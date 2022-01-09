@@ -1,0 +1,268 @@
+{
+  "data": {
+    "Page": {
+      "mediaList": [
+        {
+          "media": {
+            "coverImage": {
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx101069-e04lKe3gvSQc.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx101069-e04lKe3gvSQc.jpg",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/bx101069-e04lKe3gvSQc.jpg",
+              "color": "#e428a1"
+            }
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx113658-1nRH37J29MoY.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx113658-1nRH37J29MoY.jpg",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/bx113658-1nRH37J29MoY.jpg",
+              "color": "#f1bb50"
+            }
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx117620-cyvy8nO9GLm8.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx117620-cyvy8nO9GLm8.jpg",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/bx117620-cyvy8nO9GLm8.jpg",
+              "color": null
+            }
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx116286-nZ1jmvnbyi2t.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx116286-nZ1jmvnbyi2t.jpg",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/bx116286-nZ1jmvnbyi2t.jpg",
+              "color": "#0daee4"
+            }
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx103608-CaOYFnWesDkD.png",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx103608-CaOYFnWesDkD.png",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/bx103608-CaOYFnWesDkD.png",
+              "color": "#f1ae5d"
+            }
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx53239-Al6W4K73jyYw.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx53239-Al6W4K73jyYw.jpg",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/bx53239-Al6W4K73jyYw.jpg",
+              "color": "#e4506b"
+            }
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx108069-0o09tvykf8Pu.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx108069-0o09tvykf8Pu.jpg",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/bx108069-0o09tvykf8Pu.jpg",
+              "color": "#e4935d"
+            }
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/nx106890-bitYeoUpAXqu.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/nx106890-bitYeoUpAXqu.jpg",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/nx106890-bitYeoUpAXqu.jpg",
+              "color": "#f1c9d6"
+            }
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx112621-0ws0GgQ7Z2i7.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx112621-0ws0GgQ7Z2i7.jpg",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/bx112621-0ws0GgQ7Z2i7.jpg",
+              "color": null
+            }
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx119877-7GmOrCRkL8ar.png",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx119877-7GmOrCRkL8ar.png",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/bx119877-7GmOrCRkL8ar.png",
+              "color": "#e48628"
+            }
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx120034-tQHZHZU6I6Kv.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx120034-tQHZHZU6I6Kv.jpg",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/bx120034-tQHZHZU6I6Kv.jpg",
+              "color": null
+            }
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx108070-3GnX9L4fikHG.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx108070-3GnX9L4fikHG.jpg",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/bx108070-3GnX9L4fikHG.jpg",
+              "color": "#f1c9a1"
+            }
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx133595-DbeEkaLBjReH.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx133595-DbeEkaLBjReH.jpg",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/bx133595-DbeEkaLBjReH.jpg",
+              "color": "#e45d86"
+            }
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx109017-bT3qVhgii0Xy.png",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx109017-bT3qVhgii0Xy.png",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/bx109017-bT3qVhgii0Xy.png",
+              "color": "#fff100"
+            }
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx93456-Exs2nGwJPh07.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx93456-Exs2nGwJPh07.jpg",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/bx93456-Exs2nGwJPh07.jpg",
+              "color": "#e450a1"
+            }
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx85281-nQMiUnSqg0F0.png",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx85281-nQMiUnSqg0F0.png",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/bx85281-nQMiUnSqg0F0.png",
+              "color": "#e4281a"
+            }
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/nx98601-WNRp4Yo3xkqz.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/nx98601-WNRp4Yo3xkqz.jpg",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/nx98601-WNRp4Yo3xkqz.jpg",
+              "color": "#e44393"
+            }
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/nx100801-94JFvdg8Sk9c.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/nx100801-94JFvdg8Sk9c.jpg",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/nx100801-94JFvdg8Sk9c.jpg",
+              "color": null
+            }
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx108440-StfziwjQbhwJ.png",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx108440-StfziwjQbhwJ.png",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/bx108440-StfziwjQbhwJ.png",
+              "color": "#e47850"
+            }
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx100835-j0lwDIQQ9xs5.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx100835-j0lwDIQQ9xs5.jpg",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/bx100835-j0lwDIQQ9xs5.jpg",
+              "color": "#e4ae35"
+            }
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx99544-fwDFKUBm371f.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx99544-fwDFKUBm371f.jpg",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/bx99544-fwDFKUBm371f.jpg",
+              "color": "#f1f1c9"
+            }
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx122838-qZbrI2Zd57Qs.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx122838-qZbrI2Zd57Qs.jpg",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/bx122838-qZbrI2Zd57Qs.jpg",
+              "color": null
+            }
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx126722-hZFtLHZFYsFT.png",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx126722-hZFtLHZFYsFT.png",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/bx126722-hZFtLHZFYsFT.png",
+              "color": "#d61a35"
+            }
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx124885-eAca34w87N2p.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx124885-eAca34w87N2p.jpg",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/bx124885-eAca34w87N2p.jpg",
+              "color": "#e45d86"
+            }
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx119650-L2gWJ6TJYvGd.png",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx119650-L2gWJ6TJYvGd.png",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/bx119650-L2gWJ6TJYvGd.png",
+              "color": "#fff143"
+            }
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx131125-lilL9xBs2zLQ.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx131125-lilL9xBs2zLQ.jpg",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/bx131125-lilL9xBs2zLQ.jpg",
+              "color": null
+            }
+          }
+        }
+      ]
+    }
+  }
+}

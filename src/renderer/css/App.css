@@ -1,0 +1,22 @@
+body {
+  background-color: #111111;
+  overflow: hidden;
+  margin: 0;
+  margin-top: 4px;
+}
+
+button {
+  padding: 0 !important;
+}
+
+#root {
+  padding-top: 42px;
+  width: 100vw;
+  height: calc(100vh - 42px);
+}
+#topbar {
+  height: 32px;
+  width: calc(100% - 8px);
+  margin: 4px 4px 4px 4px;
+  position: absolute;
+}
