@@ -1,8 +1,7 @@
 import '../css/Login.css';
 import OwlCarousel from 'react-owl-carousel';
-import { StyleSheet } from 'aphrodite';
+import { StyleSheet, css } from 'aphrodite';
 import { Component } from 'react';
-import { slideInDown } from 'react-animations';
 
 import thumbnails from '../../../assets/data/thumbnail.json';
 import anilist from '../../../assets/icons/login/anilist/transparent.png';
@@ -12,12 +11,22 @@ import 'owl.carousel/dist/assets/owl.carousel.css';
 import 'owl.carousel/dist/assets/owl.theme.default.css';
 import LoginItem from './loginitem';
 
+const checkAuthenticated = () => {
+  return [
+    window.electron.store.get('authorization_anilist'),
+    window.electron.store.get('authorization_myanimelist'),
+  ].some((item) => {
+    return !!item;
+  });
+};
+
+const onAuth = () => {
+  const submitButton = document.getElementById('submit');
+  if (submitButton) submitButton.innerText = 'Continue';
+};
+
 class LoginMenu extends Component {
   styleSheet = StyleSheet.create({
-    slideOut: {
-      animationName: slideInDown,
-      animationDuration: '1s',
-    },
     buttonStateLogin: {
       top: '15%',
     },
@@ -28,15 +37,39 @@ class LoginMenu extends Component {
       maxHeight: '85%',
       height: '300px',
     },
+    button: {
+      width: '100%',
+      height: '50px',
+      background: 'rgb(14, 14, 14)',
+      border: '2px solid rgb(14, 14, 14)',
+      borderRadius: '8px',
+      color: 'rgb(255, 255, 255)',
+      fontSize: '1.2em',
+      fontFamily: "'PT Sans Narrow', sans-serif",
+      fontWeight: 'bold',
+      marginTop: '10px',
+      cursor: 'pointer',
+      position: 'relative',
+      top: 0,
+      bottom: 0,
+      left: 0,
+      right: 0,
+    },
   });
 
   constructor(props: { [k: string]: any }) {
     super(props);
 
+    this.forceUpdate = this.forceUpdate.bind(this);
     this.state = {};
   }
 
   render() {
+    const submitButton = (
+      <button type="button" id="submit" className={css(this.styleSheet.button)}>
+        {checkAuthenticated() ? 'Continue' : `I'll skip for now.`}
+      </button>
+    );
     return (
       <div id="login-container">
         <div id="login-container-inner">
@@ -46,47 +79,29 @@ class LoginMenu extends Component {
             <div className="login-content">
               <div className="login-content-inner">
                 <div className="icons">
-                  <LoginItem src={anilist} alt="Login with AniList" />
                   <LoginItem
-                    src={myanimelist}
+                    src={anilist}
                     isDisabled={
                       !!window.electron.store.get('authorization_anilist')
                     }
+                    onAuth={onAuth}
                     disabledtitle="Already logged in!"
-                    onClick={() => {
-                      window.electron.ipcRenderer
-                        .generateAuthenticationWindow(
-                          {
-                            width: 400,
-                            height: 600,
-                            center: true,
-                            maximizable: false,
-                            minimizable: false,
-                            resizable: false,
-                            title: 'AniList Login',
-                            darkTheme: true,
-                            backgroundColor: '#111',
-                            webPreferences: { contextIsolation: false },
-                          },
-                          'https://anilist.co/api/v2/oauth/authorize?client_id=7246&response_type=token'
-                        )
-                        .then((returnData) => {
-                          window.electron.store.set(
-                            'authorization_anilist',
-                            returnData
-                          );
-
-                          return true;
-                        })
-                        .catch(console.error);
-                    }}
+                    authenticator="anilist"
+                    alt="Login with AniList"
+                  />
+                  <LoginItem
+                    src={myanimelist}
+                    isDisabled={
+                      !!window.electron.store.get('authorization_myanimelist')
+                    }
+                    onAuth={onAuth}
+                    disabledtitle="Already logged in!"
+                    authenticator="myanimelist"
                     alt="Login with MyAnimeList"
                   />
                 </div>
               </div>
-              <button type="button" id="submit">
-                I&apos;ll skip for now.
-              </button>
+              {submitButton}
             </div>
           </div>
         </div>
@@ -145,7 +160,7 @@ const Login = () => {
   return (
     <div className="login-main">
       <LoginMenu />
-      <div id="login-background">{/* carouselArray */}</div>
+      <div id="login-background">{carouselArray}</div>
     </div>
   );
 };

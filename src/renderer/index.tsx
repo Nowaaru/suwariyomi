@@ -6,11 +6,17 @@ import App from './App';
 declare global {
   interface Window {
     electron: {
-      ipcRenderer: {
+      auth: {
         generateAuthenticationWindow: (
           windowData: { [key: string]: any },
           targetLocation: string
         ) => Promise<{ access_token: string; expires_in: number }>;
+        generatePKCE: () => {
+          code_challenge: string;
+          code_verifier: string;
+        };
+      };
+      ipcRenderer: {
         minimize: () => void;
         maximize: () => void;
         exit: () => void;
@@ -26,6 +32,7 @@ declare global {
       store: {
         get: (key: string) => any;
         set: (key: string, value: any) => void;
+        flush: () => void;
       };
     };
   }

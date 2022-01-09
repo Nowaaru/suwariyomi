@@ -2,17 +2,17 @@ const { contextBridge, ipcRenderer } = require('electron');
 const { v4 } = require('uuid');
 
 contextBridge.exposeInMainWorld('electron', {
-  ipcRenderer: {
+  auth: {
     async generateAuthenticationWindow(windowData, targetLocation) {
       const id = v4();
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve) => {
         ipcRenderer.on(
           `oauth-received-${id}`,
           (event, identifier, return_data) => {
             if (identifier === id) {
               ipcRenderer.removeAllListeners(`oauth-received-${id}`);
               if (return_data) resolve(return_data);
-              else reject();
+              else resolve(false);
             }
           }
         );
@@ -24,6 +24,11 @@ contextBridge.exposeInMainWorld('electron', {
         );
       });
     },
+    async generatePKCE() {
+      return ipcRenderer.invoke('generate-pkce');
+    },
+  },
+  ipcRenderer: {
     minimize() {
       ipcRenderer.send('minimize');
     },
@@ -54,6 +59,9 @@ contextBridge.exposeInMainWorld('electron', {
     },
     set(property, val) {
       ipcRenderer.send('electron-store-set', property, val);
+    },
+    flush() {
+      ipcRenderer.send('electron-store-flush');
     },
   },
 });

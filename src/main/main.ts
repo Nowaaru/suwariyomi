@@ -15,6 +15,7 @@ import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import Store from 'electron-store';
+import pkceChallenge from 'pkce-challenge';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
@@ -46,6 +47,17 @@ ipcMain.on('minimize', () => {
   return true;
 });
 
+ipcMain.on('electron-store-flush', () => {
+  ElectronStore.clear();
+});
+
+ipcMain.handle('generate-pkce', async () => {
+  const challenge = await pkceChallenge();
+  // event.reply('generate-pkce', challenge);
+
+  return challenge;
+});
+
 ipcMain.on(
   'authentication-window',
   async (event, identifier, windowData, url) => {
@@ -60,7 +72,6 @@ ipcMain.on(
     const onWebEvent = (_: any, windowUrl: string) => {
       const parsedURL = new URL(windowUrl);
 
-      console.log(parsedURL.protocol, parsedURL.protocol === 'suwariyomi');
       if (
         parsedURL.protocol.substring(0, parsedURL.protocol.length - 1) !==
         'suwariyomi'
