@@ -229,9 +229,6 @@
     "@bit/lekanmedia.shared-ui.search-bar": "^1.0.9",
     "@emotion/styled": "^11.6.0",
     "@mui/material": "^5.2.7",
-    "@types/figlet": "^1.5.4",
-    "@types/react-animations": "^1.0.0",
-    "@types/uuidv4": "^5.0.0",
     "aphrodite": "^2.4.0",
     "electron-debug": "^3.2.0",
     "electron-log": "^4.4.4",
@@ -257,7 +254,6 @@
     "regenerator-runtime": "^0.13.9",
     "ts-localstorage": "^1.1.0",
     "uuid": "^8.3.2",
-    "uuidv4": "^6.2.12",
     "webfontloader": "^1.6.28"
   },
   "devEngines": {
