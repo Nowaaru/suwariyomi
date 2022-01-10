@@ -1,7 +1,7 @@
 import React from 'react';
 import { Tooltip } from '@mui/material';
 import { StyleSheet, css } from 'aphrodite';
-import { Mal, Jikan } from 'node-myanimelist';
+import { Mal } from 'node-myanimelist';
 
 const AniListIntegrationHandler = async () => {
   window.electron.auth
