@@ -10,6 +10,7 @@ module.exports = {
     'no-plusplus': 'off',
     'no-nested-ternary': 'off',
     'no-console': 'off',
+    'no-return-assign': 'off',
   },
   parserOptions: {
     ecmaVersion: 2020,
