@@ -1,4 +1,5 @@
 import { StyleSheet, css } from 'aphrodite';
+import { Button } from '@mui/material';
 import Tag from './tag';
 
 type MangaItemListProps = {
@@ -34,6 +35,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#0c0a0c',
     verticalAlign: 'top',
     overflow: 'hidden',
+    display: 'flex',
   },
 
   mangaItemListCover: {
@@ -60,12 +62,20 @@ const styles = StyleSheet.create({
     fontFamily: '"PT Sans Narrow", "Roboto", "Helvetica", "Arial", sans-serif',
   },
   mangaItemSynopsisContainer: {
-    width: '100%',
+    width: '65%',
     height: '150px',
     position: 'relative',
     top: 0,
     left: 0,
+    display: 'inline-flex',
     overflow: 'hidden',
+    '@media (max-width: 999px)': {
+      display: 'none',
+      visibility: 'hidden',
+    },
+    '@media (max-width: 1200px)': {
+      maxWidth: '50%',
+    },
     ':after': {
       content: '""',
       position: 'absolute',
@@ -82,20 +92,26 @@ const styles = StyleSheet.create({
   },
   mangaItemSynopsis: {
     fontSize: '1em',
+    display: 'inline-flex',
     color: '#fff',
     fontFamily: '"Poppins", "Roboto", "Helvetica", "Arial", sans-serif',
-    width: '100%',
+    width: '80%',
     height: '85%',
     maxWidth: '600px',
     maxHeight: '400px',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
+    '@media (max-width: 999px)': {
+      display: 'none',
+      visibility: 'hidden',
+    },
   },
 
   mangaMetadata: {
+    flexShrink: 3,
     verticalAlign: 'top',
     display: 'inline-block',
-    width: '65%',
+    width: '80%',
     height: '100%',
   },
 
@@ -112,6 +128,44 @@ const styles = StyleSheet.create({
     height: 'fit-content',
     margin: '0px 0px 10px 0px',
     verticalAlign: 'top',
+  },
+
+  // Buttons are vertically placed with 100% width and 48px height.
+  mangaItemButtonContainer: {
+    display: 'inline-block',
+    width: '100%',
+    height: '155px',
+    margin: '0px 0px 10px 0px',
+    verticalAlign: 'top',
+    float: 'right',
+    '@media (min-width: 1000px)': {
+      maxWidth: '50%',
+    },
+    '@media (min-width: 1200px)': {
+      maxWidth: '35%',
+    },
+    // backgroundColor: 'red',
+  },
+
+  mangaItemButtonWrapper: {
+    width: '95%',
+    padding: '5px',
+    paddingTop: '20px',
+    height: '48px',
+  },
+
+  mangaItemButton: {
+    width: '100%',
+    height: '100%',
+    marginBottom: '12px',
+  },
+
+  mangaItemStartReadButton: {
+    backgroundColor: '#EE7A3B',
+  },
+
+  mangaItemViewButton: {
+    backgroundColor: '#00BCD4',
   },
 });
 
@@ -139,6 +193,28 @@ const mangaItem = (props: MangaItemProps) => {
                 <p className={css(styles.mangaItemSynopsis)}>
                   {props.synopsis}
                 </p>
+              </div>
+              <div className={css(styles.mangaItemButtonContainer)}>
+                <div className={css(styles.mangaItemButtonWrapper)}>
+                  <Button
+                    className={css(
+                      styles.mangaItemViewButton,
+                      styles.mangaItemButton
+                    )}
+                    variant="contained"
+                  >
+                    View Chapters
+                  </Button>
+                  <Button
+                    className={css(
+                      styles.mangaItemStartReadButton,
+                      styles.mangaItemButton
+                    )}
+                    variant="contained"
+                  >
+                    Start Reading
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
