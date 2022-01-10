@@ -10,7 +10,6 @@ import {
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { StyleSheet, css } from 'aphrodite';
 import MangaItem from './mangaitem';
-import templateCovers from '../../../assets/data/thumbnail.json';
 import templateFull from '../../../assets/data/full.json';
 
 const libraryStyleSheet = StyleSheet.create({
@@ -133,7 +132,7 @@ const libraryStyleSheet = StyleSheet.create({
 
   infoPaperHeaderBase: {
     color: '#FFFFFF',
-    fontFamily: '"PT Sans Narrow", "Roboto", "Helvetica", "Arial", sans-serif',
+    fontFamily: '"Poppins", "Roboto", "Helvetica", "Arial", sans-serif',
     margin: '0',
   },
   infoPaperHeaderMain: {
@@ -145,6 +144,11 @@ const libraryStyleSheet = StyleSheet.create({
 
   infoHighlight: {
     color: '#DF2935',
+  },
+
+  infoRegular: {
+    fontFamily: '"PT Sans Narrow", "Roboto", "Helvetica", "Arial", sans-serif',
+    letterSpacing: '0.05em',
   },
 
   darkHR: {
@@ -190,7 +194,6 @@ const libraryStyleSheet = StyleSheet.create({
   },
 });
 
-const mangaSynopsisTemplate = `The story begins in a small village west of the capital and centers on childhood friends Yuugo and Tenia. While Yuugo focuses on being an herbalist, Tenia is a hunter. A force of Arisen knights passes through their town in search of more Arisen to join their ranks. Tenia reveals that she is an Arisen and wants to travel with them.`;
 const Library = () => {
   const mangaListArray: Array<JSX.Element> = [];
   const accordionArray: Array<JSX.Element> = [];
@@ -206,7 +209,7 @@ const Library = () => {
   ];
 
   const { mediaList } = templateFull.data.Page;
-  mediaList.forEach((manga) => {
+  mediaList.splice(0, 6).forEach((manga) => {
     mangaListArray.push(
       <MangaItem
         displayType="list"
@@ -275,6 +278,43 @@ const Library = () => {
     );
   }
 
+  const filteredMediaList = mediaList.filter(
+    (manga) =>
+      manga.media.title.userPreferred.length < 50 &&
+      manga.readingstatus === 'CURRENT'
+  );
+  const readingPrefixTarget =
+    filteredMediaList[Math.floor(Math.random() * filteredMediaList.length)];
+
+  let statusPrefix = "Let's start reading";
+  let statusSuffix = '!';
+
+  if (readingPrefixTarget) {
+    switch (readingPrefixTarget.readingstatus) {
+      case 'COMPLETED':
+        [statusPrefix, statusSuffix] = ['Want to reread', '?'];
+        break;
+      case 'PLANNING':
+        [statusPrefix, statusSuffix] = ['Want to try reading', '?'];
+        break;
+      case 'DROPPED':
+        [statusPrefix, statusSuffix] = ['Maybe try reconsidering', '..?'];
+        break;
+      case 'PAUSED':
+        [statusPrefix, statusSuffix] = [
+          'Want to pick up',
+          ' where you left off?',
+        ];
+        break;
+      case 'REPEATING':
+      // eslint-disable-next-line no-fallthrough
+      case 'CURRENT':
+        [statusPrefix, statusSuffix] = ['Want to continue reading', '?'];
+        break;
+      default:
+        break;
+    }
+  }
   return (
     <div className={css(libraryStyleSheet.container)}>
       <div className={css(libraryStyleSheet.searchbarContainer)}>
@@ -317,11 +357,22 @@ const Library = () => {
                 libraryStyleSheet.infoPaperHeaderSub
               )}
             >
-              Up to reading some{' '}
-              <span className={css(libraryStyleSheet.infoHighlight)}>
-                Hino-san no Baka
+              <span className={css(libraryStyleSheet.infoRegular)}>
+                {statusPrefix}
+              </span>{' '}
+              <span
+                className={css(
+                  libraryStyleSheet.infoRegular,
+                  libraryStyleSheet.infoHighlight
+                )}
+              >
+                {!readingPrefixTarget
+                  ? 'some manga'
+                  : readingPrefixTarget.media.title.userPreferred}
               </span>
-              ?
+              <span className={css(libraryStyleSheet.infoRegular)}>
+                {statusSuffix}
+              </span>
             </h4>
             <hr className={css(libraryStyleSheet.darkHR)} />
             <div className={css(libraryStyleSheet.mangaStatsContainer)}>
