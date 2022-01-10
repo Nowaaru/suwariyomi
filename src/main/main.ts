@@ -71,6 +71,15 @@ ipcMain.on(
 
     const onWebEvent = (_: any, windowUrl: string) => {
       const parsedURL = new URL(windowUrl);
+      // combine the hash params and the query params
+      const params = Object.fromEntries(
+        new URLSearchParams(parsedURL.hash.slice(1)) as any
+      );
+
+      parsedURL.searchParams.forEach((value, key) => {
+        if (params[key]) return;
+        params[key] = value;
+      });
 
       if (
         parsedURL.protocol.substring(0, parsedURL.protocol.length - 1) !==
@@ -78,12 +87,8 @@ ipcMain.on(
       )
         return;
 
-      const params = new URLSearchParams(parsedURL.hash.slice(1));
       isAuthorized = true;
-      event.reply(`oauth-received-${identifier}`, identifier, {
-        access_token: params.get('access_token'),
-        expires: Date.now() + Number(params.get('expires')),
-      });
+      event.reply(`oauth-received-${identifier}`, identifier, params);
 
       newWindow.removeAllListeners('close');
       newWindow.removeAllListeners('will-redirect');

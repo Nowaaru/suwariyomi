@@ -44,7 +44,7 @@ const MyAnimeListIntegrationHandler = async () => {
         maximizable: false,
         minimizable: false,
         resizable: false,
-        title: 'AniList Login',
+        title: 'MyAnimeList Login',
         darkTheme: true,
         backgroundColor: '#111',
         webPreferences: { contextIsolation: false },
