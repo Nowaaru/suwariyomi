@@ -33,6 +33,7 @@ const styles = StyleSheet.create({
     maxHeight: '300px',
     backgroundColor: '#0c0a0c',
     verticalAlign: 'top',
+    overflow: 'hidden',
   },
 
   mangaItemListCover: {
@@ -45,6 +46,7 @@ const styles = StyleSheet.create({
 
   mangaItemListCoverImage: {
     height: '256px',
+    borderRadius: '10px',
     objectFit: 'contain',
   },
 
@@ -57,15 +59,39 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontFamily: '"PT Sans Narrow", "Roboto", "Helvetica", "Arial", sans-serif',
   },
+  mangaItemSynopsisContainer: {
+    width: '100%',
+    height: '150px',
+    position: 'relative',
+    top: 0,
+    left: 0,
+    overflow: 'hidden',
+    ':after': {
+      content: '""',
+      position: 'absolute',
+      height: '5em',
+      bottom: '0',
+      left: '0',
+      width: '100%',
+      background: `linear-gradient(to bottom,
+        rgba(0,0,0,0) 20%,
+        #0c0a0c 80%
+     );`,
+      pointerEvents: 'none', // prevent mouse events from going through to the rest of the page
+    },
+  },
   mangaItemSynopsis: {
-    display: 'block',
     fontSize: '1em',
     color: '#fff',
     fontFamily: '"Poppins", "Roboto", "Helvetica", "Arial", sans-serif',
     width: '100%',
     height: '85%',
     maxWidth: '600px',
+    maxHeight: '400px',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
   },
+
   mangaMetadata: {
     verticalAlign: 'top',
     display: 'inline-block',
@@ -109,9 +135,11 @@ const mangaItem = (props: MangaItemProps) => {
             <div className={css(styles.mangaItemInformationMain)}>
               <h3 className={css(styles.mangaItemTitle)}>{props.title}</h3>
               <div className={css(styles.mangaItemTags)}>{mangaTags}</div>
-              <span className={css(styles.mangaItemSynopsis)}>
-                {props.synopsis}
-              </span>
+              <div className={css(styles.mangaItemSynopsisContainer)}>
+                <p className={css(styles.mangaItemSynopsis)}>
+                  {props.synopsis}
+                </p>
+              </div>
             </div>
           </div>
         </div>
