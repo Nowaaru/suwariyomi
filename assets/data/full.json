@@ -1,0 +1,3435 @@
+{
+  "data": {
+    "Page": {
+      "mediaList": [
+        {
+          "media": {
+            "coverImage": {
+              "color": "#e41a78",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/bx120493-wDz6vb1A5o99.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx120493-wDz6vb1A5o99.jpg",
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx120493-wDz6vb1A5o99.jpg"
+            },
+            "id": 120493,
+            "title": {
+              "userPreferred": "Kuchi ga Saketemo Kimi ni wa"
+            },
+            "tags": [
+              {
+                "rank": 79,
+                "name": "Male Protagonist",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Main Cast"
+              },
+              {
+                "rank": 79,
+                "name": "Female Protagonist",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Main Cast"
+              },
+              {
+                "rank": 60,
+                "name": "Age Gap",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": true,
+                "category": "Theme-Romance"
+              },
+              {
+                "rank": 30,
+                "name": "Tsundere",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Traits"
+              },
+              {
+                "rank": 20,
+                "name": "Shounen",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Demographic"
+              },
+              {
+                "rank": 20,
+                "name": "Time Skip",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": true,
+                "category": "Setting-Time"
+              },
+              {
+                "rank": 20,
+                "name": "Heterosexual",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Romance"
+              }
+            ],
+            "description": "Miroku-san, the slit-mouth woman, is to marry high school student Kouichi to maintain her existence as his family has been in charge of upkeeping superstitions for generations. To add, there seems to be another reason that he seems more than willing... \n<br><br>\nMiroku, however, would rather use her own strength than borrow that of others. Thus, they establish a contract as follows.<br>\n1. For a trial period of a year, they are to act as though they were married.<br>\n2. If she is able to scare him within that year, the engagement will be broken.\n<br><br>\n<i>Note: A three part short story.</i>",
+            "chapters": 3,
+            "countryOfOrigin": "JP",
+            "volumes": null,
+            "status": "FINISHED",
+            "averageScore": 71,
+            "meanScore": 72,
+            "synonyms": [
+              "Even if your mouth is teared "
+            ],
+            "isAdult": false,
+            "siteUrl": "https://anilist.co/manga/120493"
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "color": null,
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/bx86303-DItZrA3hbaJf.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx86303-DItZrA3hbaJf.jpg",
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx86303-DItZrA3hbaJf.jpg"
+            },
+            "id": 86303,
+            "title": {
+              "userPreferred": "Kobayashi-san Chi no Maidragon"
+            },
+            "tags": [
+              {
+                "rank": 93,
+                "name": "Dragons",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Traits"
+              },
+              {
+                "rank": 85,
+                "name": "Maids",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Traits"
+              },
+              {
+                "rank": 84,
+                "name": "Yuri",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Romance"
+              },
+              {
+                "rank": 82,
+                "name": "Family Life",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Slice of Life"
+              },
+              {
+                "rank": 77,
+                "name": "Monster Girl",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Traits"
+              },
+              {
+                "rank": 75,
+                "name": "Seinen",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Demographic"
+              },
+              {
+                "rank": 73,
+                "name": "Female Protagonist",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Main Cast"
+              },
+              {
+                "rank": 66,
+                "name": "Magic",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Fantasy"
+              },
+              {
+                "rank": 44,
+                "name": "Nudity",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Traits"
+              },
+              {
+                "rank": 40,
+                "name": "War",
+                "isAdult": false,
+                "isMediaSpoiler": true,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Other"
+              },
+              {
+                "rank": 27,
+                "name": "Gender Bending",
+                "isAdult": false,
+                "isMediaSpoiler": true,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Other"
+              }
+            ],
+            "description": "Miss Kobayashi is your average office worker who lives a boring life, alone in her small apartment–until she saves the life of a female dragon in distress. The dragon, named Tohru, has the ability to magically transform into an adorable human girl (albeit with horns and a long tail!), who will do anything to pay off her debt of gratitude, whether Miss Kobayashi likes it or not. With a very persistent and amorous dragon as a roommate, nothing comes easy, and Miss Kobayashi’s normal life is about to go off the deep end!\n<br><br>\n(Source: Seven Seas Entertainment)",
+            "chapters": null,
+            "countryOfOrigin": "JP",
+            "volumes": null,
+            "status": "RELEASING",
+            "averageScore": 78,
+            "meanScore": 79,
+            "synonyms": [
+              "Kobayashi-san Chi no Maid Dragon",
+              "The maid dragon of Kobayashi-san",
+              "Дракорничная госпожи Кобаяси"
+            ],
+            "isAdult": false,
+            "siteUrl": "https://anilist.co/manga/86303"
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "color": "#e450ae",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/bx30873-Ta0oMK1QTdWc.png",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx30873-Ta0oMK1QTdWc.png",
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx30873-Ta0oMK1QTdWc.png"
+            },
+            "id": 30873,
+            "title": {
+              "userPreferred": "Sekirei"
+            },
+            "tags": [
+              {
+                "rank": 79,
+                "name": "Super Power",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Fantasy"
+              },
+              {
+                "rank": 79,
+                "name": "Seinen",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Demographic"
+              },
+              {
+                "rank": 60,
+                "name": "Female Harem",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Romance"
+              }
+            ],
+            "description": "Sekirei are 108 beautiful ladies of unknown origin, who together with their Ashikabi (human partners), must battle with one another in order to determine who will ascend and claim the \"prize.\" What is the larger purpose of this event? What are the plans of the event's overseer, the same individual who found these Sekirei and introduced them into society?<br><br>\nEnter Sasashi Minato, 19 years old and approaching his 2nd year as a ronin. He is about to give it all up and return home, when quite literally, Musubi falls into/onto his life. An extremely well endowed, energetic, simple and sweet girl in a short miko outfit. Suddenly he finds himself as an Ashikabi, living with a girl for the first time in his life. And this is just the start of his new crazy life, which at most times is more than the poor Minato can handle.<br><br>\nThis extremely ecchi, yet relatively innocent manga geared toward young men was brought to us by an established yaoi mangaka, Gokurakuin Sakurako!",
+            "chapters": 187,
+            "countryOfOrigin": "JP",
+            "volumes": 18,
+            "status": "FINISHED",
+            "averageScore": 70,
+            "meanScore": 71,
+            "synonyms": [
+              "Wagtail"
+            ],
+            "isAdult": false,
+            "siteUrl": "https://anilist.co/manga/30873"
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "color": "#e4bba1",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/nx80145-PeU7lVLC4d4Z.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/nx80145-PeU7lVLC4d4Z.jpg",
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/nx80145-PeU7lVLC4d4Z.jpg"
+            },
+            "id": 80145,
+            "title": {
+              "userPreferred": "Citrus"
+            },
+            "tags": [
+              {
+                "rank": 99,
+                "name": "Yuri",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Romance"
+              },
+              {
+                "rank": 83,
+                "name": "Female Protagonist",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Main Cast"
+              },
+              {
+                "rank": 79,
+                "name": "Inseki",
+                "isAdult": true,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Sexual Content"
+              },
+              {
+                "rank": 72,
+                "name": "Primarily Female Cast",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Main Cast"
+              },
+              {
+                "rank": 69,
+                "name": "School",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Setting-Scene"
+              },
+              {
+                "rank": 68,
+                "name": "Family Life",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Slice of Life"
+              },
+              {
+                "rank": 40,
+                "name": "Love Triangle",
+                "isAdult": false,
+                "isMediaSpoiler": true,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Romance"
+              },
+              {
+                "rank": 40,
+                "name": "LGBTQ+ Themes",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Other"
+              },
+              {
+                "rank": 40,
+                "name": "Gyaru",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Traits"
+              },
+              {
+                "rank": 20,
+                "name": "Work",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Setting-Scene"
+              }
+            ],
+            "description": "Yuzuko Aihara, a high school girl whose main interests are fashion, friends and having fun, is about to get a reality check. Due to her mom’s remarriage, Yuzu has transferred to a new, all-girls school that is extremely strict. Her real education is about to begin.\n<br><br>\nFrom Day One, happy-go-lucky Yuzu makes enemies, namely the beautiful yet stern Student Council President Mei. So what happens when a dejected Yuzu returns home and discovers the shock of her life: that Mei is actually her new step-sister who has come to live with her? Even more surprising, when Mei catches Yuzu off-guard and kisses her out of the blue, what does it all mean?\n<br><br>\n(Source: Seven Seas Entertainment)\n<br><br>\n<i>Includes 9 bonus chapters.</i>",
+            "chapters": 50,
+            "countryOfOrigin": "JP",
+            "volumes": 10,
+            "status": "FINISHED",
+            "averageScore": 71,
+            "meanScore": 71,
+            "synonyms": [
+              "citrus: secret love affair with sister",
+              "citrus: saburouta presents secret love affair with sister"
+            ],
+            "isAdult": false,
+            "siteUrl": "https://anilist.co/manga/80145"
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "color": "#f1bb93",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/nx101120-amBJIqs6SEsE.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/nx101120-amBJIqs6SEsE.jpg",
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/nx101120-amBJIqs6SEsE.jpg"
+            },
+            "id": 101120,
+            "title": {
+              "userPreferred": "Watashi no Yuri wa Oshigoto desu!"
+            },
+            "tags": [
+              {
+                "rank": 85,
+                "name": "Work",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Setting-Scene"
+              },
+              {
+                "rank": 79,
+                "name": "Love Triangle",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Romance"
+              },
+              {
+                "rank": 76,
+                "name": "Yuri",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Romance"
+              },
+              {
+                "rank": 76,
+                "name": "Female Protagonist",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Main Cast"
+              },
+              {
+                "rank": 76,
+                "name": "Primarily Female Cast",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Main Cast"
+              },
+              {
+                "rank": 70,
+                "name": "Meta",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Other"
+              },
+              {
+                "rank": 60,
+                "name": "Gyaru",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Traits"
+              },
+              {
+                "rank": 46,
+                "name": "Parody",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Comedy"
+              },
+              {
+                "rank": 40,
+                "name": "School",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Setting-Scene"
+              }
+            ],
+            "description": "Hime is a girl who has developed her cuteness as a deliberate act with the plan of marrying a billionaire. One day she is more or less forced to work as a replacement for a girl injured by bumping into her in the street. The place of work is a concept cafe where the waitresses put on a show as though the cafe were run by the yuri cliche ojousama school. There's a large contrast between the performances and the off-duty staff.",
+            "chapters": null,
+            "countryOfOrigin": "JP",
+            "volumes": null,
+            "status": "RELEASING",
+            "averageScore": 66,
+            "meanScore": 73,
+            "synonyms": [
+              "Watashi no Yuri wa Oshigotodesu!"
+            ],
+            "isAdult": false,
+            "siteUrl": "https://anilist.co/manga/101120"
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "color": "#e45d86",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/nx101795-IO5jHLnieOBR.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/nx101795-IO5jHLnieOBR.jpg",
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/nx101795-IO5jHLnieOBR.jpg"
+            },
+            "id": 101795,
+            "title": {
+              "userPreferred": "Black Gakkou ni Tsutomete Shimatta Sensei"
+            },
+            "tags": [
+              {
+                "rank": 100,
+                "name": "Gyaru",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Traits"
+              },
+              {
+                "rank": 95,
+                "name": "Primarily Female Cast",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Main Cast"
+              },
+              {
+                "rank": 86,
+                "name": "Teacher",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Traits"
+              },
+              {
+                "rank": 85,
+                "name": "Female Harem",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Romance"
+              },
+              {
+                "rank": 76,
+                "name": "School",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Setting-Scene"
+              },
+              {
+                "rank": 70,
+                "name": "Seinen",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Demographic"
+              },
+              {
+                "rank": 70,
+                "name": "Tanned Skin",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Traits"
+              },
+              {
+                "rank": 50,
+                "name": "Nudity",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Traits"
+              },
+              {
+                "rank": 20,
+                "name": "Male Protagonist",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Main Cast"
+              }
+            ],
+            "description": "Sadamichi Imada has always dreamed of teaching at an all-girls school—a wish that comes true when he's transferred to Kurosugi Girls Academy. But there may be a teeny-tiny problem... his class is packed with nothing but bronzer-abusing gyarus! He barely has time to process a decade of gyaru-inflicted PTSD before problem student number one—the bubbly (and low-key horny) Mariko Kuroi solicits him for a quicky after school, and the other girls are quick to follow! Can Imacchi be professional in these uncharted waters teeming with thirsty thots, or are they going to drag him down with him!?\n<br><br>\n(Source: Irodori Comics)\n",
+            "chapters": null,
+            "countryOfOrigin": "JP",
+            "volumes": null,
+            "status": "RELEASING",
+            "averageScore": 57,
+            "meanScore": 58,
+            "synonyms": [
+              "I Messed Up by Teaching at a Black Gyaru School!",
+              "A Teacher Who Worked at a Black School",
+              "Teacher Working at a Black School",
+              " I'm a Teacher at a Black Gyaru School!",
+              "Burakku Gakkou ni Tsutomete Shimatta Sensei"
+            ],
+            "isAdult": false,
+            "siteUrl": "https://anilist.co/manga/101795"
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "color": "#e4ae43",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/bx99462-zP6YMPTFodVl.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx99462-zP6YMPTFodVl.jpg",
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx99462-zP6YMPTFodVl.jpg"
+            },
+            "id": 99462,
+            "title": {
+              "userPreferred": "Isekai Meikyuu de Harem wo"
+            },
+            "tags": [
+              {
+                "rank": 85,
+                "name": "Nudity",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Traits"
+              },
+              {
+                "rank": 83,
+                "name": "Isekai",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Fantasy"
+              },
+              {
+                "rank": 83,
+                "name": "Dungeon",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Setting-Scene"
+              },
+              {
+                "rank": 82,
+                "name": "Seinen",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Demographic"
+              },
+              {
+                "rank": 77,
+                "name": "Slavery",
+                "isAdult": false,
+                "isMediaSpoiler": true,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Other"
+              },
+              {
+                "rank": 77,
+                "name": "Kemonomimi",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Traits"
+              },
+              {
+                "rank": 70,
+                "name": "Female Harem",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Romance"
+              },
+              {
+                "rank": 60,
+                "name": "Male Protagonist",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Main Cast"
+              }
+            ],
+            "description": "A man was about to commit suicide and decides to search for a way to die in the internet, but then he found an odd site that asked a lot of questions and had a point based system that allows you to create skills and abilities for a character. He took interest in it and when he finished setting his character he was asked \"You will now be transported to a world with the settings you choose, coming back is not possible, do you still accept.\" Then, without thinking much of it, he pressed \"Yes,\" and he found himself in another world with the skills and abilities he choose to have...\n",
+            "chapters": null,
+            "countryOfOrigin": "JP",
+            "volumes": null,
+            "status": "RELEASING",
+            "averageScore": 66,
+            "meanScore": 67,
+            "synonyms": [
+              "A Harem in the Fantasy World Dungeon",
+              "Isekai Meikyuu de Harem o"
+            ],
+            "isAdult": false,
+            "siteUrl": "https://anilist.co/manga/99462"
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "color": "#fe286b",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/bx43951-hBfU6dyF3KC4.png",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx43951-hBfU6dyF3KC4.png",
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx43951-hBfU6dyF3KC4.png"
+            },
+            "id": 43951,
+            "title": {
+              "userPreferred": "Gokujo. Gokurakuin Joshikou Ryou Monogatari"
+            },
+            "tags": [
+              {
+                "rank": 79,
+                "name": "Yuri",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Romance"
+              },
+              {
+                "rank": 79,
+                "name": "Nudity",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Traits"
+              },
+              {
+                "rank": 50,
+                "name": "School",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Setting-Scene"
+              },
+              {
+                "rank": 50,
+                "name": "Seinen",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Demographic"
+              }
+            ],
+            "description": "A story about the humorous misadventures of Akabane Aya, an arrogant high-school girl who's constantly trying to outdo her classmates in everything (especially sex appeal), only to make a fool of herself in the process. Since the story takes place in an all-girls school, expect lots of girls fanservice innuendos without much seriousness.\n",
+            "chapters": 99,
+            "countryOfOrigin": "JP",
+            "volumes": 10,
+            "status": "FINISHED",
+            "averageScore": 53,
+            "meanScore": 65,
+            "synonyms": [
+              "Gokujo. - Gokurakuin Joshikou Ryou Monogatari",
+              "Gokujyo"
+            ],
+            "isAdult": false,
+            "siteUrl": "https://anilist.co/manga/43951"
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "color": "#f1c9ae",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/12731.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/12731.jpg",
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/12731.jpg"
+            },
+            "id": 42731,
+            "title": {
+              "userPreferred": "Mnemosyne: Mnemosyne no Musumetachi"
+            },
+            "tags": [
+              {
+                "rank": 79,
+                "name": "Bisexual",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Romance"
+              },
+              {
+                "rank": 50,
+                "name": "Seinen",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Demographic"
+              },
+              {
+                "rank": 20,
+                "name": "Yuri",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Romance"
+              }
+            ],
+            "description": "The Mnemosyne manga adaptation, illustrated by Miss Black, started serialization in the male-oriented manga magazine Comic Valkyrie on May 27, 2008, and is published by Kill Time Communication.<br><br>\n(Wikipedia)",
+            "chapters": 2,
+            "countryOfOrigin": "JP",
+            "volumes": null,
+            "status": "FINISHED",
+            "averageScore": null,
+            "meanScore": 70,
+            "synonyms": [
+              "Mnemosyne",
+              "Mnemosyne: Daughters of Mnemosyne"
+            ],
+            "isAdult": false,
+            "siteUrl": "https://anilist.co/manga/42731"
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "color": "#e46b5d",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/b33039-zr5FHRWGxkqi.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/b33039-zr5FHRWGxkqi.jpg",
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/b33039-zr5FHRWGxkqi.jpg"
+            },
+            "id": 33039,
+            "title": {
+              "userPreferred": "Strawberry Panic!"
+            },
+            "tags": [
+              {
+                "rank": 50,
+                "name": "Yuri",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Romance"
+              }
+            ],
+            "description": "The setting is lush Astraea Hill, where three famous all-girls schools are built. It's the first day of school, and the cherry blossoms are scattering to the ground. Nagisa meets Hanazono Shizuma, the top student in the school, and her breath is taken away by her beauty. But when Shizuma takes a liking to Nagisa, love and chaos soon follow...<br><br>\n(Source: Seven Seas Entertainment)",
+            "chapters": 14,
+            "countryOfOrigin": "JP",
+            "volumes": 2,
+            "status": "FINISHED",
+            "averageScore": 62,
+            "meanScore": 65,
+            "synonyms": [],
+            "isAdult": false,
+            "siteUrl": "https://anilist.co/manga/33039"
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "color": "#ff6b43",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/bx66213-OK32r4Vhi2jx.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx66213-OK32r4Vhi2jx.jpg",
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx66213-OK32r4Vhi2jx.jpg"
+            },
+            "id": 66213,
+            "title": {
+              "userPreferred": "Monster Musume no Iru Nichijou"
+            },
+            "tags": [
+              {
+                "rank": 99,
+                "name": "Monster Girl",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Traits"
+              },
+              {
+                "rank": 95,
+                "name": "Female Harem",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Romance"
+              },
+              {
+                "rank": 85,
+                "name": "Seinen",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Demographic"
+              },
+              {
+                "rank": 85,
+                "name": "Nudity",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Traits"
+              },
+              {
+                "rank": 72,
+                "name": "Slapstick",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Comedy"
+              },
+              {
+                "rank": 70,
+                "name": "Primarily Female Cast",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Main Cast"
+              },
+              {
+                "rank": 56,
+                "name": "Centaur",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Traits"
+              },
+              {
+                "rank": 52,
+                "name": "Dullahan",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Traits"
+              },
+              {
+                "rank": 46,
+                "name": "Kaiju",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Fantasy"
+              },
+              {
+                "rank": 46,
+                "name": "Mermaid",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Traits"
+              },
+              {
+                "rank": 40,
+                "name": "Zombie",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Traits"
+              },
+              {
+                "rank": 40,
+                "name": "Demons",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Traits"
+              },
+              {
+                "rank": 30,
+                "name": "Vampire",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Traits"
+              },
+              {
+                "rank": 20,
+                "name": "Heterosexual",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Romance"
+              },
+              {
+                "rank": 20,
+                "name": "VTuber",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Traits"
+              }
+            ],
+            "description": "In a modern world where beast people exist and live with other humans, they have a regular household where a student lives with a lamia named Miia. The student, Kurusu Kimihito, came to live with Miia because of the culture exchange that has been going on with humans and sub-species alike. This is their story.",
+            "chapters": null,
+            "countryOfOrigin": "JP",
+            "volumes": null,
+            "status": "RELEASING",
+            "averageScore": 72,
+            "meanScore": 73,
+            "synonyms": [
+              "Everyday That There Is a Monster Girl",
+              "몬스터 아가씨가 있는 일상"
+            ],
+            "isAdult": false,
+            "siteUrl": "https://anilist.co/manga/66213"
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "color": "#e45d6b",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/bx37186-PceZKqLKoEJz.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx37186-PceZKqLKoEJz.jpg",
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx37186-PceZKqLKoEJz.jpg"
+            },
+            "id": 37186,
+            "title": {
+              "userPreferred": "Maken-Ki!"
+            },
+            "tags": [
+              {
+                "rank": 79,
+                "name": "Martial Arts",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Action"
+              },
+              {
+                "rank": 79,
+                "name": "Super Power",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Fantasy"
+              },
+              {
+                "rank": 79,
+                "name": "Male Protagonist",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Main Cast"
+              },
+              {
+                "rank": 79,
+                "name": "Urban Fantasy",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Setting-Universe"
+              },
+              {
+                "rank": 70,
+                "name": "Female Harem",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Romance"
+              },
+              {
+                "rank": 70,
+                "name": "Love Triangle",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Romance"
+              },
+              {
+                "rank": 60,
+                "name": "Memory Manipulation",
+                "isAdult": false,
+                "isMediaSpoiler": true,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Other"
+              },
+              {
+                "rank": 60,
+                "name": "Primarily Female Cast",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Main Cast"
+              },
+              {
+                "rank": 40,
+                "name": "School",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Setting-Scene"
+              },
+              {
+                "rank": 20,
+                "name": "Nudity",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Traits"
+              }
+            ],
+            "description": "Takeru Ohyama, a young normal yet perverted minded guy, got accepted and now goes to a school that, unknown to him, was where combat and magic is used. On the first day, he meets again after three years: Haruko Amaya, his childhood friend, Inaho Kushiya, a girl who says she's his fiance, and Kodama Himegami, a blonde who wants to kill him. Finding out that there are many girls there that just don't like him, he is told that everyone there uses a special magic ability while using an item or weapon called a Maken. Later, he finds that no Maken is acceptable for him and doesn't know what to do, since in this school the students get into duels that showcase their magic and combat power, to which he seemingly has none.\n<br><br>\n<i>Notes:<br>\n- Chapter 39 is divided into two parts.<br>\n- Chapter count includes 15 extras, the side story \"Maken-Ki! Kai!!\", and one-shots \"Kanojo wa Muma de Irregular\", \"Gakuen Dragon Slayer\" and \"Ezaki-senpai, Komarimasu\".</i>",
+            "chapters": 146,
+            "countryOfOrigin": "JP",
+            "volumes": 24,
+            "status": "FINISHED",
+            "averageScore": 63,
+            "meanScore": 65,
+            "synonyms": [],
+            "isAdult": false,
+            "siteUrl": "https://anilist.co/manga/37186"
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "color": "#e45d6b",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/nx101275-5t88q8PE6lYU.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/nx101275-5t88q8PE6lYU.jpg",
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/nx101275-5t88q8PE6lYU.jpg"
+            },
+            "id": 101275,
+            "title": {
+              "userPreferred": "Maken-ki! - Inaho to Yukai na Nakamatachi-"
+            },
+            "tags": [
+              {
+                "rank": 20,
+                "name": "School",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Setting-Scene"
+              },
+              {
+                "rank": 20,
+                "name": "Shounen",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Demographic"
+              },
+              {
+                "rank": 20,
+                "name": "4-koma",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Technical"
+              }
+            ],
+            "description": "4-koma spin-off of Maken-Ki.<br>\n<br>\n(Source: Batoto)",
+            "chapters": null,
+            "countryOfOrigin": "JP",
+            "volumes": 1,
+            "status": "FINISHED",
+            "averageScore": null,
+            "meanScore": null,
+            "synonyms": [
+              "Maken-Ki! ~Starring Inaho and Friends~"
+            ],
+            "isAdult": false,
+            "siteUrl": "https://anilist.co/manga/101275"
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "color": "#e4d635",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/bx85929-dVyBW7VhBzQW.png",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx85929-dVyBW7VhBzQW.png",
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx85929-dVyBW7VhBzQW.png"
+            },
+            "id": 85929,
+            "title": {
+              "userPreferred": "Keijo!!!!!!!! Hip Whip Girl"
+            },
+            "tags": [
+              {
+                "rank": 73,
+                "name": "Female Protagonist",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Main Cast"
+              },
+              {
+                "rank": 60,
+                "name": "Primarily Female Cast",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Main Cast"
+              },
+              {
+                "rank": 60,
+                "name": "Super Power",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Fantasy"
+              },
+              {
+                "rank": 50,
+                "name": "Shounen",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Demographic"
+              },
+              {
+                "rank": 20,
+                "name": "Athletics",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Game-Sport"
+              }
+            ],
+            "description": "Kaminashi Nozomi (17) is an exceptional gymnast. So much so that colleges with some of the best gymnastic programs are trying to recruit her. Unfortunately for them, she has other plans. Due to her family being extremely poor, money is everything to her. That's why she wants to step into the world of \"Keijo.\" \"Keijo\" is a type of gambling sport where girls stand on a small floating platform and compete against one another. The aim is to push the other contestant off of the platform into the water, but they are only allowed to use their butt or breasts to push the others off. Will Nozomi be able to compete in the intense world of \"Keijo\" and bring wealth and fortune for her family?\n<br><br>\n(Source: MangaHelpers)",
+            "chapters": 177,
+            "countryOfOrigin": "JP",
+            "volumes": 18,
+            "status": "FINISHED",
+            "averageScore": 68,
+            "meanScore": 70,
+            "synonyms": [],
+            "isAdult": false,
+            "siteUrl": "https://anilist.co/manga/85929"
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "color": "#f1ae5d",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/6778-LyMSNivCO3L6.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/6778-LyMSNivCO3L6.jpg",
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/6778-LyMSNivCO3L6.jpg"
+            },
+            "id": 36778,
+            "title": {
+              "userPreferred": "Rotte no Omocha!"
+            },
+            "tags": [
+              {
+                "rank": 79,
+                "name": "Isekai",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Fantasy"
+              },
+              {
+                "rank": 53,
+                "name": "Succubus",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Traits"
+              },
+              {
+                "rank": 20,
+                "name": "Demons",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Traits"
+              },
+              {
+                "rank": 20,
+                "name": "Seinen",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Demographic"
+              },
+              {
+                "rank": 20,
+                "name": "Incest",
+                "isAdult": true,
+                "isMediaSpoiler": true,
+                "isGeneralSpoiler": false,
+                "category": "Sexual Content"
+              }
+            ],
+            "description": "In the medieval fantasy world of Alfheimr, succubus princess Astarotte Ygvar, the first princess of the kingdom of Ygvar, has just reached the age of 10. For the coming years of a young succubus' life, it is necessary for them to have a male harem. In order to maintain their body and preserve their beautiful appearance, they must consume a substance only found on males. This substance is a liquid called \"Sauzfryma\", better known as semen. The princess, however, bears a great dislike against men, and only agrees to create a harem if a human male is to join.<br><br>\r\nIn the human world Midgar, young father Touhara Naoya was greeted by a suspicious lady one day, claiming that she is a fortune teller. She also claims that she can help him find the \"perfect job\" fitted for him. Even though it seems suspicious, he accepts the free consultation in order to support himself and his young daughter. After meeting in the park with the suspicious lady a day later, he suddenly found himself in Alfheimr, a medieval fantasy realm located on a different world. The mysterious lady uncloaks her true identity as the Head Chamberlain of the kingdom of Ygvarland. He was then lead to the palace of Ygvarland, and there, the \"job\" he accepted was finally revealed; he was to become a human candidate for princess Astarotte's harem.<br><br>\r\n(Source: MangaHelpers)",
+            "chapters": 70,
+            "countryOfOrigin": "JP",
+            "volumes": 9,
+            "status": "FINISHED",
+            "averageScore": 65,
+            "meanScore": 67,
+            "synonyms": [
+              "Astarotte no Omocha!",
+              "Lotte no Omocha!"
+            ],
+            "isAdult": false,
+            "siteUrl": "https://anilist.co/manga/36778"
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "color": "#e4785d",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/nx30582-YvVkjMplMxPz.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/nx30582-YvVkjMplMxPz.jpg",
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/nx30582-YvVkjMplMxPz.jpg"
+            },
+            "id": 30582,
+            "title": {
+              "userPreferred": "Kodomo no Jikan"
+            },
+            "tags": [
+              {
+                "rank": 96,
+                "name": "Primarily Child Cast",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Main Cast"
+              },
+              {
+                "rank": 90,
+                "name": "School",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Setting-Scene"
+              },
+              {
+                "rank": 79,
+                "name": "Age Gap",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": true,
+                "category": "Theme-Romance"
+              },
+              {
+                "rank": 66,
+                "name": "Teacher",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Traits"
+              },
+              {
+                "rank": 60,
+                "name": "Bullying",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Drama"
+              },
+              {
+                "rank": 60,
+                "name": "Primarily Female Cast",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Main Cast"
+              },
+              {
+                "rank": 40,
+                "name": "Nudity",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Traits"
+              },
+              {
+                "rank": 40,
+                "name": "Tsundere",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Traits"
+              },
+              {
+                "rank": 20,
+                "name": "LGBTQ+ Themes",
+                "isAdult": false,
+                "isMediaSpoiler": true,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Other"
+              }
+            ],
+            "description": "The story of Kodomo no Jikan is centered around 23-year-old Aoki Daisuke, who has just landed his first teaching job as a grade school teacher at Futatsubashi Elementary School. He is placed in charge of Class 3-1, where one of his students, a mischievously precocious Rin Kokonoe, develops a crush on him and goes so far as to proclaim herself Aoki's girlfriend. She aggressively pursues her efforts to be with her teacher despite the fact that he will lose his job if she gets too close, a situation further complicated by the often complex, intertwining relationships existing between them and their respective friends, families, and peers.<br><br>\n(Source: Wikipedia)",
+            "chapters": 93,
+            "countryOfOrigin": "JP",
+            "volumes": 13,
+            "status": "FINISHED",
+            "averageScore": 72,
+            "meanScore": 73,
+            "synonyms": [
+              "A Child's Time",
+              "Kojika",
+              "Nymphet"
+            ],
+            "isAdult": false,
+            "siteUrl": "https://anilist.co/manga/30582"
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "color": "#0d93e4",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/54713.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/54713.jpg",
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/54713.jpg"
+            },
+            "id": 84713,
+            "title": {
+              "userPreferred": "Kodomo no Jikan: Houkago"
+            },
+            "tags": [
+              {
+                "rank": 50,
+                "name": "Seinen",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Demographic"
+              }
+            ],
+            "description": "N/A.",
+            "chapters": 22,
+            "countryOfOrigin": "JP",
+            "volumes": 1,
+            "status": "FINISHED",
+            "averageScore": 61,
+            "meanScore": 70,
+            "synonyms": [],
+            "isAdult": false,
+            "siteUrl": "https://anilist.co/manga/84713"
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "color": null,
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/48383.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/48383.jpg",
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/48383.jpg"
+            },
+            "id": 78383,
+            "title": {
+              "userPreferred": "Kodomo no Jikan Prototype"
+            },
+            "tags": [
+              {
+                "rank": 50,
+                "name": "School",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Setting-Scene"
+              }
+            ],
+            "description": "The story of Kodomo no Jikan is centered around 23-year-old Aoki Daisuke, who has just landed his first teaching job as a grade school teacher at Futatsubashi Elementary School. He is placed in charge of Class 3-1, where one of his students, a mischievously precocious Rin Kokonoe, develops a crush on him and goes so far as to proclaim herself Aoki's girlfriend. She aggressively pursues her efforts to be with her teacher despite the fact that he will lose his job if she gets too close, a situation further complicated by the often complex, intertwining relationships existing between them and their respective friends, families, and peers.<br><br>\n(Source: Wikipedia)",
+            "chapters": 2,
+            "countryOfOrigin": "JP",
+            "volumes": null,
+            "status": "FINISHED",
+            "averageScore": null,
+            "meanScore": 67,
+            "synonyms": [
+              "A Child's Time",
+              "Kojika"
+            ],
+            "isAdult": false,
+            "siteUrl": "https://anilist.co/manga/78383"
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "color": "#f13578",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/bx104261-LZ228D2FafEG.png",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx104261-LZ228D2FafEG.png",
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx104261-LZ228D2FafEG.png"
+            },
+            "id": 104261,
+            "title": {
+              "userPreferred": "Hoshihimemura no Naishobanashi"
+            },
+            "tags": [
+              {
+                "rank": 79,
+                "name": "Nudity",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Traits"
+              },
+              {
+                "rank": 73,
+                "name": "Teacher",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Traits"
+              },
+              {
+                "rank": 50,
+                "name": "School",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Setting-Scene"
+              },
+              {
+                "rank": 40,
+                "name": "Female Harem",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Romance"
+              },
+              {
+                "rank": 40,
+                "name": "Seinen",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Demographic"
+              }
+            ],
+            "description": null,
+            "chapters": 38,
+            "countryOfOrigin": "JP",
+            "volumes": 6,
+            "status": "FINISHED",
+            "averageScore": 54,
+            "meanScore": 59,
+            "synonyms": [],
+            "isAdult": false,
+            "siteUrl": "https://anilist.co/manga/104261"
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "color": "#78aed6",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/bx110266-B8tS0H3YQ4YF.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx110266-B8tS0H3YQ4YF.jpg",
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx110266-B8tS0H3YQ4YF.jpg"
+            },
+            "id": 110266,
+            "title": {
+              "userPreferred": "Strike Witches: Erica Hartmann 1941"
+            },
+            "tags": [],
+            "description": "Following the story of Erica Hartmann, this tale details her early years spent training in the JG52 alongside other powerful witches like Gertrud Barkhorn and Adolphine Galland. When a Neuroi invasion plagues Europe, witches from Karlsland and Britannia team up to defeat the enemy. This is considered a character-focused prequel to the famous Strike Witches series.<br><br>(Source: \nThe Misfits Squadron)",
+            "chapters": 7,
+            "countryOfOrigin": "JP",
+            "volumes": 1,
+            "status": "FINISHED",
+            "averageScore": null,
+            "meanScore": 72,
+            "synonyms": [],
+            "isAdult": false,
+            "siteUrl": "https://anilist.co/manga/110266"
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "color": "#3593bb",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/b90965-O09H1pjLA8Qz.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/b90965-O09H1pjLA8Qz.jpg",
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/b90965-O09H1pjLA8Qz.jpg"
+            },
+            "id": 90965,
+            "title": {
+              "userPreferred": "Strike Witches: Aurora no Majo"
+            },
+            "tags": [
+              {
+                "rank": 20,
+                "name": "Magic",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Fantasy"
+              },
+              {
+                "rank": 20,
+                "name": "Military",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Other-Organisations"
+              }
+            ],
+            "description": "This story follows the earlier career of star Suomus witch Eila Ilmatar Juutilainen, when she was a part of the Suomus Air Force, 24th Unit.",
+            "chapters": 14,
+            "countryOfOrigin": "JP",
+            "volumes": 2,
+            "status": "FINISHED",
+            "averageScore": null,
+            "meanScore": 74,
+            "synonyms": [
+              "Strike Witches: Witches of Aurora"
+            ],
+            "isAdult": false,
+            "siteUrl": "https://anilist.co/manga/90965"
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "color": "#5daee4",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/92297-i68vDwQmK1EV.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/92297-i68vDwQmK1EV.jpg",
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/92297-i68vDwQmK1EV.jpg"
+            },
+            "id": 92297,
+            "title": {
+              "userPreferred": "Strike Witches: Kimi to no Kizuna no Katachi"
+            },
+            "tags": [
+              {
+                "rank": 20,
+                "name": "Magic",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Fantasy"
+              },
+              {
+                "rank": 20,
+                "name": "Shounen",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Demographic"
+              },
+              {
+                "rank": 20,
+                "name": "Military",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Other-Organisations"
+              }
+            ],
+            "description": "The third Strike Witches manga, cancelled after the first chapter. In it, the newly formed 501st JFW begins operations, encountering Neuroi for the first time as a wing, and cleaning their bath as a fraternization exercise.",
+            "chapters": 1,
+            "countryOfOrigin": "JP",
+            "volumes": null,
+            "status": "FINISHED",
+            "averageScore": null,
+            "meanScore": 77,
+            "synonyms": [
+              "Strike Witches: The Shape of Our Bond"
+            ],
+            "isAdult": false,
+            "siteUrl": "https://anilist.co/manga/92297"
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "color": "#e45d50",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/32259.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/32259.jpg",
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/32259.jpg"
+            },
+            "id": 62259,
+            "title": {
+              "userPreferred": "Strike Witches: Katayoku no Majo-tachi"
+            },
+            "tags": [
+              {
+                "rank": 50,
+                "name": "Military",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Other-Organisations"
+              },
+              {
+                "rank": 50,
+                "name": "Seinen",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Demographic"
+              }
+            ],
+            "description": "In humanity’s fight against the alien Neuroi, it’s not just the super-aces and movie stars of the 501st Joint Fighter Wing who have stories worth telling. Sergeant Wilma Bishop is transferred to the Isle of Wight detachment. It’s the sister detachment to the famous 501st, but instead of aces, the Isle of Wight is filled with awkward, insecure newbies and the walking wounded. And yet, while these “one-winged Witches” may not be ready to soar with the aces, each one has her own story to tell.\n<br><br>\n(Source: Seven Seas Entertainment)",
+            "chapters": 14,
+            "countryOfOrigin": "JP",
+            "volumes": 2,
+            "status": "FINISHED",
+            "averageScore": 58,
+            "meanScore": 70,
+            "synonyms": [
+              "One-Winged Witches"
+            ],
+            "isAdult": false,
+            "siteUrl": "https://anilist.co/manga/62259"
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "color": "#f12843",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/bx43949-sSgW4VE0nQKH.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx43949-sSgW4VE0nQKH.jpg",
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx43949-sSgW4VE0nQKH.jpg"
+            },
+            "id": 43949,
+            "title": {
+              "userPreferred": "Medaka Box"
+            },
+            "tags": [
+              {
+                "rank": 95,
+                "name": "School",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Setting-Scene"
+              },
+              {
+                "rank": 95,
+                "name": "Shounen",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Demographic"
+              },
+              {
+                "rank": 92,
+                "name": "Super Power",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Fantasy"
+              },
+              {
+                "rank": 90,
+                "name": "Female Protagonist",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Main Cast"
+              },
+              {
+                "rank": 85,
+                "name": "Parody",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Comedy"
+              },
+              {
+                "rank": 84,
+                "name": "Male Protagonist",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Main Cast"
+              },
+              {
+                "rank": 83,
+                "name": "Meta",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Other"
+              },
+              {
+                "rank": 79,
+                "name": "Ensemble Cast",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Main Cast"
+              },
+              {
+                "rank": 79,
+                "name": "Martial Arts",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Action"
+              },
+              {
+                "rank": 79,
+                "name": "Anti-Hero",
+                "isAdult": false,
+                "isMediaSpoiler": true,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Main Cast"
+              },
+              {
+                "rank": 79,
+                "name": "Coming of Age",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Drama"
+              },
+              {
+                "rank": 76,
+                "name": "Surreal Comedy",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Comedy"
+              },
+              {
+                "rank": 70,
+                "name": "Time Skip",
+                "isAdult": false,
+                "isMediaSpoiler": true,
+                "isGeneralSpoiler": true,
+                "category": "Setting-Time"
+              },
+              {
+                "rank": 70,
+                "name": "Judo",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Game-Sport"
+              },
+              {
+                "rank": 66,
+                "name": "Afterlife",
+                "isAdult": false,
+                "isMediaSpoiler": true,
+                "isGeneralSpoiler": true,
+                "category": "Setting-Universe"
+              },
+              {
+                "rank": 60,
+                "name": "Chuunibyou",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Traits"
+              },
+              {
+                "rank": 60,
+                "name": "Swordplay",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Action"
+              },
+              {
+                "rank": 60,
+                "name": "Cyborg",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Traits"
+              },
+              {
+                "rank": 60,
+                "name": "Primarily Teen Cast",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Main Cast"
+              },
+              {
+                "rank": 40,
+                "name": "Robots",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Traits"
+              },
+              {
+                "rank": 40,
+                "name": "Swimming",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Game-Sport"
+              },
+              {
+                "rank": 40,
+                "name": "Yandere",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Traits"
+              },
+              {
+                "rank": 40,
+                "name": "Nekomimi",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Traits"
+              },
+              {
+                "rank": 40,
+                "name": "Band",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Arts-Music"
+              },
+              {
+                "rank": 40,
+                "name": "Assassins",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Other-Organisations"
+              },
+              {
+                "rank": 40,
+                "name": "Guns",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Action"
+              },
+              {
+                "rank": 40,
+                "name": "Card Battle",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Game-Card & Board Game"
+              },
+              {
+                "rank": 30,
+                "name": "Nudity",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Traits"
+              },
+              {
+                "rank": 20,
+                "name": "Classic Literature",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Arts"
+              },
+              {
+                "rank": 20,
+                "name": "Idol",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Traits"
+              },
+              {
+                "rank": 20,
+                "name": "LGBTQ+ Themes",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Other"
+              },
+              {
+                "rank": 20,
+                "name": "Incest",
+                "isAdult": true,
+                "isMediaSpoiler": true,
+                "isGeneralSpoiler": false,
+                "category": "Sexual Content"
+              }
+            ],
+            "description": "Kurokami Medaka, a first year, is elected as Student Council President, and the first thing she does is establish a suggestion box, later dubbed by students the \"Medaka Box\". Medaka encourages students to submit any problem to the box without hesitation and promises to take on any issue from anyone.<br>\n<br>\nSince Medaka won the Student Council elections with a staggering 98% of the vote, she ends up as the Council's only member.  She asks her childhood friend, Hitoyoshi Zenkichi, for help and he grudgingly agrees, becoming the Student Council's lowest ranking member. Soon Medaka recruits two more people to the Student Council, the former judo club member Akune Kouki as secretary and the current swim club member Kikaijima Mogana, on loan for 300 yen a day, as treasurer.<br>\n<br>\nNow the Student Council members spend their days solving the problems submitted through the Medaka Box, whether they be hooligans in clubs where they don't belong, girls who need help writing love letters or people who've lost their pets, gradually earning the respect and admiration of the entire school.<br>\n<br>\nIncluded chapters:<br>\nVolume 15 contains the gaiden \"Good Loser Kumagawa\" (グッドルーザー球磨川); <i>Jump NEXT (2011/12/26)</i><br>\nVolume 22 contains the gaiden \"Good Loser Kumagawa Final\" (完結編).",
+            "chapters": 194,
+            "countryOfOrigin": "JP",
+            "volumes": 22,
+            "status": "FINISHED",
+            "averageScore": 77,
+            "meanScore": 77,
+            "synonyms": [
+              "Good Loser Kumagawa"
+            ],
+            "isAdult": false,
+            "siteUrl": "https://anilist.co/manga/43949"
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "color": "#fe8628",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/bx45143-dF0LfQrH8WnM.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx45143-dF0LfQrH8WnM.jpg",
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx45143-dF0LfQrH8WnM.jpg"
+            },
+            "id": 45143,
+            "title": {
+              "userPreferred": "Medaka Box"
+            },
+            "tags": [
+              {
+                "rank": 79,
+                "name": "School",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Setting-Scene"
+              },
+              {
+                "rank": 60,
+                "name": "Shounen",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Demographic"
+              },
+              {
+                "rank": 60,
+                "name": "Judo",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Game-Sport"
+              }
+            ],
+            "description": "Kurokami Medaka, a first year, is elected as Student Council President, and the first thing she does is establish a suggestion box. Since she was just elected as Student Council President, she's holding all the Student Council's responsibilities, and wearing their armbands. So she asks for her childhood friend, Hitoyoshi Zenkichi, for help.<br><br>\nAfter filtering through the suggestions, which were mostly ridiculous complaints or congratulations on becoming president, they find out the Judo Club needs one more member to participate. So, Medaka volunteers her and Zenkichi, who have both been practicing Judo for years, to help train the club and borrow Zenkichi for the match.",
+            "chapters": 1,
+            "countryOfOrigin": "JP",
+            "volumes": null,
+            "status": "FINISHED",
+            "averageScore": 66,
+            "meanScore": 68,
+            "synonyms": [
+              "Medaka Box 0"
+            ],
+            "isAdult": false,
+            "siteUrl": "https://anilist.co/manga/45143"
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "color": "#e45da1",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/bx124500-YqVqqQKZ3UU2.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx124500-YqVqqQKZ3UU2.jpg",
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx124500-YqVqqQKZ3UU2.jpg"
+            },
+            "id": 124500,
+            "title": {
+              "userPreferred": "Virgin Tweet: Ero Aka de Tsubuyaita Mousou ga Genjitsu ni"
+            },
+            "tags": [],
+            "description": null,
+            "chapters": 6,
+            "countryOfOrigin": "JP",
+            "volumes": null,
+            "status": "FINISHED",
+            "averageScore": null,
+            "meanScore": 53,
+            "synonyms": [
+              "Ero Account ni Hamatte Shimatta Shojo"
+            ],
+            "isAdult": true,
+            "siteUrl": "https://anilist.co/manga/124500"
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "color": "#f14393",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/bx78671-09lD4MlcCOz3.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx78671-09lD4MlcCOz3.jpg",
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx78671-09lD4MlcCOz3.jpg"
+            },
+            "id": 78671,
+            "title": {
+              "userPreferred": "AIKa R-16: SCHOOL MISSION"
+            },
+            "tags": [
+              {
+                "rank": 50,
+                "name": "School",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Setting-Scene"
+              }
+            ],
+            "description": "A manga spin-off of Aika R-16.",
+            "chapters": 10,
+            "countryOfOrigin": "JP",
+            "volumes": 1,
+            "status": "FINISHED",
+            "averageScore": null,
+            "meanScore": 65,
+            "synonyms": [],
+            "isAdult": false,
+            "siteUrl": "https://anilist.co/manga/78671"
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "color": "#e4d60d",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/bx94792-kr1IT9eUToNU.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx94792-kr1IT9eUToNU.jpg",
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx94792-kr1IT9eUToNU.jpg"
+            },
+            "id": 94792,
+            "title": {
+              "userPreferred": "Gekka Bijin"
+            },
+            "tags": [],
+            "description": "1. <b>My Dear Cow</b>; Comic Shitsurakuten 2014-05<br>\n2. <b>Tsuyatsuya Exercise</b> (艶々エクササイズ); Comic Shitsurakuten 2011-10<br>\n3. <b>Dare yori mo Kirei ni Shite Kudasai!</b> (ダレよりもキレイにしてくださいっ！); Comic Hana-Man 2011-04<br>\n4. <b>Yaei</b> (野営); Comic Shitsurakuten 2013-10<br>\n5. <b>Tabi</b> (旅); Comic Shitsurakuten 2013-05<br>\n6, 16. <b>Yarisugi-kei Joshi Mayu-chan</b> (ヤリすぎ系女子まゆちゃん); Comic Shitsurakuten 2013-04, kakioroshi<br>\n7. <b>in public</b>; Comic Shitsurakuten 2013-07<br>\n8. <b>Pleasure Room</b> (プレジャールーム); Comic Shitsurakuten 2013-09<br>\n9. <b>Silk no Uraji</b> (シルクの裏地); Comic Shitsurakuten 2014-04<br>\n10. <b>Anata ga Hoshii</b> (あなたが欲しい); Comic Shitsurakuten 2014-01<br>\n11. <b>Souyuu Sekai</b> (そーゆーせかい); Comic Shitsurakuten 2014-11<br>\n12. <b>fallen</b>; Comic Shitsurakuten 2013-11<br>\n13. <b>Gekka Bijin</b> (ゲッカビジン); Comic Shitsurakuten 2014-07<br>\n14. <b>two sides</b>; Comic Shitsurakuten 2014-08 + kakioroshi<br>\n15. <b>pick me up</b>; Comic Shitsurakuten 2014-02",
+            "chapters": 16,
+            "countryOfOrigin": "JP",
+            "volumes": 1,
+            "status": "FINISHED",
+            "averageScore": null,
+            "meanScore": 66,
+            "synonyms": [
+              "My Dear Cow",
+              "Sperma Shining Exercise",
+              "Yaei",
+              "Tabi",
+              "In Public",
+              "Pleasure Room",
+              "Silk no Uraji",
+              "Anata ga Hoshii",
+              "That Kind of World",
+              "Fallen",
+              "Two Sides",
+              "Pick Me Up",
+              "Girls Who Go Too Far: Mayu-chan",
+              "A Queen of the Night",
+              "Tsuyatsuya Exercise",
+              "Dare yori mo Kirei ni Shite Kudasai!",
+              "Yarisugi-kei Joshi Mayu-chan",
+              "Yacchatta-kei Joshi Mayu-chan"
+            ],
+            "isAdult": true,
+            "siteUrl": "https://anilist.co/manga/94792"
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "color": null,
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/bx83179-xqaC4JGUtMKd.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx83179-xqaC4JGUtMKd.jpg",
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx83179-xqaC4JGUtMKd.jpg"
+            },
+            "id": 83179,
+            "title": {
+              "userPreferred": "Yarisugikei Joshi Mayu-chan"
+            },
+            "tags": [],
+            "description": " ",
+            "chapters": 1,
+            "countryOfOrigin": "JP",
+            "volumes": null,
+            "status": "FINISHED",
+            "averageScore": null,
+            "meanScore": 70,
+            "synonyms": [
+              "Girls Who Go Too Far: Mayu-chan"
+            ],
+            "isAdult": true,
+            "siteUrl": "https://anilist.co/manga/83179"
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "color": "#5d86e4",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/bx62557-S1DLWEjdQhpx.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx62557-S1DLWEjdQhpx.jpg",
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx62557-S1DLWEjdQhpx.jpg"
+            },
+            "id": 62557,
+            "title": {
+              "userPreferred": "Tsuyatsuya Exercise"
+            },
+            "tags": [],
+            "description": " ",
+            "chapters": 1,
+            "countryOfOrigin": "JP",
+            "volumes": null,
+            "status": "FINISHED",
+            "averageScore": null,
+            "meanScore": 80,
+            "synonyms": [
+              "Sperma Shining Exercise"
+            ],
+            "isAdult": true,
+            "siteUrl": "https://anilist.co/manga/62557"
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "color": "#e41a28",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/88087-XAxs3A3hl1Cg.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/88087-XAxs3A3hl1Cg.jpg",
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/88087-XAxs3A3hl1Cg.jpg"
+            },
+            "id": 88087,
+            "title": {
+              "userPreferred": "Tatoeba Haha ga Extra"
+            },
+            "tags": [],
+            "description": "Aka (Red)\n1. Otonari-san kara Delivery\n2. Tatoeba Haha ga Mitsugetsu\n3. Tatoeba Haha ga 28+\n4. Tatoeba Haha ga 49+\n5. Tatoeba Haha ga After\n6. Masuo-san no Oshigoto\n7. Mizu Asobi\n8. Tatoeba Kotomi gaKuro (Black)\n1. Private Video\n2. Tatoeba Haha ga 35+\n3. Minekoshou\n4. Maid Mitsuko no Daibouken\n5. Natsuyasumi (Summer Vacation)\n6. Tatoeba Haha ga EX\n7-8. Tatoeba Haha ga Zero",
+            "chapters": 16,
+            "countryOfOrigin": "JP",
+            "volumes": 2,
+            "status": "FINISHED",
+            "averageScore": null,
+            "meanScore": 62,
+            "synonyms": [
+              "Otonari-san kara Delivery",
+              "Tatoeba Haha ga Mitsugetsu",
+              "Tatoeba Haha ga 28+",
+              "Tatoeba Haha ga 49+",
+              "Tatoeba Haha ga After",
+              "Masuo-san no Oshigoto",
+              "Mizu Asobi",
+              "Tatoeba Kotomi ga",
+              "Private Video",
+              "Tatoeba Haha ga 35+",
+              "Minekoshou",
+              "Maid Mitsuko no Daibouken",
+              "Summer"
+            ],
+            "isAdult": true,
+            "siteUrl": "https://anilist.co/manga/88087"
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "color": "#e4a15d",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/32519.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/32519.jpg",
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/32519.jpg"
+            },
+            "id": 62519,
+            "title": {
+              "userPreferred": "Tatoeba Haha ga dj - 28+"
+            },
+            "tags": [],
+            "description": " ",
+            "chapters": null,
+            "countryOfOrigin": "JP",
+            "volumes": 1,
+            "status": "FINISHED",
+            "averageScore": null,
+            "meanScore": 59,
+            "synonyms": [],
+            "isAdult": true,
+            "siteUrl": "https://anilist.co/manga/62519"
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "color": "#f16b5d",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/bx95397-vuYmQP08YZaC.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx95397-vuYmQP08YZaC.jpg",
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx95397-vuYmQP08YZaC.jpg"
+            },
+            "id": 95397,
+            "title": {
+              "userPreferred": "Kore wa Zombie desu ka?: Hai, Anata no Yome desu"
+            },
+            "tags": [
+              {
+                "rank": 20,
+                "name": "Female Harem",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Romance"
+              }
+            ],
+            "description": "Aikawa Ayumu is a normal high school boy. One day he is killed by a serial killer and revived as a zombie by a necromancer named Eucliwood Hellscythe. He starts to serve Eu as her guard but he happens to deprive the mahou shoujo Haruna of her magic power. Haruna orders Ayumu to fight against the anti-mahou shoujo system \"Megalo\" in her place.",
+            "chapters": 29,
+            "countryOfOrigin": "JP",
+            "volumes": 5,
+            "status": "FINISHED",
+            "averageScore": null,
+            "meanScore": 76,
+            "synonyms": [
+              "Is this a Zombie? Yes",
+              "She's Your Bride"
+            ],
+            "isAdult": false,
+            "siteUrl": "https://anilist.co/manga/95397"
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "color": "#e450a1",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/bx51410-X0eo4ZP0VHAg.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx51410-X0eo4ZP0VHAg.jpg",
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx51410-X0eo4ZP0VHAg.jpg"
+            },
+            "id": 51410,
+            "title": {
+              "userPreferred": "Kore wa Zombie desu ka?"
+            },
+            "tags": [
+              {
+                "rank": 79,
+                "name": "Female Harem",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Romance"
+              },
+              {
+                "rank": 79,
+                "name": "Shounen",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Demographic"
+              },
+              {
+                "rank": 20,
+                "name": "Crossdressing",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Traits"
+              },
+              {
+                "rank": 20,
+                "name": "Zombie",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Traits"
+              }
+            ],
+            "description": "<i>Based on the novels under the same name.</i><br><br>\nLife - or undeath? - isn't easy for Ayumu Aikawa. A seemingly normal high schooler, he is in fact a zombie who serves as a bodyguard to an introverted necromancer. But his already complicated existence becomes even more outlandish when he accidently steals the powers of a magical girl, transforming into one himself - complete with frilly dress and pink chainsaw!! How's a reanimated corpse supposed to keep his head on his shoulders with roommates like these girls around the house?<br><br>\n(Source: Yen Press)\n<br><br><i>Note: Contains three extras.</i>",
+            "chapters": 48,
+            "countryOfOrigin": "JP",
+            "volumes": 8,
+            "status": "FINISHED",
+            "averageScore": 63,
+            "meanScore": 68,
+            "synonyms": [
+              "Kore wa Zonbi desu ka?",
+              "Kore wa Zonbi desuka?"
+            ],
+            "isAdult": false,
+            "siteUrl": "https://anilist.co/manga/51410"
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "color": "#e4c950",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/bx109891-2T8kpkBHo1PL.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx109891-2T8kpkBHo1PL.jpg",
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx109891-2T8kpkBHo1PL.jpg"
+            },
+            "id": 109891,
+            "title": {
+              "userPreferred": "Sakura Quest"
+            },
+            "tags": [
+              {
+                "rank": 60,
+                "name": "Primarily Adult Cast",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Main Cast"
+              },
+              {
+                "rank": 60,
+                "name": "Rural",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Setting-Scene"
+              },
+              {
+                "rank": 60,
+                "name": "Work",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Setting-Scene"
+              },
+              {
+                "rank": 60,
+                "name": "Female Protagonist",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Main Cast"
+              }
+            ],
+            "description": "The story centers on five girls who work in the tourism bureau of their small provincial town. The town revives its \"micro-nation\" tourism program, which originated from a nationwide movement during Japan's bubble economy period, and hires the five girls as \"monarchs\" (tourism ambassadors). The anime will depict one year in their jobs in the tourism industry, and show how they change and grow. \n<br><br>\n(Source: Anime News Network)",
+            "chapters": null,
+            "countryOfOrigin": "JP",
+            "volumes": 5,
+            "status": "FINISHED",
+            "averageScore": null,
+            "meanScore": 73,
+            "synonyms": [],
+            "isAdult": false,
+            "siteUrl": "https://anilist.co/manga/109891"
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "color": "#e4bb43",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/bx110751-Yy8E0zLj2EXb.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx110751-Yy8E0zLj2EXb.jpg",
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx110751-Yy8E0zLj2EXb.jpg"
+            },
+            "id": 110751,
+            "title": {
+              "userPreferred": "Sakura Quest Gaiden: Oribe Ririko no Gyoumu Nippou"
+            },
+            "tags": [],
+            "description": "A Sakura Quest side-story focusing on Ririko.",
+            "chapters": 16,
+            "countryOfOrigin": "JP",
+            "volumes": 2,
+            "status": "FINISHED",
+            "averageScore": null,
+            "meanScore": null,
+            "synonyms": [
+              "Sakura Quest Side Story: Oribe Ririko's Work Report"
+            ],
+            "isAdult": false,
+            "siteUrl": "https://anilist.co/manga/110751"
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "color": "#28a1e4",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/bx30045-st6WbT6tk1iO.png",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx30045-st6WbT6tk1iO.png",
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx30045-st6WbT6tk1iO.png"
+            },
+            "id": 30045,
+            "title": {
+              "userPreferred": "Ichigo 100%"
+            },
+            "tags": [
+              {
+                "rank": 100,
+                "name": "Female Harem",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Romance"
+              },
+              {
+                "rank": 96,
+                "name": "Love Triangle",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Romance"
+              },
+              {
+                "rank": 80,
+                "name": "School",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Setting-Scene"
+              },
+              {
+                "rank": 80,
+                "name": "Male Protagonist",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Main Cast"
+              },
+              {
+                "rank": 79,
+                "name": "Shounen",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Demographic"
+              },
+              {
+                "rank": 65,
+                "name": "Coming of Age",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Drama"
+              },
+              {
+                "rank": 20,
+                "name": "Acting",
+                "isAdult": false,
+                "isMediaSpoiler": true,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Arts"
+              }
+            ],
+            "description": "Junpei Manaka sneaks up to the roof to see the sunset. When he opens the door, he startles a mysterious beauty. She panics and runs away, but before not Junpei has caught sight of her adorable strawberry print panties... in EXTREME close-up. With that vision forever burned into his memory, Junpei embarks on a quest to find the girl, and the panties, of his dreams!\n<br><br>\n(Source: Viz Media)",
+            "chapters": 167,
+            "countryOfOrigin": "JP",
+            "volumes": 19,
+            "status": "FINISHED",
+            "averageScore": 73,
+            "meanScore": 74,
+            "synonyms": [
+              "100% Morango"
+            ],
+            "isAdult": false,
+            "siteUrl": "https://anilist.co/manga/30045"
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "color": "#d67850",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/104229-oTfVlkMJlQkD.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/104229-oTfVlkMJlQkD.jpg",
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/104229-oTfVlkMJlQkD.jpg"
+            },
+            "id": 104229,
+            "title": {
+              "userPreferred": "Ichigo 100%: East Side Story"
+            },
+            "tags": [
+              {
+                "rank": 79,
+                "name": "Male Protagonist",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Main Cast"
+              },
+              {
+                "rank": 79,
+                "name": "Shounen",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Demographic"
+              },
+              {
+                "rank": 79,
+                "name": "Time Skip",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": true,
+                "category": "Setting-Time"
+              }
+            ],
+            "description": "A short sequel of Ichigo 100%, focusing on Touyou Aya and a new encounter.",
+            "chapters": 4,
+            "countryOfOrigin": "JP",
+            "volumes": null,
+            "status": "FINISHED",
+            "averageScore": 51,
+            "meanScore": 55,
+            "synonyms": [],
+            "isAdult": false,
+            "siteUrl": "https://anilist.co/manga/104229"
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "color": "#e48650",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/bx30073-yWexDmfmuxrX.png",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx30073-yWexDmfmuxrX.png",
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx30073-yWexDmfmuxrX.png"
+            },
+            "id": 30073,
+            "title": {
+              "userPreferred": "Tenjou Tenge"
+            },
+            "tags": [
+              {
+                "rank": 79,
+                "name": "School",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Setting-Scene"
+              },
+              {
+                "rank": 79,
+                "name": "Delinquents",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Traits"
+              },
+              {
+                "rank": 79,
+                "name": "Martial Arts",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Action"
+              },
+              {
+                "rank": 79,
+                "name": "Seinen",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Demographic"
+              },
+              {
+                "rank": 60,
+                "name": "School Club",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Setting-Scene"
+              },
+              {
+                "rank": 60,
+                "name": "Male Protagonist",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Main Cast"
+              },
+              {
+                "rank": 20,
+                "name": "Nudity",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Traits"
+              }
+            ],
+            "description": "Soichiro Nagi and Bob Makihara have always been the meanest street brawlers around. When they enter Todo High they plan on carving out a reputation as the strongest fighters in their new school—easier said than done in a place that's dedicated to training its students in the art of combat! After realizing they're the new fish swimming in a tank full of sharks, Soichiro and Bob enter the Juken fight club as rookie members. However, the Executive Council—the archrival of the Juken Club—soon launches a surprise attack. Soichiro and Bob have a chance to show their stuff, as long as they don't get curb-kicked in the process!\n<br><br>\n(Source: Viz Media)",
+            "chapters": 136,
+            "countryOfOrigin": "JP",
+            "volumes": 22,
+            "status": "FINISHED",
+            "averageScore": 65,
+            "meanScore": 66,
+            "synonyms": [
+              "TenTen",
+              "Heaven and Earth",
+              "Enfer et Paradis",
+              "Inferno e paradiso",
+              "Tenjho Tenge"
+            ],
+            "isAdult": false,
+            "siteUrl": "https://anilist.co/manga/30073"
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "color": "#f1e435",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/bx71313-SzxzzX52qKEb.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx71313-SzxzzX52qKEb.jpg",
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx71313-SzxzzX52qKEb.jpg"
+            },
+            "id": 71313,
+            "title": {
+              "userPreferred": "Hantsu x Trash"
+            },
+            "tags": [
+              {
+                "rank": 79,
+                "name": "School",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Setting-Scene"
+              },
+              {
+                "rank": 79,
+                "name": "Seinen",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Demographic"
+              },
+              {
+                "rank": 60,
+                "name": "Male Protagonist",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Main Cast"
+              },
+              {
+                "rank": 53,
+                "name": "School Club",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Setting-Scene"
+              },
+              {
+                "rank": 40,
+                "name": "Swimming",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Game-Sport"
+              }
+            ],
+            "description": "Hamaji Youhei, a freshman in high school, lives his life aimlessly, lazing around all day. He can't keep up with his studies, no good at sports and won't stick with anything for long. Besides that he's a pervert who's continuously rejected by girls. A sophomore convinces him into joining a club where he could lunge at girls, fondling and touching all he wanted. Thus he joined the Water Polo Club. Can Youhei, who never sticks with anything for long, find his place in this club?",
+            "chapters": 199,
+            "countryOfOrigin": "JP",
+            "volumes": 18,
+            "status": "FINISHED",
+            "averageScore": 60,
+            "meanScore": 61,
+            "synonyms": [
+              "Hantsu x Torasshu"
+            ],
+            "isAdult": false,
+            "siteUrl": "https://anilist.co/manga/71313"
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "color": "#e45d93",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/bx116088-EwTzICrwKO0H.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx116088-EwTzICrwKO0H.jpg",
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx116088-EwTzICrwKO0H.jpg"
+            },
+            "id": 116088,
+            "title": {
+              "userPreferred": "Hantsu x Trash: Tottemo Ecchi na Yomikiri-shuu"
+            },
+            "tags": [
+              {
+                "rank": 79,
+                "name": "Seinen",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Demographic"
+              },
+              {
+                "rank": 79,
+                "name": "School",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Setting-Scene"
+              },
+              {
+                "rank": 20,
+                "name": "Large Breasts",
+                "isAdult": true,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Sexual Content"
+              }
+            ],
+            "description": null,
+            "chapters": 10,
+            "countryOfOrigin": "JP",
+            "volumes": 1,
+            "status": "FINISHED",
+            "averageScore": null,
+            "meanScore": 49,
+            "synonyms": [
+              "Hantsu x Trash: Very Naughty One-shot Collection"
+            ],
+            "isAdult": false,
+            "siteUrl": "https://anilist.co/manga/116088"
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "color": "#e40d86",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/bx85949-LTyCOJ4WE5Vw.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx85949-LTyCOJ4WE5Vw.jpg",
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx85949-LTyCOJ4WE5Vw.jpg"
+            },
+            "id": 85949,
+            "title": {
+              "userPreferred": "Masou Gakuen HxH"
+            },
+            "tags": [
+              {
+                "rank": 79,
+                "name": "Female Harem",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Romance"
+              },
+              {
+                "rank": 79,
+                "name": "Male Protagonist",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Main Cast"
+              },
+              {
+                "rank": 79,
+                "name": "Nudity",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Traits"
+              },
+              {
+                "rank": 70,
+                "name": "Gods",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Traits"
+              },
+              {
+                "rank": 70,
+                "name": "Incest",
+                "isAdult": true,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Sexual Content"
+              },
+              {
+                "rank": 66,
+                "name": "School",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Setting-Scene"
+              },
+              {
+                "rank": 60,
+                "name": "Magic",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Fantasy"
+              },
+              {
+                "rank": 40,
+                "name": "Tsundere",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Traits"
+              },
+              {
+                "rank": 40,
+                "name": "Yandere",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Traits"
+              }
+            ],
+            "description": "Hida Kizuna possesses the HHG (Heart Hybrid Gear) ability, but it is not strong enough to make him particularly important. His older sister calls him to transfer to a strategic defense school, where many of the students (many of which are large-breasted girls) use their HHG abilities to fight invaders from another world while wearing extremely skimpy pilot outfits. Kizuna's fighting ability doesn't measure up, but his sister has another plan—apparently having erotic experiences with Kizuna will allow the girls to replenish their energy or power-up. It looks like his new school life is going to be full of embarrassment\n",
+            "chapters": 85,
+            "countryOfOrigin": "JP",
+            "volumes": 14,
+            "status": "FINISHED",
+            "averageScore": 62,
+            "meanScore": 73,
+            "synonyms": [
+              "Masou Gakuen Hybrid x Heart",
+              "Hybrid x Heart Magias Academy Ataraxia"
+            ],
+            "isAdult": false,
+            "siteUrl": "https://anilist.co/manga/85949"
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "color": "#e45d43",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/bx117465-VGQWSpux3GXx.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx117465-VGQWSpux3GXx.jpg",
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx117465-VGQWSpux3GXx.jpg"
+            },
+            "id": 117465,
+            "title": {
+              "userPreferred": "Maou Gakuen no Hangyakusha: Jinrui Hatsu no Maou Kouho, Kenzoku Shoujo to Ouza wo Mezashite Nariagaru"
+            },
+            "tags": [
+              {
+                "rank": 88,
+                "name": "Male Protagonist",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Main Cast"
+              },
+              {
+                "rank": 86,
+                "name": "Magic",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Fantasy"
+              },
+              {
+                "rank": 83,
+                "name": "Demons",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Traits"
+              },
+              {
+                "rank": 82,
+                "name": "Female Harem",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Romance"
+              },
+              {
+                "rank": 70,
+                "name": "Nudity",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Traits"
+              },
+              {
+                "rank": 56,
+                "name": "School",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Setting-Scene"
+              },
+              {
+                "rank": 55,
+                "name": "Seinen",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Demographic"
+              }
+            ],
+            "description": "To demons, humans are nothing but slaves.\nMorioka Yuuto, an ordinary high school boy, is selected as a candidate to be the next demon king. He is admitted into Ginsei Academy, a school for demons where he's scorned upon by the other students. <br>\n\"...I'll make you the demon king. So... make me your kin.\"<br>\nAfter meeting Himekami Rizeru, a beautiful demon girl, Yuuto's world begins to change.",
+            "chapters": null,
+            "countryOfOrigin": "JP",
+            "volumes": null,
+            "status": "RELEASING",
+            "averageScore": 61,
+            "meanScore": 64,
+            "synonyms": [],
+            "isAdult": false,
+            "siteUrl": "https://anilist.co/manga/117465"
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "color": null,
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/bx117066-1xwARiIXFigT.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx117066-1xwARiIXFigT.jpg",
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx117066-1xwARiIXFigT.jpg"
+            },
+            "id": 117066,
+            "title": {
+              "userPreferred": "Kou Iu no ga Ii"
+            },
+            "tags": [
+              {
+                "rank": 79,
+                "name": "Nudity",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Traits"
+              },
+              {
+                "rank": 60,
+                "name": "Primarily Adult Cast",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Main Cast"
+              },
+              {
+                "rank": 60,
+                "name": "Seinen",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Demographic"
+              }
+            ],
+            "description": null,
+            "chapters": 1,
+            "countryOfOrigin": "JP",
+            "volumes": null,
+            "status": "FINISHED",
+            "averageScore": 58,
+            "meanScore": 63,
+            "synonyms": [
+              "This is good"
+            ],
+            "isAdult": false,
+            "siteUrl": "https://anilist.co/manga/117066"
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "color": "#f15086",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/bx118170-GA9DyfaAHHiT.png",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx118170-GA9DyfaAHHiT.png",
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx118170-GA9DyfaAHHiT.png"
+            },
+            "id": 118170,
+            "title": {
+              "userPreferred": "Bishoujo Senshi 04R1"
+            },
+            "tags": [],
+            "description": null,
+            "chapters": null,
+            "countryOfOrigin": "JP",
+            "volumes": null,
+            "status": "RELEASING",
+            "averageScore": null,
+            "meanScore": 52,
+            "synonyms": [],
+            "isAdult": false,
+            "siteUrl": "https://anilist.co/manga/118170"
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "color": "#e45d6b",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/bx96131-KTqtHBO3srhp.png",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx96131-KTqtHBO3srhp.png",
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx96131-KTqtHBO3srhp.png"
+            },
+            "id": 96131,
+            "title": {
+              "userPreferred": "Doku Mushi"
+            },
+            "tags": [
+              {
+                "rank": 86,
+                "name": "Death Game",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Other"
+              },
+              {
+                "rank": 65,
+                "name": "Gore",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Other"
+              },
+              {
+                "rank": 65,
+                "name": "Rape",
+                "isAdult": true,
+                "isMediaSpoiler": true,
+                "isGeneralSpoiler": false,
+                "category": "Sexual Content"
+              },
+              {
+                "rank": 60,
+                "name": "Yandere",
+                "isAdult": false,
+                "isMediaSpoiler": true,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Traits"
+              },
+              {
+                "rank": 26,
+                "name": "Bisexual",
+                "isAdult": false,
+                "isMediaSpoiler": true,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Romance"
+              },
+              {
+                "rank": 20,
+                "name": "Seinen",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Demographic"
+              }
+            ],
+            "description": "A group of very different people wake up together in the sealed environment of an abandoned school building. They include the college students Yumi and Reiji, a cabaret girl named Akane, an occult-obsessed salaryman named Yukitoshi, a punk factory worker named Toshio, an unemployed pedophile named Taichi, and a nine-year-old girl named Michika. The building in which they find themselves has running water, no food, and a timer set for seven days. When they find a cleaver and a hot pot in an upstairs classroom, they begin to guess the intention behind their imprisonment; they're meant to kill and eat one another to survive. In principle, they should be able to survive just by waiting out the seven days in hunger, but nothing is ever that simple.",
+            "chapters": 48,
+            "countryOfOrigin": "JP",
+            "volumes": 6,
+            "status": "FINISHED",
+            "averageScore": 49,
+            "meanScore": 50,
+            "synonyms": [
+              "Dokumushi",
+              "Killer District"
+            ],
+            "isAdult": false,
+            "siteUrl": "https://anilist.co/manga/96131"
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "color": "#d6281a",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/nx105115-PTHrgXDDyn8x.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/nx105115-PTHrgXDDyn8x.jpg",
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/nx105115-PTHrgXDDyn8x.jpg"
+            },
+            "id": 105115,
+            "title": {
+              "userPreferred": "Doku Mushi: The Ruins Hotel"
+            },
+            "tags": [],
+            "description": "Six members of the occult circle will spend a few days at a ruined love hotel during their summer vacation. Upon arrival they meet two additional people who join them, but in the morning of the second day, a female member was found tied & naked. In addition, the exit was locked by someone and the building became a completely enclosed cage. Will this be a repeat of the 'kodoku' that happened 3 years ago?",
+            "chapters": 29,
+            "countryOfOrigin": "JP",
+            "volumes": 6,
+            "status": "FINISHED",
+            "averageScore": 46,
+            "meanScore": 52,
+            "synonyms": [],
+            "isAdult": false,
+            "siteUrl": "https://anilist.co/manga/105115"
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "color": "#e46b35",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/12223.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/12223.jpg",
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/12223.jpg"
+            },
+            "id": 42223,
+            "title": {
+              "userPreferred": "Doku Doku Ryouki Zukan"
+            },
+            "tags": [
+              {
+                "rank": 20,
+                "name": "Ero Guro",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Other"
+              }
+            ],
+            "description": "Collection of erotic grotesque stories. They all contain an heavy dose of violence, mutilation, rape and cannibalism.<br><br>\nThe stories are:<br><br>\n01. Flesh Colored Water<br>\n02. Material<br>\n03. Together With Peko<br>\n04. Comeback<br>\n05. Jill's Knife<br>\n06. Ego<br>\n07. Crybaby Sick<br>\n08. Three Bums<br>\n09. Disposable Toys",
+            "chapters": 9,
+            "countryOfOrigin": "JP",
+            "volumes": 1,
+            "status": "FINISHED",
+            "averageScore": null,
+            "meanScore": 56,
+            "synonyms": [
+              "Bizarre Picture Book"
+            ],
+            "isAdult": true,
+            "siteUrl": "https://anilist.co/manga/42223"
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "color": "#e46b50",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/bx51419-MbntyvO82kdm.png",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx51419-MbntyvO82kdm.png",
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx51419-MbntyvO82kdm.png"
+            },
+            "id": 51419,
+            "title": {
+              "userPreferred": "No Zo Ki A Na"
+            },
+            "tags": [
+              {
+                "rank": 94,
+                "name": "Voyeur",
+                "isAdult": true,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Sexual Content"
+              },
+              {
+                "rank": 89,
+                "name": "Nudity",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Traits"
+              },
+              {
+                "rank": 86,
+                "name": "Seinen",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Demographic"
+              },
+              {
+                "rank": 80,
+                "name": "Masturbation",
+                "isAdult": true,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Sexual Content"
+              },
+              {
+                "rank": 76,
+                "name": "Love Triangle",
+                "isAdult": false,
+                "isMediaSpoiler": true,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Romance"
+              },
+              {
+                "rank": 68,
+                "name": "Coming of Age",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Drama"
+              },
+              {
+                "rank": 60,
+                "name": "Netorare",
+                "isAdult": true,
+                "isMediaSpoiler": true,
+                "isGeneralSpoiler": false,
+                "category": "Sexual Content"
+              },
+              {
+                "rank": 60,
+                "name": "Heterosexual",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Romance"
+              },
+              {
+                "rank": 42,
+                "name": "School",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Setting-Scene"
+              },
+              {
+                "rank": 13,
+                "name": "LGBTQ+ Themes",
+                "isAdult": false,
+                "isMediaSpoiler": true,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Other"
+              }
+            ],
+            "description": "Tatsuhiko Kido, a vocational/technical school student who's staying in his school's dorms, one day discovers a hole in the wall of his apartment room. He peeks through the hole, but when he does so, he sees his neighbor, Ikuno Emiru, masturbating and he's caught peeking! However, when he goes over to inform her of the hole in the wall, she shuts the door in his face. Luckily for him, he's able to stop the door from closing and pursues after her, but, in his haste, he trips and lands right on top of her. As luck would have it, she takes a picture of them in a compromising position and tries to blackmail him into getting naked?!",
+            "chapters": 117,
+            "countryOfOrigin": "JP",
+            "volumes": 13,
+            "status": "FINISHED",
+            "averageScore": 75,
+            "meanScore": 75,
+            "synonyms": [
+              "A Peephole",
+              "Podejrzane sekrety",
+              "Nozoki Ana"
+            ],
+            "isAdult": true,
+            "siteUrl": "https://anilist.co/manga/51419"
+          }
+        },
+        {
+          "media": {
+            "coverImage": {
+              "color": "#ffc9bb",
+              "medium": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/small/nx103864-XxVcQHWg7iSB.jpg",
+              "large": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/nx103864-XxVcQHWg7iSB.jpg",
+              "extraLarge": "https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/nx103864-XxVcQHWg7iSB.jpg"
+            },
+            "id": 103864,
+            "title": {
+              "userPreferred": "Cheos-salang Moleumoteu"
+            },
+            "tags": [
+              {
+                "rank": 91,
+                "name": "Crossdressing",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Traits"
+              },
+              {
+                "rank": 88,
+                "name": "Female Harem",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Romance"
+              },
+              {
+                "rank": 85,
+                "name": "School Club",
+                "isAdult": false,
+                "isMediaSpoiler": true,
+                "isGeneralSpoiler": false,
+                "category": "Setting-Scene"
+              },
+              {
+                "rank": 84,
+                "name": "Nudity",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Traits"
+              },
+              {
+                "rank": 84,
+                "name": "Yandere",
+                "isAdult": false,
+                "isMediaSpoiler": true,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Traits"
+              },
+              {
+                "rank": 82,
+                "name": "Full Color",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Technical"
+              },
+              {
+                "rank": 66,
+                "name": "Heterosexual",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Theme-Romance"
+              },
+              {
+                "rank": 60,
+                "name": "Primarily Female Cast",
+                "isAdult": false,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Main Cast"
+              },
+              {
+                "rank": 40,
+                "name": "Delinquents",
+                "isAdult": false,
+                "isMediaSpoiler": true,
+                "isGeneralSpoiler": false,
+                "category": "Cast-Traits"
+              },
+              {
+                "rank": 30,
+                "name": "Public Sex",
+                "isAdult": true,
+                "isMediaSpoiler": true,
+                "isGeneralSpoiler": false,
+                "category": "Sexual Content"
+              },
+              {
+                "rank": 20,
+                "name": "Armpits",
+                "isAdult": true,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Sexual Content"
+              },
+              {
+                "rank": 20,
+                "name": "Defloration",
+                "isAdult": true,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Sexual Content"
+              },
+              {
+                "rank": 20,
+                "name": "Handjob",
+                "isAdult": true,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Sexual Content"
+              },
+              {
+                "rank": 20,
+                "name": "Boobjob",
+                "isAdult": true,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Sexual Content"
+              },
+              {
+                "rank": 20,
+                "name": "Large Breasts",
+                "isAdult": true,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Sexual Content"
+              },
+              {
+                "rank": 20,
+                "name": "Fellatio",
+                "isAdult": true,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Sexual Content"
+              },
+              {
+                "rank": 20,
+                "name": "Cunnilingus",
+                "isAdult": true,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Sexual Content"
+              },
+              {
+                "rank": 20,
+                "name": "Masturbation",
+                "isAdult": true,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Sexual Content"
+              },
+              {
+                "rank": 20,
+                "name": "Ashikoki",
+                "isAdult": true,
+                "isMediaSpoiler": false,
+                "isGeneralSpoiler": false,
+                "category": "Sexual Content"
+              }
+            ],
+            "description": "Junhee's a pushover and has somehow managed to lend out all his money. He finally finds a great part-time gig, but it's only for women! In serious need of the cash, he dresses up as a girl only to discover the job he's just applied for is a clinical trial on a libido pill for women. Not only is he locked in for a week with five other (ahem, horny) women, they're all women from his high school! How long before everyone discovers he's not a she?<br>\n<br>\n(Source: Lezhin)",
+            "chapters": 52,
+            "countryOfOrigin": "KR",
+            "volumes": null,
+            "status": "FINISHED",
+            "averageScore": 71,
+            "meanScore": 73,
+            "synonyms": [
+              "初恋モルモット",
+              "Girls Marmot"
+            ],
+            "isAdult": true,
+            "siteUrl": "https://anilist.co/manga/103864"
+          }
+        }
+      ]
+    }
+  }
+}
