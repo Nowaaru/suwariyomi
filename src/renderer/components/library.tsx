@@ -10,6 +10,8 @@ import {
 
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { StyleSheet, css } from 'aphrodite';
+import MangaItem from './mangaitem';
+import templateCovers from '../../../assets/data/thumbnail.json';
 
 const libraryStyleSheet = StyleSheet.create({
   container: {
@@ -18,6 +20,7 @@ const libraryStyleSheet = StyleSheet.create({
     width: '100vw',
     height: 'calc(100vh - 42px)',
   },
+
   searchbarContainer: {
     position: 'fixed',
     bottom: 15,
@@ -33,30 +36,49 @@ const libraryStyleSheet = StyleSheet.create({
   },
   searchbarContainerInner: {
     backgroundColor: '#FFFFFF',
-    borderRadius: '4px',
+    borderRadius: '80%',
     padding: '8px',
-    width: 'fit-content',
+    width: '52px',
     height: '52px',
+    opacity: 0.2,
+    transition:
+      'width 0.2s ease-out, opacity 0.2s ease-in-out, border-radius 0s ease-in-out',
+    ':focus-within': {
+      opacity: 1,
+      width: 'fit-content',
+      borderRadius: '4px',
+    },
   },
   searchbar: {
-    width: '300px',
-    minWidth: '300px',
+    width: '64px',
+    minWidth: '64px',
     height: '100%',
+    transition: 'width 0.2s ease-in-out',
+    opacity: 0,
     ':focus-within': {
       width: '600px',
+      minWidth: '300px',
+      opacity: 1,
     },
   },
   libraryContainer: {
+    display: 'block',
     position: 'absolute',
-    width: 'calc(100% - 32px)',
-    padding: '16px 32px 0px',
-    height: 'calc(100vh - 100px + 32px)',
+    width: 'calc(100% - 64px)',
+    padding: '32px',
+    height: 'calc(100% - 48px)',
     overflowY: 'scroll',
-    overflowX: 'hidden',
+    '::-webkit-scrollbar': {
+      width: '4px',
+      // backgroundColor: '#FFFFFF',
+    },
+    '::-webkit-scrollbar-thumb': {
+      background: '#FFFFFF',
+    },
   },
   testContainer: {
     width: '100%',
-    height: '750px',
+    height: '250px',
     // height: "fit-content",
   },
   accordionItem: {
@@ -65,8 +87,7 @@ const libraryStyleSheet = StyleSheet.create({
   },
 
   accordionItemIcon: {
-    margin: '0px 0px 0px 4px',
-    flexGrow: 1,
+    margin: '0px 8px 0px 0px',
   },
 
   accordionText: {
@@ -160,16 +181,43 @@ const libraryStyleSheet = StyleSheet.create({
   mangaStatsSpan: {
     marginTop: '8px',
   },
+
+  sourceContainer: {
+    position: 'relative',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+  },
 });
 const Library = () => {
-  const accordionArray = [];
+  const mangaListArray: Array<JSX.Element> = [];
+  const accordionArray: Array<JSX.Element> = [];
   const potentialSources = [
     'MangaDex',
     'MangaFox',
     'Bato.to',
     'Comick.fun',
     'Dynasty-Series',
+    'Lolicon',
+    'ReaperScans',
+    'KissManga',
   ];
+
+  const { mediaList } = templateCovers.data.Page;
+  mediaList.forEach((manga) => {
+    mangaListArray.push(
+      <MangaItem
+        displayType="list"
+        listDisplayType="verbose"
+        title="Tadokoro-san"
+        coverUrl={manga.media.coverImage.extraLarge}
+        tags={['Action', 'Adventure', 'Comedy', 'Fantasy']}
+        synopsis="Poggers!"
+        key={manga.media.coverImage.medium}
+      />
+    );
+  });
+
   for (let i = 0; i < potentialSources.length; i++) {
     accordionArray.push(
       <Accordion
@@ -183,7 +231,11 @@ const Library = () => {
           aria-controls="panel1a-content"
           id="panel1a-header"
         >
-          <img src="https://mangadex.org/favicon.ico" alt="MangaDex" />
+          <img
+            src="https://mangadex.org/favicon.ico"
+            className={css(libraryStyleSheet.accordionItemIcon)}
+            alt="MangaDex"
+          />
           <Typography
             sx={{
               width: '66%',
@@ -203,11 +255,14 @@ const Library = () => {
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <div className={css(libraryStyleSheet.testContainer)} />
+          <div className={css(libraryStyleSheet.sourceContainer)}>
+            {mangaListArray}
+          </div>
         </AccordionDetails>
       </Accordion>
     );
   }
+
   return (
     <div className={css(libraryStyleSheet.container)}>
       <div className={css(libraryStyleSheet.searchbarContainer)}>
@@ -220,86 +275,86 @@ const Library = () => {
           />
         </div>
       </div>
-      <div className={css(libraryStyleSheet.welcomeContainer)}>
-        <Paper
-          elevation={6}
-          className={css(
-            libraryStyleSheet.profilePaperIcon,
-            libraryStyleSheet.paperObject
-          )}
-        />
-        <Paper
-          elevation={6}
-          className={css(
-            libraryStyleSheet.infoPaperBlock,
-            libraryStyleSheet.paperObject
-          )}
-        >
-          <h1
-            className={css(
-              libraryStyleSheet.infoPaperHeaderBase,
-              libraryStyleSheet.infoPaperHeaderMain
-            )}
-          >
-            Welcome back, Noire.
-          </h1>
-          <h4
-            className={css(
-              libraryStyleSheet.infoPaperHeaderBase,
-              libraryStyleSheet.infoPaperHeaderSub
-            )}
-          >
-            Up to reading some{' '}
-            <span className={css(libraryStyleSheet.infoHighlight)}>
-              Hino-san no Baka
-            </span>
-            ?
-          </h4>
-          <hr className={css(libraryStyleSheet.darkHR)} />
-          <div className={css(libraryStyleSheet.mangaStatsContainer)}>
-            <div className={css(libraryStyleSheet.mangaStatsItem)}>
-              <h3 className={css(libraryStyleSheet.infoPaperHeaderBase)}>
-                Total Manga
-              </h3>
-              <span
-                className={css(
-                  libraryStyleSheet.infoPaperHeaderBase,
-                  libraryStyleSheet.mangaStatsSpan
-                )}
-              >
-                47
-              </span>
-            </div>
-            <div className={css(libraryStyleSheet.mangaStatsItem)}>
-              <h3 className={css(libraryStyleSheet.infoPaperHeaderBase)}>
-                Volumes Read
-              </h3>
-              <span
-                className={css(
-                  libraryStyleSheet.infoPaperHeaderBase,
-                  libraryStyleSheet.mangaStatsSpan
-                )}
-              >
-                82
-              </span>
-            </div>
-            <div className={css(libraryStyleSheet.mangaStatsItem)}>
-              <h3 className={css(libraryStyleSheet.infoPaperHeaderBase)}>
-                Chapters Read
-              </h3>
-              <span
-                className={css(
-                  libraryStyleSheet.infoPaperHeaderBase,
-                  libraryStyleSheet.mangaStatsSpan
-                )}
-              >
-                1900
-              </span>
-            </div>
-          </div>
-        </Paper>
-      </div>
       <div className={css(libraryStyleSheet.libraryContainer)}>
+        <div className={css(libraryStyleSheet.welcomeContainer)}>
+          <Paper
+            elevation={6}
+            className={css(
+              libraryStyleSheet.profilePaperIcon,
+              libraryStyleSheet.paperObject
+            )}
+          />
+          <Paper
+            elevation={6}
+            className={css(
+              libraryStyleSheet.infoPaperBlock,
+              libraryStyleSheet.paperObject
+            )}
+          >
+            <h1
+              className={css(
+                libraryStyleSheet.infoPaperHeaderBase,
+                libraryStyleSheet.infoPaperHeaderMain
+              )}
+            >
+              Welcome back, Noire.
+            </h1>
+            <h4
+              className={css(
+                libraryStyleSheet.infoPaperHeaderBase,
+                libraryStyleSheet.infoPaperHeaderSub
+              )}
+            >
+              Up to reading some{' '}
+              <span className={css(libraryStyleSheet.infoHighlight)}>
+                Hino-san no Baka
+              </span>
+              ?
+            </h4>
+            <hr className={css(libraryStyleSheet.darkHR)} />
+            <div className={css(libraryStyleSheet.mangaStatsContainer)}>
+              <div className={css(libraryStyleSheet.mangaStatsItem)}>
+                <h3 className={css(libraryStyleSheet.infoPaperHeaderBase)}>
+                  Total Manga
+                </h3>
+                <span
+                  className={css(
+                    libraryStyleSheet.infoPaperHeaderBase,
+                    libraryStyleSheet.mangaStatsSpan
+                  )}
+                >
+                  47
+                </span>
+              </div>
+              <div className={css(libraryStyleSheet.mangaStatsItem)}>
+                <h3 className={css(libraryStyleSheet.infoPaperHeaderBase)}>
+                  Volumes Read
+                </h3>
+                <span
+                  className={css(
+                    libraryStyleSheet.infoPaperHeaderBase,
+                    libraryStyleSheet.mangaStatsSpan
+                  )}
+                >
+                  82
+                </span>
+              </div>
+              <div className={css(libraryStyleSheet.mangaStatsItem)}>
+                <h3 className={css(libraryStyleSheet.infoPaperHeaderBase)}>
+                  Chapters Read
+                </h3>
+                <span
+                  className={css(
+                    libraryStyleSheet.infoPaperHeaderBase,
+                    libraryStyleSheet.mangaStatsSpan
+                  )}
+                >
+                  1900
+                </span>
+              </div>
+            </div>
+          </Paper>
+        </div>
         {accordionArray}
       </div>
     </div>
