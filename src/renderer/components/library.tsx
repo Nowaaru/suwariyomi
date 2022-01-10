@@ -11,6 +11,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { StyleSheet, css } from 'aphrodite';
 import MangaItem from './mangaitem';
 import templateCovers from '../../../assets/data/thumbnail.json';
+import templateFull from '../../../assets/data/full.json';
 
 const libraryStyleSheet = StyleSheet.create({
   container: {
@@ -204,16 +205,26 @@ const Library = () => {
     'KissManga',
   ];
 
-  const { mediaList } = templateCovers.data.Page;
+  const { mediaList } = templateFull.data.Page;
   mediaList.forEach((manga) => {
     mangaListArray.push(
       <MangaItem
         displayType="list"
         listDisplayType="verbose"
-        title="Tadokoro-san"
+        title={manga.media.title.userPreferred}
         coverUrl={manga.media.coverImage.extraLarge}
-        tags={['Action', 'Adventure', 'Comedy', 'Fantasy']}
-        synopsis={mangaSynopsisTemplate}
+        tags={manga.media.tags
+          .sort((a, b) => Math.sign(a.rank - b.rank) + Math.random())
+          .slice(0, 3)
+          .map((tag) => tag.name)}
+        synopsis={(() => {
+          return (
+            new DOMParser().parseFromString(
+              manga.media.description || 'No synopsis available.', // Use OR instead of null check to implicitly cast empty strings to boolean.
+              'text/html'
+            ).body.textContent || 'No synopsis available.'
+          );
+        })()}
         key={manga.media.coverImage.medium}
       />
     );
