@@ -189,6 +189,8 @@ const libraryStyleSheet = StyleSheet.create({
     justifyContent: 'space-between',
   },
 });
+
+const mangaSynopsisTemplate = `The story begins in a small village west of the capital and centers on childhood friends Yuugo and Tenia. While Yuugo focuses on being an herbalist, Tenia is a hunter. A force of Arisen knights passes through their town in search of more Arisen to join their ranks. Tenia reveals that she is an Arisen and wants to travel with them.`;
 const Library = () => {
   const mangaListArray: Array<JSX.Element> = [];
   const accordionArray: Array<JSX.Element> = [];
@@ -212,7 +214,7 @@ const Library = () => {
         title="Tadokoro-san"
         coverUrl={manga.media.coverImage.extraLarge}
         tags={['Action', 'Adventure', 'Comedy', 'Fantasy']}
-        synopsis="Poggers!"
+        synopsis={mangaSynopsisTemplate}
         key={manga.media.coverImage.medium}
       />
     );
