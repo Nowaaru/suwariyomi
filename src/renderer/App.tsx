@@ -5,7 +5,6 @@ import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import Library from './components/library';
 import Login from './components/login';
 
-const { checkAuthenticated } = window.electron.auth;
 export default function App() {
   return (
     <Router>
