@@ -87,6 +87,9 @@ ipcMain.on(
       )
         return;
 
+      if (params.code)
+        [params.code, params.access_token] = [undefined, params.code]; // this is a hack to make the code work with the access_token
+
       isAuthorized = true;
       event.reply(`oauth-received-${identifier}`, identifier, params);
 
