@@ -3,6 +3,7 @@ import { Tooltip } from '@mui/material';
 import { StyleSheet, css } from 'aphrodite';
 import { Mal } from 'node-myanimelist';
 
+// TODO: Unionize this
 const AniListIntegrationHandler = async () => {
   window.electron.auth
     .generateAuthenticationWindow(
