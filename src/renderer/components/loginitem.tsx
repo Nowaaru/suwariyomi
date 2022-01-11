@@ -22,8 +22,13 @@ const AniListIntegrationHandler = async () => {
     )
     .then((returnData) => {
       if (!returnData) return false;
-      window.electron.store.set('authorization_anilist', returnData);
 
+      console.log(returnData);
+      const previousAuthorization = window.electron.store.get('authorization');
+      previousAuthorization.anilist = returnData;
+      window.electron.store.set('authorization', previousAuthorization);
+
+      console.log(previousAuthorization);
       return true;
     })
     .catch(console.error);
@@ -53,8 +58,10 @@ const MyAnimeListIntegrationHandler = async () => {
     )
     .then((returnData) => {
       if (!returnData) return false;
-      window.electron.store.set('authorization_myanimelist', returnData);
+      const previousAuthorization = window.electron.store.get('authorization');
+      previousAuthorization.myanimelist = returnData;
 
+      window.electron.store.set('authorization', previousAuthorization);
       return true;
     });
 };
