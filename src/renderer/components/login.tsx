@@ -1,7 +1,7 @@
 import '../css/Login.css';
 import OwlCarousel from 'react-owl-carousel';
 import { StyleSheet, css } from 'aphrodite';
-import { Component } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import thumbnails from '../../../assets/data/thumbnail.json';
 import anilist from '../../../assets/icons/login/anilist/transparent.png';
@@ -11,22 +11,15 @@ import 'owl.carousel/dist/assets/owl.carousel.css';
 import 'owl.carousel/dist/assets/owl.theme.default.css';
 import LoginItem from './loginitem';
 
-const checkAuthenticated = () => {
-  return [
-    window.electron.store.get('authorization_anilist'),
-    window.electron.store.get('authorization_myanimelist'),
-  ].some((item) => {
-    return !!item;
-  });
-};
-
+const { checkAuthenticated } = window.electron.auth;
 const onAuth = () => {
   const submitButton = document.getElementById('submit');
   if (submitButton) submitButton.innerText = 'Continue';
 };
 
-class LoginMenu extends Component {
-  styleSheet = StyleSheet.create({
+const LoginMenu = () => {
+  const navigate = useNavigate();
+  const styleSheet = StyleSheet.create({
     buttonStateLogin: {
       top: '15%',
     },
@@ -56,59 +49,56 @@ class LoginMenu extends Component {
       right: 0,
     },
   });
+  if (window.electron.store.get('skipped_auth')) navigate('/library');
 
-  constructor(props: { [k: string]: any }) {
-    super(props);
-
-    this.forceUpdate = this.forceUpdate.bind(this);
-    this.state = {};
-  }
-
-  render() {
-    const submitButton = (
-      <button type="button" id="submit" className={css(this.styleSheet.button)}>
-        {checkAuthenticated() ? 'Continue' : `I'll skip for now.`}
-      </button>
-    );
-    return (
-      <div id="login-container">
-        <div id="login-container-inner">
-          <div id="login-container-inner-inner">
-            <h1>Login</h1>
-            <hr className="rule" />
-            <div className="login-content">
-              <div className="login-content-inner">
-                <div className="icons">
-                  <LoginItem
-                    src={anilist}
-                    isDisabled={
-                      !!window.electron.store.get('authorization_anilist')
-                    }
-                    onAuth={onAuth}
-                    disabledtitle="Already logged in!"
-                    authenticator="anilist"
-                    alt="Login with AniList"
-                  />
-                  <LoginItem
-                    src={myanimelist}
-                    isDisabled={
-                      !!window.electron.store.get('authorization_myanimelist')
-                    }
-                    onAuth={onAuth}
-                    disabledtitle="Already logged in!"
-                    authenticator="myanimelist"
-                    alt="Login with MyAnimeList"
-                  />
-                </div>
+  const submitButton = (
+    <button
+      type="button"
+      id="submit"
+      onClick={() => {
+        if (!checkAuthenticated)
+          window.electron.store.set('skipped_auth', true);
+        navigate('/');
+      }}
+      className={css(styleSheet.button)}
+    >
+      {checkAuthenticated() ? 'Continue' : `I'll skip for now.`}
+    </button>
+  );
+  return (
+    <div id="login-container">
+      <div id="login-container-inner">
+        <div id="login-container-inner-inner">
+          <h1>Login</h1>
+          <hr className="rule" />
+          <div className="login-content">
+            <div className="login-content-inner">
+              <div className="icons">
+                <LoginItem
+                  src={anilist}
+                  isDisabled={checkAuthenticated('anilist')}
+                  onAuth={onAuth}
+                  disabledtitle="Already logged in!"
+                  authenticator="anilist"
+                  alt="Login with AniList"
+                />
+                <LoginItem
+                  src={myanimelist}
+                  isDisabled={checkAuthenticated('myanimelist')}
+                  onAuth={onAuth}
+                  disabledtitle="Already logged in!"
+                  authenticator="myanimelist"
+                  alt="Login with MyAnimeList"
+                />
               </div>
-              {submitButton}
             </div>
+            {submitButton}
           </div>
         </div>
       </div>
-    );
-  }
-}
+    </div>
+  );
+};
 
 const Login = () => {
   /* Get all thumbnails and array-ify them */
