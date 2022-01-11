@@ -1,5 +1,6 @@
 import { StyleSheet, css } from 'aphrodite';
 import { Button } from '@mui/material';
+import LazyLoad from 'react-lazyload';
 import Tag from './tag';
 
 type MangaItemListProps = {
@@ -48,6 +49,7 @@ const styles = StyleSheet.create({
 
   mangaItemListCoverImage: {
     height: '256px',
+    maxWidth: '180px',
     borderRadius: '10px',
     objectFit: 'contain',
   },
@@ -177,48 +179,50 @@ const mangaItem = (props: MangaItemProps) => {
   switch (props.displayType) {
     case 'list':
       return (
-        <div className={css(styles.mangaItemListContainer)}>
-          <div className={css(styles.mangaItemListCover)}>
-            <img
-              src={props.coverUrl}
-              className={css(styles.mangaItemListCoverImage)}
-              alt={props.title}
-            />
-          </div>
-          <div className={css(styles.mangaMetadata)}>
-            <div className={css(styles.mangaItemInformationMain)}>
-              <h3 className={css(styles.mangaItemTitle)}>{props.title}</h3>
-              <div className={css(styles.mangaItemTags)}>{mangaTags}</div>
-              <div className={css(styles.mangaItemSynopsisContainer)}>
-                <p className={css(styles.mangaItemSynopsis)}>
-                  {props.synopsis}
-                </p>
-              </div>
-              <div className={css(styles.mangaItemButtonContainer)}>
-                <div className={css(styles.mangaItemButtonWrapper)}>
-                  <Button
-                    className={css(
-                      styles.mangaItemViewButton,
-                      styles.mangaItemButton
-                    )}
-                    variant="contained"
-                  >
-                    View Chapters
-                  </Button>
-                  <Button
-                    className={css(
-                      styles.mangaItemStartReadButton,
-                      styles.mangaItemButton
-                    )}
-                    variant="contained"
-                  >
-                    Start Reading
-                  </Button>
+        <LazyLoad key={props.title} scrollContainer="#lazyload">
+          <div className={css(styles.mangaItemListContainer)}>
+            <div className={css(styles.mangaItemListCover)}>
+              <img
+                src={props.coverUrl}
+                className={css(styles.mangaItemListCoverImage)}
+                alt={props.title}
+              />
+            </div>
+            <div className={css(styles.mangaMetadata)}>
+              <div className={css(styles.mangaItemInformationMain)}>
+                <h3 className={css(styles.mangaItemTitle)}>{props.title}</h3>
+                <div className={css(styles.mangaItemTags)}>{mangaTags}</div>
+                <div className={css(styles.mangaItemSynopsisContainer)}>
+                  <p className={css(styles.mangaItemSynopsis)}>
+                    {props.synopsis}
+                  </p>
+                </div>
+                <div className={css(styles.mangaItemButtonContainer)}>
+                  <div className={css(styles.mangaItemButtonWrapper)}>
+                    <Button
+                      className={css(
+                        styles.mangaItemViewButton,
+                        styles.mangaItemButton
+                      )}
+                      variant="contained"
+                    >
+                      View Chapters
+                    </Button>
+                    <Button
+                      className={css(
+                        styles.mangaItemStartReadButton,
+                        styles.mangaItemButton
+                      )}
+                      variant="contained"
+                    >
+                      Start Reading
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        </LazyLoad>
       );
 
     default:

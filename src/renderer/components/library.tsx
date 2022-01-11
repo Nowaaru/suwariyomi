@@ -7,9 +7,10 @@ import {
   Paper,
 } from '@mui/material';
 
-import { StyleSheet, css } from 'aphrodite';
+import { StyleSheet, css } from 'aphrodite/no-important';
 import { useNavigate } from 'react-router-dom';
 
+import LazyLoad, { forceCheck } from 'react-lazyload';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MangaItem from './mangaitem';
 import templateFull from '../../../assets/data/full.json';
@@ -212,7 +213,7 @@ const Library = () => {
   ];
 
   const { mediaList } = templateFull.data.Page;
-  mediaList.splice(0, 6).forEach((manga) => {
+  mediaList.splice(0, 400).forEach((manga) => {
     mangaListArray.push(
       <MangaItem
         displayType="list"
@@ -238,53 +239,58 @@ const Library = () => {
 
   for (let i = 0; i < potentialSources.length; i++) {
     accordionArray.push(
-      <Accordion
-        classes={{
-          root: css(libraryStyleSheet.accordionItem),
-        }}
-        key={i}
-      >
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon htmlColor="#FFFFFF" />}
-          aria-controls="panel1a-content"
-          id="panel1a-header"
+      <LazyLoad scrollContainer="#lazyload">
+        <Accordion
+          TransitionProps={{
+            unmountOnExit: true,
+            onExited: forceCheck,
+            onEntered: forceCheck,
+          }}
+          classes={{
+            root: css(libraryStyleSheet.accordionItem),
+          }}
+          key={i}
         >
-          <img
-            src="https://mangadex.org/favicon.ico"
-            className={css(libraryStyleSheet.accordionItemIcon)}
-            alt="MangaDex"
-          />
-          <Typography
-            sx={{
-              width: '66%',
-              flexShrink: 2,
-              color: '#FFFFFF',
-            }}
-            className={css(libraryStyleSheet.accordionText)}
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon htmlColor="#FFFFFF" />}
+            aria-controls="panel1a-content"
+            id="panel1a-header"
           >
-            {potentialSources[i]}
-          </Typography>
-          <Typography
-            sx={{
-              color: '#FFFFFF',
-            }}
-          >
-            25 Mangas
-          </Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <div className={css(libraryStyleSheet.sourceContainer)}>
-            {mangaListArray}
-          </div>
-        </AccordionDetails>
-      </Accordion>
+            <img
+              src="https://mangadex.org/favicon.ico"
+              className={css(libraryStyleSheet.accordionItemIcon)}
+              alt="MangaDex"
+            />
+            <Typography
+              sx={{
+                width: '66%',
+                flexShrink: 2,
+                color: '#FFFFFF',
+              }}
+              className={css(libraryStyleSheet.accordionText)}
+            >
+              {potentialSources[i]}
+            </Typography>
+            <Typography
+              sx={{
+                color: '#FFFFFF',
+              }}
+            >
+              {mangaListArray.length} Mangas
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <div className={css(libraryStyleSheet.sourceContainer)}>
+              {mangaListArray}
+            </div>
+          </AccordionDetails>
+        </Accordion>
+      </LazyLoad>
     );
   }
 
   const filteredMediaList = mediaList.filter(
-    (manga) =>
-      manga.media.title.userPreferred.length < 50 &&
-      manga.readingstatus === 'CURRENT'
+    (manga) => manga.media.title.userPreferred.length < 50
   );
   const readingPrefixTarget =
     filteredMediaList[Math.floor(Math.random() * filteredMediaList.length)];
@@ -330,7 +336,7 @@ const Library = () => {
           />
         </div>
       </div>
-      <div className={css(libraryStyleSheet.libraryContainer)}>
+      <div id="lazyload" className={css(libraryStyleSheet.libraryContainer)}>
         <div className={css(libraryStyleSheet.welcomeContainer)}>
           <Paper
             elevation={6}
