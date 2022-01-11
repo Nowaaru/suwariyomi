@@ -27,6 +27,28 @@ contextBridge.exposeInMainWorld('electron', {
     async generatePKCE() {
       return ipcRenderer.invoke('generate-pkce');
     },
+    checkAuthenticated(specificLogin) {
+      const authorizationStore = ipcRenderer.sendSync(
+        'electron-store-get',
+        'authorization'
+      );
+
+      // Iterate through authorizationStore; if any of the values' have both an access_token and an expires_in, return true
+      if (specificLogin)
+        return (
+          authorizationStore[specificLogin].access_token &&
+          authorizationStore[specificLogin].expires_in
+        );
+
+      const isAuthenticated = Object.keys(authorizationStore).some(
+        (key) =>
+          authorizationStore[key].access_token &&
+          (authorizationStore[key].expires_in
+            ? authorizationStore[key].expires_in > Date.now()
+            : true) // if there is no expires_in, assume it's valid
+      );
+      return isAuthenticated;
+    },
   },
   ipcRenderer: {
     minimize() {
