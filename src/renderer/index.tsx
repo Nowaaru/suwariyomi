@@ -15,6 +15,7 @@ declare global {
           code_challenge: string;
           code_verifier: string;
         };
+        checkAuthenticated: (specificLogin?: string) => boolean;
       };
       ipcRenderer: {
         minimize: () => void;
@@ -37,6 +38,19 @@ declare global {
     };
   }
 }
+
+// Setup authorization defaults
+if (!window.electron.store.get('authorization'))
+  window.electron.store.set('authorization', {
+    myanimelist: {
+      access_token: null,
+      expires: null,
+    },
+    anilist: {
+      access_token: null,
+      expires: null,
+    },
+  });
 
 render(<Topbar />, document.getElementById('topbar'));
 render(<App />, document.getElementById('root'));
