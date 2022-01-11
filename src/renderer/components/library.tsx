@@ -7,11 +7,14 @@ import {
   Paper,
 } from '@mui/material';
 
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { StyleSheet, css } from 'aphrodite';
+import { useNavigate } from 'react-router-dom';
+
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MangaItem from './mangaitem';
 import templateFull from '../../../assets/data/full.json';
 
+const { checkAuthenticated } = window.electron.auth;
 const libraryStyleSheet = StyleSheet.create({
   container: {
     display: 'block',
