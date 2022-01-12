@@ -3,6 +3,9 @@ import { Button } from '@mui/material';
 import LazyLoad from 'react-lazyload';
 import Tag from './tag';
 
+// image assets
+import nocover from '../../../assets/images/nocover_dark.png';
+
 type MangaItemListProps = {
   displayType: 'list';
   listDisplayType: 'verbose' | 'compact' | 'comfy';
@@ -13,7 +16,7 @@ type MangaItemGridProps = {
 };
 
 type MangaItemGenericProps = {
-  coverUrl: string;
+  coverUrl?: string;
   title: string;
   tags: string[];
   synopsis: string;
@@ -183,7 +186,7 @@ const mangaItem = (props: MangaItemProps) => {
           <div className={css(styles.mangaItemListContainer)}>
             <div className={css(styles.mangaItemListCover)}>
               <img
-                src={props.coverUrl}
+                src={props.coverUrl ?? nocover}
                 className={css(styles.mangaItemListCoverImage)}
                 alt={props.title}
               />
