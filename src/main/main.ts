@@ -11,11 +11,13 @@
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain } from 'electron';
-import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import Store from 'electron-store';
 import pkceChallenge from 'pkce-challenge';
+import { app, BrowserWindow, shell, ipcMain } from 'electron';
+import { autoUpdater } from 'electron-updater';
+
+import MangaDB from './dbUtil';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
@@ -29,7 +31,6 @@ export default class AppUpdater {
 }
 
 let mainWindow: BrowserWindow | null = null;
-
 ipcMain.on('ipc-example', async (event, arg) => {
   const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
   console.log(msgTemplate(arg));
@@ -56,6 +57,45 @@ ipcMain.handle('generate-pkce', async () => {
   // event.reply('generate-pkce', challenge);
 
   return challenge;
+});
+
+ipcMain.handle('get-source', (_, sourceName) => {
+  return MangaDB.getSource(sourceName);
+});
+
+ipcMain.handle('get-sources', () => {
+  return MangaDB.getSources();
+});
+
+ipcMain.handle('get-manga', (_, sourceName, mangaId) => {
+  return MangaDB.getManga(sourceName, mangaId);
+});
+
+ipcMain.handle('get-manga-by-name', (_, sourceName, mangaName) => {
+  return MangaDB.getMangaByName(sourceName, mangaName);
+});
+
+ipcMain.handle('get-manga-by-author', (_, sourceName, authorName) => {
+  return MangaDB.getMangasByAuthor(sourceName, authorName);
+});
+
+ipcMain.handle('add-manga', (_, sourceName, manga) => {
+  return MangaDB.addManga(sourceName, manga);
+});
+
+ipcMain.handle('remove-manga', (_, sourceName, mangaId) => {
+  return MangaDB.removeManga(sourceName, mangaId);
+});
+
+ipcMain.handle(
+  'update-manga',
+  (_, sourceName, mangaId, replacementMangaItem) => {
+    return MangaDB.updateManga(sourceName, mangaId, replacementMangaItem);
+  }
+);
+
+ipcMain.handle('get-mangas', (_, sourceName) => {
+  return MangaDB.getMangas(sourceName);
 });
 
 ipcMain.on(
