@@ -2,6 +2,40 @@ const { contextBridge, ipcRenderer } = require('electron');
 const { v4 } = require('uuid');
 
 contextBridge.exposeInMainWorld('electron', {
+  library: {
+    getSource: (sourceName) => {
+      return ipcRenderer.invoke('get-source', sourceName);
+    },
+    getSources: () => {
+      return ipcRenderer.invoke('get-sources');
+    },
+    getManga: (sourceName, mangaId) => {
+      return ipcRenderer.invoke('get-manga', sourceName, mangaId);
+    },
+    getMangaByName: (sourceName, mangaName) => {
+      return ipcRenderer.invoke('get-manga-by-name', sourceName, mangaName);
+    },
+    getMangasByAuthor: (sourceName, authorName) => {
+      return ipcRenderer.invoke('get-mangas-by-author', sourceName, authorName);
+    },
+    addManga: (sourceName, manga) => {
+      return ipcRenderer.invoke('add-manga', sourceName, manga);
+    },
+    removeManga: (sourceName, mangaId) => {
+      return ipcRenderer.invoke('remove-manga', sourceName, mangaId);
+    },
+    updateManga: (sourceName, mangaId, replacementMangaItem) => {
+      return ipcRenderer.invoke(
+        'update-manga',
+        sourceName,
+        mangaId,
+        replacementMangaItem
+      );
+    },
+    getMangas: (sourceName) => {
+      return ipcRenderer.invoke('get-mangas', sourceName);
+    },
+  },
   auth: {
     async generateAuthenticationWindow(windowData, targetLocation) {
       const id = v4();

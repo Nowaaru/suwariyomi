@@ -1,11 +1,36 @@
 import { render } from 'react-dom';
 import { IpcRendererEvent } from 'electron';
+import { Source, Sources, Manga, Chapter } from '../main/dbUtil';
 import Topbar from './components/topbar';
 import App from './App';
 
 declare global {
   interface Window {
     electron: {
+      library: {
+        getSource: (sourceName: string) => Promise<Source | undefined>;
+        getSources: () => Promise<Sources>;
+        getManga: (
+          sourceName: string,
+          mangaID: string
+        ) => Promise<Manga | undefined>;
+        getMangas: (sourceName: string) => Promise<Manga[]>;
+        getMangaByName: (
+          sourceName: string,
+          mangaName: string
+        ) => Promise<Manga | undefined>;
+        getMangasByAuthor: (
+          sourceName: string,
+          authorName: string
+        ) => Promise<Manga[]>;
+        addManga: (sourceName: string, manga: Manga) => Promise<void>;
+        updateManga: (sourceName: string, mangaID: string) => Promise<void>;
+        removeManga: (
+          sourceName: string,
+          mangaID: string,
+          manga: Manga
+        ) => Promise<void>;
+      };
       auth: {
         generateAuthenticationWindow: (
           windowData: { [key: string]: any },
