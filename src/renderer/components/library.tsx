@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import LazyLoad, { forceCheck } from 'react-lazyload';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MangaItem from './mangaitem';
-import templateFull from '../../../assets/data/full.json';
+// import templateFull from '../../../assets/data/full.json';
 
 const { checkAuthenticated } = window.electron.auth;
 const libraryStyleSheet = StyleSheet.create({
@@ -140,6 +140,7 @@ const libraryStyleSheet = StyleSheet.create({
     margin: '0',
   },
   infoPaperHeaderMain: {
+    textAlign: 'left',
     fontSize: '2.4em',
   },
   infoPaperHeaderSub: {
@@ -198,46 +199,46 @@ const libraryStyleSheet = StyleSheet.create({
   },
 });
 
+const { library: LibraryUtiltiies } = window.electron;
+
 const Library = () => {
   const mangaListArray: Array<JSX.Element> = [];
   const accordionArray: Array<JSX.Element> = [];
-  const potentialSources = [
-    'MangaDex',
-    'MangaFox',
-    'Bato.to',
-    'Comick.fun',
-    'Dynasty-Series',
-    'Lolicon',
-    'ReaperScans',
-    'KissManga',
-  ];
+  const librarySources = LibraryUtiltiies.getSources();
+  const librarySourcesKeys = Object.keys(librarySources);
+  // Filter out sources that are not enabled AND has no manga
+  const sourceList = librarySourcesKeys
+    .filter(
+      (source) =>
+        librarySources[source].Enabled &&
+        librarySources[source].Manga.length > 0
+    )
+    .map((source) => librarySources[source]);
 
-  const { mediaList } = templateFull.data.Page;
-  mediaList.splice(0, 400).forEach((manga) => {
-    mangaListArray.push(
-      <MangaItem
-        displayType="list"
-        listDisplayType="verbose"
-        title={manga.media.title.userPreferred}
-        coverUrl={manga.media.coverImage.extraLarge}
-        tags={manga.media.tags
-          .sort((a, b) => Math.sign(a.rank - b.rank) + Math.random())
-          .slice(0, 3)
-          .map((tag) => tag.name)}
-        synopsis={(() => {
-          return (
-            new DOMParser().parseFromString(
-              manga.media.description || 'No synopsis available.', // Use OR instead of null check to implicitly cast empty strings to boolean.
-              'text/html'
-            ).body.textContent || 'No synopsis available.'
-          );
-        })()}
-        key={manga.media.coverImage.medium}
-      />
-    );
+  sourceList.forEach((Source) => {
+    Source.Manga.forEach((Manga) => {
+      mangaListArray.push(
+        <MangaItem
+          displayType="list"
+          listDisplayType="verbose"
+          title={Manga.Name}
+          coverUrl={Manga.CoverURL}
+          tags={[]}
+          synopsis={(() => {
+            return (
+              new DOMParser().parseFromString(
+                Manga.Synopsis || 'No synopsis available.', // Use OR instead of null check to implicitly cast empty strings to boolean.
+                'text/html'
+              ).body.textContent || 'No synopsis available.'
+            );
+          })()}
+          key={Manga.Name}
+        />
+      );
+    });
   });
 
-  for (let i = 0; i < potentialSources.length; i++) {
+  sourceList.forEach((sourceObject) => {
     accordionArray.push(
       <LazyLoad scrollContainer="#lazyload">
         <Accordion
@@ -249,7 +250,7 @@ const Library = () => {
           classes={{
             root: css(libraryStyleSheet.accordionItem),
           }}
-          key={i}
+          key={sourceObject.Name}
         >
           <AccordionSummary
             expandIcon={<ExpandMoreIcon htmlColor="#FFFFFF" />}
@@ -269,7 +270,7 @@ const Library = () => {
               }}
               className={css(libraryStyleSheet.accordionText)}
             >
-              {potentialSources[i]}
+              {`${sourceObject.Name}-accordion`}
             </Typography>
             <Typography
               sx={{
@@ -287,11 +288,12 @@ const Library = () => {
         </Accordion>
       </LazyLoad>
     );
-  }
+  });
 
-  const filteredMediaList = mediaList.filter(
-    (manga) => manga.media.title.userPreferred.length < 50
-  );
+  const filteredMediaList = sourceList
+    .filter((x) => x.Enabled && x.Manga.length > 0)
+    .map((x) => x.Manga)
+    .flat();
   const readingPrefixTarget =
     filteredMediaList[Math.floor(Math.random() * filteredMediaList.length)];
 
@@ -299,30 +301,46 @@ const Library = () => {
   let statusSuffix = '!';
 
   if (readingPrefixTarget) {
-    switch (readingPrefixTarget.readingstatus) {
-      case 'COMPLETED':
-        [statusPrefix, statusSuffix] = ['Want to reread', '?'];
-        break;
-      case 'PLANNING':
-        [statusPrefix, statusSuffix] = ['Want to try reading', '?'];
-        break;
-      case 'DROPPED':
-        [statusPrefix, statusSuffix] = ['Maybe try reconsidering', '..?'];
-        break;
-      case 'PAUSED':
-        [statusPrefix, statusSuffix] = [
-          'Want to pick up',
-          ' where you left off?',
-        ];
-        break;
-      case 'REPEATING':
-      // eslint-disable-next-line no-fallthrough
-      case 'CURRENT':
-        [statusPrefix, statusSuffix] = ['Want to continue reading', '?'];
-        break;
-      default:
-        break;
-    }
+    // TODO: Integrate with AniList / MyAnimeList. If not logged in to either, get flavor texts from here.
+    // CURRENT: Create a list of flavor texts.
+    const flavorTexts = [
+      ['How about reading', '?'],
+      ["Let's read", '!'],
+      ['Feel like reading', '?'],
+      ['Want to read', '?'],
+      ['Feeling like reading', 'today?'],
+      ['Want to read', 'today?'],
+      ['Is it time for the', 'binge-read marathon?'],
+    ];
+
+    const chosenText =
+      flavorTexts[Math.floor(Math.random() * flavorTexts.length)];
+    [statusPrefix, statusSuffix] = chosenText;
+
+    // switch (readingPrefixTarget.readingstatus) {
+    //   case 'COMPLETED':
+    //     [statusPrefix, statusSuffix] = ['Want to reread', '?'];
+    //     break;
+    //   case 'PLANNING':
+    //     [statusPrefix, statusSuffix] = ['Want to try reading', '?'];
+    //     break;
+    //   case 'DROPPED':
+    //     [statusPrefix, statusSuffix] = ['Maybe try reconsidering', '..?'];
+    //     break;
+    //   case 'PAUSED':
+    //     [statusPrefix, statusSuffix] = [
+    //       'Want to pick up',
+    //       ' where you left off?',
+    //     ];
+    //     break;
+    //   case 'REPEATING':
+    //   // eslint-disable-next-line no-fallthrough
+    //   case 'CURRENT':
+    //     [statusPrefix, statusSuffix] = ['Want to continue reading', '?'];
+    //     break;
+    //   default:
+    //     break;
+    // }
   }
   return (
     <div className={css(libraryStyleSheet.container)}>
@@ -375,9 +393,7 @@ const Library = () => {
                   libraryStyleSheet.infoHighlight
                 )}
               >
-                {!readingPrefixTarget
-                  ? 'some manga'
-                  : readingPrefixTarget.media.title.userPreferred}
+                {!readingPrefixTarget ? 'some manga' : readingPrefixTarget.Name}
               </span>
               <span className={css(libraryStyleSheet.infoRegular)}>
                 {statusSuffix}
