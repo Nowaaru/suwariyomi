@@ -35,6 +35,7 @@ const Tag = (props: TagProps) => {
       padding: '2px 5px',
       margin: '0px',
       marginRight: '10px',
+      marginBottom: '5px',
       borderRadius: '5px',
       backgroundColor: tagColours[type],
       color: '#fff',

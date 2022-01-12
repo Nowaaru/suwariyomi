@@ -9,7 +9,7 @@ import myanimelist from '../../../assets/icons/login/myanimelist/transparent.png
 
 import 'owl.carousel/dist/assets/owl.carousel.css';
 import 'owl.carousel/dist/assets/owl.theme.default.css';
-import LoginItem from './loginitem';
+import LoginItem from '../components/loginitem';
 
 const { checkAuthenticated } = window.electron.auth;
 const onAuth = () => {

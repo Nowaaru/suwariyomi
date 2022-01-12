@@ -8,11 +8,16 @@ import {
 } from '@mui/material';
 
 import { StyleSheet, css } from 'aphrodite/no-important';
-import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 import LazyLoad, { forceCheck } from 'react-lazyload';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import MangaItem from './mangaitem';
+import parseQuery from '../util/search';
+
+import { Manga as MangaType } from '../../main/dbUtil';
+import MangaItem from '../components/mangaitem';
+
 // import templateFull from '../../../assets/data/full.json';
 
 const { checkAuthenticated } = window.electron.auth;
@@ -148,6 +153,7 @@ const libraryStyleSheet = StyleSheet.create({
   },
 
   infoHighlight: {
+    textDecoration: 'none',
     color: '#DF2935',
   },
 
@@ -197,33 +203,62 @@ const libraryStyleSheet = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'space-between',
   },
+
+  noMangaContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    height: '45%',
+  },
 });
 
-const { library: LibraryUtiltiies } = window.electron;
+const { library: LibraryUtilties } = window.electron;
+const noResultsFlavorTexts = [
+  ["Nobody's reading manga here.", 'How about we look', 'somewhere else?'],
+  ["This library's empty.", "Let's go", 'somewhere else.'],
+  ['Nothing to see here.', "Let's", 'keep on moving.'],
+  ['End of the road.', 'Want to', 'start building?'],
+];
 
+let readingPrefixTarget: MangaType | undefined;
+let statusPrefix: string;
+let statusSuffix: string;
 const Library = () => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const parsedSearch = parseQuery(searchQuery);
+
   const mangaListArray: Array<JSX.Element> = [];
   const accordionArray: Array<JSX.Element> = [];
-  const librarySources = LibraryUtiltiies.getSources();
+  const librarySources = LibraryUtilties.getSources();
   const librarySourcesKeys = Object.keys(librarySources);
   // Filter out sources that are not enabled AND has no manga
   const sourceList = librarySourcesKeys
     .filter(
       (source) =>
         librarySources[source].Enabled &&
-        librarySources[source].Manga.length > 0
+        librarySources[source].Manga.length > 0 &&
+        (searchQuery === '' ||
+          librarySources[source].Manga.some((manga) =>
+            manga.Name.toLowerCase().includes(searchQuery.toLowerCase())
+          ))
     )
     .map((source) => librarySources[source]);
 
   sourceList.forEach((Source) => {
     Source.Manga.forEach((Manga) => {
+      if (searchQuery !== '')
+        if (!Manga.Name.toLowerCase().includes(searchQuery.toLowerCase()))
+          return;
+
       mangaListArray.push(
         <MangaItem
           displayType="list"
           listDisplayType="verbose"
           title={Manga.Name}
-          coverUrl={Manga.CoverURL}
-          tags={[]}
+          coverUrl={Manga.CoverURL || undefined}
+          tags={Manga.Tags.slice(1, 10) ?? []}
           synopsis={(() => {
             return (
               new DOMParser().parseFromString(
@@ -240,13 +275,19 @@ const Library = () => {
 
   sourceList.forEach((sourceObject) => {
     accordionArray.push(
-      <LazyLoad scrollContainer="#lazyload">
+      <LazyLoad
+        key={`${sourceObject.Name}-lazyload`}
+        scrollContainer="#lazyload"
+      >
         <Accordion
           TransitionProps={{
             unmountOnExit: true,
             onExited: forceCheck,
             onEntered: forceCheck,
           }}
+          defaultExpanded={
+            searchQuery !== '' && sourceObject.Manga.length <= 45
+          }
           classes={{
             root: css(libraryStyleSheet.accordionItem),
           }}
@@ -270,7 +311,7 @@ const Library = () => {
               }}
               className={css(libraryStyleSheet.accordionText)}
             >
-              {`${sourceObject.Name}-accordion`}
+              {sourceObject.Name}
             </Typography>
             <Typography
               sx={{
@@ -292,15 +333,13 @@ const Library = () => {
 
   const filteredMediaList = sourceList
     .filter((x) => x.Enabled && x.Manga.length > 0)
-    .map((x) => x.Manga)
+    .map((x) => x.Manga.filter((y) => y.Name.length <= 45))
     .flat();
-  const readingPrefixTarget =
-    filteredMediaList[Math.floor(Math.random() * filteredMediaList.length)];
+  if (!readingPrefixTarget)
+    readingPrefixTarget =
+      filteredMediaList[Math.floor(Math.random() * filteredMediaList.length)];
 
-  let statusPrefix = "Let's start reading";
-  let statusSuffix = '!';
-
-  if (readingPrefixTarget) {
+  if (readingPrefixTarget && (!statusPrefix || !statusSuffix)) {
     // TODO: Integrate with AniList / MyAnimeList. If not logged in to either, get flavor texts from here.
     // CURRENT: Create a list of flavor texts.
     const flavorTexts = [
@@ -315,6 +354,7 @@ const Library = () => {
 
     const chosenText =
       flavorTexts[Math.floor(Math.random() * flavorTexts.length)];
+
     [statusPrefix, statusSuffix] = chosenText;
 
     // switch (readingPrefixTarget.readingstatus) {
@@ -341,6 +381,43 @@ const Library = () => {
     //   default:
     //     break;
     // }
+  } else [statusPrefix, statusSuffix] = ["Let's start reading", '!'];
+
+  if (accordionArray.length === 0) {
+    const decidedFlavorText =
+      noResultsFlavorTexts[
+        Math.floor(Math.random() * noResultsFlavorTexts.length)
+      ];
+    accordionArray.push(
+      <div className={css(libraryStyleSheet.noMangaContainer)}>
+        <Typography
+          sx={{
+            color: '#FFFFFF',
+            fontSize: '24px',
+            fontWeight: 'bold',
+          }}
+        >
+          {decidedFlavorText[0]}
+        </Typography>
+        <Typography
+          sx={{
+            color: '#FFFFFF',
+            fontSize: '16px',
+          }}
+        >
+          {decidedFlavorText[1]}{' '}
+          <Link
+            to="/login"
+            className={css(
+              libraryStyleSheet.infoPaperHeaderBase,
+              libraryStyleSheet.infoHighlight
+            )}
+          >
+            {decidedFlavorText[decidedFlavorText.length - 1]}
+          </Link>
+        </Typography>
+      </div>
+    );
   }
   return (
     <div className={css(libraryStyleSheet.container)}>
@@ -351,6 +428,12 @@ const Library = () => {
             placeholder={`pages>10 "Slice of Life" "Kemonomimi" "Romance" "Fantasy"`}
             className={css(libraryStyleSheet.searchbar)}
             variant="filled"
+            error={!parsedSearch}
+            helperText={parsedSearch ? '' : 'Mismatched quotation marks.'}
+            onChange={(e) => {
+              forceCheck();
+              setSearchQuery(e.target.value.trim());
+            }}
           />
         </div>
       </div>
@@ -396,7 +479,9 @@ const Library = () => {
                 {!readingPrefixTarget ? 'some manga' : readingPrefixTarget.Name}
               </span>
               <span className={css(libraryStyleSheet.infoRegular)}>
-                {statusSuffix}
+                {statusSuffix.match(/^[.!?]$/)
+                  ? statusSuffix
+                  : ` ${statusSuffix}`}
               </span>
             </h4>
             <hr className={css(libraryStyleSheet.darkHR)} />
