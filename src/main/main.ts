@@ -59,43 +59,51 @@ ipcMain.handle('generate-pkce', async () => {
   return challenge;
 });
 
-ipcMain.handle('get-source', (_, sourceName) => {
-  return MangaDB.getSource(sourceName);
+ipcMain.handle('flush', () => {
+  MangaDB.flush();
 });
 
-ipcMain.handle('get-sources', () => {
-  return MangaDB.getSources();
+ipcMain.on('get-source', (event, sourceName) => {
+  event.returnValue = MangaDB.getSource(sourceName);
 });
 
-ipcMain.handle('get-manga', (_, sourceName, mangaId) => {
-  return MangaDB.getManga(sourceName, mangaId);
+ipcMain.on('get-sources', (event) => {
+  event.returnValue = MangaDB.getSources();
 });
 
-ipcMain.handle('get-manga-by-name', (_, sourceName, mangaName) => {
-  return MangaDB.getMangaByName(sourceName, mangaName);
+ipcMain.on('get-manga', (event, sourceName, mangaId) => {
+  event.returnValue = MangaDB.getManga(sourceName, mangaId);
 });
 
-ipcMain.handle('get-manga-by-author', (_, sourceName, authorName) => {
-  return MangaDB.getMangasByAuthor(sourceName, authorName);
+ipcMain.on('get-manga-by-name', (event, sourceName, mangaName) => {
+  event.returnValue = MangaDB.getMangaByName(sourceName, mangaName);
 });
 
-ipcMain.handle('add-manga', (_, sourceName, manga) => {
-  return MangaDB.addManga(sourceName, manga);
+ipcMain.on('get-manga-by-author', (event, sourceName, authorName) => {
+  event.returnValue = MangaDB.getMangasByAuthor(sourceName, authorName);
 });
 
-ipcMain.handle('remove-manga', (_, sourceName, mangaId) => {
-  return MangaDB.removeManga(sourceName, mangaId);
+ipcMain.on('add-manga', (event, sourceName, manga) => {
+  event.returnValue = MangaDB.addManga(sourceName, manga);
 });
 
-ipcMain.handle(
+ipcMain.on('remove-manga', (event, sourceName, mangaId) => {
+  event.returnValue = MangaDB.removeManga(sourceName, mangaId);
+});
+
+ipcMain.on(
   'update-manga',
-  (_, sourceName, mangaId, replacementMangaItem) => {
-    return MangaDB.updateManga(sourceName, mangaId, replacementMangaItem);
+  (event, sourceName, mangaId, replacementMangaItem) => {
+    event.returnValue = MangaDB.updateManga(
+      sourceName,
+      mangaId,
+      replacementMangaItem
+    );
   }
 );
 
-ipcMain.handle('get-mangas', (_, sourceName) => {
-  return MangaDB.getMangas(sourceName);
+ipcMain.on('get-mangas', (event, sourceName) => {
+  event.returnValue = MangaDB.getMangas(sourceName);
 });
 
 ipcMain.on(

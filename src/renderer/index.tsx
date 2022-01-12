@@ -8,28 +8,23 @@ declare global {
   interface Window {
     electron: {
       library: {
-        getSource: (sourceName: string) => Promise<Source | undefined>;
-        getSources: () => Promise<Sources>;
-        getManga: (
-          sourceName: string,
-          mangaID: string
-        ) => Promise<Manga | undefined>;
-        getMangas: (sourceName: string) => Promise<Manga[]>;
+        flush: () => void;
+        getSource: (sourceName: string) => Source | undefined;
+        getSources: () => Sources;
+        getManga: (sourceName: string, mangaID: string) => Manga | undefined;
+        getMangas: (sourceName: string) => Manga[];
         getMangaByName: (
           sourceName: string,
           mangaName: string
-        ) => Promise<Manga | undefined>;
-        getMangasByAuthor: (
-          sourceName: string,
-          authorName: string
-        ) => Promise<Manga[]>;
-        addManga: (sourceName: string, manga: Manga) => Promise<void>;
-        updateManga: (sourceName: string, mangaID: string) => Promise<void>;
+        ) => Manga | undefined;
+        getMangasByAuthor: (sourceName: string, authorName: string) => Manga[];
+        addManga: (sourceName: string, manga: Manga) => boolean;
+        updateManga: (sourceName: string, mangaID: string) => boolean;
         removeManga: (
           sourceName: string,
           mangaID: string,
           manga: Manga
-        ) => Promise<void>;
+        ) => boolean;
       };
       auth: {
         generateAuthenticationWindow: (

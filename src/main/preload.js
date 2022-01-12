@@ -3,29 +3,36 @@ const { v4 } = require('uuid');
 
 contextBridge.exposeInMainWorld('electron', {
   library: {
+    flush: () => {
+      ipcRenderer.invoke('flush');
+    },
     getSource: (sourceName) => {
-      return ipcRenderer.invoke('get-source', sourceName);
+      return ipcRenderer.sendSync('get-source', sourceName);
     },
     getSources: () => {
-      return ipcRenderer.invoke('get-sources');
+      return ipcRenderer.sendSync('get-sources');
     },
     getManga: (sourceName, mangaId) => {
-      return ipcRenderer.invoke('get-manga', sourceName, mangaId);
+      return ipcRenderer.sendSync('get-manga', sourceName, mangaId);
     },
     getMangaByName: (sourceName, mangaName) => {
-      return ipcRenderer.invoke('get-manga-by-name', sourceName, mangaName);
+      return ipcRenderer.sendSync('get-manga-by-name', sourceName, mangaName);
     },
     getMangasByAuthor: (sourceName, authorName) => {
-      return ipcRenderer.invoke('get-mangas-by-author', sourceName, authorName);
+      return ipcRenderer.sendSync(
+        'get-mangas-by-author',
+        sourceName,
+        authorName
+      );
     },
     addManga: (sourceName, manga) => {
-      return ipcRenderer.invoke('add-manga', sourceName, manga);
+      return ipcRenderer.sendSync('add-manga', sourceName, manga);
     },
     removeManga: (sourceName, mangaId) => {
-      return ipcRenderer.invoke('remove-manga', sourceName, mangaId);
+      return ipcRenderer.sendSync('remove-manga', sourceName, mangaId);
     },
     updateManga: (sourceName, mangaId, replacementMangaItem) => {
-      return ipcRenderer.invoke(
+      return ipcRenderer.sendSync(
         'update-manga',
         sourceName,
         mangaId,
@@ -33,7 +40,7 @@ contextBridge.exposeInMainWorld('electron', {
       );
     },
     getMangas: (sourceName) => {
-      return ipcRenderer.invoke('get-mangas', sourceName);
+      return ipcRenderer.sendSync('get-mangas', sourceName);
     },
   },
   auth: {
