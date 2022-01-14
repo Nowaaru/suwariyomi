@@ -1,0 +1,12 @@
+diff --git a/node_modules/mangadex-full-api/src/structure/chapter.js b/node_modules/mangadex-full-api/src/structure/chapter.js
+index bd8ae21..ea2b9d5 100644
+--- a/node_modules/mangadex-full-api/src/structure/chapter.js
++++ b/node_modules/mangadex-full-api/src/structure/chapter.js
+@@ -3,6 +3,7 @@
+ const Util = require('../util.js');
+ const AuthUtil = require('../auth.js');
+ const Relationship = require('../internal/relationship.js');
++const APIRequestError = require('../internal/requesterror.js');
+ 
+ /**
+  * Represents a chapter with readable pages
