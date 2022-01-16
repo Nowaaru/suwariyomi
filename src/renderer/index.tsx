@@ -1,12 +1,15 @@
 import { render } from 'react-dom';
 import { IpcRendererEvent } from 'electron';
-import { Source, Sources, Manga, Chapter } from '../main/dbUtil';
+import { Source, Sources, Manga, Chapter } from '../main/util/dbUtil';
 import Topbar from './components/topbar';
 import App from './App';
 
 declare global {
   interface Window {
     electron: {
+      util: {
+        getSourceFiles: () => string[];
+      };
       library: {
         flush: () => void;
         getSource: (sourceName: string) => Source | undefined;
