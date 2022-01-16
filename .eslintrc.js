@@ -11,6 +11,8 @@ module.exports = {
     'no-nested-ternary': 'off',
     'no-console': 'off',
     'no-return-assign': 'off',
+    'no-underscore-dangle': 'off',
+    'class-methods-use-this': 'off',
   },
   parserOptions: {
     ecmaVersion: 2020,
