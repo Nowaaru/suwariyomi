@@ -15,12 +15,10 @@ import LazyLoad, { forceCheck } from 'react-lazyload';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import parseQuery from '../util/search';
 
-import { Manga as MangaType } from '../../main/dbUtil';
+import { Manga as MangaType } from '../../main/util/dbUtil';
 import MangaItem from '../components/mangaitem';
+import useQuery from '../util/hook/usequery';
 
-// import templateFull from '../../../assets/data/full.json';
-
-const { checkAuthenticated } = window.electron.auth;
 const libraryStyleSheet = StyleSheet.create({
   container: {
     display: 'block',
@@ -171,6 +169,15 @@ const libraryStyleSheet = StyleSheet.create({
     height: '2px',
   },
 
+  centeredHR: {
+    border: 'none',
+    margin: '28px 0px 20px 0px',
+    backgroundImage:
+      'radial-gradient(circle at center, #FFFFFE, #00000000 45%)',
+    width: '100%',
+    height: '2px',
+  },
+
   mangaStatsContainer: {
     position: 'relative',
     display: 'flex',
@@ -212,6 +219,15 @@ const libraryStyleSheet = StyleSheet.create({
     width: '100%',
     height: '45%',
   },
+
+  globalSearchContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    height: '45%',
+  },
 });
 
 const { library: LibraryUtilties } = window.electron;
@@ -220,14 +236,20 @@ const noResultsFlavorTexts = [
   ["This library's empty.", "Let's go", 'somewhere else.'],
   ['Nothing to see here.', "Let's", 'keep on moving.'],
   ['End of the road.', 'Want to', 'start building?'],
+  ['Nobody here but us chickens.', 'Want to', 'search globally?'],
 ];
 
 let readingPrefixTarget: MangaType | undefined;
 let statusPrefix: string;
 let statusSuffix: string;
 const Library = () => {
-  const [searchQuery, setSearchQuery] = useState('');
+  const pageQueryParams = useQuery();
+  const [searchQuery, setSearchQuery] = useState(
+    pageQueryParams.get('search') || ''
+  );
   const parsedSearch = parseQuery(searchQuery);
+  const currentSearchParams = new URLSearchParams();
+  currentSearchParams.set('search', searchQuery);
 
   const mangaListArray: Array<JSX.Element> = [];
   const accordionArray: Array<JSX.Element> = [];
@@ -383,42 +405,11 @@ const Library = () => {
     // }
   } else [statusPrefix, statusSuffix] = ["Let's start reading", '!'];
 
-  if (accordionArray.length === 0) {
-    const decidedFlavorText =
-      noResultsFlavorTexts[
-        Math.floor(Math.random() * noResultsFlavorTexts.length)
-      ];
-    accordionArray.push(
-      <div className={css(libraryStyleSheet.noMangaContainer)}>
-        <Typography
-          sx={{
-            color: '#FFFFFF',
-            fontSize: '24px',
-            fontWeight: 'bold',
-          }}
-        >
-          {decidedFlavorText[0]}
-        </Typography>
-        <Typography
-          sx={{
-            color: '#FFFFFF',
-            fontSize: '16px',
-          }}
-        >
-          {decidedFlavorText[1]}{' '}
-          <Link
-            to="/login"
-            className={css(
-              libraryStyleSheet.infoPaperHeaderBase,
-              libraryStyleSheet.infoHighlight
-            )}
-          >
-            {decidedFlavorText[decidedFlavorText.length - 1]}
-          </Link>
-        </Typography>
-      </div>
-    );
-  }
+  const decidedFlavorText =
+    noResultsFlavorTexts[
+      Math.floor(Math.random() * noResultsFlavorTexts.length)
+    ];
+
   return (
     <div className={css(libraryStyleSheet.container)}>
       <div className={css(libraryStyleSheet.searchbarContainer)}>
@@ -428,6 +419,7 @@ const Library = () => {
             placeholder={`pages>10 "Slice of Life" "Kemonomimi" "Romance" "Fantasy"`}
             className={css(libraryStyleSheet.searchbar)}
             variant="filled"
+            defaultValue={searchQuery}
             error={!parsedSearch}
             helperText={parsedSearch ? '' : 'Mismatched quotation marks.'}
             onChange={(e) => {
@@ -528,7 +520,57 @@ const Library = () => {
             </div>
           </Paper>
         </div>
-        {accordionArray}
+        {accordionArray.length > 0 ? (
+          accordionArray
+        ) : (
+          <div className={css(libraryStyleSheet.noMangaContainer)}>
+            <Typography
+              sx={{
+                color: '#FFFFFF',
+                fontSize: '24px',
+                fontWeight: 'bold',
+              }}
+            >
+              {decidedFlavorText[0]}
+            </Typography>
+            <Typography
+              sx={{
+                color: '#FFFFFF',
+                fontSize: '16px',
+              }}
+            >
+              {decidedFlavorText[1]}{' '}
+              <Link
+                to={`/search?${currentSearchParams.toString()}`}
+                className={css(
+                  libraryStyleSheet.infoPaperHeaderBase,
+                  libraryStyleSheet.infoHighlight
+                )}
+              >
+                {decidedFlavorText[decidedFlavorText.length - 1]}
+              </Link>
+            </Typography>
+          </div>
+        )}
+        {accordionArray.length > 0 ? (
+          <div>
+            <hr className={css(libraryStyleSheet.centeredHR)} />
+            <div className={css(libraryStyleSheet.globalSearchContainer)}>
+              <h3 className={css(libraryStyleSheet.infoPaperHeaderBase)}>
+                Can&apos;t find what you&apos;re looking for?
+              </h3>
+              <h4 className={css(libraryStyleSheet.infoPaperHeaderBase)}>
+                How about we{' '}
+                <Link
+                  className={css(libraryStyleSheet.infoHighlight)}
+                  to={`/search?${currentSearchParams.toString()}`}
+                >
+                  search globally?
+                </Link>
+              </h4>
+            </div>
+          </div>
+        ) : null}
       </div>
     </div>
   );
