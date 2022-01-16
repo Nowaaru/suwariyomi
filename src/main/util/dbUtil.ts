@@ -40,8 +40,8 @@ const MangaDatabase = new Enmap({
 
 export type Chapter = {
   ChapterID: string;
-  ChapterNumber: number;
-  VolumeNumber: number;
+  Chapter: number | string;
+  Volume: number | string;
   ChapterTitle: string;
   PageCount: number;
   CurrentPage: number;
@@ -53,7 +53,6 @@ export type Manga = {
   Synopsis: string;
 
   Tags: string[];
-  SourceURL: string;
   CoverURL: string;
   Added: Date | null; // Null if never added to library
   LastRead: Date | null; // Null if never read
