@@ -58,7 +58,7 @@ const LoginMenu = () => {
       onClick={() => {
         if (!checkAuthenticated)
           window.electron.store.set('skipped_auth', true);
-        navigate('/');
+        navigate('/library');
       }}
       className={css(styleSheet.button)}
     >
@@ -76,7 +76,7 @@ const LoginMenu = () => {
               <div className="icons">
                 <LoginItem
                   src={anilist}
-                  isDisabled={checkAuthenticated('anilist')}
+                  isDisabled={!!checkAuthenticated('anilist')}
                   onAuth={onAuth}
                   disabledtitle="Already logged in!"
                   authenticator="anilist"
@@ -84,7 +84,7 @@ const LoginMenu = () => {
                 />
                 <LoginItem
                   src={myanimelist}
-                  isDisabled={checkAuthenticated('myanimelist')}
+                  isDisabled={!!checkAuthenticated('myanimelist')}
                   onAuth={onAuth}
                   disabledtitle="Already logged in!"
                   authenticator="myanimelist"
