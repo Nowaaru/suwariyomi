@@ -11,13 +11,14 @@
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import path from 'path';
+import fs from 'fs';
 import log from 'electron-log';
 import Store from 'electron-store';
 import pkceChallenge from 'pkce-challenge';
 import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 
-import MangaDB from './dbUtil';
+import MangaDB from './util/dbUtil';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
@@ -61,6 +62,13 @@ ipcMain.handle('generate-pkce', async () => {
 
 ipcMain.handle('flush', () => {
   MangaDB.flush();
+});
+
+ipcMain.on('get-fs-sources', async (event) => {
+  const sources = await fs.readdirSync(
+    path.join(__dirname, '../sources/container')
+  );
+  event.returnValue = sources;
 });
 
 ipcMain.on('get-source', (event, sourceName) => {
@@ -214,6 +222,8 @@ const createWindow = async () => {
     icon: getAssetPath('icon.png'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
+      nodeIntegrationInSubFrames: false,
+      nodeIntegration: true,
     },
     titleBarStyle: process.platform === 'win32' ? 'hidden' : 'default',
   });

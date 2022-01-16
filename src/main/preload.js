@@ -2,6 +2,11 @@ const { contextBridge, ipcRenderer } = require('electron');
 const { v4 } = require('uuid');
 
 contextBridge.exposeInMainWorld('electron', {
+  util: {
+    getSourceFiles: () => {
+      return ipcRenderer.sendSync('get-fs-sources');
+    },
+  },
   library: {
     flush: () => {
       ipcRenderer.invoke('flush');
