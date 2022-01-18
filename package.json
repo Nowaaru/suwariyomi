@@ -1,6 +1,6 @@
 {
-  "name": "electron-react-boilerplate",
-  "description": "Electron application boilerplate based on React, React Router, Webpack, React Fast Refresh for rapid application development",
+  "name": "suwariyomi",
+  "description": "manga reader made with electron-react-boilerplate. inspired by tachiyomi",
   "scripts": {
     "build": "concurrently \"npm run build:main\" \"npm run build:renderer\"",
     "build:main": "cross-env NODE_ENV=production TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.main.prod.ts",
@@ -30,8 +30,8 @@
     ]
   },
   "build": {
-    "productName": "ElectronReact",
-    "appId": "org.erb.ElectronReact",
+    "productName": "suwariyomi",
+    "appId": "org.erb.Suwariyomi",
     "asar": true,
     "asarUnpack": "**\\*.{node,dll}",
     "files": [
@@ -241,6 +241,7 @@
     "electron-updater": "^4.6.4",
     "enmap": "^5.8.7",
     "figlet": "^1.5.2",
+    "framer-motion": "^5.6.0",
     "graphql": "^16.2.0",
     "history": "^5.2.0",
     "jquery": "^3.6.0",
