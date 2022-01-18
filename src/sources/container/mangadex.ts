@@ -1,5 +1,8 @@
 import { resolveArray, Chapter, Manga } from 'mangadex-full-api';
-import SourceBase from '../static/base';
+import SourceBase, {
+  SearchFilters,
+  SearchFilterFieldTypes,
+} from '../static/base';
 import {
   Manga as DatabaseManga,
   Chapter as DatabaseChapter,
@@ -17,11 +20,7 @@ type SortMethod = {
     | 'relevance']: 'asc' | 'desc';
 };
 
-type MangaDexFilters = {
-  query: string;
-  results?: number;
-  offset?: number;
-
+type MangaDexFilters = SearchFilters & {
   sortOrder: SortMethod;
   includedTags: TagID[];
   tagInclusivity: 'AND' | 'OR';
@@ -47,6 +46,33 @@ export default class MangaDex extends SourceBase {
   }
 
   protected _sourceName: string = 'MangaDex';
+
+  protected searchFilterFieldTypes: SearchFilterFieldTypes = {
+    'Content Rating': [
+      {
+        type: 'checkbox',
+        display: 'safe',
+        writeTo: 'contentRating',
+        checked: true,
+      },
+      {
+        type: 'checkbox',
+        display: 'Suggestive',
+        writeTo: 'contentRating',
+        checked: true,
+      },
+      {
+        type: 'checkbox',
+        display: 'Erotica',
+        writeTo: 'contentRating',
+      },
+      {
+        type: 'checkbox',
+        display: 'Pornographic',
+        writeTo: 'contentRating',
+      },
+    ],
+  };
 
   protected searchFilters: MangaDexFilters = {
     query: '',
