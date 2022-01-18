@@ -1,5 +1,4 @@
 import Enmap from 'enmap';
-import path from 'path';
 import { app } from 'electron';
 
 const MangaDatabase = new Enmap({
@@ -49,6 +48,7 @@ export type Chapter = {
 export type Manga = {
   Name: string;
   MangaID: string;
+  SourceID: string;
   Authors: string[];
   Synopsis: string;
 

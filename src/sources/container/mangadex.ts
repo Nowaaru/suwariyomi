@@ -88,6 +88,7 @@ export default class MangaDex extends SourceBase {
     return {
       Name: mangaItem.localizedTitle.localString,
       MangaID: mangaItem.id,
+      SourceID: this.getName(),
       Authors: (await resolveArray(mangaItem.authors)).map((x) => x.name),
       Synopsis: mangaItem.localizedDescription.localString,
       Tags: mangaItem.tags.map((tag) => tag.localizedName.localString),
