@@ -105,6 +105,9 @@ const styles = StyleSheet.create({
   },
 
   searchButton: {
+    color: '#ffffff',
+    borderColor: 'white',
+    padding: '0px 6px 0px 6px !important',
     position: 'relative',
     zIndex: 256,
   },
@@ -174,7 +177,6 @@ const SearchPage = () => {
       );
     });
 
-    console.log(filteredFileNames);
     filteredFileNames.forEach(async (source) => {
       source
         .search()
@@ -201,8 +203,8 @@ const SearchPage = () => {
   });
 
   /* TODO:
-    - Implement grid MangaItem
-    - Implement lazyload
+    - Implement grid MangaItem (DONE)
+    - Implement lazyload (DONE)
     - Loading placeholder for loading sources
     - When a manga is clicked, go to the /view route
     - If `queriedSearchesLog` is empty, show a loading placeholder for each enabled source
@@ -282,6 +284,8 @@ const SearchPage = () => {
                 title={MangaObject.Name}
                 coverUrl={MangaObject.CoverURL || undefined}
                 tags={MangaObject.Tags.slice(1, 10) ?? []}
+                source={MangaObject.SourceID ?? sourceString}
+                mangaid={MangaObject.MangaID}
                 synopsis={(() => {
                   return (
                     new DOMParser().parseFromString(
