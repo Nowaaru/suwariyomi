@@ -76,7 +76,6 @@ const libraryStyleSheet = StyleSheet.create({
     overflowY: 'scroll',
     '::-webkit-scrollbar': {
       width: '4px',
-      // backgroundColor: '#FFFFFF',
     },
     '::-webkit-scrollbar-thumb': {
       background: '#FFFFFF',
@@ -86,19 +85,6 @@ const libraryStyleSheet = StyleSheet.create({
     width: '100%',
     height: '250px',
     // height: "fit-content",
-  },
-  accordionItem: {
-    margin: '0px 0px 8px 0px',
-    backgroundColor: '#080708',
-  },
-
-  accordionItemIcon: {
-    margin: '0px 8px 0px 0px',
-  },
-
-  accordionText: {
-    fontSize: '1.2rem',
-    fontFamily: '"PT Sans Narrow", "Roboto", "Helvetica", "Arial", sans-serif',
   },
 
   welcomeContainer: {
@@ -204,13 +190,6 @@ const libraryStyleSheet = StyleSheet.create({
     marginTop: '8px',
   },
 
-  sourceContainer: {
-    position: 'relative',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-  },
-
   noMangaContainer: {
     display: 'flex',
     flexDirection: 'column',
@@ -228,6 +207,37 @@ const libraryStyleSheet = StyleSheet.create({
     width: '100%',
     height: '45%',
   },
+
+  accordionItem: {
+    margin: '0px 0px 8px 0px',
+    backgroundColor: '#080708',
+  },
+
+  accordionItemIcon: {
+    margin: '0px 8px 0px 0px',
+  },
+
+  sourceContainer: {
+    position: 'relative',
+    display: 'flex',
+  },
+
+  list: {
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+  },
+
+  grid: {
+    width: '100%',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+  },
+
+  accordionText: {
+    fontSize: '1.2rem',
+    fontFamily: '"PT Sans Narrow", "Roboto", "Helvetica", "Arial", sans-serif',
+  },
 });
 
 const { library: LibraryUtilties } = window.electron;
@@ -243,6 +253,7 @@ let readingPrefixTarget: MangaType | undefined;
 let statusPrefix: string;
 let statusSuffix: string;
 const Library = () => {
+  const mangaItemDisplayFormat: 'list' | 'grid' = 'grid';
   const pageQueryParams = useQuery();
   const [searchQuery, setSearchQuery] = useState(
     pageQueryParams.get('search') || ''
@@ -276,8 +287,11 @@ const Library = () => {
 
       mangaListArray.push(
         <MangaItem
-          displayType="list"
-          listDisplayType="verbose"
+          displayType={mangaItemDisplayFormat}
+          // Disabled because this only exists for testing purposes
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          listDisplayType={mangaItemDisplayFormat === 'list' ? 'verbose' : null}
           title={Manga.Name}
           coverUrl={Manga.CoverURL || undefined}
           tags={Manga.Tags.slice(1, 10) ?? []}
@@ -344,7 +358,12 @@ const Library = () => {
             </Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <div className={css(libraryStyleSheet.sourceContainer)}>
+            <div
+              className={css(
+                libraryStyleSheet.sourceContainer,
+                libraryStyleSheet[mangaItemDisplayFormat]
+              )}
+            >
               {mangaListArray}
             </div>
           </AccordionDetails>

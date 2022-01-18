@@ -13,6 +13,7 @@ type MangaItemListProps = {
 
 type MangaItemGridProps = {
   displayType: 'grid';
+  listDisplayType: null;
 };
 
 type MangaItemGenericProps = {
@@ -42,17 +43,52 @@ const styles = StyleSheet.create({
     display: 'flex',
   },
 
-  mangaItemListCover: {
+  mangaItemCover: {
     margin: '10px 15px 10px 10px',
     verticalAlign: 'top',
-    display: 'inline-flex',
     width: 'fit-content',
     height: 'fit-content',
+  },
+
+  gridCover: {
+    marginBottom: '0px',
+    display: 'block',
+  },
+
+  listCover: {
+    display: 'inline-flex',
+  },
+
+  mangaItemGridTitle: {
+    margin: '0px 6px 3px 6px',
+    fontFamily: '"PT Sans Narrow", "Roboto", "Helvetica", "Arial", sans-serif',
+    color: '#ffffff',
+    fontSize: '1rem',
   },
 
   mangaItemListCoverImage: {
     height: '256px',
     maxWidth: '180px',
+    borderRadius: '10px',
+    objectFit: 'contain',
+  },
+
+  mangaItemGridContainer: {
+    margin: '0px 10px 10px 10px',
+    width: 'fit-content',
+    height: 'fit-content',
+    borderRadius: '10px',
+    backgroundColor: '#0c0a0c',
+    verticalAlign: 'top',
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'column',
+  },
+
+  mangaItemGridCoverImage: {
+    height: '150px',
+    maxWidth: '150px',
     borderRadius: '10px',
     objectFit: 'contain',
   },
@@ -184,7 +220,7 @@ const mangaItem = (props: MangaItemProps) => {
       return (
         <LazyLoad key={props.title} scrollContainer="#lazyload">
           <div className={css(styles.mangaItemListContainer)}>
-            <div className={css(styles.mangaItemListCover)}>
+            <div className={css(styles.mangaItemCover, styles.listCover)}>
               <img
                 src={props.coverUrl ?? nocover}
                 className={css(styles.mangaItemListCoverImage)}
@@ -227,7 +263,26 @@ const mangaItem = (props: MangaItemProps) => {
           </div>
         </LazyLoad>
       );
-
+    case 'grid':
+      return (
+        <LazyLoad key={props.title} scrollContainer="#lazyload">
+          <div className={css(styles.mangaItemGridContainer)}>
+            <div className={css(styles.mangaItemCover, styles.gridCover)}>
+              <img
+                src={props.coverUrl ?? nocover}
+                className={css(styles.mangaItemGridCoverImage)}
+                alt={props.title}
+              />
+            </div>
+            <span className={css(styles.mangaItemGridTitle)}>
+              {props.title.length < 27
+                ? props.title
+                : `${props.title.slice(0, 27)}...`}
+            </span>
+          </div>
+        </LazyLoad>
+      );
+      break;
     default:
       return null;
   }
