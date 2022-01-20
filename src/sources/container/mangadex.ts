@@ -102,11 +102,11 @@ export default class MangaDex extends SourceBase {
     return this._sourceName;
   }
 
-  public setFilters(searchFilters: MangaDexFilters) {
+  public override setFilters(searchFilters: MangaDexFilters) {
     this.searchFilters = searchFilters;
   }
 
-  public getFilters(): MangaDexFilters {
+  public override getFilters(): MangaDexFilters {
     return this.searchFilters;
   }
 
@@ -168,7 +168,7 @@ export default class MangaDex extends SourceBase {
       excludedTags,
       contentRating,
       limit,
-      offset,
+      offset: offset * limit,
     });
   }
 }
