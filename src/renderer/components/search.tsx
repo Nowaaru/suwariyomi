@@ -30,6 +30,9 @@ const searchStyles = StyleSheet.create({
       width: 'fit-content',
       borderRadius: '4px',
     },
+    ':hover': {
+      opacity: 0.8,
+    },
   },
   searchbar: {
     width: '64px',
