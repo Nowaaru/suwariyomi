@@ -50,4 +50,7 @@ cd <your project name>
 npm install
 ```
 
+to test the program, run `npm start`. 
+if you have a port conflict, change the port in `.erb/scripts/check-port-in-use.js` (or figure out command line args in node)
+
 ###### powered by [electron](https://github.com/electron/electron) [electron-react-boilerplate](https://github.com/electron-react-boilerplate) and [react](https://github.com/facebook/react). thank you.
