@@ -8,15 +8,16 @@ import {
 } from '@mui/material';
 
 import { StyleSheet, css } from 'aphrodite/no-important';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import LazyLoad, { forceCheck } from 'react-lazyload';
+import useScrollTrigger from '@mui/material/useScrollTrigger';
 import ArrowCircleLeftRoundedIcon from '@mui/icons-material/ArrowCircleLeftRounded';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SearchIcon from '@mui/icons-material/Search';
 
-import SourceBase from '../../sources/static/base';
+import SourceBase, { SearchFilters } from '../../sources/static/base';
 import useQuery from '../util/hook/usequery';
 import { Manga } from '../../main/util/dbUtil';
 
@@ -79,6 +80,10 @@ const styles = StyleSheet.create({
     margin: '0px 8px 0px 0px',
   },
 
+  lazyLoadObject: {
+    marginBottom: '8px',
+  },
+
   sourceContainer: {
     position: 'relative',
     display: 'flex',
@@ -130,13 +135,33 @@ const styles = StyleSheet.create({
     }
   }
 */
-type QueriedType = { [searchQuery: string]: { [sourceName: string]: Manga[] } };
+type QueriedType = {
+  [searchQuery: string]: { [sourceName: string]: Manga[] | false };
+}; // False means that there are no results
 const generateQueriedSearchData = (
   mappedFileNames: Array<InstanceType<typeof SourceBase>>
 ) =>
   Object.fromEntries(mappedFileNames.map((source) => [source.getName(), []]));
+
+/* Utility Elements */
+const returnButton = (
+  <div className={css(styles.returnButtonContainer)}>
+    <Link className={css(styles.returnTo)} to="/library">
+      <ArrowCircleLeftRoundedIcon fontSize="inherit" />
+      <span className={css(styles.returnSpan)}> Library</span>
+    </Link>
+  </div>
+);
+
+const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
+  console.log(event);
+};
+
 const SearchPage = () => {
   const pageQueryParams = useQuery();
+  const [queryOffset, setQueryOffset] = useState(
+    Number(pageQueryParams.get('offset') || 0)
+  ); // Used for source query
   const [specifiedSource, setSpecifiedSource] = useState(
     pageQueryParams.get('source')
   );
@@ -163,18 +188,40 @@ const SearchPage = () => {
 
   // Apply search query to all sources
   mappedFileNames.forEach((source) => {
-    const sourceFilters = { ...source.getFilters() };
+    const sourceFilters: SearchFilters = { ...source.getFilters() };
+    sourceFilters.offset = queryOffset * sourceFilters.results;
     sourceFilters.query = searchData.searchQuery;
     source.setFilters(sourceFilters);
   });
 
   useEffect(() => {
+    // This only runs when the user is specifying a source.
+    // Depends on an offset. Initially, the offset is 0.
+    // When the user scrolls and reaches the bottom of the page,
+    // the offset is increased by 1.
+
+    // The offset is handled internally by the sources.
+
+    if (specifiedSource) {
+      console.log('source or something');
+    }
+  }, [specifiedSource]);
+
+  useEffect(() => {
+    // This is used for maintaining the last iteration of an infinite scroll.
+    // Is also used to determine if the user has scrolled to the bottom of the page.
+    // When the user scrolls to the bottom of the page, the offset is increased by 1.
+  });
+
+  useEffect(() => {
+    // This only runs when the user is not specifying a source.
+
     const filteredFileNames = mappedFileNames.filter((x) => {
-      return (
+      const searchQueryIndex =
         searchData.queriedSearches[searchData.searchQuery][
           x.getName() as string
-        ].length === 0
-      );
+        ];
+      return searchQueryIndex !== false && searchQueryIndex.length === 0;
     });
 
     filteredFileNames.forEach(async (source) => {
@@ -182,16 +229,16 @@ const SearchPage = () => {
         .search()
         .then((x) => x.map(source.serialize))
         .then((y) => {
-          console.log(y);
           return Promise.all(y);
         })
-        .then((MangaData: any) => {
+        .then((z) => z.filter((a) => a !== false).map((b) => b as Manga))
+        .then((MangaData: Array<Manga>) => {
           const newQueriedSearchesLog = { ...searchData.queriedSearches };
           newQueriedSearchesLog[searchData.searchQuery] =
             newQueriedSearchesLog[searchData.searchQuery] || {}; // Check if it exists beforehand because there might be other sources still loading after this one.
 
           newQueriedSearchesLog[searchData.searchQuery][source.getName()] =
-            MangaData;
+            MangaData.length > 0 ? MangaData : false;
 
           return setSearchData({
             ...searchData,
@@ -222,11 +269,19 @@ const SearchPage = () => {
     }
 
     if (specifiedSource) {
-      return <span>Work in progress.</span>;
+      return (
+        <LazyLoad key={sourceString} height="100%" offset={[-100, 0]}>
+          {/* <MangaItem></MangaItem> */}
+        </LazyLoad>
+      );
     }
-
+    const searchIndex = currentSearches[sourceString];
     return (
-      <LazyLoad key={sourceString} scrollContainer="#lazyload">
+      <LazyLoad
+        key={sourceString}
+        className={css(styles.lazyLoadObject)}
+        scrollContainer="#lazyload"
+      >
         <Accordion
           TransitionProps={{
             unmountOnExit: true,
@@ -262,54 +317,59 @@ const SearchPage = () => {
             >
               {sourceString}
             </Typography>
-            <Button
-              variant="outlined"
-              className={css(styles.searchButton)}
-              startIcon={<SearchIcon />}
-              onClick={(e) => {
-                setSpecifiedSource(sourceString);
+            {searchIndex === false || searchIndex.length > 0 ? (
+              <Button
+                variant="outlined"
+                className={css(styles.searchButton)}
+                startIcon={<SearchIcon />}
+                onClick={(e) => {
+                  setSpecifiedSource(sourceString);
 
-                e.preventDefault();
-                e.stopPropagation();
-              }}
-            >
-              Search
-            </Button>
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
+              >
+                Search
+              </Button>
+            ) : null}
           </AccordionSummary>
           <AccordionDetails className={css(styles.sourceContainer)}>
-            {currentSearches[sourceString].map((MangaObject) => (
-              <MangaItem
-                displayType="grid"
-                listDisplayType={null}
-                title={MangaObject.Name}
-                coverUrl={MangaObject.CoverURL || undefined}
-                tags={MangaObject.Tags.slice(1, 10) ?? []}
-                source={MangaObject.SourceID ?? sourceString}
-                mangaid={MangaObject.MangaID}
-                synopsis={(() => {
-                  return (
-                    new DOMParser().parseFromString(
-                      MangaObject.Synopsis || 'No synopsis available.', // Use OR instead of null check to implicitly cast empty strings to boolean.
-                      'text/html'
-                    ).body.textContent || 'No synopsis available.'
-                  );
-                })()}
-                key={MangaObject.Name}
-              />
-            ))}
+            {searchIndex !== false ? (
+              searchIndex.map((MangaObject) => (
+                <MangaItem
+                  displayType="grid"
+                  listDisplayType={null}
+                  title={MangaObject.Name}
+                  coverUrl={MangaObject.CoverURL || undefined}
+                  tags={MangaObject.Tags.slice(1, 10) ?? []}
+                  source={MangaObject.SourceID ?? sourceString}
+                  mangaid={MangaObject.MangaID}
+                  synopsis={(() => {
+                    return (
+                      new DOMParser().parseFromString(
+                        MangaObject.Synopsis || 'No synopsis available.', // Use OR instead of null check to implicitly cast empty strings to boolean.
+                        'text/html'
+                      ).body.textContent || 'No synopsis available.'
+                    );
+                  })()}
+                  key={MangaObject.Name}
+                />
+              ))
+            ) : (
+              <span>No results.</span>
+            )}
           </AccordionDetails>
         </Accordion>
       </LazyLoad>
     );
   });
   return (
-    <div id="lazyload" className={css(styles.container)}>
-      <div className={css(styles.returnButtonContainer)}>
-        <Link className={css(styles.returnTo)} to="/library">
-          <ArrowCircleLeftRoundedIcon fontSize="inherit" />
-          <span className={css(styles.returnSpan)}> Library</span>
-        </Link>
-      </div>
+    <div
+      id="lazyload"
+      className={css(styles.container)}
+      onScroll={handleScroll}
+    >
+      {returnButton}
       <Box
         component="form"
         onSubmit={(e: any) => {
