@@ -1,5 +1,7 @@
 import { StyleSheet, css } from 'aphrodite';
 import { Button } from '@mui/material';
+import { Link } from 'react-router-dom';
+
 import LazyLoad from 'react-lazyload';
 import Tag from './tag';
 
@@ -21,6 +23,8 @@ type MangaItemGenericProps = {
   title: string;
   tags: string[];
   synopsis: string;
+  source: string;
+  mangaid: string;
 };
 
 type MangaItemProps = MangaItemGenericProps &
@@ -60,6 +64,7 @@ const styles = StyleSheet.create({
   },
 
   mangaItemGridTitle: {
+    textAlign: 'center',
     margin: '0px 6px 3px 6px',
     fontFamily: '"PT Sans Narrow", "Roboto", "Helvetica", "Arial", sans-serif',
     color: '#ffffff',
@@ -69,13 +74,11 @@ const styles = StyleSheet.create({
   mangaItemListCoverImage: {
     height: '256px',
     maxWidth: '180px',
-    borderRadius: '10px',
-    objectFit: 'contain',
   },
 
   mangaItemGridContainer: {
     margin: '0px 10px 10px 10px',
-    width: 'fit-content',
+    width: '140px',
     height: 'fit-content',
     borderRadius: '10px',
     backgroundColor: '#0c0a0c',
@@ -86,11 +89,19 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
   },
 
+  coverImage: {
+    borderRadius: '10px',
+    objectFit: 'contain',
+    border: '1px solid transparent',
+    transition: 'border 0.3s ease-in-out',
+    ':hover': {
+      border: '1px solid #ffffff',
+    },
+  },
+
   mangaItemGridCoverImage: {
     height: '150px',
     maxWidth: '150px',
-    borderRadius: '10px',
-    objectFit: 'contain',
   },
 
   mangaItemTitle: {
@@ -188,6 +199,14 @@ const styles = StyleSheet.create({
     // backgroundColor: 'red',
   },
 
+  linkCover: {
+    color: 'unset',
+    border: 'none',
+    outline: 'none',
+    textDecoration: 'none',
+    textDecorationColor: '#fff',
+  },
+
   mangaItemButtonWrapper: {
     width: '95%',
     padding: '5px',
@@ -221,11 +240,16 @@ const mangaItem = (props: MangaItemProps) => {
         <LazyLoad key={props.title} scrollContainer="#lazyload">
           <div className={css(styles.mangaItemListContainer)}>
             <div className={css(styles.mangaItemCover, styles.listCover)}>
-              <img
-                src={props.coverUrl ?? nocover}
-                className={css(styles.mangaItemListCoverImage)}
-                alt={props.title}
-              />
+              <button type="button">
+                <img
+                  src={props.coverUrl ?? nocover}
+                  className={css(
+                    styles.mangaItemListCoverImage,
+                    styles.coverImage
+                  )}
+                  alt={props.title}
+                />
+              </button>
             </div>
             <div className={css(styles.mangaMetadata)}>
               <div className={css(styles.mangaItemInformationMain)}>
@@ -268,11 +292,19 @@ const mangaItem = (props: MangaItemProps) => {
         <LazyLoad key={props.title} scrollContainer="#lazyload">
           <div className={css(styles.mangaItemGridContainer)}>
             <div className={css(styles.mangaItemCover, styles.gridCover)}>
-              <img
-                src={props.coverUrl ?? nocover}
-                className={css(styles.mangaItemGridCoverImage)}
-                alt={props.title}
-              />
+              <Link
+                className={css(styles.linkCover)}
+                to={`/view?source=${props.source}&id=${props.mangaid}`}
+              >
+                <img
+                  src={props.coverUrl ?? nocover}
+                  className={css(
+                    styles.mangaItemGridCoverImage,
+                    styles.coverImage
+                  )}
+                  alt={props.title}
+                />
+              </Link>
             </div>
             <span className={css(styles.mangaItemGridTitle)}>
               {props.title.length < 27
