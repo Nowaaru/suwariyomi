@@ -257,7 +257,14 @@ const mangaItem = (props: MangaItemProps) => {
                 <div className={css(styles.mangaItemTags)}>{mangaTags}</div>
                 <div className={css(styles.mangaItemSynopsisContainer)}>
                   <p className={css(styles.mangaItemSynopsis)}>
-                    {props.synopsis}
+                    {(() => {
+                      return (
+                        new DOMParser().parseFromString(
+                          props.synopsis || 'No synopsis available.', // Use OR instead of null check to implicitly cast empty strings to boolean.
+                          'text/html'
+                        ).body.textContent || 'No synopsis available.'
+                      );
+                    })()}
                   </p>
                 </div>
                 <div className={css(styles.mangaItemButtonContainer)}>

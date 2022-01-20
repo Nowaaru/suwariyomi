@@ -295,14 +295,7 @@ const Library = () => {
           title={Manga.Name}
           coverUrl={Manga.CoverURL || undefined}
           tags={Manga.Tags.slice(1, 10) ?? []}
-          synopsis={(() => {
-            return (
-              new DOMParser().parseFromString(
-                Manga.Synopsis || 'No synopsis available.', // Use OR instead of null check to implicitly cast empty strings to boolean.
-                'text/html'
-              ).body.textContent || 'No synopsis available.'
-            );
-          })()}
+          synopsis={Manga.Synopsis}
           key={Manga.Name}
         />
       );
