@@ -153,12 +153,9 @@ const returnButton = (
   </div>
 );
 
-const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
-  console.log(event);
-};
-
 const SearchPage = () => {
   const pageQueryParams = useQuery();
+  const [specificResults, setSpecificResults] = useState<Manga[]>([]); // Only used when a source is specified
   const [queryOffset, setQueryOffset] = useState(
     Number(pageQueryParams.get('offset') || 0)
   ); // Used for source query
@@ -195,27 +192,9 @@ const SearchPage = () => {
   });
 
   useEffect(() => {
-    // This only runs when the user is specifying a source.
-    // Depends on an offset. Initially, the offset is 0.
-    // When the user scrolls and reaches the bottom of the page,
-    // the offset is increased by 1.
+    if (specifiedSource) return undefined;
 
-    // The offset is handled internally by the sources.
-
-    if (specifiedSource) {
-      console.log('source or something');
-    }
-  }, [specifiedSource]);
-
-  useEffect(() => {
-    // This is used for maintaining the last iteration of an infinite scroll.
-    // Is also used to determine if the user has scrolled to the bottom of the page.
-    // When the user scrolls to the bottom of the page, the offset is increased by 1.
-  });
-
-  useEffect(() => {
     // This only runs when the user is not specifying a source.
-
     const filteredFileNames = mappedFileNames.filter((x) => {
       const searchQueryIndex =
         searchData.queriedSearches[searchData.searchQuery][
@@ -247,6 +226,8 @@ const SearchPage = () => {
         })
         .catch(console.error);
     });
+
+    return undefined;
   });
 
   /* TODO:
@@ -260,114 +241,122 @@ const SearchPage = () => {
     - If there is a query param `source`, show an entirely different display; similar to the library.
   */
   const currentSearches = searchData.queriedSearches[searchData.searchQuery];
-  const elementHierarchy = Object.keys(currentSearches).map((sourceString) => {
-    if (
-      specifiedSource &&
-      sourceString.toLowerCase() !== specifiedSource.toLowerCase()
-    ) {
-      return null;
-    }
-
-    if (specifiedSource) {
+  let elementHierarchy;
+  if (!specifiedSource) {
+    elementHierarchy = Object.keys(currentSearches).map((sourceString) => {
+      const searchIndex = currentSearches[sourceString];
       return (
-        <LazyLoad key={sourceString} height="100%" offset={[-100, 0]}>
-          {/* <MangaItem></MangaItem> */}
+        <LazyLoad
+          key={sourceString}
+          // Disabled because className isn't typed correctly.
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          className={css(styles.lazyLoadObject)}
+          scrollContainer="#lazyload"
+        >
+          <Accordion
+            TransitionProps={{
+              unmountOnExit: true,
+              onExited: forceCheck,
+              onEntered: forceCheck,
+            }}
+            classes={{
+              root: css(styles.accordionItem),
+            }}
+            defaultExpanded
+          >
+            <AccordionSummary
+              expandIcon={
+                <ExpandMoreIcon
+                  sx={{
+                    color: '#ffffff',
+                  }}
+                />
+              }
+            >
+              <img
+                src="https://mangadex.org/favicon.ico"
+                className={css(styles.accordionItemIcon)}
+                alt="MangaDex"
+              />
+              <Typography
+                sx={{
+                  width: '66%',
+                  flexShrink: 2,
+                  color: '#FFFFFF',
+                }}
+                className={css(styles.accordionText)}
+              >
+                {sourceString}
+              </Typography>
+              {searchIndex === false || searchIndex.length > 0 ? (
+                <Button
+                  variant="outlined"
+                  className={css(styles.searchButton)}
+                  startIcon={<SearchIcon />}
+                  onClick={(e) => {
+                    setSpecifiedSource(sourceString);
+
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
+                >
+                  Search
+                </Button>
+              ) : null}
+            </AccordionSummary>
+            <AccordionDetails className={css(styles.sourceContainer)}>
+              {searchIndex !== false ? (
+                searchIndex.map((MangaObject) => (
+                  <MangaItem
+                    displayType="grid"
+                    listDisplayType={null}
+                    title={MangaObject.Name}
+                    coverUrl={MangaObject.CoverURL || undefined}
+                    tags={MangaObject.Tags.slice(1, 10) ?? []}
+                    source={MangaObject.SourceID ?? sourceString}
+                    mangaid={MangaObject.MangaID}
+                    synopsis={(() => {
+                      return (
+                        new DOMParser().parseFromString(
+                          MangaObject.Synopsis || 'No synopsis available.', // Use OR instead of null check to implicitly cast empty strings to boolean.
+                          'text/html'
+                        ).body.textContent || 'No synopsis available.'
+                      );
+                    })()}
+                    key={MangaObject.Name}
+                  />
+                ))
+              ) : (
+                <span>No results.</span>
+              )}
+            </AccordionDetails>
+          </Accordion>
         </LazyLoad>
       );
-    }
-    const searchIndex = currentSearches[sourceString];
-    return (
-      <LazyLoad
-        key={sourceString}
-        className={css(styles.lazyLoadObject)}
-        scrollContainer="#lazyload"
-      >
-        <Accordion
-          TransitionProps={{
-            unmountOnExit: true,
-            onExited: forceCheck,
-            onEntered: forceCheck,
-          }}
-          classes={{
-            root: css(styles.accordionItem),
-          }}
-          defaultExpanded
-        >
-          <AccordionSummary
-            expandIcon={
-              <ExpandMoreIcon
-                sx={{
-                  color: '#ffffff',
-                }}
-              />
-            }
-          >
-            <img
-              src="https://mangadex.org/favicon.ico"
-              className={css(styles.accordionItemIcon)}
-              alt="MangaDex"
-            />
-            <Typography
-              sx={{
-                width: '66%',
-                flexShrink: 2,
-                color: '#FFFFFF',
-              }}
-              className={css(styles.accordionText)}
-            >
-              {sourceString}
-            </Typography>
-            {searchIndex === false || searchIndex.length > 0 ? (
-              <Button
-                variant="outlined"
-                className={css(styles.searchButton)}
-                startIcon={<SearchIcon />}
-                onClick={(e) => {
-                  setSpecifiedSource(sourceString);
-
-                  e.preventDefault();
-                  e.stopPropagation();
-                }}
-              >
-                Search
-              </Button>
-            ) : null}
-          </AccordionSummary>
-          <AccordionDetails className={css(styles.sourceContainer)}>
-            {searchIndex !== false ? (
-              searchIndex.map((MangaObject) => (
-                <MangaItem
-                  displayType="grid"
-                  listDisplayType={null}
-                  title={MangaObject.Name}
-                  coverUrl={MangaObject.CoverURL || undefined}
-                  tags={MangaObject.Tags.slice(1, 10) ?? []}
-                  source={MangaObject.SourceID ?? sourceString}
-                  mangaid={MangaObject.MangaID}
-                  synopsis={(() => {
-                    return (
-                      new DOMParser().parseFromString(
-                        MangaObject.Synopsis || 'No synopsis available.', // Use OR instead of null check to implicitly cast empty strings to boolean.
-                        'text/html'
-                      ).body.textContent || 'No synopsis available.'
-                    );
-                  })()}
-                  key={MangaObject.Name}
-                />
-              ))
-            ) : (
-              <span>No results.</span>
-            )}
-          </AccordionDetails>
-        </Accordion>
-      </LazyLoad>
-    );
-  });
+    });
+  } else {
+    elementHierarchy = specificResults.map((MangaObject) => (
+      <MangaItem
+        key={MangaObject.MangaID}
+        mangaid={MangaObject.MangaID}
+        source={MangaObject.SourceID}
+        displayType="list"
+        listDisplayType="verbose"
+        title={MangaObject.Name}
+        synopsis={MangaObject.Synopsis}
+        coverUrl={MangaObject.CoverURL || undefined}
+        tags={MangaObject.Tags.slice(1, 10) ?? []}
+      />
+    ));
+  }
   return (
     <div
       id="lazyload"
       className={css(styles.container)}
-      onScroll={handleScroll}
+      onScroll={(event: React.UIEvent<HTMLDivElement>) => {
+        console.log(event);
+      }}
     >
       {returnButton}
       <Box
