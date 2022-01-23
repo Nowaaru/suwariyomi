@@ -1,0 +1,22 @@
+diff --git a/node_modules/node-polyfill-webpack-plugin/index.js b/node_modules/node-polyfill-webpack-plugin/index.js
+index 51c6810..25694ac 100644
+--- a/node_modules/node-polyfill-webpack-plugin/index.js
++++ b/node_modules/node-polyfill-webpack-plugin/index.js
+@@ -16,7 +16,7 @@ module.exports = class NodePolyfillPlugin {
+ 		compiler.options.plugins.push(new ProvidePlugin(excludeObjectKeys({
+ 			Buffer: [require.resolve("buffer/"), "Buffer"],
+ 			console: require.resolve("console-browserify"),
+-			process: require.resolve("process/browser")
++			process: require.resolve("process/browser.js")
+ 		}, this.options.excludeAliases)))
+ 
+ 		compiler.options.resolve.fallback = {
+@@ -33,7 +33,7 @@ module.exports = class NodePolyfillPlugin {
+ 				os: require.resolve("os-browserify/browser"),
+ 				path: require.resolve("path-browserify"),
+ 				punycode: require.resolve("punycode/"),
+-				process: require.resolve("process/browser"),
++				process: require.resolve("process/browser.js"),
+ 				querystring: require.resolve("querystring-es3"),
+ 				stream: require.resolve("stream-browserify"),
+ 				/* eslint-disable camelcase */
