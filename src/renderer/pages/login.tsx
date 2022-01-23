@@ -1,5 +1,4 @@
 import '../css/Login.css';
-import OwlCarousel from 'react-owl-carousel';
 import { StyleSheet, css } from 'aphrodite';
 import { useNavigate } from 'react-router-dom';
 
@@ -7,8 +6,6 @@ import thumbnails from '../../../assets/data/thumbnail.json';
 import anilist from '../../../assets/icons/login/anilist/transparent.png';
 import myanimelist from '../../../assets/icons/login/myanimelist/transparent.png';
 
-import 'owl.carousel/dist/assets/owl.carousel.css';
-import 'owl.carousel/dist/assets/owl.theme.default.css';
 import LoginItem from '../components/loginitem';
 
 const { checkAuthenticated } = window.electron.auth;
@@ -119,33 +116,33 @@ const Login = () => {
     );
   });
 
-  for (let i = 0; i < 4; i += 1) {
-    const owlCarousel = (
-      <OwlCarousel
-        className={`owl-carousel-${i}`}
-        dots={false}
-        mouseDrag={false}
-        loop
-        autoplay
-        items={16}
-        autoplaySpeed={6000}
-        smartSpeed={6000}
-        center
-        seamless
-        margin={0}
-        key={`owl-carousel-${i}`}
-      >
-        {elementArray}
-      </OwlCarousel>
-    );
-    carouselArray.push(
-      <div className="carousel-item" key={i}>
-        <div className="carousel-item-inner" key={i}>
-          {owlCarousel}
-        </div>
-      </div>
-    );
-  }
+  // for (let i = 0; i < 4; i += 1) {
+  //   const owlCarousel = (
+  //     <OwlCarousel
+  //       className={`owl-carousel-${i}`}
+  //       dots={false}
+  //       mouseDrag={false}
+  //       loop
+  //       autoplay
+  //       items={16}
+  //       autoplaySpeed={6000}
+  //       smartSpeed={6000}
+  //       center
+  //       seamless
+  //       margin={0}
+  //       key={`owl-carousel-${i}`}
+  //     >
+  //       {elementArray}
+  //     </OwlCarousel>
+  //   );
+  //   carouselArray.push(
+  //     <div className="carousel-item" key={i}>
+  //       <div className="carousel-item-inner" key={i}>
+  //         {owlCarousel}
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="login-main">
