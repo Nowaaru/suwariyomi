@@ -240,7 +240,7 @@ const libraryStyleSheet = StyleSheet.create({
   },
 });
 
-const { library: LibraryUtilties } = window.electron;
+const { library: LibraryUtilities } = window.electron;
 const noResultsFlavorTexts = [
   ["Nobody's reading manga here.", 'How about we look', 'somewhere else?'],
   ["This library's empty.", "Let's go", 'somewhere else.'],
@@ -264,7 +264,7 @@ const Library = () => {
 
   const mangaListArray: Array<JSX.Element> = [];
   const accordionArray: Array<JSX.Element> = [];
-  const librarySources = LibraryUtilties.getSources();
+  const librarySources = LibraryUtilities.getSources();
   const librarySourcesKeys = Object.keys(librarySources);
   // Filter out sources that are not enabled AND has no manga
   const sourceList = librarySourcesKeys
