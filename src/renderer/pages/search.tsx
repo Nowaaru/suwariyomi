@@ -5,6 +5,7 @@ import {
   Typography,
   Button,
   Box,
+  Skeleton,
 } from '@mui/material';
 
 import { StyleSheet, css } from 'aphrodite/no-important';
@@ -40,6 +41,14 @@ const styles = StyleSheet.create({
       background: '#FFFFFF',
     },
     marginBottom: '48px',
+  },
+  noResultsSpan: {
+    color: '#FFFFFF',
+    fontSize: '1.5em',
+    fontWeight: 'bold',
+    margin: '0px',
+    padding: '0px',
+    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
   },
   returnButtonContainer: {
     position: 'relative', // tl tr bl br
@@ -84,6 +93,14 @@ const styles = StyleSheet.create({
     marginBottom: '8px',
   },
 
+  skeletonPlaceholder: {
+    width: '150px',
+    height: '180px',
+    marginRight: '8px',
+    flexShrink: 0,
+    flexGrow: 0,
+  },
+
   sourceContainer: {
     position: 'relative',
     display: 'flex',
@@ -102,6 +119,14 @@ const styles = StyleSheet.create({
         backgroundColor: '#DF2935',
       },
     },
+  },
+
+  noResultsSourceContainer: {
+    justifyContent: 'center',
+  },
+
+  unloadedSourceContainer: {
+    justifyContent: 'unset',
   },
 
   accordionText: {
@@ -305,30 +330,64 @@ const SearchPage = () => {
                 </Button>
               ) : null}
             </AccordionSummary>
-            <AccordionDetails className={css(styles.sourceContainer)}>
+            <AccordionDetails
+              className={css(
+                styles.sourceContainer,
+                searchIndex === false && styles.noResultsSourceContainer,
+                searchIndex !== false && searchIndex.length === 0
+                  ? styles.unloadedSourceContainer
+                  : false
+              )}
+            >
               {searchIndex !== false ? (
-                searchIndex.map((MangaObject) => (
-                  <MangaItem
-                    displayType="grid"
-                    listDisplayType={null}
-                    title={MangaObject.Name}
-                    coverUrl={MangaObject.CoverURL || undefined}
-                    tags={MangaObject.Tags.slice(1, 10) ?? []}
-                    source={MangaObject.SourceID ?? sourceString}
-                    mangaid={MangaObject.MangaID}
-                    synopsis={(() => {
-                      return (
-                        new DOMParser().parseFromString(
-                          MangaObject.Synopsis || 'No synopsis available.', // Use OR instead of null check to implicitly cast empty strings to boolean.
-                          'text/html'
-                        ).body.textContent || 'No synopsis available.'
+                searchIndex.length > 0 ? (
+                  searchIndex.map((MangaObject) => (
+                    <MangaItem
+                      displayType="grid"
+                      listDisplayType={null}
+                      title={MangaObject.Name}
+                      coverUrl={MangaObject.CoverURL || undefined}
+                      tags={MangaObject.Tags.slice(1, 10) ?? []}
+                      source={MangaObject.SourceID ?? sourceString}
+                      mangaid={MangaObject.MangaID}
+                      synopsis={(() => {
+                        return (
+                          new DOMParser().parseFromString(
+                            MangaObject.Synopsis || 'No synopsis available.', // Use OR instead of null check to implicitly cast empty strings to boolean.
+                            'text/html'
+                          ).body.textContent || 'No synopsis available.'
+                        );
+                      })()}
+                      key={MangaObject.Name}
+                    />
+                  ))
+                ) : (
+                  (() => {
+                    const skeletonPlaceholders = [];
+                    for (
+                      let i = 0;
+                      i <
+                      (Math.min(
+                        8,
+                        mappedFileNames
+                          .find((x) => x.getName() === sourceString)
+                          ?.getFilters().results
+                      ) || 8);
+                      i++
+                    ) {
+                      skeletonPlaceholders.push(
+                        <Skeleton
+                          key={i}
+                          className={css(styles.skeletonPlaceholder)}
+                          variant="rectangular"
+                        />
                       );
-                    })()}
-                    key={MangaObject.Name}
-                  />
-                ))
+                    }
+                    return skeletonPlaceholders;
+                  })()
+                )
               ) : (
-                <span>No results.</span>
+                <span className={css(styles.noResultsSpan)}>No results.</span>
               )}
             </AccordionDetails>
           </Accordion>
