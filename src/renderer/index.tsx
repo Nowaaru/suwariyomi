@@ -1,6 +1,6 @@
 import { render } from 'react-dom';
 import { IpcRendererEvent } from 'electron';
-import { Source, Sources, Manga, Chapter } from '../main/util/dbUtil';
+import { Source, Sources, Manga } from '../main/util/dbUtil';
 import Topbar from './components/topbar';
 import App from './App';
 
