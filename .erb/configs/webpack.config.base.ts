@@ -14,23 +14,22 @@ const configuration: webpack.Configuration = {
 
   module: {
     rules: [
-      // {
-      //   test: /\.[jt]sx?$/,
-      //   exclude: /node_modules/,
-      //   use: {
-      //     loader: 'ts-loader',
-      //     options: {
-      //       // Remove this line to enable type checking in webpack builds
-      //       transpileOnly: true,
-      //     },
-      //   },
-      // },
+      {
+        test: /\.[jt]sx?$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'ts-loader',
+          options: {
+            // Remove this line to enable type checking in webpack builds
+            transpileOnly: true,
+          },
+        },
+      },
       {
         test: /\.[jt]sx?$/,
         loader: 'esbuild-loader',
         options: {
           loader: 'tsx', // Or 'ts' if you don't need tsx
-          target: 'es2015',
         },
       },
       {
