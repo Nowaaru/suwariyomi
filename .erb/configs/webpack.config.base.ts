@@ -30,6 +30,7 @@ const configuration: webpack.Configuration = {
         loader: 'esbuild-loader',
         options: {
           loader: 'tsx', // Or 'ts' if you don't need tsx
+          target: 'esnext',
         },
       },
       {
