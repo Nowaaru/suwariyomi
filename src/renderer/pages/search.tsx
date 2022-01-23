@@ -9,7 +9,7 @@ import {
 } from '@mui/material';
 
 import { StyleSheet, css } from 'aphrodite/no-important';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import LazyLoad, { forceCheck } from 'react-lazyload';
@@ -97,6 +97,7 @@ const styles = StyleSheet.create({
     width: '150px',
     height: '180px',
     marginRight: '8px',
+    marginBottom: '8px',
     flexShrink: 0,
     flexGrow: 0,
   },
@@ -119,6 +120,15 @@ const styles = StyleSheet.create({
         backgroundColor: '#DF2935',
       },
     },
+  },
+
+  grid: {
+    display: 'flex',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    alignContent: 'flex-start',
   },
 
   noResultsSourceContainer: {
@@ -168,6 +178,15 @@ const generateQueriedSearchData = (
 ) =>
   Object.fromEntries(mappedFileNames.map((source) => [source.getName(), []]));
 
+const beginSearch = (source: InstanceType<typeof SourceBase>) =>
+  source
+    .search()
+    .then((x) => x.map(source.serialize))
+    .then((y) => {
+      return Promise.all(y);
+    })
+    .then((z) => z.filter((a) => a !== false).map((b) => b as Manga));
+
 /* Utility Elements */
 const returnButton = (
   <div className={css(styles.returnButtonContainer)}>
@@ -179,6 +198,9 @@ const returnButton = (
 );
 
 const SearchPage = () => {
+  const oldScrollPosition = useRef(0);
+  const isLoadingMoreResults = useRef(false);
+
   const pageQueryParams = useQuery();
   const [specificResults, setSpecificResults] = useState<Manga[]>([]); // Only used when a source is specified
   const [queryOffset, setQueryOffset] = useState(
@@ -239,13 +261,7 @@ const SearchPage = () => {
 
     filteredFileNames.forEach(async (source) => {
       searchData.initiatedSearches[source.getName()] = true;
-      source
-        .search()
-        .then((x) => x.map(source.serialize))
-        .then((y) => {
-          return Promise.all(y);
-        })
-        .then((z) => z.filter((a) => a !== false).map((b) => b as Manga))
+      beginSearch(source)
         .then((MangaData: Array<Manga>) => {
           const newQueriedSearchesLog = { ...searchData.queriedSearches };
           newQueriedSearchesLog[searchData.searchQuery] =
@@ -268,12 +284,12 @@ const SearchPage = () => {
   /* TODO:
     - Implement grid MangaItem (DONE)
     - Implement lazyload (DONE)
-    - Loading placeholder for loading sources
-    - When a manga is clicked, go to the /view route
-    - If `queriedSearchesLog` is empty, show a loading placeholder for each enabled source
-    - If a source returns {}, return a "No results" placeholder.
-    - If the *source name* is clicked, go to the /search route with the source name as a query param.
-    - If there is a query param `source`, show an entirely different display; similar to the library.
+    - Loading placeholder for loading sources (DONE)
+    - When a manga is clicked, go to the /view route (DONE)
+    - If `queriedSearchesLog` is empty, show a loading placeholder for each enabled source (DEFERRED)
+    - If a source returns {}, return a "No results" placeholder. (DONE)
+    - If the *source name* is clicked, go to the /search route with the source name as a query param. (DONE)
+    - If there is a query param `source`, show an entirely different display; similar to the library. (DONE)
   */
   const currentSearches = searchData.queriedSearches[searchData.searchQuery];
   let elementHierarchy;
@@ -389,6 +405,7 @@ const SearchPage = () => {
                         <Skeleton
                           key={i}
                           className={css(styles.skeletonPlaceholder)}
+                          animation="wave"
                           variant="rectangular"
                         />
                       );
@@ -405,26 +422,62 @@ const SearchPage = () => {
       );
     });
   } else {
-    elementHierarchy = specificResults.map((MangaObject) => (
-      <MangaItem
-        key={MangaObject.MangaID}
-        mangaid={MangaObject.MangaID}
-        source={MangaObject.SourceID}
-        displayType="list"
-        listDisplayType="verbose"
-        title={MangaObject.Name}
-        synopsis={MangaObject.Synopsis}
-        coverUrl={MangaObject.CoverURL || undefined}
-        tags={MangaObject.Tags.slice(1, 10) ?? []}
-      />
-    ));
+    elementHierarchy = [];
+    for (let i = 0; i < 35; i++) {
+      elementHierarchy.push(
+        <Skeleton
+          key={i}
+          className={css(styles.skeletonPlaceholder)}
+          variant="rectangular"
+        />
+      );
+    }
+    // elementHierarchy = specificResults.map((MangaObject) => (
+    //   <MangaItem
+    //     key={MangaObject.MangaID}
+    //     mangaid={MangaObject.MangaID}
+    //     source={MangaObject.SourceID}
+    //     displayType="list"
+    //     listDisplayType="verbose"
+    //     title={MangaObject.Name}
+    //     synopsis={MangaObject.Synopsis}
+    //     coverUrl={MangaObject.CoverURL || undefined}
+    //     tags={MangaObject.Tags.slice(1, 10) ?? []}
+    //   />
+    // ));
   }
   return (
     <div
       id="lazyload"
       className={css(styles.container)}
-      onScroll={(event: React.UIEvent<HTMLDivElement>) => {
-        console.log(event);
+      onScroll={async (event: React.UIEvent<HTMLDivElement>) => {
+        if (!mappedFileNames[0]) return;
+        // We check for this because if:
+        //  1. The specified source does not exist
+        //  2. There is no source with the specified name
+        // then nothing will be shown, as the first source should always be the source with the specified name.
+
+        const { scrollTop, scrollHeight, clientHeight } =
+          event.target as HTMLDivElement;
+        const isScrolledFully = scrollHeight - scrollTop >= clientHeight;
+        const { current: lastScrollTop } = oldScrollPosition;
+        const { current: isLoadingResults } = isLoadingMoreResults;
+
+        if (isScrolledFully && lastScrollTop < scrollTop) {
+          oldScrollPosition.current = scrollTop;
+          isLoadingMoreResults.current = true;
+          if (isLoadingResults) return;
+
+          // Set specific source offset to offset + results.
+          const selectedSource: InstanceType<typeof SourceBase> =
+            mappedFileNames[0];
+          const currentFilters = selectedSource.getFilters();
+          currentFilters.offset += currentFilters.results;
+          selectedSource.setFilters(currentFilters);
+
+          // Begin loading more results. Also known as: Push into the skeleton array.
+          console.log('resuuults');
+        }
       }}
     >
       {returnButton}
@@ -453,7 +506,11 @@ const SearchPage = () => {
           placeholder="Hana ni Arashi"
         />
       </Box>
-      {elementHierarchy}
+      {!specifiedSource ? (
+        elementHierarchy
+      ) : (
+        <div className={css(styles.grid)}>{elementHierarchy}</div>
+      )}
     </div>
   );
 };
