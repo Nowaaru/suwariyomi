@@ -107,7 +107,7 @@ export default class MangaDex extends SourceBase {
   }
 
   public override getFilters(): MangaDexFilters {
-    return this.searchFilters;
+    return { ...this.searchFilters };
   }
 
   public async serialize(mangaItem: Manga): Promise<DatabaseManga> {

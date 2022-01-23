@@ -46,7 +46,7 @@ export default abstract class SourceBase {
   public abstract serialize(mangaItem: any): Promise<Manga | false>;
 
   public getFilters(): typeof SourceBase.prototype.searchFilters {
-    return this.searchFilters;
+    return { ...this.searchFilters };
   }
 
   public abstract serializeChapters(chapters: any[]): Promise<Chapter[]>;
