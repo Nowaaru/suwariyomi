@@ -199,8 +199,14 @@ const SearchPage = () => {
   const [searchData, setSearchData] = useState<{
     searchQuery: string;
     queriedSearches: QueriedType;
+    initiatedSearches: { [sourceName: string]: boolean };
+
+    // if a search is initiated, it is added to this array.
+    // this is good because it allows us to keep track of which searches are in progress
+    // so we don't have to re-query the same sources
   }>({
     searchQuery: (pageQueryParams.get('search') || '').toLowerCase().trim(),
+    initiatedSearches: {},
     queriedSearches: {
       // I seriously have no way to make this cleaner.
       [(pageQueryParams.get('search') || '').toLowerCase().trim()]:
@@ -218,17 +224,21 @@ const SearchPage = () => {
 
   useEffect(() => {
     if (specifiedSource) return undefined;
-
     // This only runs when the user is not specifying a source.
     const filteredFileNames = mappedFileNames.filter((x) => {
       const searchQueryIndex =
         searchData.queriedSearches[searchData.searchQuery][
           x.getName() as string
         ];
-      return searchQueryIndex !== false && searchQueryIndex.length === 0;
+      return (
+        searchQueryIndex !== false &&
+        searchQueryIndex.length === 0 &&
+        !searchData.initiatedSearches[x.getName()]
+      );
     });
 
     filteredFileNames.forEach(async (source) => {
+      searchData.initiatedSearches[source.getName()] = true;
       source
         .search()
         .then((x) => x.map(source.serialize))
