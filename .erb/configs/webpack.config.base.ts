@@ -17,32 +17,35 @@ const configuration: webpack.Configuration = {
       {
         test: /\.[jt]sx?$/,
         exclude: /node_modules/,
-        use: [
-          {
-            loader: 'ts-loader',
-            options: {
-              // Remove this line to enable type checking in webpack builds
-              transpileOnly: true,
-            },
+        use: {
+          loader: 'ts-loader',
+          options: {
+            // Remove this line to enable type checking in webpack builds
+            transpileOnly: true,
           },
-          {
-            loader: 'esbuild-loader',
-            options: {
-              loader: 'tsx', // Or 'ts' if you don't need tsx
-              target: 'es2015',
-            },
-          },
-          {
-            loader: 'swc-loader',
-            options: {
-              jsc: {
-                parser: {
-                  syntax: 'typescript',
-                },
+        },
+      },
+      {
+        test: /\.tsx?$/,
+        loader: 'esbuild-loader',
+        options: {
+          loader: 'tsx', // Or 'ts' if you don't need tsx
+          target: 'es2015',
+        },
+      },
+      {
+        test: /\.tsx?$/,
+        exclude: /(node_modules|bower_components)/,
+        use: {
+          loader: 'swc-loader',
+          options: {
+            jsc: {
+              parser: {
+                syntax: 'typescript',
               },
             },
           },
-        ],
+        },
       },
     ],
   },
