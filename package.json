@@ -210,6 +210,7 @@
     "opencollective-postinstall": "^2.0.3",
     "path-browserify": "^1.0.1",
     "prettier": "^2.5.1",
+    "process": "^0.11.10",
     "react-refresh": "^0.11.0",
     "react-refresh-typescript": "^2.0.3",
     "react-test-renderer": "^17.0.2",
@@ -239,7 +240,6 @@
     "electron-log": "^4.4.4",
     "electron-store": "^8.0.1",
     "electron-updater": "^4.6.4",
-    "enmap": "^5.8.7",
     "figlet": "^1.5.2",
     "framer-motion": "^5.6.0",
     "graphql": "^16.2.0",
@@ -253,7 +253,6 @@
     "native-css": "^2.0.0",
     "neovim": "^4.10.1",
     "node-myanimelist": "^3.0.4",
-    "node-polyfill-webpack-plugin": "^1.1.4",
     "patch-package": "^6.4.7",
     "pkce-challenge": "^2.2.0",
     "react": "^17.0.2",
@@ -271,9 +270,6 @@
   "devEngines": {
     "node": ">=14.x",
     "npm": ">=7.x"
-  },
-  "collective": {
-    "url": "https://opencollective.com/electron-react-boilerplate-594"
   },
   "browserslist": [],
   "prettier": {

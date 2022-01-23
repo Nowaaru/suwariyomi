@@ -4,7 +4,6 @@
 
 import webpack from 'webpack';
 import webpackPaths from './webpack.paths';
-import nodePolyfillWebpackPlugin from 'node-polyfill-webpack-plugin';
 import { dependencies as externals } from '../../release/app/package.json';
 
 const configuration: webpack.Configuration = {
@@ -42,6 +41,9 @@ const configuration: webpack.Configuration = {
   resolve: {
     extensions: ['.js', '.jsx', '.json', '.ts', '.tsx'],
     modules: [webpackPaths.srcPath, 'node_modules'],
+    alias: {
+      process: 'process/browser.js',
+    },
     fallback: {
       path: require.resolve('path-browserify'),
       https: require.resolve('https-browserify'),
@@ -55,7 +57,7 @@ const configuration: webpack.Configuration = {
       NODE_ENV: 'production',
     }),
     new webpack.ProvidePlugin({
-      process: 'process/browser',
+      process: 'process/browser.js',
       Buffer: ['buffer', 'Buffer'],
     }),
   ],
