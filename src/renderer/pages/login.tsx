@@ -8,13 +8,13 @@ import myanimelist from '../../../assets/icons/login/myanimelist/transparent.png
 
 import LoginItem from '../components/loginitem';
 
-const { checkAuthenticated } = window.electron.auth;
 const onAuth = () => {
   const submitButton = document.getElementById('submit');
   if (submitButton) submitButton.innerText = 'Continue';
 };
 
 const LoginMenu = () => {
+  const { checkAuthenticated } = window.electron.auth;
   const navigate = useNavigate();
   const styleSheet = StyleSheet.create({
     buttonStateLogin: {

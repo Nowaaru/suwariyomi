@@ -240,7 +240,6 @@ const libraryStyleSheet = StyleSheet.create({
   },
 });
 
-const { library: LibraryUtilities } = window.electron;
 const noResultsFlavorTexts = [
   ["Nobody's reading manga here.", 'How about we look', 'somewhere else?'],
   ["This library's empty.", "Let's go", 'somewhere else.'],
@@ -253,6 +252,7 @@ let readingPrefixTarget: MangaType | undefined;
 let statusPrefix: string;
 let statusSuffix: string;
 const Library = () => {
+  const { library: LibraryUtilities } = window.electron;
   const mangaItemDisplayFormat: 'list' | 'grid' = 'grid';
   const pageQueryParams = useQuery();
   const [searchQuery, setSearchQuery] = useState(
