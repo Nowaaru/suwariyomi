@@ -1,5 +1,5 @@
 import { StyleSheet, css } from 'aphrodite';
-import icon from '../../../assets/icons/app/32x32.png';
+import icon from '../../../assets/icons/32x32.png';
 
 export const Styling = StyleSheet.create({
   button: {
