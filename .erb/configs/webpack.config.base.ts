@@ -4,6 +4,7 @@
 
 import webpack from 'webpack';
 import webpackPaths from './webpack.paths';
+import NodePolyFillPlugin from 'node-polyfill-webpack-plugin';
 import { dependencies as externals } from '../../release/app/package.json';
 
 const configuration: webpack.Configuration = {
@@ -49,6 +50,8 @@ const configuration: webpack.Configuration = {
       https: require.resolve('https-browserify'),
       http: require.resolve('stream-http'),
       fs: false,
+      net: false,
+      tls: false,
     },
   },
 
@@ -60,6 +63,7 @@ const configuration: webpack.Configuration = {
       process: 'process/browser.js',
       Buffer: ['buffer', 'Buffer'],
     }),
+    new NodePolyFillPlugin(),
   ],
 };
 

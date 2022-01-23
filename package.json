@@ -256,6 +256,7 @@
     "neovim": "^4.10.1",
     "node-fetch": "^3.2.0",
     "node-myanimelist": "^1.1.4",
+    "node-polyfill-webpack-plugin": "^1.1.4",
     "patch-package": "^6.4.7",
     "pkce-challenge": "^2.2.0",
     "react": "^17.0.2",
