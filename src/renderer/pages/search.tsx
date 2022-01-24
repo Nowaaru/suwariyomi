@@ -6,6 +6,7 @@ import {
   Button,
   Box,
   Skeleton,
+  CircularProgress,
 } from '@mui/material';
 
 import { StyleSheet, css } from 'aphrodite/no-important';
@@ -42,6 +43,16 @@ const styles = StyleSheet.create({
     },
     marginBottom: '48px',
   },
+
+  loadingObject: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    height: 'fit-content',
+  },
+
   noResultsSpan: {
     color: '#FFFFFF',
     fontSize: '1.5em',
@@ -199,7 +210,15 @@ const returnButton = (
 
 const SearchPage = () => {
   const oldScrollPosition = useRef(0);
-  const isLoadingMoreResults = useRef(false);
+  const [isLoadingMoreResults, setLoading] = useState(false);
+  const [specificQueryLoadedTitles, setLoadedTitles] = useState<any[]>(
+    Array.from({ length: 10 }, () => true)
+  );
+
+  // Currently using Any as a placeholder. Will be typed as Manga[] in the future.
+  // This is a different state than the one below because organization filters
+  // can make the presentation of the results become different
+  // When a filter is changed, the search results are cleared.
 
   const pageQueryParams = useQuery();
   const [specificResults, setSpecificResults] = useState<Manga[]>([]); // Only used when a source is specified
@@ -291,6 +310,7 @@ const SearchPage = () => {
     - If the *source name* is clicked, go to the /search route with the source name as a query param. (DONE)
     - If there is a query param `source`, show an entirely different display; similar to the library. (DONE)
   */
+  console.log(specificQueryLoadedTitles);
   const currentSearches = searchData.queriedSearches[searchData.searchQuery];
   let elementHierarchy;
   if (!specifiedSource) {
@@ -402,12 +422,17 @@ const SearchPage = () => {
                       i++
                     ) {
                       skeletonPlaceholders.push(
-                        <Skeleton
-                          key={i}
-                          className={css(styles.skeletonPlaceholder)}
-                          animation="wave"
-                          variant="rectangular"
-                        />
+                        <LazyLoad
+                          key={`${i}-llcontainer`}
+                          scrollContainer="#lazyload"
+                        >
+                          <Skeleton
+                            key={i}
+                            className={css(styles.skeletonPlaceholder)}
+                            animation="wave"
+                            variant="rectangular"
+                          />
+                        </LazyLoad>
                       );
                     }
                     return skeletonPlaceholders;
@@ -422,16 +447,22 @@ const SearchPage = () => {
       );
     });
   } else {
-    elementHierarchy = [];
-    for (let i = 0; i < 35; i++) {
-      elementHierarchy.push(
+    console.log('load moment');
+    // ElementHierarchy will be a list of Skeletons instead of MangaItems for now
+    elementHierarchy = specificQueryLoadedTitles.map((MangaObject) => (
+      <LazyLoad
+        key={`${Math.random()}-llcontainer`}
+        scrollContainer="#lazyload"
+      >
         <Skeleton
-          key={i}
+          key={Math.random()} // This definitely is bad practice, but this is only for a placeholder; therefore I don't really care.
           className={css(styles.skeletonPlaceholder)}
+          animation="wave"
           variant="rectangular"
         />
-      );
-    }
+      </LazyLoad>
+    ));
+
     // elementHierarchy = specificResults.map((MangaObject) => (
     //   <MangaItem
     //     key={MangaObject.MangaID}
@@ -460,13 +491,13 @@ const SearchPage = () => {
         const { scrollTop, scrollHeight, clientHeight } =
           event.target as HTMLDivElement;
         const isScrolledFully = scrollHeight - scrollTop >= clientHeight;
-        const { current: lastScrollTop } = oldScrollPosition;
-        const { current: isLoadingResults } = isLoadingMoreResults;
+        // const { current: lastScrollTop } = oldScrollPosition;
 
-        if (isScrolledFully && lastScrollTop < scrollTop) {
+        if (isScrolledFully) {
+          console.log('loading more');
           oldScrollPosition.current = scrollTop;
-          isLoadingMoreResults.current = true;
-          if (isLoadingResults) return;
+          if (isLoadingMoreResults) return;
+          setLoading(true);
 
           // Set specific source offset to offset + results.
           const selectedSource: InstanceType<typeof SourceBase> =
@@ -476,7 +507,14 @@ const SearchPage = () => {
           selectedSource.setFilters(currentFilters);
 
           // Begin loading more results. Also known as: Push into the skeleton array.
-          console.log('resuuults');
+          const newSkeletonPlaceholders = [...specificQueryLoadedTitles];
+          for (let i = 0; i < 10; i++) newSkeletonPlaceholders.push(true);
+          setLoadedTitles(newSkeletonPlaceholders);
+
+          console.log('resuuuuults');
+          // wait 2 seconds
+          await new Promise((resolve) => setTimeout(resolve, 2000));
+          setLoading(false);
         }
       }}
     >
@@ -511,6 +549,14 @@ const SearchPage = () => {
       ) : (
         <div className={css(styles.grid)}>{elementHierarchy}</div>
       )}
+      {
+        // If loading, show circular progress bar.
+        isLoadingMoreResults ? (
+          <div className={css(styles.loadingObject)}>
+            <CircularProgress />
+          </div>
+        ) : null
+      }
     </div>
   );
 };
