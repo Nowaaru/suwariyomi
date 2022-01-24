@@ -9,15 +9,16 @@ import {
   CircularProgress,
 } from '@mui/material';
 
-import { StyleSheet, css } from 'aphrodite/no-important';
+import { StyleSheet, css } from 'aphrodite';
 import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import LazyLoad, { forceCheck } from 'react-lazyload';
-import useScrollTrigger from '@mui/material/useScrollTrigger';
 import ArrowCircleLeftRoundedIcon from '@mui/icons-material/ArrowCircleLeftRounded';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SearchIcon from '@mui/icons-material/Search';
+
+import InfiniteScroll from 'react-infinite-scroll-component';
 
 import SourceBase, { SearchFilters } from '../../sources/static/base';
 import useQuery from '../util/hook/usequery';
@@ -42,6 +43,10 @@ const styles = StyleSheet.create({
       background: '#FFFFFF',
     },
     marginBottom: '48px',
+  },
+
+  specific: {
+    height: '82.5%',
   },
 
   loadingObject: {
@@ -140,6 +145,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'flex-start',
     alignContent: 'flex-start',
+    margin: '0 auto',
   },
 
   noResultsSourceContainer: {
@@ -212,7 +218,7 @@ const SearchPage = () => {
   const oldScrollPosition = useRef(0);
   const [isLoadingMoreResults, setLoading] = useState(false);
   const [specificQueryLoadedTitles, setLoadedTitles] = useState<any[]>(
-    Array.from({ length: 10 }, () => true)
+    Array.from({ length: 50 }, () => true)
   );
 
   // Currently using Any as a placeholder. Will be typed as Manga[] in the future.
@@ -450,17 +456,12 @@ const SearchPage = () => {
     console.log('load moment');
     // ElementHierarchy will be a list of Skeletons instead of MangaItems for now
     elementHierarchy = specificQueryLoadedTitles.map((MangaObject) => (
-      <LazyLoad
-        key={`${Math.random()}-llcontainer`}
-        scrollContainer="#lazyload"
-      >
-        <Skeleton
-          key={Math.random()} // This definitely is bad practice, but this is only for a placeholder; therefore I don't really care.
-          className={css(styles.skeletonPlaceholder)}
-          animation="wave"
-          variant="rectangular"
-        />
-      </LazyLoad>
+      <Skeleton
+        key={Math.random()} // This definitely is bad practice, but this is only for a placeholder; therefore I don't really care.
+        className={css(styles.skeletonPlaceholder)}
+        animation="wave"
+        variant="rectangular"
+      />
     ));
 
     // elementHierarchy = specificResults.map((MangaObject) => (
@@ -480,43 +481,10 @@ const SearchPage = () => {
   return (
     <div
       id="lazyload"
-      className={css(styles.container)}
-      onScroll={async (event: React.UIEvent<HTMLDivElement>) => {
-        if (!mappedFileNames[0]) return;
-        // We check for this because if:
-        //  1. The specified source does not exist
-        //  2. There is no source with the specified name
-        // then nothing will be shown, as the first source should always be the source with the specified name.
-
-        const { scrollTop, scrollHeight, clientHeight } =
-          event.target as HTMLDivElement;
-        const isScrolledFully = scrollHeight - scrollTop >= clientHeight;
-        // const { current: lastScrollTop } = oldScrollPosition;
-
-        if (isScrolledFully) {
-          console.log('loading more');
-          oldScrollPosition.current = scrollTop;
-          if (isLoadingMoreResults) return;
-          setLoading(true);
-
-          // Set specific source offset to offset + results.
-          const selectedSource: InstanceType<typeof SourceBase> =
-            mappedFileNames[0];
-          const currentFilters = selectedSource.getFilters();
-          currentFilters.offset += currentFilters.results;
-          selectedSource.setFilters(currentFilters);
-
-          // Begin loading more results. Also known as: Push into the skeleton array.
-          const newSkeletonPlaceholders = [...specificQueryLoadedTitles];
-          for (let i = 0; i < 10; i++) newSkeletonPlaceholders.push(true);
-          setLoadedTitles(newSkeletonPlaceholders);
-
-          console.log('resuuuuults');
-          // wait 2 seconds
-          await new Promise((resolve) => setTimeout(resolve, 2000));
-          setLoading(false);
-        }
-      }}
+      className={css(
+        styles.container,
+        specifiedSource ? styles.specific : false
+      )}
     >
       {returnButton}
       <Box
@@ -544,19 +512,35 @@ const SearchPage = () => {
           placeholder="Hana ni Arashi"
         />
       </Box>
-      {!specifiedSource ? (
+      {!specifiedSource ? ( // wtf is going on here
         elementHierarchy
-      ) : (
-        <div className={css(styles.grid)}>{elementHierarchy}</div>
-      )}
-      {
-        // If loading, show circular progress bar.
-        isLoadingMoreResults ? (
-          <div className={css(styles.loadingObject)}>
-            <CircularProgress />
-          </div>
-        ) : null
-      }
+      ) : specificQueryLoadedTitles[0] !== false ? (
+        <InfiniteScroll
+          next={() => {
+            const newTitleData = [...specificQueryLoadedTitles];
+            for (let i = 0; i < 10; i++) newTitleData.push(true);
+
+            setTimeout(() => {
+              setLoadedTitles(newTitleData);
+            }, 1000);
+          }}
+          dataLength={specificQueryLoadedTitles.length}
+          hasMore
+          endMessage="Looks like nothing's here..."
+          loader={
+            <div className={css(styles.loadingObject)}>
+              <CircularProgress />
+            </div>
+          }
+          style={{
+            overflow: 'hidden',
+          }}
+          scrollableTarget="lazyload"
+          className={css(styles.grid)}
+        >
+          {elementHierarchy}
+        </InfiniteScroll>
+      ) : null}
     </div>
   );
 };
