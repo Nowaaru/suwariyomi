@@ -230,7 +230,7 @@ const SearchPage = () => {
   const [specificResults, setSpecificResults] = useState<Manga[]>([]); // Only used when a source is specified
   const [queryOffset, setQueryOffset] = useState(
     Number(pageQueryParams.get('offset') || 0)
-  ); // Used for source query
+  ); // Used for specified source query
   const [specifiedSource, setSpecifiedSource] = useState(
     pageQueryParams.get('source')
   );
@@ -264,7 +264,9 @@ const SearchPage = () => {
   // Apply search query to all sources
   mappedFileNames.forEach((source) => {
     const sourceFilters: SearchFilters = { ...source.getFilters() };
-    sourceFilters.offset = queryOffset * sourceFilters.results;
+    sourceFilters.offset = specifiedSource
+      ? queryOffset * sourceFilters.results
+      : 0;
     sourceFilters.query = searchData.searchQuery;
     source.setFilters(sourceFilters);
   });
