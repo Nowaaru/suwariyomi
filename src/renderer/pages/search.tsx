@@ -7,10 +7,11 @@ import {
   Box,
   Skeleton,
   CircularProgress,
+  Pagination,
 } from '@mui/material';
 
 import { StyleSheet, css } from 'aphrodite';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import LazyLoad, { forceCheck } from 'react-lazyload';
@@ -215,9 +216,8 @@ const returnButton = (
 );
 
 const SearchPage = () => {
-  const oldScrollPosition = useRef(0);
   const [isLoadingMoreResults, setLoading] = useState(false);
-  const [specificQueryLoadedTitles, setLoadedTitles] = useState<any[]>(
+  const [specificQueryLoadedTitles, setLoadedTitle] = useState<any[]>(
     Array.from({ length: 50 }, () => true)
   );
 
@@ -227,7 +227,9 @@ const SearchPage = () => {
   // When a filter is changed, the search results are cleared.
 
   const pageQueryParams = useQuery();
-  const [specificResults, setSpecificResults] = useState<Manga[]>([]); // Only used when a source is specified
+  const [specificResults, setSpecificResults] = useState<{
+    [pageNumber: number]: Manga[];
+  }>({}); // Only used when a source is specified
   const [queryOffset, setQueryOffset] = useState(
     Number(pageQueryParams.get('offset') || 0)
   ); // Used for specified source query
@@ -517,32 +519,13 @@ const SearchPage = () => {
       {!specifiedSource ? ( // wtf is going on here
         elementHierarchy
       ) : specificQueryLoadedTitles[0] !== false ? (
-        <InfiniteScroll
-          next={() => {
-            const newTitleData = [...specificQueryLoadedTitles];
-            for (let i = 0; i < 10; i++) newTitleData.push(true);
-
-            setTimeout(() => {
-              setLoadedTitles(newTitleData);
-            }, 1000);
-          }}
-          dataLength={specificQueryLoadedTitles.length}
-          hasMore
-          endMessage="Looks like nothing's here..."
-          loader={
-            <div className={css(styles.loadingObject)}>
-              <CircularProgress />
-            </div>
-          }
-          style={{
-            overflow: 'hidden',
-          }}
-          scrollableTarget="lazyload"
-          className={css(styles.grid)}
+        <div
+          className={css(isLoadingMoreResults ? styles.loadingObject : false)}
         >
-          {elementHierarchy}
-        </InfiniteScroll>
+          {isLoadingMoreResults ? <CircularProgress /> : elementHierarchy}
+        </div>
       ) : null}
+      <Pagination count={10} />
     </div>
   );
 };
