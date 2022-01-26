@@ -7,7 +7,7 @@ import {
   Box,
   Skeleton,
   CircularProgress,
-  Pagination,
+  // Pagination, - Use when mangadex-full-api exposes the total number of results
 } from '@mui/material';
 
 import { StyleSheet, css } from 'aphrodite';
@@ -20,6 +20,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SearchIcon from '@mui/icons-material/Search';
 
 import InfiniteScroll from 'react-infinite-scroll-component';
+import ShortPagination from '../components/shortpagination';
 
 import SourceBase, { SearchFilters } from '../../sources/static/base';
 import useQuery from '../util/hook/usequery';
@@ -177,6 +178,16 @@ const styles = StyleSheet.create({
     height: '80%',
     padding: '48px',
   },
+
+  row: {
+    display: 'flex',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    alignContent: 'flex-start',
+    margin: '0 auto',
+  },
 });
 
 /*
@@ -319,6 +330,26 @@ const SearchPage = () => {
     - If a source returns {}, return a "No results" placeholder. (DONE)
     - If the *source name* is clicked, go to the /search route with the source name as a query param. (DONE)
     - If there is a query param `source`, show an entirely different display; similar to the library. (DONE)
+  */
+
+  /* SOURCE SEARCH PLAN:
+    using pagination, we can load the next page of results.
+
+    when a new page is loaded, we should:
+      - update the specificResults state
+      - load the next page of results
+        - if the next page is the last page, disable the button
+
+        the reason we need to load the next page is to prevent the user
+        from having to wait for the next page to load before they can
+        click on the next page button.
+
+        the user however can still click on the previous page button
+        if the next page is still loading because of our good old friend memoization.
+
+        * to do this, load the amount per page * 2, and then only display the amount per page.
+          this should only be done when a render's useEffect detects when there is no idx+1
+          in the specificResults state.
   */
   console.log(specificQueryLoadedTitles);
   const currentSearches = searchData.queriedSearches[searchData.searchQuery];
@@ -520,12 +551,14 @@ const SearchPage = () => {
         elementHierarchy
       ) : specificQueryLoadedTitles[0] !== false ? (
         <div
-          className={css(isLoadingMoreResults ? styles.loadingObject : false)}
+          className={css(
+            isLoadingMoreResults ? styles.loadingObject : styles.row
+          )}
         >
           {isLoadingMoreResults ? <CircularProgress /> : elementHierarchy}
         </div>
       ) : null}
-      <Pagination count={10} />
+      <ShortPagination disabled={isLoadingMoreResults} page={1} />
     </div>
   );
 };
