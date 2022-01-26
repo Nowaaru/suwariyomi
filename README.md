@@ -13,26 +13,29 @@ if you wish to test the application, please observe the "how to build" section.
 <h2><b>features</b></h2>
 
 user features:
-* online reading from one source. it is mangadex.
-* tracker support: [MyAnimeList](https://www.myanimelist.com) and [AniList](https://anilist.co). more soon to come!
-* its all in dark mode
+
+- online reading from one source. it is mangadex.
+- tracker support: [MyAnimeList](https://www.myanimelist.com) and [AniList](https://anilist.co). more soon to come!
+- its all in dark mode
 
 developer features:
-* modular sources (i did it in react, be proud.)
-* it's fast
-* i made it fast as well
-* why doesn't it build
-* very segmented for easy understanding; hopefully inviting for new contributors
-* the code is pretty
-* made in react. i don't know how to react
+
+- modular sources (i did it in react, be proud.)
+- it's fast
+- i made it fast as well
+- why doesn't it build
+- very segmented for easy understanding; hopefully inviting for new contributors
+- the code is pretty
+- made in react. i don't know how to react
 
 planned features:
-* online reading from **all the sources.**
-* support **Kitsu**, **Shikimori**, and **Bangumi** similarly to Tachiyomi
-* library organization via categories
-* custom themes; hopefully a theme repository!
-* plugins to further extend user experience
-* downloading
+
+- online reading from **all the sources.**
+- support **Kitsu**, **Shikimori**, and **Bangumi** similarly to Tachiyomi
+- library organization via categories
+- custom themes; hopefully a theme repository!
+- plugins to further extend user experience
+- downloading
 
 in short, i aim to accomplish what Tachiyomi can do and then some.
 
@@ -50,7 +53,7 @@ cd <your project name>
 npm install
 ```
 
-to test the program, run `npm start`. 
+to test the program, run `npm start`.
 if you have a port conflict, change the port in `.erb/scripts/check-port-in-use.js` (or figure out command line args in node)
 
-###### powered by [electron](https://github.com/electron/electron) [electron-react-boilerplate](https://github.com/electron-react-boilerplate) and [react](https://github.com/facebook/react). thank you.
+###### powered by [electron](https://github.com/electron/electron), [electron-react-boilerplate](https://github.com/electron-react-boilerplate), and [react](https://github.com/facebook/react). thank you.
