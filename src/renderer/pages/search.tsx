@@ -7,11 +7,13 @@ import {
   Box,
   Skeleton,
   CircularProgress,
+  Alert,
+  AlertTitle,
   // Pagination, - Use when mangadex-full-api exposes the total number of results
 } from '@mui/material';
 
 import { StyleSheet, css } from 'aphrodite';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 
 import LazyLoad, { forceCheck } from 'react-lazyload';
@@ -207,14 +209,16 @@ const generateQueriedSearchData = (
 ) =>
   Object.fromEntries(mappedFileNames.map((source) => [source.getName(), []]));
 
-const beginSearch = (source: InstanceType<typeof SourceBase>) =>
-  source
+const beginSearch = (source: InstanceType<typeof SourceBase>) => {
+  console.log(`beginSearch on ${source.getName()}`);
+  return source
     .search()
     .then((x) => x.map(source.serialize))
     .then((y) => {
       return Promise.all(y);
     })
     .then((z) => z.filter((a) => a !== false).map((b) => b as Manga));
+};
 
 /* Utility Elements */
 const returnButton = (
@@ -228,9 +232,17 @@ const returnButton = (
 
 const SearchPage = () => {
   const [isLoadingMoreResults, setLoading] = useState(false);
-  const [specificQueryLoadedTitles, setLoadedTitle] = useState<any[]>(
-    Array.from({ length: 50 }, () => true)
-  );
+  const [currentAlert, setAlert] = useState<{
+    message: string;
+    severity: 'success' | 'error';
+  } | null>(null);
+
+  const specificQueryLoadedPages = useRef<{
+    [sourceName: string]: {
+      [searchQuery: string]: { [searchIndex: number]: boolean };
+    };
+  }>({});
+  const [specificQueryLoadedTitles, setLoadedTitles] = useState<Manga[]>([]);
 
   // Currently using Any as a placeholder. Will be typed as Manga[] in the future.
   // This is a different state than the one below because organization filters
@@ -238,9 +250,6 @@ const SearchPage = () => {
   // When a filter is changed, the search results are cleared.
 
   const pageQueryParams = useQuery();
-  const [specificResults, setSpecificResults] = useState<{
-    [pageNumber: number]: Manga[];
-  }>({}); // Only used when a source is specified
   const [queryOffset, setQueryOffset] = useState(
     Number(pageQueryParams.get('offset') || 0)
   ); // Used for specified source query
@@ -283,6 +292,57 @@ const SearchPage = () => {
     sourceFilters.query = searchData.searchQuery;
     source.setFilters(sourceFilters);
   });
+
+  useEffect(() => {
+    if (!specifiedSource) return;
+    if (!mappedFileNames[0]) return;
+    if (isLoadingMoreResults) return;
+
+    if (!specificQueryLoadedPages.current[specifiedSource]) {
+      specificQueryLoadedPages.current[specifiedSource] = {
+        [searchData.searchQuery]: {},
+      };
+    }
+    const cco =
+      specificQueryLoadedPages.current[specifiedSource][searchData.searchQuery][
+        queryOffset
+      ];
+    console.log(queryOffset);
+    console.log(specificQueryLoadedPages.current[specifiedSource]);
+    console.log(`${cco ? 'already loaded; skipping...' : 'loading'}`);
+
+    if (
+      specificQueryLoadedPages.current[specifiedSource][searchData.searchQuery][
+        queryOffset
+      ]
+    )
+      return;
+    setLoading(true);
+    beginSearch(mappedFileNames[0])
+      .then((n) => {
+        setLoadedTitles((prevData) => {
+          return [...prevData, ...n];
+        });
+
+        specificQueryLoadedPages.current[specifiedSource][
+          searchData.searchQuery
+        ][queryOffset] = true;
+        return setLoading(false); // ?????
+      })
+      .catch(() => {
+        setAlert({
+          message:
+            'An error occurred while searching. You might have been rate limited.\nTry again later.',
+          severity: 'error',
+        });
+      });
+  }, [
+    searchData.searchQuery,
+    mappedFileNames,
+    specifiedSource,
+    queryOffset,
+    isLoadingMoreResults,
+  ]);
 
   useEffect(() => {
     if (specifiedSource) return undefined;
@@ -351,7 +411,6 @@ const SearchPage = () => {
           this should only be done when a render's useEffect detects when there is no idx+1
           in the specificResults state.
   */
-  console.log(specificQueryLoadedTitles);
   const currentSearches = searchData.queriedSearches[searchData.searchQuery];
   let elementHierarchy;
   if (!specifiedSource) {
@@ -488,7 +547,6 @@ const SearchPage = () => {
       );
     });
   } else {
-    console.log('load moment');
     // ElementHierarchy will be a list of Skeletons instead of MangaItems for now
     elementHierarchy = specificQueryLoadedTitles.map((MangaObject) => (
       <Skeleton
@@ -549,7 +607,7 @@ const SearchPage = () => {
       </Box>
       {!specifiedSource ? ( // wtf is going on here
         elementHierarchy
-      ) : specificQueryLoadedTitles[0] !== false ? (
+      ) : (
         <div
           className={css(
             isLoadingMoreResults ? styles.loadingObject : styles.row
@@ -557,8 +615,16 @@ const SearchPage = () => {
         >
           {isLoadingMoreResults ? <CircularProgress /> : elementHierarchy}
         </div>
+      )}
+      {specifiedSource ? (
+        <ShortPagination
+          disabled={isLoadingMoreResults}
+          page={1}
+          onUpdate={(page) => {
+            setQueryOffset(Math.max(0, page - 1));
+          }}
+        />
       ) : null}
-      <ShortPagination disabled={isLoadingMoreResults} page={1} />
     </div>
   );
 };
