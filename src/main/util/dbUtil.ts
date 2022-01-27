@@ -62,11 +62,11 @@ export type Manga = {
   Name: string;
   MangaID: string;
   SourceID: string;
-  Authors: string[];
+  Authors: string[] | null; // Null, can be obtained by calling getAuthors()
   Synopsis: string;
 
   Tags: string[];
-  CoverURL: string;
+  CoverURL?: string;
   Added: Date | null; // Null if never added to library
   LastRead: Date | null; // Null if never read
   Chapters: Chapter[] | null;
