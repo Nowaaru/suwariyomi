@@ -45,6 +45,7 @@ export type Chapter = {
   PageCount: number;
   CurrentPage: number;
 };
+
 /**
  * @typedef {Object} Manga
  * @property {string} Name - The name of the manga.
