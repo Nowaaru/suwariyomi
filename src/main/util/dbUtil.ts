@@ -45,6 +45,19 @@ export type Chapter = {
   PageCount: number;
   CurrentPage: number;
 };
+/**
+ * @typedef {Object} Manga
+ * @property {string} Name - The name of the manga.
+ * @property {string} MangaID - Manga ID. Format varies depending on the source.
+ * @property {string} SourceID - The source name of the manga.
+ * @property {string[] | null} Authors - Array of authors. By default it's null; but the authors can be obtained by calling getAuthors on its source.
+ * @property {string} Synopsis - Description of the manga.
+ * @property {string[]} Tags - Array of tags.
+ * @property {string | null} CoverURL - URL to the cover image.
+ * @property {Date | null} Added - When the manga was added to the library. Null if not added.
+ * @property {Date | null} LastRead - When the manga was last read.
+ * @property {Chapter[] | null} Chapters - Array of chapters. By default it's null; but the chapters can be obtained by calling getChapters() on its source.
+ */
 export type Manga = {
   Name: string;
   MangaID: string;
