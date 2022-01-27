@@ -2605,9 +2605,12 @@ export default class MangaDB {
     const source = MangaDB.getSource(sourceName);
     if (!source) return [];
 
-    return source.Manga.filter((manga) =>
-      manga.Authors.map((x) => x.toLowerCase()).includes(author.toLowerCase())
-    );
+    return source.Manga.filter((manga) => {
+      if (!manga.Authors) return false;
+      return manga.Authors.map((x) => x.toLowerCase()).includes(
+        author.toLowerCase()
+      );
+    });
   }
 
   static addManga(sourceName: string, manga: Manga): boolean {
