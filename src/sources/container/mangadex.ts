@@ -121,11 +121,7 @@ export default class MangaDex extends SourceBase {
       CoverURL: (await mangaItem.getCovers()).slice(-1)[0].image512,
       Added: null,
       LastRead: null,
-      Chapters: await this.serializeChapters(
-        await mangaItem.getFeed({
-          translatedLanguage: ['en'],
-        })
-      ),
+      Chapters: null,
     };
   }
 
