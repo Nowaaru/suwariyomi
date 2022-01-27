@@ -56,7 +56,7 @@ export type Manga = {
   CoverURL: string;
   Added: Date | null; // Null if never added to library
   LastRead: Date | null; // Null if never read
-  Chapters: Chapter[];
+  Chapters: Chapter[] | null;
 };
 
 export type Source = {
