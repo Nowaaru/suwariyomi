@@ -128,7 +128,6 @@ export default class MangaDex extends SourceBase {
   public async serializeChapters(
     chapters: Chapter[]
   ): Promise<DatabaseChapter[]> {
-    console.log('serchap called');
     return Promise.all(
       chapters.map(async (chapter) => {
         return {
