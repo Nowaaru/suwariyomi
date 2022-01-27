@@ -7,8 +7,11 @@ import {
   Box,
   Skeleton,
   CircularProgress,
+  AppBar,
   Alert,
   AlertTitle,
+  Toolbar,
+  IconButton,
   // Pagination, - Use when mangadex-full-api exposes the total number of results
 } from '@mui/material';
 
@@ -20,6 +23,7 @@ import LazyLoad, { forceCheck } from 'react-lazyload';
 import ArrowCircleLeftRoundedIcon from '@mui/icons-material/ArrowCircleLeftRounded';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SearchIcon from '@mui/icons-material/Search';
+import FilterListIcon from '@mui/icons-material/FilterList';
 
 import InfiniteScroll from 'react-infinite-scroll-component';
 import ShortPagination from '../components/shortpagination';
@@ -179,6 +183,31 @@ const styles = StyleSheet.create({
     width: '90%',
     height: '80%',
     padding: '48px',
+  },
+
+  appBarContainer: {
+    position: 'absolute',
+    width: 'fit-content',
+    height: 'fit-content',
+    bottom: '100px',
+    right: '25px',
+  },
+
+  appBar: {
+    position: 'relative',
+    backgroundColor: '#080708',
+    color: '#ffffff',
+    width: '128px',
+    height: 'fit-content',
+    borderRadius: '5%',
+  },
+
+  filterIcon: {
+    color: '#DF2935',
+    transition: 'color 0.2s ease-in-out',
+    ':hover': {
+      color: '#FFFFFF',
+    },
   },
 
   row: {
@@ -579,6 +608,21 @@ const SearchPage = () => {
         specifiedSource ? styles.specific : false
       )}
     >
+      <div className={css(styles.appBarContainer)}>
+        <AppBar color="primary" className={css(styles.appBar)}>
+          <Toolbar variant="dense">
+            <IconButton
+              edge="start"
+              sx={{
+                mr: 2,
+              }}
+            >
+              <FilterListIcon className={css(styles.filterIcon)} />
+            </IconButton>
+            <Typography>Filter</Typography>
+          </Toolbar>
+        </AppBar>
+      </div>
       {returnButton}
       <Box
         component="form"
