@@ -1,8 +1,6 @@
 /* eslint-disable react/destructuring-assignment */
 import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
 
-import { createTheme, ThemeProvider } from '@mui/system';
 import { css, StyleSheet } from 'aphrodite';
 import { useState } from 'react';
 import type { ChangeEvent } from 'react';
@@ -119,22 +117,30 @@ type PaginationProps = {
   // eslint-disable-next-line react/require-default-props
   disabled?: boolean;
   page: number;
+  // eslint-disable-next-line react/require-default-props
+  onUpdate?: (page: number) => void;
 };
-const ShortPagination = ({ disabled = false, page }: PaginationProps) => {
+const ShortPagination = ({
+  disabled = false,
+  page,
+  onUpdate = () => {},
+}: PaginationProps) => {
   const [value, setValue] = useState(String(page)); // display page number
   if (value.length > 5) setValue(value.slice(0, 5));
 
   const onValueChange = (newValue: string) => {
     if (newValue.length > 5) return setValue(newValue.slice(0, 5));
     const newerValue = newValue.match(/^\d*$/) ? newValue : value;
+    if (newerValue === value) return undefined; // so state doesn't update (no clue if react checks for this internally so better to be safe than sorry!)
 
-    return setValue(newerValue);
+    const newestValue = String(Math.max(1, Number(newerValue))); // i'm genuinely just a terrible person
+    if (onUpdate) onUpdate(Number(newestValue));
+    return setValue(newestValue);
   };
 
   const onFocusLost = (event: ChangeEvent<HTMLInputElement>) => {
     if (!event.target.value || event.target.value.trim().length === 0) {
-      console.log('???');
-      setValue(String(page));
+      onValueChange(String(page));
     }
   };
 
