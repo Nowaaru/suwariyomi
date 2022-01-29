@@ -51,13 +51,18 @@ const styles = StyleSheet.create({
   mangaItemCover: {
     margin: '10px 15px 10px 10px',
     verticalAlign: 'top',
-    width: 'fit-content',
-    height: 'fit-content',
   },
 
   gridCover: {
-    marginBottom: '0px',
-    display: 'block',
+    overflow: 'hidden',
+    margin: '5px 0 0px 0',
+    width: '95%',
+    height: '90%',
+    boxSizing: 'border-box',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'column',
   },
 
   listCover: {
@@ -80,7 +85,7 @@ const styles = StyleSheet.create({
   mangaItemGridContainer: {
     margin: '0px 10px 10px 10px',
     width: '140px',
-    height: 'fit-content',
+    height: '200px',
     borderRadius: '10px',
     backgroundColor: '#0c0a0c',
     verticalAlign: 'top',
@@ -90,6 +95,10 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     boxSizing: 'border-box',
     overflow: 'hidden',
+    '@media (min-width: 1200px)': {
+      width: 'calc(140px * 1.4)',
+      height: 'calc(200px * 1.4)',
+    },
   },
 
   coverImage: {
@@ -103,8 +112,13 @@ const styles = StyleSheet.create({
   },
 
   mangaItemGridCoverImage: {
-    height: '150px',
-    maxWidth: '150px',
+    // height: '150px',
+    // maxWidth: '150px',
+    // width: '100%',
+    // maxHeight: '150px',
+    maxWidth: '100%',
+    maxHeight: '100%',
+    display: 'flex',
   },
 
   mangaItemTitle: {
