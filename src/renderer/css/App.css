@@ -20,13 +20,12 @@ input::-webkit-inner-spin-button {
 }
 
 #root {
-  padding-top: 42px;
   width: 100vw;
-  height: calc(100vh - 42px);
+  height: 100vh;
 }
 #topbar {
   height: 32px;
   width: calc(100% - 8px);
   margin: 4px 4px 4px 4px;
-  position: absolute;
+  position: relative;
 }
