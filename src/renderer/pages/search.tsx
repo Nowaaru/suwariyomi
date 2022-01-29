@@ -284,9 +284,7 @@ const SearchPage = () => {
   // Apply search query to all sources
   mappedFileNames.forEach((source) => {
     const sourceFilters: SearchFilters = { ...source.getFilters() };
-    sourceFilters.offset = specifiedSource
-      ? queryOffset * sourceFilters.results
-      : 0;
+    sourceFilters.offset = specifiedSource ? queryOffset : 0; // Handled by the source module itself
     sourceFilters.query = searchData.searchQuery;
     source.setFilters(sourceFilters);
   });
