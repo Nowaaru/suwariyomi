@@ -15,7 +15,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: 'fit-content',
     height: 'fit-content',
-    bottom: '25px',
+    bottom: '15px',
     right: '25px',
     overflow: 'hidden',
   },
