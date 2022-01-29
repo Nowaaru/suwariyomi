@@ -7,14 +7,32 @@ import type { ChangeEvent } from 'react';
 
 import ArrowBackIosNewSharpIcon from '@mui/icons-material/ArrowBackIosNewSharp';
 import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp';
+import { Paper } from '@mui/material';
 
 const styles = StyleSheet.create({
   paginationbox: {
+    position: 'fixed',
     height: 'fit-content',
     width: '100%',
+    bottom: '15px',
+    opacity: 0.75,
+    transition: 'opacity 0.2s ease-in-out',
+    ':hover': {
+      opacity: 1,
+    },
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+
+  paginationBoxInner: {
+    width: 'fit-content',
+    height: 'fit-content',
+    display: 'inherit',
+    justifyContent: 'inherit',
+    alignItems: 'inherit',
+    backgroundColor: '#050401',
+    padding: '2px 5px',
   },
 
   paginationinput: {
@@ -24,16 +42,16 @@ const styles = StyleSheet.create({
     width: 'fit-content',
     height: 'fit-content',
     border: '1px solid #11111100',
-    borderRadius: '4px',
+    borderRadius: '0px',
     padding: '6px 0px',
     margin: '0 4px',
-    backgroundColor: 'rgba(0,0,0,0.2)',
+    backgroundColor: 'rgba(28, 27, 24, 0.2)',
     color: '#FFFFFF',
     transition: 'background-color 0.2s ease-in-out, caret-color 1s ease-in-out',
     caretColor: 'rgba(255,255,255,0)',
     ':focus-within': {
       caretColor: 'rgba(255,255,255,1)',
-      backgroundColor: 'rgba(0,0,0,0.4)',
+      backgroundColor: 'rgba(28, 27, 24, 0.4)',
     },
     fontFamily: '"Poppins", "Roboto", "Helvetica", "Arial", sans-serif',
   },
@@ -92,9 +110,9 @@ const styles = StyleSheet.create({
   paginationicon: {
     color: '#fff',
     position: 'relative',
-    transition: 'color 0.1s ease-in-out 0s',
+    transition: 'color 0.2s ease-in-out 0s',
     ':hover': {
-      color: '##DF2935',
+      color: '#DF2935',
     },
   },
 
@@ -146,54 +164,56 @@ const ShortPagination = ({
 
   return (
     <Box className={css(styles.paginationbox)}>
-      <button
-        disabled={disabled}
-        type="button"
-        className={css(
-          styles.paginationbutton,
-          styles.left,
-          disabled ? styles.disabled : false
-        )}
-        onClick={() => {
-          onValueChange(String(Number(value) - 1));
-        }}
-      >
-        <ArrowBackIosNewSharpIcon
-          className={css(styles.paginationicon, styles.paginationiconl)}
-        />
-      </button>
-      <div className={css(styles.paginationinput)}>
-        <input
-          min={1}
-          max={100}
-          type="number"
-          value={value}
+      <Paper className={css(styles.paginationBoxInner)}>
+        <button
+          disabled={disabled}
+          type="button"
           className={css(
-            styles.paginationinputinner,
+            styles.paginationbutton,
+            styles.left,
             disabled ? styles.disabled : false
           )}
-          onBlur={onFocusLost}
-          onChange={(e: ChangeEvent<HTMLInputElement>) => {
-            onValueChange(e.target.value);
+          onClick={() => {
+            onValueChange(String(Number(value) - 1));
           }}
-        />
-      </div>
-      <button
-        type="button"
-        disabled={disabled}
-        className={css(
-          styles.paginationbutton,
-          styles.right,
-          disabled ? styles.disabled : false
-        )}
-        onClick={() => {
-          onValueChange(String(Number(value) + 1));
-        }}
-      >
-        <ArrowForwardIosSharpIcon
-          className={css(styles.paginationicon, styles.paginationiconr)}
-        />
-      </button>
+        >
+          <ArrowBackIosNewSharpIcon
+            className={css(styles.paginationicon, styles.paginationiconl)}
+          />
+        </button>
+        <div className={css(styles.paginationinput)}>
+          <input
+            min={1}
+            max={100}
+            type="number"
+            value={value}
+            className={css(
+              styles.paginationinputinner,
+              disabled ? styles.disabled : false
+            )}
+            onBlur={onFocusLost}
+            onChange={(e: ChangeEvent<HTMLInputElement>) => {
+              onValueChange(e.target.value);
+            }}
+          />
+        </div>
+        <button
+          type="button"
+          disabled={disabled}
+          className={css(
+            styles.paginationbutton,
+            styles.right,
+            disabled ? styles.disabled : false
+          )}
+          onClick={() => {
+            onValueChange(String(Number(value) + 1));
+          }}
+        >
+          <ArrowForwardIosSharpIcon
+            className={css(styles.paginationicon, styles.paginationiconr)}
+          />
+        </button>
+      </Paper>
     </Box>
   );
 };
