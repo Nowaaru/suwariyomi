@@ -92,7 +92,7 @@ export default class MangaDex extends SourceBase {
     excludedTags: [],
     tagExclusivity: 'AND',
 
-    targetDemographic: ['none'],
+    targetDemographic: ['shounen', 'shoujo', 'seinen', 'josei', 'none'],
     contentRating: ['safe'],
     sortOrder: {
       title: 'desc',
