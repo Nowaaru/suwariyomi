@@ -52,7 +52,11 @@ export default class EmptySource extends SourceBase {
     return false;
   }
 
-  public async serializeChapters(chapters: any[]): Promise<Chapter[]> {
+  public async serializeChapters(): Promise<Chapter[]> {
+    return [];
+  }
+
+  public async getAuthors(): Promise<string[]> {
     return [];
   }
 

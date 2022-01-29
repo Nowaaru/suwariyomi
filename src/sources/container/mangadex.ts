@@ -115,14 +115,19 @@ export default class MangaDex extends SourceBase {
       Name: mangaItem.localizedTitle.localString,
       MangaID: mangaItem.id,
       SourceID: this.getName(),
-      Authors: (await resolveArray(mangaItem.authors)).map((x) => x.name),
+      Authors: null,
       Synopsis: mangaItem.localizedDescription.localString,
       Tags: mangaItem.tags.map((tag) => tag.localizedName.localString),
-      CoverURL: (await mangaItem.getCovers()).slice(-1)[0].image512,
+      CoverURL: (await mangaItem.getCovers())?.slice(-1)[0]?.image512,
       Added: null,
       LastRead: null,
       Chapters: null,
     };
+  }
+
+  public async getAuthors(mangaID: any): Promise<string[]> {
+    const manga = await Manga.get(mangaID);
+    return (await resolveArray(manga.authors)).map((x) => x.name);
   }
 
   public async serializeChapters(
