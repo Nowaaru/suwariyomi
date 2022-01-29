@@ -7,25 +7,19 @@ import {
   Box,
   Skeleton,
   CircularProgress,
-  AppBar,
   Alert,
   AlertTitle,
-  Toolbar,
-  IconButton,
   // Pagination, - Use when mangadex-full-api exposes the total number of results
 } from '@mui/material';
 
 import { StyleSheet, css } from 'aphrodite';
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, Fragment } from 'react';
 import { Link } from 'react-router-dom';
 
 import LazyLoad, { forceCheck } from 'react-lazyload';
 import ArrowCircleLeftRoundedIcon from '@mui/icons-material/ArrowCircleLeftRounded';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SearchIcon from '@mui/icons-material/Search';
-import FilterListIcon from '@mui/icons-material/FilterList';
-
-import InfiniteScroll from 'react-infinite-scroll-component';
 import ShortPagination from '../components/shortpagination';
 
 import SourceBase, { SearchFilters } from '../../sources/static/base';
@@ -34,15 +28,15 @@ import { Manga } from '../../main/util/dbUtil';
 
 import MangaItem from '../components/mangaitem';
 import SearchBar from '../components/search';
+import Filter from '../components/filter';
 import Handler from '../../sources/handler';
 
 const styles = StyleSheet.create({
   container: {
     display: 'block',
-    position: 'absolute',
-    width: 'calc(100% - 64px)',
-    padding: '32px',
-    height: 'calc(100% - 48px)',
+    position: 'relative',
+    width: '100%',
+    height: '100%',
     overflowY: 'scroll',
     '::-webkit-scrollbar': {
       width: '4px',
@@ -50,12 +44,9 @@ const styles = StyleSheet.create({
     '::-webkit-scrollbar-thumb': {
       background: '#FFFFFF',
     },
-    marginBottom: '48px',
   },
 
-  specific: {
-    height: '82.5%',
-  },
+  specific: {},
 
   loadingObject: {
     display: 'flex',
@@ -185,39 +176,16 @@ const styles = StyleSheet.create({
     padding: '48px',
   },
 
-  appBarContainer: {
-    position: 'absolute',
-    width: 'fit-content',
-    height: 'fit-content',
-    bottom: '100px',
-    right: '25px',
-  },
-
-  appBar: {
-    position: 'relative',
-    backgroundColor: '#080708',
-    color: '#ffffff',
-    width: '128px',
-    height: 'fit-content',
-    borderRadius: '5%',
-  },
-
-  filterIcon: {
-    color: '#DF2935',
-    transition: 'color 0.2s ease-in-out',
-    ':hover': {
-      color: '#FFFFFF',
-    },
-  },
-
   row: {
     display: 'flex',
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'flex-start',
-    alignItems: 'flex-start',
-    alignContent: 'flex-start',
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignContent: 'center',
     margin: '0 auto',
+    boxSizing: 'border-box',
+    paddingBottom: '96px',
   },
 });
 
@@ -271,19 +239,22 @@ const SearchPage = () => {
       [searchQuery: string]: { [searchIndex: number]: boolean };
     };
   }>({});
-  const [specificQueryLoadedTitles, setLoadedTitles] = useState<Manga[]>([]);
 
-  // Currently using Any as a placeholder. Will be typed as Manga[] in the future.
   // This is a different state than the one below because organization filters
   // can make the presentation of the results become different
   // When a filter is changed, the search results are cleared.
 
+  const [specificQueryLoadedTitles, setLoadedTitles] = useState<Manga[]>([]);
   const pageQueryParams = useQuery();
   const [queryOffset, setQueryOffset] = useState(
     Number(pageQueryParams.get('offset') || 0)
   ); // Used for specified source query
   const [specifiedSource, setSpecifiedSource] = useState(
     pageQueryParams.get('source')
+  );
+
+  const [scrollTarget, setScrollTarget] = useState<Node | Window | undefined>(
+    undefined
   );
   const mappedFileNames = window.electron.util
     .getSourceFiles()
@@ -578,88 +549,76 @@ const SearchPage = () => {
   } else {
     // ElementHierarchy will be a list of Skeletons instead of MangaItems for now
     elementHierarchy = specificQueryLoadedTitles.map((MangaObject) => (
-      <Skeleton
-        key={Math.random()} // This definitely is bad practice, but this is only for a placeholder; therefore I don't really care.
-        className={css(styles.skeletonPlaceholder)}
-        animation="wave"
-        variant="rectangular"
+      <MangaItem
+        displayType="grid"
+        listDisplayType={null}
+        title={MangaObject.Name}
+        coverUrl={MangaObject.CoverURL || undefined}
+        tags={MangaObject.Tags?.slice(1, 10) ?? []}
+        source={MangaObject.SourceID ?? specifiedSource}
+        mangaid={MangaObject.MangaID}
+        synopsis={MangaObject.Synopsis}
+        key={MangaObject.MangaID}
       />
     ));
-
-    // elementHierarchy = specificResults.map((MangaObject) => (
-    //   <MangaItem
-    //     key={MangaObject.MangaID}
-    //     mangaid={MangaObject.MangaID}
-    //     source={MangaObject.SourceID}
-    //     displayType="list"
-    //     listDisplayType="verbose"
-    //     title={MangaObject.Name}
-    //     synopsis={MangaObject.Synopsis}
-    //     coverUrl={MangaObject.CoverURL || undefined}
-    //     tags={MangaObject.Tags.slice(1, 10) ?? []}
-    //   />
-    // ));
   }
   return (
-    <div
-      id="lazyload"
-      className={css(
-        styles.container,
-        specifiedSource ? styles.specific : false
-      )}
-    >
-      <div className={css(styles.appBarContainer)}>
-        <AppBar color="primary" className={css(styles.appBar)}>
-          <Toolbar variant="dense">
-            <IconButton
-              edge="start"
-              sx={{
-                mr: 2,
-              }}
-            >
-              <FilterListIcon className={css(styles.filterIcon)} />
-            </IconButton>
-            <Typography>Filter</Typography>
-          </Toolbar>
-        </AppBar>
-      </div>
-      {returnButton}
-      <Box
-        component="form"
-        onSubmit={(e: any) => {
-          // the type of this should *NOT* be any but I don't know why it refuses to be typed properly ugh
-          e.preventDefault();
-          e.stopPropagation();
-
-          const newSearchQueryData = {
-            ...searchData,
-            searchQuery: e.target[0].value,
-          };
-
-          if (!searchData.queriedSearches[newSearchQueryData.searchQuery]) {
-            newSearchQueryData.queriedSearches[newSearchQueryData.searchQuery] =
-              generateQueriedSearchData(mappedFileNames);
-          }
-          return setSearchData(newSearchQueryData);
+    <>
+      <Filter
+        onClick={() => {
+          console.log('Clicked!');
         }}
+        scrollTarget={scrollTarget ?? window}
+      />
+      <div
+        id="lazyload"
+        ref={(node) => {
+          setScrollTarget(node ?? undefined);
+        }}
+        className={css(
+          styles.container,
+          specifiedSource ? styles.specific : false
+        )}
       >
-        <SearchBar
-          label="Search globally..."
-          defaultValue={searchData.searchQuery}
-          placeholder="Hana ni Arashi"
-        />
-      </Box>
-      {!specifiedSource ? ( // wtf is going on here
-        elementHierarchy
-      ) : (
-        <div
-          className={css(
-            isLoadingMoreResults ? styles.loadingObject : styles.row
-          )}
+        {returnButton}
+        <Box
+          component="form"
+          onSubmit={(e: any) => {
+            // the type of this should *NOT* be any but I don't know why it refuses to be typed properly ugh
+            e.preventDefault();
+            e.stopPropagation();
+
+            const newSearchQueryData = {
+              ...searchData,
+              searchQuery: e.target[0].value,
+            };
+
+            if (!searchData.queriedSearches[newSearchQueryData.searchQuery]) {
+              newSearchQueryData.queriedSearches[
+                newSearchQueryData.searchQuery
+              ] = generateQueriedSearchData(mappedFileNames);
+            }
+            return setSearchData(newSearchQueryData);
+          }}
         >
-          {isLoadingMoreResults ? <CircularProgress /> : elementHierarchy}
-        </div>
-      )}
+          <SearchBar
+            label="Search globally..."
+            defaultValue={searchData.searchQuery}
+            placeholder="Hana ni Arashi"
+          />
+        </Box>
+        {!specifiedSource ? ( // wtf is going on here
+          elementHierarchy
+        ) : (
+          <div
+            className={css(
+              isLoadingMoreResults ? styles.loadingObject : styles.row
+            )}
+          >
+            {isLoadingMoreResults ? <CircularProgress /> : elementHierarchy}
+          </div>
+        )}
+      </div>
       {specifiedSource ? (
         <ShortPagination
           disabled={isLoadingMoreResults}
@@ -669,7 +628,7 @@ const SearchPage = () => {
           }}
         />
       ) : null}
-    </div>
+    </>
   );
 };
 
