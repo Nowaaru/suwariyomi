@@ -27,10 +27,15 @@ const styles = StyleSheet.create({
     width: '128px',
     height: 'fit-content',
     borderRadius: '5%',
-    transition: 'width 0.2s ease-in-out, height 0.2s ease-in-out',
+    transition:
+      'width 0.2s ease-in-out, height 0.2s ease-in-out, border-radius 0.1s ease-in-out',
   },
 
   small: {
+    transition:
+      'width 0.2s ease-in-out, height 0.2s ease-in-out, border-radius 0.3s ease-in-out',
+
+    borderRadius: '50%',
     width: '48px',
     height: '48px',
   },
