@@ -51,13 +51,17 @@ export type Chapter = {
  * @property {string} Name - The name of the manga.
  * @property {string} MangaID - Manga ID. Format varies depending on the source.
  * @property {string} SourceID - The source name of the manga.
- * @property {string[] | null} Authors - Array of authors. By default it's null; but the authors can be obtained by calling getAuthors on its source.
+ * @property {string[] | null} Authors - Array of authors. By default it's null; but the authors can be obtained by calling getAuthors on its source. Depending on the source, it could also be present in the manga object initially.
  * @property {string} Synopsis - Description of the manga.
  * @property {string[]} Tags - Array of tags.
  * @property {string | null} CoverURL - URL to the cover image.
  * @property {Date | null} Added - When the manga was added to the library. Null if not added.
  * @property {Date | null} LastRead - When the manga was last read.
  * @property {Chapter[] | null} Chapters - Array of chapters. By default it's null; but the chapters can be obtained by calling getChapters() on its source.
+ */
+
+/**
+ * @type {Manga}
  */
 export type Manga = {
   Name: string;
