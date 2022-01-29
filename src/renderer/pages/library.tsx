@@ -253,7 +253,7 @@ let statusPrefix: string;
 let statusSuffix: string;
 const Library = () => {
   const { library: LibraryUtilities } = window.electron;
-  const mangaItemDisplayFormat: 'list' | 'grid' = 'grid';
+  const mangaItemDisplayFormat: 'list' | 'grid' = 'list';
   const pageQueryParams = useQuery();
   const [searchQuery, setSearchQuery] = useState(
     pageQueryParams.get('search') || ''
@@ -287,16 +287,18 @@ const Library = () => {
 
       mangaListArray.push(
         <MangaItem
-          displayType={mangaItemDisplayFormat}
+          displayType="list"
           // Disabled because this only exists for testing purposes
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
-          listDisplayType={mangaItemDisplayFormat === 'list' ? 'verbose' : null}
+          listDisplayType="verbose"
           title={Manga.Name}
           coverUrl={Manga.CoverURL || undefined}
-          tags={Manga.Tags.slice(1, 10) ?? []}
+          tags={Manga.Tags?.slice(1, 10) ?? []}
           synopsis={Manga.Synopsis}
           key={Manga.Name}
+          source={Manga.SourceID}
+          mangaid={Manga.MangaID}
         />
       );
     });
