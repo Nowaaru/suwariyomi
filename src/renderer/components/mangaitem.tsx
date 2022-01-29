@@ -45,6 +45,7 @@ const styles = StyleSheet.create({
     verticalAlign: 'top',
     overflow: 'hidden',
     display: 'flex',
+    boxSizing: 'border-box',
   },
 
   mangaItemCover: {
@@ -87,6 +88,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'column',
+    boxSizing: 'border-box',
+    overflow: 'hidden',
   },
 
   coverImage: {
@@ -200,6 +203,9 @@ const styles = StyleSheet.create({
   },
 
   linkCover: {
+    width: 'fit-content',
+    height: 'fit-content',
+    display: 'inline-block',
     color: 'unset',
     border: 'none',
     outline: 'none',
@@ -297,12 +303,12 @@ const mangaItem = (props: MangaItemProps) => {
     case 'grid':
       return (
         <LazyLoad key={props.title} scrollContainer="#lazyload">
-          <div className={css(styles.mangaItemGridContainer)}>
-            <div className={css(styles.mangaItemCover, styles.gridCover)}>
-              <Link
-                className={css(styles.linkCover)}
-                to={`/view?source=${props.source}&id=${props.mangaid}`}
-              >
+          <div>
+            <Link
+              className={css(styles.linkCover, styles.mangaItemGridContainer)}
+              to={`/view?source=${props.source}&id=${props.mangaid}`}
+            >
+              <div className={css(styles.mangaItemCover, styles.gridCover)}>
                 <img
                   src={props.coverUrl ?? nocover}
                   className={css(
@@ -311,13 +317,13 @@ const mangaItem = (props: MangaItemProps) => {
                   )}
                   alt={props.title}
                 />
-              </Link>
-            </div>
-            <span className={css(styles.mangaItemGridTitle)}>
-              {props.title.length < 27
-                ? props.title
-                : `${props.title.slice(0, 27)}...`}
-            </span>
+              </div>
+              <span className={css(styles.mangaItemGridTitle)}>
+                {props.title.length < 27
+                  ? props.title
+                  : `${props.title.slice(0, 27)}...`}
+              </span>
+            </Link>
           </div>
         </LazyLoad>
       );
