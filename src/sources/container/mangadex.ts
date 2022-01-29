@@ -72,11 +72,13 @@ export default class MangaDex extends SourceBase {
         type: 'checkbox',
         display: 'Erotica',
         writeTo: 'contentRating',
+        checked: false,
       },
       {
         type: 'checkbox',
         display: 'Pornographic',
         writeTo: 'contentRating',
+        checked: false,
       },
     ],
   };
