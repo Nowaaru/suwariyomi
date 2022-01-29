@@ -2,7 +2,7 @@
 import Box from '@mui/material/Box';
 
 import { css, StyleSheet } from 'aphrodite';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { ChangeEvent } from 'react';
 
 import ArrowBackIosNewSharpIcon from '@mui/icons-material/ArrowBackIosNewSharp';
@@ -161,6 +161,11 @@ const ShortPagination = ({
       onValueChange(String(page));
     }
   };
+
+  useEffect(() => {
+    // This is a hack to make sure that if the page prop changes, the input value is updated
+    setValue(String(page));
+  }, [page]);
 
   return (
     <Box className={css(styles.paginationbox)}>
