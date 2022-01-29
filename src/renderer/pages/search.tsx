@@ -235,7 +235,7 @@ const SearchPage = () => {
 
   const specificQueryLoadedPages = useRef<{
     [sourceName: string]: {
-      [searchQuery: string]: { [searchIndex: number]: boolean };
+      [searchQuery: string]: { [page: number]: Manga[] };
     };
   }>({});
 
@@ -243,7 +243,6 @@ const SearchPage = () => {
   // can make the presentation of the results become different
   // When a filter is changed, the search results are cleared.
 
-  const [specificQueryLoadedTitles, setLoadedTitles] = useState<Manga[]>([]);
   const pageQueryParams = useQuery();
   const [queryOffset, setQueryOffset] = useState(
     Number(pageQueryParams.get('offset') || 0)
@@ -302,30 +301,18 @@ const SearchPage = () => {
         [searchData.searchQuery]: {},
       };
     }
-    const cco =
-      specificQueryLoadedPages.current[specifiedSource][searchData.searchQuery][
-        queryOffset
-      ];
-    console.log(queryOffset);
-    console.log(specificQueryLoadedPages.current[specifiedSource]);
-    console.log(`${cco ? 'already loaded; skipping...' : 'loading'}`);
 
-    if (
-      specificQueryLoadedPages.current[specifiedSource][searchData.searchQuery][
-        queryOffset
-      ]
-    )
+    const specifiedSourceCurrentValue =
+      specificQueryLoadedPages.current[specifiedSource];
+    if (!specifiedSourceCurrentValue[searchData.searchQuery])
+      specifiedSourceCurrentValue[searchData.searchQuery] = {};
+
+    if (specifiedSourceCurrentValue[searchData.searchQuery][queryOffset])
       return;
     setLoading(true);
     beginSearch(mappedFileNames[0])
       .then((n) => {
-        setLoadedTitles((prevData) => {
-          return [...prevData, ...n];
-        });
-
-        specificQueryLoadedPages.current[specifiedSource][
-          searchData.searchQuery
-        ][queryOffset] = true;
+        specifiedSourceCurrentValue[searchData.searchQuery][queryOffset] = n;
         return setLoading(false); // ?????
       })
       .catch(() => {
@@ -379,7 +366,6 @@ const SearchPage = () => {
 
     return undefined;
   });
-
   /* TODO:
     - Implement grid MangaItem (DONE)
     - Implement lazyload (DONE)
@@ -544,25 +530,27 @@ const SearchPage = () => {
     });
   } else {
     // ElementHierarchy will be a list of Skeletons instead of MangaItems for now
-    const queryResults = mappedFileNames[0]?.getFilters().results ?? 20;
-    elementHierarchy = specificQueryLoadedTitles
-      .slice(
-        queryOffset * queryResults,
-        queryOffset * queryResults + queryResults // WayTooDank
-      )
-      .map((MangaObject) => (
-        <MangaItem
-          displayType="grid"
-          listDisplayType={null}
-          title={MangaObject.Name}
-          coverUrl={MangaObject.CoverURL || undefined}
-          tags={MangaObject.Tags?.slice(1, 10) ?? []}
-          source={MangaObject.SourceID ?? specifiedSource}
-          mangaid={MangaObject.MangaID}
-          synopsis={MangaObject.Synopsis}
-          key={MangaObject.MangaID}
-        />
-      ));
+    const queryFilters = mappedFileNames[0]?.getFilters();
+    const queryData =
+      specificQueryLoadedPages.current[mappedFileNames[0].getName()]?.[
+        searchData.searchQuery
+      ]?.[queryOffset] ?? [];
+
+    console.log(queryFilters);
+    console.log(specificQueryLoadedPages);
+    elementHierarchy = queryData.map((MangaObject: Manga) => (
+      <MangaItem
+        displayType="grid"
+        listDisplayType={null}
+        title={MangaObject.Name}
+        coverUrl={MangaObject.CoverURL || undefined}
+        tags={MangaObject.Tags?.slice(1, 10) ?? []}
+        source={MangaObject.SourceID ?? specifiedSource}
+        mangaid={MangaObject.MangaID}
+        synopsis={MangaObject.Synopsis}
+        key={MangaObject.MangaID}
+      />
+    ));
   }
   return (
     <>
@@ -600,7 +588,10 @@ const SearchPage = () => {
                 newSearchQueryData.searchQuery
               ] = generateQueriedSearchData(mappedFileNames);
             }
-            return setSearchData(newSearchQueryData);
+            return setSearchData(() => {
+              setQueryOffset(0);
+              return newSearchQueryData;
+            });
           }}
         >
           <SearchBar
@@ -624,7 +615,7 @@ const SearchPage = () => {
       {specifiedSource ? (
         <ShortPagination
           disabled={isLoadingMoreResults}
-          page={1}
+          page={queryOffset + 1}
           onUpdate={(page) => {
             setQueryOffset(Math.max(0, page - 1));
           }}
