@@ -76,7 +76,7 @@ export default class MangaDex extends SourceBase {
 
   protected searchFilters: MangaDexFilters = {
     query: '',
-    results: 20,
+    results: 24,
     offset: 0,
 
     includedTags: [],
