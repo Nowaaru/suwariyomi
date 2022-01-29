@@ -43,13 +43,15 @@ export default abstract class SourceBase {
     this.searchFilters = searchFilters;
   }
 
-  public abstract serialize(mangaItem: any): Promise<Manga | false>;
-
   public getFilters(): typeof SourceBase.prototype.searchFilters {
     return { ...this.searchFilters };
   }
 
+  public abstract serialize(mangaItem: any): Promise<Manga | false>;
+
   public abstract serializeChapters(chapters: any[]): Promise<Chapter[]>;
+
+  public abstract getAuthors(mangaID: any): Promise<string[]>;
 
   public abstract search(): Promise<any[]>;
 }
