@@ -182,7 +182,6 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'center',
     alignItems: 'center',
-    alignContent: 'center',
     margin: '0 auto',
     boxSizing: 'border-box',
     paddingBottom: '96px',
@@ -513,12 +512,9 @@ const SearchPage = () => {
                     for (
                       let i = 0;
                       i <
-                      (Math.min(
-                        8,
-                        mappedFileNames
-                          .find((x) => x.getName() === sourceString)
-                          ?.getFilters().results
-                      ) || 8);
+                      (mappedFileNames
+                        .find((x) => x.getName() === sourceString)
+                        ?.getFilters().results || 20);
                       i++
                     ) {
                       skeletonPlaceholders.push(
