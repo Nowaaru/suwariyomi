@@ -47,6 +47,10 @@ export default abstract class SourceBase {
     return { ...this.searchFilters };
   }
 
+  public getFieldTypes(): SearchFilterFieldTypes {
+    return { ...this.searchFilterFieldTypes };
+  }
+
   public abstract serialize(mangaItem: any): Promise<Manga | false>;
 
   public abstract serializeChapters(chapters: any[]): Promise<Chapter[]>;
