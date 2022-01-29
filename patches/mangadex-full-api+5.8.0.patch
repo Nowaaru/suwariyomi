@@ -1,12 +1,267 @@
-diff --git a/node_modules/mangadex-full-api/src/structure/chapter.js b/node_modules/mangadex-full-api/src/structure/chapter.js
-index bd8ae21..ea2b9d5 100644
---- a/node_modules/mangadex-full-api/src/structure/chapter.js
-+++ b/node_modules/mangadex-full-api/src/structure/chapter.js
-@@ -3,6 +3,7 @@
- const Util = require('../util.js');
- const AuthUtil = require('../auth.js');
- const Relationship = require('../internal/relationship.js');
-+const APIRequestError = require('../internal/requesterror.js');
- 
- /**
-  * Represents a chapter with readable pages
+diff --git a/node_modules/mangadex-full-api/types/index.d.ts b/node_modules/mangadex-full-api/types/index.d.ts
+index c323360..cb10117 100644
+--- a/node_modules/mangadex-full-api/types/index.d.ts
++++ b/node_modules/mangadex-full-api/types/index.d.ts
+@@ -192,9 +192,9 @@ export declare class Cover {
+ 		 */
+ 		uploaders?: string[] | User[];
+ 		order?: {
+-			createdAt: "asc" | "desc";
+-			updatedAt: "asc" | "desc";
+-			volume: "asc" | "desc";
++			createdAt?: "asc" | "desc";
++			updatedAt?: "asc" | "desc";
++			volume?: "asc" | "desc";
+ 		};
+ 	}, includeSubObjects?: boolean): Promise<Cover[]>;
+ 	/**
+@@ -227,9 +227,9 @@ export declare class Cover {
+ 		 */
+ 		uploaders?: string[] | User[];
+ 		order?: {
+-			createdAt: "asc" | "desc";
+-			updatedAt: "asc" | "desc";
+-			volume: "asc" | "desc";
++			createdAt?: "asc" | "desc";
++			updatedAt?: "asc" | "desc";
++			volume?: "asc" | "desc";
+ 		};
+ 	}): Promise<Cover>;
+ 	/**
+@@ -392,11 +392,11 @@ export declare class Chapter {
+ 		 */
+ 		publishAtSince?: string;
+ 		order?: {
+-			createdAt: "asc" | "desc";
+-			updatedAt: "asc" | "desc";
+-			publishAt: "asc" | "desc";
+-			volume: "asc" | "desc";
+-			chapter: "asc" | "desc";
++			createdAt?: "asc" | "desc";
++			updatedAt?: "asc" | "desc";
++			publishAt?: "asc" | "desc";
++			volume?: "asc" | "desc";
++			chapter?: "asc" | "desc";
+ 		};
+ 		translatedLanguage?: string[];
+ 		originalLanguage?: string[];
+@@ -450,11 +450,11 @@ export declare class Chapter {
+ 		 */
+ 		publishAtSince?: string;
+ 		order?: {
+-			createdAt: "asc" | "desc";
+-			updatedAt: "asc" | "desc";
+-			publishAt: "asc" | "desc";
+-			volume: "asc" | "desc";
+-			chapter: "asc" | "desc";
++			createdAt?: "asc" | "desc";
++			updatedAt?: "asc" | "desc";
++			publishAt?: "asc" | "desc";
++			volume?: "asc" | "desc";
++			chapter?: "asc" | "desc";
+ 		};
+ 		translatedLanguage?: string[];
+ 		originalLanguage?: string[];
+@@ -783,10 +783,10 @@ export declare class List {
+ 		 */
+ 		publishAtSince?: string;
+ 		order?: {
+-			volume: "asc" | "desc";
+-			chapter: "asc" | "desc";
+-			createdAt: "asc" | "desc";
+-			updatedAt: "asc" | "desc";
++			volume?: "asc" | "desc";
++			chapter?: "asc" | "desc";
++			createdAt?: "asc" | "desc";
++			updatedAt?: "asc" | "desc";
+ 		};
+ 	}, includeSubObjects?: boolean): Promise<any[]>;
+ 	/**
+@@ -851,10 +851,10 @@ export declare class List {
+ 		 */
+ 		publishAtSince?: string;
+ 		order?: {
+-			volume: "asc" | "desc";
+-			chapter: "asc" | "desc";
+-			createdAt: "asc" | "desc";
+-			updatedAt: "asc" | "desc";
++			volume?: "asc" | "desc";
++			chapter?: "asc" | "desc";
++			createdAt?: "asc" | "desc";
++			updatedAt?: "asc" | "desc";
+ 		};
+ 	}): Promise<any[]>;
+ 	/**
+@@ -952,13 +952,13 @@ export declare class Manga {
+ 		 */
+ 		updatedAtSince?: string;
+ 		order?: {
+-			createdAt: "asc" | "desc";
+-			updatedAt: "asc" | "desc";
+-			title: "asc" | "desc";
+-			latestUploadedChapter: "asc" | "desc";
+-			followedCount: "asc" | "desc";
+-			relevance: "asc" | "desc";
+-			year: "asc" | "desc";
++			createdAt?: "asc" | "desc";
++			updatedAt?: "asc" | "desc";
++			title?: "asc" | "desc";
++			latestUploadedChapter?: "asc" | "desc";
++			followedCount?: "asc" | "desc";
++			relevance?: "asc" | "desc";
++			year?: "asc" | "desc";
+ 		};
+ 		/**
+ 		 * Array of author ids
+@@ -1024,13 +1024,13 @@ export declare class Manga {
+ 		 */
+ 		updatedAtSince?: string;
+ 		order?: {
+-			createdAt: "asc" | "desc";
+-			updatedAt: "asc" | "desc";
+-			title: "asc" | "desc";
+-			latestUploadedChapter: "asc" | "desc";
+-			followedCount: "asc" | "desc";
+-			relevance: "asc" | "desc";
+-			year: "asc" | "desc";
++			createdAt?: "asc" | "desc";
++			updatedAt?: "asc" | "desc";
++			title?: "asc" | "desc";
++			latestUploadedChapter?: "asc" | "desc";
++			followedCount?: "asc" | "desc";
++			relevance?: "asc" | "desc";
++			year?: "asc" | "desc";
+ 		};
+ 		/**
+ 		 * Array of author ids
+@@ -1106,11 +1106,11 @@ export declare class Manga {
+ 		 */
+ 		publishAtSince?: string;
+ 		order?: {
+-			volume: "asc" | "desc";
+-			chapter: "asc" | "desc";
+-			createdAt: "asc" | "desc";
+-			updatedAt: "asc" | "desc";
+-			publishAt: "asc" | "desc";
++			volume?: "asc" | "desc";
++			chapter?: "asc" | "desc";
++			createdAt?: "asc" | "desc";
++			updatedAt?: "asc" | "desc";
++			publishAt?: "asc" | "desc";
+ 		};
+ 	}, includeSubObjects?: boolean): Promise<Chapter[]>;
+ 	/**
+@@ -1189,11 +1189,11 @@ export declare class Manga {
+ 		 */
+ 		publishAtSince?: string;
+ 		order?: {
+-			volume: "asc" | "desc";
+-			chapter: "asc" | "desc";
+-			createdAt: "asc" | "desc";
+-			updatedAt: "asc" | "desc";
+-			publishAt: "asc" | "desc";
++			volume?: "asc" | "desc";
++			chapter?: "asc" | "desc";
++			createdAt?: "asc" | "desc";
++			updatedAt?: "asc" | "desc";
++			publishAt?: "asc" | "desc";
+ 		};
+ 	}, includeSubObjects?: boolean): Promise<Chapter[]>;
+ 	/**
+@@ -1239,11 +1239,11 @@ export declare class Manga {
+ 	 */
+ 	static getAggregate(id: string, ...languages: (string | string[])[]): Promise<{
+ 		[x: string]: {
+-			volume: string;
++			volume?: string;
+ 			count: number;
+ 			chapters: {
+ 				[x: string]: {
+-					chapter: string;
++					chapter?: string;
+ 					count: number;
+ 					id: string;
+ 					others: string[];
+@@ -1484,11 +1484,11 @@ export declare class Manga {
+ 		 */
+ 		publishAtSince?: string;
+ 		order?: {
+-			volume: "asc" | "desc";
+-			chapter: "asc" | "desc";
+-			createdAt: "asc" | "desc";
+-			updatedAt: "asc" | "desc";
+-			publishAt: "asc" | "desc";
++			volume?: "asc" | "desc";
++			chapter?: "asc" | "desc";
++			createdAt?: "asc" | "desc";
++			updatedAt?: "asc" | "desc";
++			publishAt?: "asc" | "desc";
+ 		};
+ 	}, includeSubObjects?: boolean): Promise<Chapter[]>;
+ 	/**
+@@ -1529,11 +1529,11 @@ export declare class Manga {
+ 	 */
+ 	getAggregate(...languages: string[]): Promise<{
+ 		[x: string]: {
+-			volume: string;
++			volume?: string;
+ 			count: number;
+ 			chapters: {
+ 				[x: string]: {
+-					chapter: string;
++					chapter?: string;
+ 					count: number;
+ 					id: string;
+ 					others: string[];
+@@ -1576,7 +1576,7 @@ export declare class Author {
+ 		limit?: number;
+ 		offset?: number;
+ 		order?: {
+-			name: "asc" | "desc";
++			name?: "asc" | "desc";
+ 		};
+ 	}, includeSubObjects?: boolean): Promise<Author[]>;
+ 	/**
+@@ -1609,7 +1609,7 @@ export declare class Author {
+ 		limit?: number;
+ 		offset?: number;
+ 		order?: {
+-			name: "asc" | "desc";
++			name?: "asc" | "desc";
+ 		};
+ 	}): Promise<Author>;
+ 	/**
+@@ -1681,11 +1681,11 @@ export declare class Group {
+ 		name?: string;
+ 		focusedLanguage?: string;
+ 		order?: {
+-			createdAt: "asc" | "desc";
+-			updatedAt: "asc" | "desc";
+-			name: "asc" | "desc";
+-			followedCount: "asc" | "desc";
+-			relevance: "asc" | "desc";
++			createdAt?: "asc" | "desc";
++			updatedAt?: "asc" | "desc";
++			name?: "asc" | "desc";
++			followedCount?: "asc" | "desc";
++			relevance?: "asc" | "desc";
+ 		};
+ 		/**
+ 		 * Max of 100 per request
+@@ -1719,11 +1719,11 @@ export declare class Group {
+ 		name?: string;
+ 		focusedLanguage?: string;
+ 		order?: {
+-			createdAt: "asc" | "desc";
+-			updatedAt: "asc" | "desc";
+-			name: "asc" | "desc";
+-			followedCount: "asc" | "desc";
+-			relevance: "asc" | "desc";
++			createdAt?: "asc" | "desc";
++			updatedAt?: "asc" | "desc";
++			name?: "asc" | "desc";
++			followedCount?: "asc" | "desc";
++			relevance?: "asc" | "desc";
+ 		};
+ 		/**
+ 		 * Max of 100 per request
