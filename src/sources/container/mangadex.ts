@@ -95,13 +95,7 @@ export default class MangaDex extends SourceBase {
     targetDemographic: ['none'],
     contentRating: ['safe'],
     sortOrder: {
-      title: 'asc',
-      year: 'asc',
-      createdAt: 'asc',
-      updatedAt: 'asc',
-      latestUploadedChapter: 'asc',
-      followedCount: 'asc',
-      relevance: 'asc',
+      title: 'desc',
     },
   };
 
