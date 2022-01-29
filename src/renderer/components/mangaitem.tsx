@@ -95,6 +95,8 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     boxSizing: 'border-box',
     overflow: 'hidden',
+    transition:
+      'width 0.2s ease-in-out, height 0.2s ease-in-out, border-radius 0.1s ease-in-out',
     '@media (min-width: 1200px)': {
       width: 'calc(140px * 1.4)',
       height: 'calc(200px * 1.4)',
