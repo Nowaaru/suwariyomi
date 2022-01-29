@@ -548,19 +548,25 @@ const SearchPage = () => {
     });
   } else {
     // ElementHierarchy will be a list of Skeletons instead of MangaItems for now
-    elementHierarchy = specificQueryLoadedTitles.map((MangaObject) => (
-      <MangaItem
-        displayType="grid"
-        listDisplayType={null}
-        title={MangaObject.Name}
-        coverUrl={MangaObject.CoverURL || undefined}
-        tags={MangaObject.Tags?.slice(1, 10) ?? []}
-        source={MangaObject.SourceID ?? specifiedSource}
-        mangaid={MangaObject.MangaID}
-        synopsis={MangaObject.Synopsis}
-        key={MangaObject.MangaID}
-      />
-    ));
+    const queryResults = mappedFileNames[0]?.getFilters().results ?? 20;
+    elementHierarchy = specificQueryLoadedTitles
+      .slice(
+        queryOffset * queryResults,
+        queryOffset * queryResults + queryResults // WayTooDank
+      )
+      .map((MangaObject) => (
+        <MangaItem
+          displayType="grid"
+          listDisplayType={null}
+          title={MangaObject.Name}
+          coverUrl={MangaObject.CoverURL || undefined}
+          tags={MangaObject.Tags?.slice(1, 10) ?? []}
+          source={MangaObject.SourceID ?? specifiedSource}
+          mangaid={MangaObject.MangaID}
+          synopsis={MangaObject.Synopsis}
+          key={MangaObject.MangaID}
+        />
+      ));
   }
   return (
     <>
