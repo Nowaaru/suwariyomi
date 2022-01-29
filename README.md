@@ -1,6 +1,6 @@
 <center><h1><b>座り読み</b></h1></center>
 
-similarly to [Tachiyomi](https://github.com/tachiyomiorg/tachiyomi), suwariyomi is a free and open-source manga reader for <b>windows</b> and <b>macOS.</b>
+similarly to [Tachiyomi](https://github.com/tachiyomiorg/tachiyomi), suwariyomi is a free and open-source manga reader for <b>windows</b>, <b>linux</b>, and <b>macOS.</b>
 <br />
 
 this application is **_incomplete._** some features are bound to change; and some could be removed **entirely.**
