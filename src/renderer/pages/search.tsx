@@ -67,14 +67,14 @@ const styles = StyleSheet.create({
   },
   returnButtonContainer: {
     position: 'relative', // tl tr bl br
-    margin: '5px 5px 10px 5px',
+    margin: '2px 5px 10px 5px',
     padding: '5px 5px 8px 5px',
     width: 'fit-content',
     height: 'fit-content',
-    left: '0px',
+    left: '10px',
     transition: 'left 0.3s ease-in-out',
     ':hover': {
-      left: '-20px',
+      left: '0px',
     },
     marginBottom: '10px',
   },
