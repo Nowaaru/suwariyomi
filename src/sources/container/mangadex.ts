@@ -10,14 +10,21 @@ import {
 
 type TagID = string;
 type SortMethod = {
-  [key in
-    | 'title'
-    | 'year'
-    | 'createdAt'
-    | 'updatedAt'
-    | 'latestUploadedChapter'
-    | 'followedCount'
-    | 'relevance']: 'asc' | 'desc';
+  // [key in
+  //   | 'title'
+  //   | 'year'
+  //   | 'createdAt'
+  //   | 'updatedAt'
+  //   | 'latestUploadedChapter'
+  //   | 'followedCount'
+  //   | 'relevance']: 'asc' | 'desc';
+  title?: 'asc' | 'desc';
+  year?: 'asc' | 'desc';
+  createdAt?: 'asc' | 'desc';
+  updatedAt?: 'asc' | 'desc';
+  latestUploadedChapter?: 'asc' | 'desc';
+  followedCount?: 'asc' | 'desc';
+  relevance?: 'asc' | 'desc';
 };
 
 type MangaDexFilters = SearchFilters & {
