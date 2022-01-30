@@ -9,6 +9,8 @@ import ArrowBackIosNewSharpIcon from '@mui/icons-material/ArrowBackIosNewSharp';
 import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp';
 import { Paper } from '@mui/material';
 
+import propTypes from 'prop-types';
+
 const styles = StyleSheet.create({
   paginationbox: {
     position: 'fixed',
@@ -132,10 +134,8 @@ const styles = StyleSheet.create({
 });
 
 type PaginationProps = {
-  // eslint-disable-next-line react/require-default-props
   disabled?: boolean;
   page: number;
-  // eslint-disable-next-line react/require-default-props
   onUpdate?: (page: number) => void;
 };
 const ShortPagination = ({
@@ -222,5 +222,9 @@ const ShortPagination = ({
     </Box>
   );
 };
-
+ShortPagination.propTypes = {
+  disabled: propTypes.bool.isRequired,
+  onUpdate: propTypes.func.isRequired,
+  page: propTypes.number.isRequired,
+};
 export default ShortPagination;
