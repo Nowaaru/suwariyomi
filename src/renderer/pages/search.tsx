@@ -7,8 +7,11 @@ import {
   Box,
   Skeleton,
   CircularProgress,
+  Modal,
+  IconButton,
   Alert,
   AlertTitle,
+  Paper,
   // Pagination, - Use when mangadex-full-api exposes the total number of results
 } from '@mui/material';
 
@@ -19,17 +22,19 @@ import { Link } from 'react-router-dom';
 import LazyLoad, { forceCheck } from 'react-lazyload';
 import ArrowCircleLeftRoundedIcon from '@mui/icons-material/ArrowCircleLeftRounded';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import CloseIcon from '@mui/icons-material/Close';
 import SearchIcon from '@mui/icons-material/Search';
-import ShortPagination from '../components/shortpagination';
 
 import SourceBase, { SearchFilters } from '../../sources/static/base';
 import useQuery from '../util/hook/usequery';
 import { Manga } from '../../main/util/dbUtil';
 
+import ShortPagination from '../components/shortpagination';
 import MangaItem from '../components/mangaitem';
 import SearchBar from '../components/search';
 import Filter from '../components/filter';
 import Handler from '../../sources/handler';
+import FilterSettings from '../components/filtersettings';
 
 const styles = StyleSheet.create({
   container: {
@@ -186,6 +191,60 @@ const styles = StyleSheet.create({
     boxSizing: 'border-box',
     paddingBottom: '96px',
   },
+
+  modalObject: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    height: '100%',
+  },
+  modalContainer: {
+    backgroundColor: '#080708',
+    position: 'relative',
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
+    width: '50%',
+    minHeight: '65%',
+    boxSizing: 'border-box',
+    padding: '10px 28px',
+  },
+  modalContent: {
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  modalHeader: {
+    color: '#ffffff',
+    fontWeight: 'bold',
+    fontFamily: '"Poppins", "Roboto", "Helvetica", "Arial", sans-serif',
+  },
+  modalCloseButton: {
+    position: 'absolute',
+    top: '10px',
+    right: '14px',
+    width: '32px',
+    height: '32px',
+  },
+  modalCloseIcon: {
+    color: '#ffffff',
+    ':hover': {
+      color: '#DF2935',
+    },
+  },
+  rule: {
+    width: '85%',
+    float: 'left', // border with gradient
+    border: 'none',
+    outline: 'none',
+    height: '1px',
+    background: 'linear-gradient(to left, #FFFFFF00, #DF2935FF)',
+  },
+  modalBody: {},
 });
 
 /*
@@ -233,6 +292,7 @@ const SearchPage = () => {
     severity: 'success' | 'error';
   } | null>(null);
 
+  const [modalIsOpen, setIsOpen] = useState(false);
   const specificQueryLoadedPages = useRef<{
     [sourceName: string]: {
       [searchQuery: string]: { [page: number]: Manga[] };
@@ -552,9 +612,43 @@ const SearchPage = () => {
   }
   return (
     <>
+      <Modal
+        open={modalIsOpen}
+        className={css(styles.modalObject)}
+        onClose={() => setIsOpen(false)}
+      >
+        <Paper className={css(styles.modalContainer)}>
+          <div className={css(styles.modalContent)}>
+            <div className={css(styles.modalHeader)}>
+              <Typography variant="h5">Filters</Typography>
+              <hr className={css(styles.rule)} />
+              <IconButton
+                onClick={() => setIsOpen(false)}
+                className={css(styles.modalCloseButton)}
+              >
+                <CloseIcon
+                  sx={{
+                    float: 'right',
+                  }}
+                  className={css(styles.modalCloseIcon)}
+                />
+              </IconButton>
+            </div>
+            <div className={css(styles.modalBody)}>
+              <FilterSettings
+                sourceFilters={mappedFileNames[0].getFilters()}
+                filterSettings={mappedFileNames[0].getFieldTypes()}
+                onSubmit={(newFilters) => {
+                  console.log(newFilters);
+                }}
+              />
+            </div>
+          </div>
+        </Paper>
+      </Modal>
       <Filter
         onClick={() => {
-          console.log('Clicked!');
+          setIsOpen(!modalIsOpen);
         }}
         scrollTarget={scrollTarget ?? window}
       />
