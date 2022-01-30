@@ -55,32 +55,28 @@ export default class MangaDex extends SourceBase {
   protected _sourceName: string = 'MangaDex';
 
   protected searchFilterFieldTypes: SearchFilterFieldTypes = {
-    'Content Rating': [
-      {
-        type: 'checkbox',
-        display: 'safe',
-        writeTo: 'contentRating',
-        checked: true,
-      },
-      {
-        type: 'checkbox',
-        display: 'Suggestive',
-        writeTo: 'contentRating',
-        checked: true,
-      },
-      {
-        type: 'checkbox',
-        display: 'Erotica',
-        writeTo: 'contentRating',
-        checked: false,
-      },
-      {
-        type: 'checkbox',
-        display: 'Pornographic',
-        writeTo: 'contentRating',
-        checked: false,
-      },
-    ],
+    'Content Rating': {
+      fieldType: 'checkbox',
+      writeTo: 'contentRating',
+      choices: [
+        {
+          display: 'Safe',
+          value: 'safe',
+        },
+        {
+          display: 'Suggestive',
+          value: 'suggestive',
+        },
+        {
+          display: 'Erotica',
+          value: 'erotica',
+        },
+        {
+          display: 'Pornographic',
+          value: 'pornographic',
+        },
+      ],
+    },
   };
 
   protected searchFilters: MangaDexFilters = {

@@ -4,6 +4,10 @@ import SourceBase, {
   SearchFilters,
 } from '../static/base';
 
+type EmptySourceFilters = SearchFilters & {
+  contentRating: Array<'safe' | 'suggestive' | 'erotica' | 'pornographic'>;
+};
+
 export default class EmptySource extends SourceBase {
   constructor() {
     super();
@@ -16,36 +20,35 @@ export default class EmptySource extends SourceBase {
   protected _sourceName: string = 'EmptySource';
 
   protected searchFilterFieldTypes: SearchFilterFieldTypes = {
-    'Content Rating': [
-      {
-        type: 'checkbox',
-        display: 'safe',
-        writeTo: 'contentRating',
-        checked: true,
-      },
-      {
-        type: 'checkbox',
-        display: 'Suggestive',
-        writeTo: 'contentRating',
-        checked: true,
-      },
-      {
-        type: 'checkbox',
-        display: 'Erotica',
-        writeTo: 'contentRating',
-      },
-      {
-        type: 'checkbox',
-        display: 'Pornographic',
-        writeTo: 'contentRating',
-      },
-    ],
+    'Content Rating': {
+      fieldType: 'checkbox',
+      writeTo: 'contentRating',
+      choices: [
+        {
+          display: 'Safe',
+          value: 'safe',
+        },
+        {
+          display: 'Suggestive',
+          value: 'suggestive',
+        },
+        {
+          display: 'Erotica',
+          value: 'erotica',
+        },
+        {
+          display: 'Pornographic',
+          value: 'pornographic',
+        },
+      ],
+    },
   };
 
-  protected searchFilters: SearchFilters = {
+  protected searchFilters: EmptySourceFilters = {
     query: '',
     results: 20,
     offset: 0,
+    contentRating: ['safe', 'pornographic'],
   };
 
   public async serialize(): Promise<Manga | false> {

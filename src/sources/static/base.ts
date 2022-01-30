@@ -6,53 +6,42 @@ export type SearchFilters = {
   offset: number;
 };
 
-export type OptionWithDefaults = {
-  isDefault: boolean;
-  label: string;
-  value: string;
-};
-
 type SearchFilterFieldBase = {
   writeTo: string;
 };
 
-type SearchFilterFieldTypeAutoComplete = {
-  type: 'autocomplete';
-  options: string[];
-};
-
-type SearchFilterFieldTypeCheckbox = {
-  type: 'checkbox';
-  checked?: boolean;
+export type Selectable = {
   display: string;
+  value: string;
 };
 
-type SearchFilterFieldTypeSelect = {
-  type: 'select';
-  options: OptionWithDefaults[];
+export type Checkable = {
   display: string;
+  value: string;
 };
 
-type SearchFilterFieldTypeRadio = {
-  type: 'radio';
-  options: OptionWithDefaults[];
-  display: string;
-  isHorizontal: boolean;
+export type Option = Selectable | Checkable;
+
+export type SearchFilterFieldTypeCheckbox = SearchFilterFieldBase & {
+  fieldType: 'checkbox';
+  choices: Checkable[];
 };
 
-type SearchFilterField = SearchFilterFieldBase &
-  (
-    | SearchFilterFieldTypeAutoComplete
-    | SearchFilterFieldTypeCheckbox
-    | SearchFilterFieldTypeSelect
-    | SearchFilterFieldTypeRadio
-  );
+export type SearchFilterFieldTypeSelect = SearchFilterFieldBase & {
+  fieldType: 'select';
+  choices: Selectable[];
+};
+
+export type SearchFilterFieldTypeRadio = SearchFilterFieldBase & {
+  fieldType: 'radio';
+  choices: (Selectable & { isHorizontal: boolean })[];
+};
 
 export type SearchFilterFieldTypes = {
-  [categoryName: string]: {
-    fieldType: SearchFilterField['type'];
-    choices: SearchFilterField[]; // an array of objects that have the same type as the fieldType ( i have no clue how to type this )
-  };
+  [categoryName: string]:
+    | SearchFilterFieldTypeCheckbox
+    | SearchFilterFieldTypeSelect
+    | SearchFilterFieldTypeRadio;
 };
 
 export default abstract class SourceBase {
