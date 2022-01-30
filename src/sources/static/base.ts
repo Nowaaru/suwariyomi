@@ -6,6 +6,12 @@ export type SearchFilters = {
   offset: number;
 };
 
+export type OptionWithDefaults = {
+  isDefault: boolean;
+  label: string;
+  value: string;
+};
+
 type SearchFilterFieldBase = {
   writeTo: string;
 };
@@ -21,9 +27,32 @@ type SearchFilterFieldTypeCheckbox = {
   display: string;
 };
 
+type SearchFilterFieldTypeSelect = {
+  type: 'select';
+  options: OptionWithDefaults[];
+  display: string;
+};
+
+type SearchFilterFieldTypeRadio = {
+  type: 'radio';
+  options: OptionWithDefaults[];
+  display: string;
+  isHorizontal: boolean;
+};
+
+type SearchFilterField = SearchFilterFieldBase &
+  (
+    | SearchFilterFieldTypeAutoComplete
+    | SearchFilterFieldTypeCheckbox
+    | SearchFilterFieldTypeSelect
+    | SearchFilterFieldTypeRadio
+  );
+
 export type SearchFilterFieldTypes = {
-  [categoryName: string]: (SearchFilterFieldBase &
-    (SearchFilterFieldTypeAutoComplete | SearchFilterFieldTypeCheckbox))[];
+  [categoryName: string]: {
+    fieldType: SearchFilterField['type'];
+    choices: SearchFilterField[]; // an array of objects that have the same type as the fieldType ( i have no clue how to type this )
+  };
 };
 
 export default abstract class SourceBase {
