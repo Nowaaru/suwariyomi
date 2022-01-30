@@ -19,6 +19,7 @@
     "allowJs": true,
     "outDir": "release/app/dist"
   },
+  "include": ["src/**/*"],
   "exclude": [
     "test",
     "release/build",
