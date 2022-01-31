@@ -8,6 +8,7 @@ import {
 } from '@mui/material';
 
 import FilterListIcon from '@mui/icons-material/FilterList';
+import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 
 const styles = StyleSheet.create({
@@ -55,6 +56,13 @@ const styles = StyleSheet.create({
     },
   },
 
+  filterIconDisabled: {
+    color: '#7C7C7C',
+    ':hover': {
+      color: '#7C7C7C',
+    },
+  },
+
   toolbarsmall: {
     display: 'flex',
     alignItems: 'center',
@@ -74,9 +82,11 @@ const styles = StyleSheet.create({
 
 type FilterProps = {
   onClick: () => void;
+  disabled?: boolean;
   scrollTarget: Node | Window;
 };
-const FilterButton = ({ onClick, scrollTarget }: FilterProps) => {
+
+const FilterButton = ({ onClick, scrollTarget, disabled }: FilterProps) => {
   const didScroll = useScrollTrigger({
     disableHysteresis: false,
     target: scrollTarget,
@@ -95,6 +105,7 @@ const FilterButton = ({ onClick, scrollTarget }: FilterProps) => {
         className={css(styles.buttonWrapper)}
         onMouseEnter={() => setHoverState(true)}
         onMouseLeave={() => setHoverState(false)}
+        disabled={disabled}
       >
         <AppBar
           color="primary"
@@ -106,6 +117,7 @@ const FilterButton = ({ onClick, scrollTarget }: FilterProps) => {
           >
             <IconButton
               edge={displaySmall ? false : 'start'}
+              disabled={disabled}
               sx={
                 !displaySmall
                   ? {
@@ -114,7 +126,12 @@ const FilterButton = ({ onClick, scrollTarget }: FilterProps) => {
                   : undefined
               }
             >
-              <FilterListIcon className={css(styles.filterIcon)} />
+              <FilterListIcon
+                className={css(
+                  styles.filterIcon,
+                  disabled ? styles.filterIconDisabled : false
+                )}
+              />
             </IconButton>
             {!displaySmall ? <Typography>Filter</Typography> : null}
           </Toolbar>
@@ -122,6 +139,10 @@ const FilterButton = ({ onClick, scrollTarget }: FilterProps) => {
       </button>
     </div>
   );
+};
+
+FilterButton.propTypes = {
+  disabled: PropTypes.bool.isRequired,
 };
 
 export default FilterButton;
