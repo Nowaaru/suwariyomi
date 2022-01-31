@@ -64,7 +64,7 @@
           "x": 410,
           "y": 220,
           "type": "link",
-          "path": "/Applications"
+          "path": "/applications"
         }
       ]
     },
@@ -75,61 +75,46 @@
     },
     "linux": {
       "target": [
-        "AppImage"
+        "appimage"
       ],
-      "category": "Development"
+      "category": "development"
     },
     "directories": {
       "app": "release/app",
-      "buildResources": "assets",
+      "buildresources": "assets",
       "output": "release/build"
     },
-    "extraResources": [
+    "extraresources": [
       "./assets/**"
     ],
     "publish": {
       "provider": "github",
-      "owner": "electron-react-boilerplate",
-      "repo": "electron-react-boilerplate"
+      "owner": "nowaaru",
+      "repo": "suwariyomi"
     }
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/electron-react-boilerplate/electron-react-boilerplate.git"
+    "url": "git+https://github.com/Nowaaru/suwariyomi.git"
   },
   "author": {
-    "name": "Electron React Boilerplate Maintainers",
-    "email": "electronreactboilerplate@gmail.com",
-    "url": "https://electron-react-boilerplate.js.org"
+    "name": "Nowaaru",
+    "email": "zackyboy135@gmail.com",
+    "url": "https://nowaaru.github.io"
   },
-  "contributors": [
-    {
-      "name": "Amila Welihinda",
-      "email": "amilajack@gmail.com",
-      "url": "https://github.com/amilajack"
-    },
-    {
-      "name": "John Tran",
-      "email": "jptran318@gmail.com",
-      "url": "https://github.com/jooohhn"
-    }
-  ],
+  "contributors": [],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/electron-react-boilerplate/electron-react-boilerplate/issues"
+    "url": "https://github.com/Nowaaru/suwariyomi/issues"
   },
   "keywords": [
+    "manga",
+    "reader",
     "electron",
-    "boilerplate",
     "react",
-    "typescript",
-    "ts",
-    "sass",
-    "webpack",
-    "hot",
-    "reload"
+    "tachiyomi"
   ],
-  "homepage": "https://github.com/electron-react-boilerplate/electron-react-boilerplate#readme",
+  "homepage": "https://github.com/Nowaaru/suwariyomi#readme",
   "jest": {
     "testURL": "http://localhost/",
     "testEnvironment": "jsdom",
