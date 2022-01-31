@@ -7,12 +7,8 @@ export type SearchFilters = {
 };
 
 type SearchFilterFieldBase = {
+  noDisplay?: boolean;
   writeTo: string;
-};
-
-export type Selectable = {
-  display: string;
-  value: string;
 };
 
 export type Checkable = {
@@ -20,7 +16,10 @@ export type Checkable = {
   value: string;
 };
 
-export type Option = Selectable | Checkable;
+export type Selectable = {
+  label: string;
+  value: string;
+};
 
 export type SearchFilterFieldTypeCheckbox = SearchFilterFieldBase & {
   fieldType: 'checkbox';
@@ -34,7 +33,8 @@ export type SearchFilterFieldTypeSelect = SearchFilterFieldBase & {
 
 export type SearchFilterFieldTypeRadio = SearchFilterFieldBase & {
   fieldType: 'radio';
-  choices: (Selectable & { isHorizontal: boolean })[];
+  isHorizontal?: boolean;
+  choices: Selectable[];
 };
 
 export type SearchFilterFieldTypes = {

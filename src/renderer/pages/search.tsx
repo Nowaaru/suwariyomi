@@ -16,6 +16,7 @@ import {
 } from '@mui/material';
 
 import { StyleSheet, css } from 'aphrodite';
+import { isEqual } from 'lodash';
 import React, { useEffect, useState, useRef, Fragment } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -209,8 +210,22 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     width: '50%',
     minHeight: '65%',
+    maxHeight: '85%',
+    overflowX: 'hidden',
+    overflowY: 'auto',
     boxSizing: 'border-box',
     padding: '10px 28px',
+    '::-webkit-scrollbar': {
+      width: '4px',
+    },
+    '::-webkit-scrollbar-thumb': {
+      backgroundColor: '#FFFFFF',
+      borderRadius: '4px',
+      transition: 'background-color 0.2s ease-in-out',
+      ':hover': {
+        backgroundColor: '#DF2935',
+      },
+    },
   },
   modalContent: {
     width: '100%',
@@ -295,13 +310,12 @@ const SearchPage = () => {
   const [modalIsOpen, setIsOpen] = useState(false);
   const specificQueryLoadedPages = useRef<{
     [sourceName: string]: {
-      [searchQuery: string]: { [page: number]: Manga[] };
+      [searchQuery: string]: {
+        filters: SearchFilters;
+        pageData: { [page: number]: Manga[] };
+      };
     };
   }>({});
-
-  // This is a different state than the one below because organization filters
-  // can make the presentation of the results become different
-  // When a filter is changed, the search results are cleared.
 
   const pageQueryParams = useQuery();
   const [queryOffset, setQueryOffset] = useState(
@@ -311,17 +325,18 @@ const SearchPage = () => {
     pageQueryParams.get('source')
   );
 
+  const mappedFileNamesRef = useRef(
+    window.electron.util.getSourceFiles().map(Handler.getSource)
+  );
+  const mappedFileNames = mappedFileNamesRef.current.filter(
+    (x) =>
+      !specifiedSource ||
+      x.getName().toLowerCase() === specifiedSource.toLowerCase()
+  );
+
   const [scrollTarget, setScrollTarget] = useState<Node | Window | undefined>(
     undefined
   );
-  const mappedFileNames = window.electron.util
-    .getSourceFiles()
-    .map(Handler.getSource)
-    .filter(
-      (x) =>
-        !specifiedSource ||
-        x.getName().toLowerCase() === specifiedSource.toLowerCase()
-    );
 
   const [searchData, setSearchData] = useState<{
     searchQuery: string;
@@ -354,23 +369,47 @@ const SearchPage = () => {
     if (!mappedFileNames[0]) return;
     if (isLoadingMoreResults) return;
 
-    if (!specificQueryLoadedPages.current[specifiedSource]) {
-      specificQueryLoadedPages.current[specifiedSource] = {
-        [searchData.searchQuery]: {},
-      };
+    const generateBaseSearchData = () => ({
+      [searchData.searchQuery]: {
+        filters: mappedFileNames[0].getFilters(),
+        pageData: {},
+      },
+    });
+    const Current = specificQueryLoadedPages.current;
+    if (!Current[specifiedSource]) {
+      specificQueryLoadedPages.current[specifiedSource] =
+        generateBaseSearchData();
+    } else {
+      const currentSpecifiedSource = Current[specifiedSource];
+      if (
+        !isEqual(
+          currentSpecifiedSource[searchData.searchQuery].filters,
+          mappedFileNames[0].getFilters()
+        )
+      ) {
+        specificQueryLoadedPages.current[specifiedSource] =
+          generateBaseSearchData();
+      }
     }
 
     const specifiedSourceCurrentValue =
       specificQueryLoadedPages.current[specifiedSource];
     if (!specifiedSourceCurrentValue[searchData.searchQuery])
-      specifiedSourceCurrentValue[searchData.searchQuery] = {};
+      specifiedSourceCurrentValue[searchData.searchQuery] = {
+        filters: mappedFileNames[0].getFilters(),
+        pageData: {},
+      };
 
-    if (specifiedSourceCurrentValue[searchData.searchQuery][queryOffset])
+    if (
+      specifiedSourceCurrentValue[searchData.searchQuery].pageData[queryOffset]
+    )
       return;
     setLoading(true);
     beginSearch(mappedFileNames[0])
       .then((n) => {
-        specifiedSourceCurrentValue[searchData.searchQuery][queryOffset] = n;
+        specifiedSourceCurrentValue[searchData.searchQuery].pageData[
+          queryOffset
+        ] = n;
         return setLoading(false); // ?????
       })
       .catch(() => {
@@ -592,7 +631,7 @@ const SearchPage = () => {
     const queryData =
       specificQueryLoadedPages.current[mappedFileNames[0].getName()]?.[
         searchData.searchQuery
-      ]?.[queryOffset] ?? [];
+      ]?.pageData?.[queryOffset] ?? [];
 
     console.log(queryFilters);
     console.log(specificQueryLoadedPages);
@@ -613,7 +652,7 @@ const SearchPage = () => {
   return (
     <>
       <Modal
-        open={modalIsOpen}
+        open={modalIsOpen && !isLoadingMoreResults}
         className={css(styles.modalObject)}
         onClose={() => setIsOpen(false)}
       >
@@ -639,7 +678,8 @@ const SearchPage = () => {
                 sourceFilters={mappedFileNames[0].getFilters()}
                 filterSettings={mappedFileNames[0].getFieldTypes()}
                 onSubmit={(newFilters) => {
-                  console.log(newFilters);
+                  mappedFileNames[0].setFilters(newFilters);
+                  setIsOpen(false);
                 }}
               />
             </div>
@@ -650,6 +690,7 @@ const SearchPage = () => {
         onClick={() => {
           setIsOpen(!modalIsOpen);
         }}
+        disabled={isLoadingMoreResults}
         scrollTarget={scrollTarget ?? window}
       />
       <div

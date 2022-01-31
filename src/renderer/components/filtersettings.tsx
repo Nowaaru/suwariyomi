@@ -1,28 +1,29 @@
 import {
   Radio,
   Switch,
-  Select,
   Checkbox,
   Button,
-  MenuItem,
   RadioGroup,
-  FormControl,
   FormLabel,
   FormGroup,
   FormControlLabel,
+  Select,
+  Typography,
+  MenuItem,
 } from '@mui/material';
-import { useState, useEffect, Fragment } from 'react';
+import React, { useState, Fragment } from 'react';
 import { css, StyleSheet } from 'aphrodite';
 import propTypes from 'prop-types';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
+
 import type {
   SearchFilterFieldTypes,
-  SearchFilterFieldTypeRadio,
-  SearchFilterFieldTypeSelect,
   Selectable,
-  Option,
   Checkable,
 } from '../../sources/static/base';
-import SourceBase from '../../sources/static/base';
 
 type GenericSourceFilterType = {
   [key: string]: any;
@@ -48,29 +49,53 @@ type GenericSourceFilterType = {
 */
 
 const styles = StyleSheet.create({
+  topMargin: {
+    marginTop: '1rem',
+  },
+
   FormControlLabel: {
     color: '#ffffff',
   },
-  FormLabel: {
+
+  White: {
     color: '#ffffff',
+  },
+
+  FormLabel: {
+    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+    fontWeight: 500,
+    fontSize: '1.2rem',
+    color: '#ffffff',
+  },
+  Red: {
+    color: '#DF2935',
+  },
+  FilledWhite: {
+    background:
+      'radial-gradient(circle at center, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 50%, transparent 51%)',
+  },
+  Group: {
+    marginBottom: '1rem',
   },
 });
 
 const filterSettingsPropTypes = {
   filterSettings: propTypes.shape({
     fieldType: propTypes.oneOf(['checkbox', 'radio', 'select']),
+    noDisplay: propTypes.bool,
     writeTo: propTypes.string,
     choices: propTypes.arrayOf(
-      propTypes.oneOf([
-        propTypes.shape({
-          display: propTypes.string,
-          value: propTypes.string,
-        }),
-        propTypes.shape({
-          display: propTypes.string,
-          value: propTypes.number,
-        }),
-      ])
+      propTypes.shape({
+        display: propTypes.string,
+        value: propTypes.oneOfType([
+          propTypes.string,
+          propTypes.number,
+          propTypes.shape({
+            label: propTypes.string,
+            value: propTypes.oneOfType([propTypes.string, propTypes.number]),
+          }),
+        ]),
+      })
     ),
   }).isRequired,
   sourceFilters: propTypes.shape({
@@ -106,55 +131,139 @@ const FilterSettings = ({
   };
 
   // Convert each filter field to a component
-  const filterFields = Object.keys(filterSettings).map((field) => {
-    const { fieldType, writeTo } = filterSettings[field];
-    const fieldChoices = filterSettings[field].choices;
+  const filterFields = Object.keys(filterSettings)
+    .map((field) => {
+      const { fieldType, writeTo, noDisplay } = filterSettings[field];
+      const fieldChoices = filterSettings[field].choices;
 
-    if (!fieldChoices)
-      throw new Error(
-        `No options for ${
-          field ? String(field) : '<no name>'
-        } in field ${field}.`
-      );
+      if (!fieldChoices)
+        throw new Error(
+          `No options for ${
+            field ? String(field) : '<no name>'
+          } in field ${field}.`
+        );
 
-    if (fieldType) {
-      return (
-        <div>
-          <FormGroup>
-            <FormLabel className={css(styles.FormLabel)}>{field}</FormLabel>
-            {(fieldChoices as Checkable[]).map((choice: Checkable) => {
-              return (
-                <FormControlLabel
-                  key={choice.display}
-                  className={css(styles.FormControlLabel)}
-                  control={
-                    <Checkbox
-                      defaultChecked={sourceFiltersState[writeTo]?.includes(
-                        choice.value
-                      )}
-                      onChange={() => {
-                        const newValue = [...sourceFiltersState[writeTo]];
-                        if (newValue.includes(choice.value)) {
-                          newValue.splice(newValue.indexOf(choice.value), 1);
-                        } else {
-                          newValue.push(choice.value);
+      // TODO: Instead of repetitively making <divs> with <FormGroup>s, make one big div with <FormGroup>s
+      // TODO: Change all "!noDisplay"s to noDisplay and swap the logic
+      switch (fieldType) {
+        case 'checkbox':
+          return (
+            <FormGroup>
+              {!noDisplay ? (
+                <FormLabel className={css(styles.FormLabel)}>{field}</FormLabel>
+              ) : null}
+              {(fieldChoices as Checkable[]).map((choice: Checkable) => {
+                return (
+                  <FormControlLabel
+                    key={choice.display}
+                    className={css(styles.FormControlLabel)}
+                    control={
+                      <Checkbox
+                        className={
+                          sourceFiltersState[writeTo]?.includes(choice.value)
+                            ? css(styles.Red)
+                            : css(styles.FormControlLabel)
                         }
+                        checkedIcon={
+                          <CheckBoxIcon
+                            className={css(styles.Red, styles.FilledWhite)}
+                          />
+                        }
+                        icon={
+                          <CheckBoxOutlineBlankIcon
+                            className={css(styles.Red)}
+                          />
+                        }
+                        checked={sourceFiltersState[writeTo]?.includes(
+                          choice.value
+                        )}
+                        onChange={() => {
+                          const newValue = [...sourceFiltersState[writeTo]];
+                          if (newValue.includes(choice.value)) {
+                            newValue.splice(newValue.indexOf(choice.value), 1);
+                          } else {
+                            newValue.push(choice.value);
+                          }
 
-                        handleChange(writeTo, newValue);
-                      }}
-                    />
-                  }
-                  label={choice.display}
-                />
-              );
-            })}
-          </FormGroup>
-        </div>
-      );
-    }
+                          handleChange(writeTo, newValue);
+                        }}
+                      />
+                    }
+                    label={choice.display}
+                  />
+                );
+              })}
+            </FormGroup>
+          );
+        case 'radio':
+          return (
+            <RadioGroup>
+              {!noDisplay ? (
+                <FormLabel className={css(styles.FormLabel)}>{field}</FormLabel>
+              ) : null}
+              {(fieldChoices as Selectable[]).map((choice: Selectable) => {
+                return (
+                  <FormControlLabel
+                    key={choice.label}
+                    className={css(styles.FormControlLabel)}
+                    control={
+                      <Radio
+                        checked={sourceFiltersState[writeTo] === choice.value}
+                        onChange={() => {
+                          handleChange(writeTo, choice.value);
+                        }}
+                      />
+                    }
+                    label={choice.label}
+                  />
+                );
+              })}
+            </RadioGroup>
+          );
+        case 'select':
+          return (
+            <FormGroup>
+              {!noDisplay ? (
+                <FormLabel className={css(styles.FormLabel)}>{field}</FormLabel>
+              ) : null}
+              <Select
+                variant="standard"
+                value={sourceFiltersState[writeTo]}
+                onChange={(event) => {
+                  handleChange(writeTo, event.target.value);
+                }}
+                className={css(styles.topMargin)}
+                renderValue={(selected) => {
+                  const selectedChoice = (fieldChoices as Selectable[]).find(
+                    (choice) => choice.value === selected
+                  );
+                  return selectedChoice ? (
+                    <Typography className={css(styles.White)}>
+                      {selectedChoice.label}
+                    </Typography>
+                  ) : (
+                    selected
+                  );
+                }}
+              >
+                {(fieldChoices as Selectable[]).map((choice: Selectable) => {
+                  return (
+                    <MenuItem key={choice.label} value={choice.value}>
+                      {choice.label}
+                    </MenuItem>
+                  );
+                })}
+              </Select>
+            </FormGroup>
+          );
+          break;
+        default:
+          throw new Error(`Unsupported field type ${fieldType} for ${field}.`);
+      }
 
-    return null;
-  });
+      return null;
+    })
+    .map((x) => <div className={css(styles.Group)}>{x}</div>);
   return (
     <>
       {filterFields}

@@ -9,26 +9,21 @@ import {
 } from '../../main/util/dbUtil';
 
 type TagID = string;
-type SortMethod = {
-  // [key in
-  //   | 'title'
-  //   | 'year'
-  //   | 'createdAt'
-  //   | 'updatedAt'
-  //   | 'latestUploadedChapter'
-  //   | 'followedCount'
-  //   | 'relevance']: 'asc' | 'desc';
-  title?: 'asc' | 'desc';
-  year?: 'asc' | 'desc';
-  createdAt?: 'asc' | 'desc';
-  updatedAt?: 'asc' | 'desc';
-  latestUploadedChapter?: 'asc' | 'desc';
-  followedCount?: 'asc' | 'desc';
-  relevance?: 'asc' | 'desc';
-};
+
+type SortMethod =
+  | 'title'
+  | 'year'
+  | 'createdAt'
+  | 'updatedAt'
+  | 'latestUploadedChapter'
+  | 'followedCount'
+  | 'relevance';
+type SortOrder = 'asc' | 'desc';
 
 type MangaDexFilters = SearchFilters & {
-  sortOrder: SortMethod;
+  sortOrderBy: SortMethod;
+  sortOrderDirection: SortOrder;
+
   includedTags: TagID[];
   tagInclusivity: 'AND' | 'OR';
 
@@ -37,6 +32,7 @@ type MangaDexFilters = SearchFilters & {
 
   targetDemographic: Array<'shounen' | 'shoujo' | 'seinen' | 'josei' | 'none'>;
   contentRating: Array<'safe' | 'suggestive' | 'erotica' | 'pornographic'>;
+  originalLanguage: Array<'ko' | 'zh' | 'en'>;
 
   createdAfter?: string;
   updatedAfter?: string;
@@ -77,6 +73,100 @@ export default class MangaDex extends SourceBase {
         },
       ],
     },
+    'Original Language': {
+      fieldType: 'checkbox',
+      writeTo: 'originalLanguage',
+      // TODO: Get Original Languages to start working
+      choices: [
+        {
+          display: 'Japanese (Manga)',
+          value: 'ja',
+        },
+        {
+          display: 'Chinese (Manhua)',
+          value: 'zh',
+        },
+        {
+          display: 'Korean (Manhwa)',
+          value: 'ko',
+        },
+      ],
+    },
+    'Target Demographic': {
+      fieldType: 'checkbox',
+      writeTo: 'targetDemographic',
+      choices: [
+        {
+          display: 'None',
+          value: 'none',
+        },
+        {
+          display: 'Shounen',
+          value: 'shounen',
+        },
+        {
+          display: 'Shoujo',
+          value: 'shoujo',
+        },
+        {
+          display: 'Seinen',
+          value: 'seinen',
+        },
+        {
+          display: 'Josei',
+          value: 'josei',
+        },
+      ],
+    },
+    'Sort Order': {
+      fieldType: 'select',
+      writeTo: 'sortOrderBy',
+      choices: [
+        {
+          label: 'Title',
+          value: 'title',
+        },
+        {
+          label: 'Year',
+          value: 'year',
+        },
+        {
+          label: 'Created At',
+          value: 'createdAt',
+        },
+        {
+          label: 'Updated At',
+          value: 'updatedAt',
+        },
+        {
+          label: 'Latest Uploaded Chapter',
+          value: 'latestUploadedChapter',
+        },
+        {
+          label: 'Followed Count',
+          value: 'followedCount',
+        },
+        {
+          label: 'Relevance',
+          value: 'relevance',
+        },
+      ],
+    },
+    'Sort Order Direction': {
+      fieldType: 'select',
+      noDisplay: true,
+      writeTo: 'sortOrderDirection',
+      choices: [
+        {
+          label: 'Ascending',
+          value: 'asc',
+        },
+        {
+          label: 'Descending',
+          value: 'desc',
+        },
+      ],
+    },
   };
 
   protected searchFilters: MangaDexFilters = {
@@ -90,11 +180,12 @@ export default class MangaDex extends SourceBase {
     excludedTags: [],
     tagExclusivity: 'AND',
 
-    targetDemographic: ['shounen', 'shoujo', 'seinen', 'josei', 'none'],
     contentRating: ['safe'],
-    sortOrder: {
-      title: 'desc',
-    },
+    targetDemographic: [],
+    originalLanguage: [],
+
+    sortOrderBy: 'title',
+    sortOrderDirection: 'desc',
   };
 
   public getName(): string {
@@ -151,8 +242,9 @@ export default class MangaDex extends SourceBase {
       query: title,
       tagInclusivity: includedTagsMode,
       tagExclusivity: excludedTagsMode,
-      sortOrder: order,
       includedTags,
+      sortOrderBy,
+      sortOrderDirection,
       excludedTags,
       contentRating,
       results: limit,
@@ -162,7 +254,9 @@ export default class MangaDex extends SourceBase {
       title,
       includedTagsMode,
       excludedTagsMode,
-      order,
+      order: {
+        [sortOrderBy]: sortOrderDirection,
+      },
       includedTags,
       excludedTags,
       contentRating,
