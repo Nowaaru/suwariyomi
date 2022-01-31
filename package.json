@@ -81,7 +81,7 @@
     },
     "directories": {
       "app": "release/app",
-      "buildresources": "assets",
+      "buildResources": "assets",
       "output": "release/build"
     },
     "extraresources": [
