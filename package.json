@@ -84,7 +84,7 @@
       "buildResources": "assets",
       "output": "release/build"
     },
-    "extraresources": [
+    "extraResources": [
       "./assets/**"
     ],
     "publish": {
