@@ -76,7 +76,6 @@ export default class MangaDex extends SourceBase {
     'Original Language': {
       fieldType: 'checkbox',
       writeTo: 'originalLanguage',
-      // TODO: Get Original Languages to start working
       choices: [
         {
           display: 'Japanese (Manga)',
@@ -248,6 +247,7 @@ export default class MangaDex extends SourceBase {
       excludedTags,
       contentRating,
       results: limit,
+      originalLanguage,
       offset,
     } = this.searchFilters;
     return Manga.search({
@@ -261,6 +261,7 @@ export default class MangaDex extends SourceBase {
       excludedTags,
       contentRating,
       limit,
+      originalLanguage,
       offset: offset * limit,
     });
   }
