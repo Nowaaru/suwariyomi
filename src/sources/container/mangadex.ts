@@ -187,6 +187,11 @@ export default class MangaDex extends SourceBase {
     sortOrderDirection: 'desc',
   };
 
+  protected Tags: Promise<{ tagName: string; tagID: string }[]> =
+    Manga.getAllTags().then((Tags) =>
+      Tags.map((Tag) => ({ tagName: Tag.name, tagID: Tag.id }))
+    );
+
   public getName(): string {
     return this._sourceName;
   }

@@ -51,6 +51,13 @@ export default abstract class SourceBase {
     return this._sourceName;
   }
 
+  protected abstract Tags: Promise<
+    {
+      tagName: string;
+      tagID: string;
+    }[]
+  >;
+
   protected abstract searchFilters: any;
 
   protected abstract searchFilterFieldTypes: SearchFilterFieldTypes;

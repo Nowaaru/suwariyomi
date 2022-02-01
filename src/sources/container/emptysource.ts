@@ -44,6 +44,13 @@ export default class EmptySource extends SourceBase {
     },
   };
 
+  protected Tags: Promise<
+    {
+      tagName: string;
+      tagID: string;
+    }[]
+  > = Promise.resolve([]);
+
   protected searchFilters: EmptySourceFilters = {
     query: '',
     results: 20,
