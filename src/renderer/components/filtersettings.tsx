@@ -145,6 +145,7 @@ const FilterSettings = ({
 
       // TODO: Instead of repetitively making <divs> with <FormGroup>s, make one big div with <FormGroup>s
       // TODO: Change all "!noDisplay"s to noDisplay and swap the logic
+      // TODO: Implement a switch type using MaterialUI's useSwitch hook
       switch (fieldType) {
         case 'checkbox3':
           return (
