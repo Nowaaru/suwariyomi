@@ -102,6 +102,7 @@ const styles = StyleSheet.create({
     marginLeft: '10px',
   },
   accordionItem: {
+    width: '95%',
     margin: '0px 0px 8px 0px',
     backgroundColor: '#080708',
   },
@@ -111,6 +112,10 @@ const styles = StyleSheet.create({
   },
 
   lazyLoadObject: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: '8px',
   },
 
