@@ -120,15 +120,16 @@ const FilterSettings = ({
 }: FilterSettingsProps) => {
   const [sourceFiltersState, setSourceFiltersState] = useState(sourceFilters);
 
-  // TODO: Make this accept an array of filter settings
-  const handleChange = (field: string, value: any) => {
-    setSourceFiltersState((previousValue) => {
-      return {
-        ...previousValue,
-        [field]: value,
-      };
-    });
-  };
+  const handleChange = useCallback(
+    (changeList: Array<[string, any]>) => {
+      const currentFilters = { ...sourceFiltersState };
+      changeList.forEach(([key, value]) => {
+        currentFilters[key] = value;
+      });
+      setSourceFiltersState(currentFilters);
+    },
+    [setSourceFiltersState, sourceFiltersState]
+  );
 
   const generateSettingsComponent = useCallback(
     (field: string): React.ReactElement => {
@@ -198,20 +199,16 @@ const FilterSettings = ({
                           if (isAllowed) {
                             allowedArray.splice(allowedArray.indexOf(value), 1);
                             disallowedArray.push(value);
-
-                            handleChange(disallowedWriteTo, disallowedArray);
                           } else if (isDisallowed) {
                             disallowedArray.splice(
                               disallowedArray.indexOf(value),
                               1
                             );
                           } else allowedArray.push(value);
-                          return handleChange(
-                            isAllowed || (!isDisallowed && !isAllowed)
-                              ? writeTo
-                              : disallowedWriteTo,
-                            allowedArray
-                          );
+                          return handleChange([
+                            [writeTo, allowedArray],
+                            [disallowedWriteTo, disallowedArray],
+                          ]);
                         }}
                         color="primary"
                         inputProps={{ 'aria-label': `${display}` }}
@@ -262,7 +259,7 @@ const FilterSettings = ({
                             newValue.push(choice.value);
                           }
 
-                          handleChange(writeTo, newValue);
+                          handleChange([[writeTo, newValue]]);
                         }}
                       />
                     }
@@ -287,7 +284,7 @@ const FilterSettings = ({
                       <Radio
                         checked={sourceFiltersState[writeTo] === choice.value}
                         onChange={() => {
-                          handleChange(writeTo, choice.value);
+                          handleChange([[writeTo, choice.value]]);
                         }}
                       />
                     }
@@ -311,7 +308,7 @@ const FilterSettings = ({
                 variant="standard"
                 value={sourceFiltersState[writeTo]}
                 onChange={(event) => {
-                  handleChange(writeTo, event.target.value);
+                  handleChange([[writeTo, event.target.value]]);
                 }}
                 renderValue={(selected) => {
                   const selectedChoice = (fieldChoices as Selectable[]).find(
@@ -341,7 +338,7 @@ const FilterSettings = ({
           throw new Error(`Unsupported field type ${fieldType} for ${field}.`);
       }
     },
-    [sourceFiltersState, filterSettings]
+    [sourceFiltersState, filterSettings, handleChange]
   );
 
   // Convert each filter field to a component
