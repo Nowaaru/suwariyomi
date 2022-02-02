@@ -120,6 +120,7 @@ const FilterSettings = ({
 }: FilterSettingsProps) => {
   const [sourceFiltersState, setSourceFiltersState] = useState(sourceFilters);
 
+  // TODO: Make this accept an array of filter settings
   const handleChange = (field: string, value: any) => {
     setSourceFiltersState((previousValue) => {
       return {
