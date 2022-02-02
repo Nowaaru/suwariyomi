@@ -288,11 +288,11 @@ const beginSearch = (source: InstanceType<typeof SourceBase>) => {
   console.log(`beginSearch on ${source.getName()}`);
   return source
     .search()
-    .then((x) => x.map(source.serialize))
-    .then((y) => {
-      return Promise.all(y);
+    .then((x) => x.map((y) => source.serialize(y, false)))
+    .then((z) => {
+      return Promise.all(z);
     })
-    .then((z) => z.filter((a) => a !== false).map((b) => b as Manga));
+    .then((a) => a.filter((b) => b !== false).map((c) => c as Manga));
 };
 
 /* Utility Elements */
@@ -638,8 +638,6 @@ const SearchPage = () => {
         searchData.searchQuery
       ]?.pageData?.[queryOffset] ?? [];
 
-    console.log(queryFilters);
-    console.log(specificQueryLoadedPages);
     elementHierarchy = queryData.map((MangaObject: Manga) => (
       <MangaItem
         displayType="grid"
