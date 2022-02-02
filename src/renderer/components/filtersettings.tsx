@@ -1,6 +1,5 @@
 import {
   Radio,
-  Switch,
   Checkbox,
   Button,
   RadioGroup,
@@ -14,8 +13,6 @@ import {
 import React, { useState, Fragment, useCallback } from 'react';
 import { css, StyleSheet } from 'aphrodite';
 import propTypes from 'prop-types';
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import IndeterminateCheckBoxIcon from '@mui/icons-material/IndeterminateCheckBox';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
