@@ -11,6 +11,8 @@ import SourceBase, {
 import {
   Manga as DatabaseManga,
   Chapter as DatabaseChapter,
+  MangaWithAuthors,
+  FullManga,
 } from '../../main/util/dbUtil';
 
 type TagID = string;
@@ -270,13 +272,9 @@ export default class MangaDex extends SourceBase {
     return { ...this.searchFilters };
   }
 
-  public async getManga(
-    mangaID: string
-  ): Promise<DatabaseManga & Pick<Required<DatabaseManga>, 'Authors'>> {
+  public async getManga(mangaID: string): Promise<FullManga> {
     return Manga.get(mangaID).then(
-      (mangaObject) =>
-        this.serialize(mangaObject, true) as unknown as DatabaseManga &
-          Pick<Required<DatabaseManga>, 'Authors'>
+      (mangaObject) => this.serialize(mangaObject, true) as unknown as FullManga
     );
   }
 
@@ -317,6 +315,9 @@ export default class MangaDex extends SourceBase {
           ChapterTitle: chapter.title,
           PageCount: -1, // PageCount will be available when they attempt to start reading the chapter
           CurrentPage: -1,
+          Groups: (await resolveArray(chapter.groups)).map(
+            (group) => group.name
+          ),
         };
       })
     );

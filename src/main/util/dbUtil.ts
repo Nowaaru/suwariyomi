@@ -44,6 +44,7 @@ export type Chapter = {
   ChapterTitle: string;
   PageCount: number;
   CurrentPage: number;
+  Groups: string[];
 };
 
 /**
@@ -76,6 +77,13 @@ export type Manga = {
   LastRead?: Date; // Null if never read
   Chapters?: Chapter[];
 };
+
+export type MangaWithAuthors = Manga & Pick<Required<Manga>, 'Authors'>;
+
+export type FullManga = MangaWithAuthors &
+  Pick<Required<MangaWithAuthors>, 'Chapters'>;
+
+export type LibraryManga = FullManga & Pick<Required<Manga>, 'Added'>;
 
 export type Source = {
   Name: string;

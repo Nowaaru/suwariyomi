@@ -2,25 +2,32 @@ import { useRef, useEffect, useState } from 'react';
 import { StyleSheet, css } from 'aphrodite';
 import { URLSearchParams } from 'url';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@mui/material';
+import { Button, Paper } from '@mui/material';
 
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import HeartBrokenIcon from '@mui/icons-material/HeartBroken';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 
-import { Manga } from '../../main/util/dbUtil';
+import { FullManga, Manga } from '../../main/util/dbUtil';
 
 import Tag from '../components/tag';
 import Handler from '../../sources/handler';
 import useQuery from '../util/hook/usequery';
 
 const styles = StyleSheet.create({
+  container: {
+    width: '100%',
+    height: '100%',
+    overflowX: 'hidden',
+    overflowY: 'auto',
+  },
+
   upperContainer: {
+    position: 'relative',
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'initial',
     justifyContent: 'initial',
-    height: '100%',
     width: '100%',
     fontFamily: '"Roboto", sans-serif',
   },
@@ -97,6 +104,7 @@ const styles = StyleSheet.create({
     fontWeight: 200,
     fontFamily: 'Open Sans, sans-serif',
     marginBottom: '8px',
+    textAlign: 'left',
   },
 
   mangaTags: {
@@ -149,6 +157,75 @@ const styles = StyleSheet.create({
       letterSpacing: '2px',
     },
   },
+
+  dataRule: {
+    position: 'relative',
+    top: '35px',
+    border: 'none',
+    height: '2px',
+    backgroundImage:
+      'radial-gradient(circle at center,rgb(255,255,255,1), rgba(255,255,255,0))',
+    marginBottom: '48px',
+  },
+
+  chaptersContainer: {
+    width: '50%',
+  },
+
+  chaptersHeader: {
+    fontSize: '1.5em',
+    fontFamily: 'Poppins, Open Sans,sans-serif',
+    fontWeight: 400,
+    textShadow: 'none',
+    marginBottom: '8px',
+    textAlign: 'center',
+    color: '#FFFFFF',
+  },
+
+  chapters: {},
+
+  chapter: {
+    display: 'flex',
+    flexDirection: 'row',
+    marginBottom: '8px',
+    height: '64px',
+    boxSizing: 'border-box',
+    padding: '8px',
+    font: '14px Roboto, sans-serif',
+    backgroundColor: '#222222',
+    boxShadow: '0px 0px 5px #000000',
+  },
+
+  chapterNumberData: {
+    // This only shows when there is a chapter title.
+    // This is because if there is no chapter title, then the chapter number is
+    // the chapter title.
+    fontSize: '0.8em',
+    fontWeight: 200,
+    fontVariant: 'small-caps',
+    marginRight: '8px',
+    display: 'inline',
+    fontFamily: 'Open Sans, sans-serif',
+    color: 'white',
+  },
+
+  chapterTitle: {
+    width: '100%',
+    height: '100%',
+  },
+
+  chapterTitleHeader: {
+    display: 'inline',
+    marginRight: '8px',
+    color: '#FFFFFF',
+    textShadow: 'none',
+  },
+
+  chapterGroups: {},
+
+  chapterGroupsText: {
+    color: 'rgb(127,127,127)',
+  },
 });
 
 const View = () => {
@@ -168,6 +245,7 @@ const View = () => {
       .filter((x) => x.getName().toLowerCase() === source.toLowerCase())
   );
 
+  console.log(Query);
   useEffect(() => {
     if (mappedFileNamesRef.current.length === 0) return Navigate('/404');
     if (!id || !source) return Navigate('/404');
@@ -176,9 +254,7 @@ const View = () => {
   }, [id, source, Navigate, mappedFileNamesRef]);
 
   const selectedSource = mappedFileNamesRef.current[0];
-  const mangaData = useRef<(Manga & Pick<Required<Manga>, 'Authors'>) | null>(
-    null
-  );
+  const mangaData = useRef<FullManga | null>(null);
 
   useEffect(() => {
     selectedSource
@@ -186,9 +262,9 @@ const View = () => {
       .then((x) => (mangaData.current = x))
       .then(() => setIsLoaded(true))
       .catch(console.error);
-  }, [selectedSource, id]);
+  }, [selectedSource, id, mangaData]);
 
-  const currentManga = mangaData.current;
+  const currentManga: FullManga | null = mangaData.current;
   if (!currentManga) {
     console.log(mappedFileNamesRef);
     return null;
@@ -197,7 +273,7 @@ const View = () => {
   const Authors = currentManga.Authors.slice(0, 4);
   const remainderAuthors = currentManga.Authors.length - Authors.length;
   return (
-    <div>
+    <div className={css(styles.container)}>
       <div className={css(styles.upperContainer)}>
         <div className={css(styles.mangaBannerContainer)}>
           <img
@@ -254,6 +330,70 @@ const View = () => {
           >
             Add to Library
           </Button>
+        </div>
+      </div>
+      <hr className={css(styles.dataRule)} />
+      <div className={css(styles.metadataContainer)}>
+        <div className={css(styles.chaptersContainer)}>
+          <h2 className={css(styles.chaptersHeader)}>Chapters</h2>
+          <div className={css(styles.chapters)}>
+            {currentManga.Chapters.sort((a, b) => {
+              const numberifiedA = Number(a.Chapter);
+              const numberifiedB = Number(b.Chapter);
+
+              const numberifiedAVolume = Number(a.Volume);
+              const numberifiedBVolume = Number(b.Volume);
+
+              const isANumber = !Number.isNaN(numberifiedA);
+              const isBNumber = !Number.isNaN(numberifiedB);
+
+              const isAVolumeNumber = !Number.isNaN(numberifiedAVolume);
+              const isBVolumeNumber = !Number.isNaN(numberifiedBVolume);
+
+              const calculatedA =
+                numberifiedA *
+                (isAVolumeNumber ? Math.max(numberifiedAVolume, 1) : 1);
+              const calculatedB =
+                numberifiedB *
+                (isBVolumeNumber ? Math.max(numberifiedBVolume, 1) : 1);
+              if (isANumber && isBNumber) {
+                return -(calculatedA - calculatedB);
+              }
+
+              return -1;
+            }).map((x) => (
+              <Paper
+                elevation={3}
+                key={x.ChapterID}
+                className={css(styles.chapter)}
+              >
+                <div className={css(styles.chapterTitle)}>
+                  <h3 className={css(styles.chapterTitleHeader)}>
+                    {x.ChapterTitle ||
+                      `${
+                        x.Volume
+                          ? `Volume ${x.Volume} Chapter ${x.Chapter}`
+                          : `Chapter ${x.Chapter}`
+                      }`}
+                  </h3>
+                  {x.ChapterTitle && (
+                    <h4 className={css(styles.chapterNumberData)}>
+                      {x.Volume
+                        ? `VOL. ${x.Volume} CH. ${x.Chapter}`
+                        : `CH. ${x.Chapter}`}
+                    </h4>
+                  )}
+                  {x.Groups && x.Groups.length > 0 ? (
+                    <div className={css(styles.chapterGroups)}>
+                      <span className={css(styles.chapterGroupsText)}>
+                        {x.Groups.join('& ').slice(0, 45)}
+                      </span>
+                    </div>
+                  ) : null}
+                </div>
+              </Paper>
+            ))}
+          </div>
         </div>
       </div>
     </div>

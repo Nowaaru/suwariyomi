@@ -1,4 +1,9 @@
-import { Manga, Chapter } from '../../main/util/dbUtil';
+import {
+  Manga,
+  Chapter,
+  MangaWithAuthors,
+  FullManga,
+} from '../../main/util/dbUtil';
 
 export type SearchFilters = {
   query: string;
@@ -108,14 +113,12 @@ export default abstract class SourceBase {
   }
 
   // This one requires a record because different sources have different required data
-  public abstract getManga(
-    mangaID: string
-  ): Promise<Manga & Pick<Required<Manga>, 'Authors'>>;
+  public abstract getManga(mangaID: string): Promise<FullManga>;
 
   public abstract serialize(
     mangaItem: any,
     doFull?: boolean
-  ): Promise<Manga | false>;
+  ): Promise<Manga | false> | Promise<FullManga | false>;
 
   public abstract serializeChapters(chapters: any[]): Promise<Chapter[]>;
 
