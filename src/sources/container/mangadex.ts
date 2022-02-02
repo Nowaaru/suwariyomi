@@ -46,6 +46,22 @@ export default class MangaDex extends SourceBase {
     this.serialize = this.serialize.bind(this);
     this.serializeChapters = this.serializeChapters.bind(this);
     this.search = this.search.bind(this);
+
+    this.Tags.then((tags) => {
+      this.searchFilterFieldTypes['Included Tags'] = {
+        fieldType: 'checkbox3',
+        writeTo: 'includedTags',
+        disallowedWriteTo: 'excludedTags',
+        accordion: true,
+        choices: tags.map((tag) => ({
+          display: tag.tagName,
+          value: tag.tagID,
+        })),
+      };
+      return true;
+    }).catch((err) => {
+      console.error(err);
+    });
   }
 
   protected _sourceName: string = 'MangaDex';

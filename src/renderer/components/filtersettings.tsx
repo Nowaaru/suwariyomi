@@ -11,18 +11,20 @@ import {
   Typography,
   MenuItem,
 } from '@mui/material';
-import React, { useState, Fragment } from 'react';
+import React, { useState, Fragment, useCallback } from 'react';
 import { css, StyleSheet } from 'aphrodite';
 import propTypes from 'prop-types';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import IndeterminateCheckBoxIcon from '@mui/icons-material/IndeterminateCheckBox';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 
 import type {
   SearchFilterFieldTypes,
   Selectable,
   Checkable,
+  SearchFilterFieldTypeCheckbox3,
 } from '../../sources/static/base';
 
 type GenericSourceFilterType = {
@@ -49,8 +51,8 @@ type GenericSourceFilterType = {
 */
 
 const styles = StyleSheet.create({
-  topMargin: {
-    marginTop: '1rem',
+  bottomMargin: {
+    marginBottom: '1rem',
   },
 
   FormControlLabel: {
@@ -130,9 +132,8 @@ const FilterSettings = ({
     });
   };
 
-  // Convert each filter field to a component
-  const filterFields = Object.keys(filterSettings)
-    .map((field) => {
+  const generateSettingsComponent = useCallback(
+    (field: string): React.ReactElement => {
       const { fieldType, writeTo, noDisplay } = filterSettings[field];
       const fieldChoices = filterSettings[field].choices;
 
@@ -146,6 +147,70 @@ const FilterSettings = ({
       // TODO: Instead of repetitively making <divs> with <FormGroup>s, make one big div with <FormGroup>s
       // TODO: Change all "!noDisplay"s to noDisplay and swap the logic
       switch (fieldType) {
+        case 'checkbox3':
+          return (
+            <FormGroup>
+              <FormLabel className={css(styles.FormLabel)}>{field}</FormLabel>
+              {(fieldChoices as Checkable[]).map((choice: Checkable) => {
+                const { display, value } = choice;
+                const { disallowedWriteTo } = filterSettings[
+                  field
+                ] as SearchFilterFieldTypeCheckbox3;
+                const isAllowed = sourceFiltersState[writeTo].includes(value);
+                const isDisallowed =
+                  sourceFiltersState[disallowedWriteTo].includes(value);
+
+                console.log(isDisallowed);
+                return (
+                  <FormControlLabel
+                    key={value}
+                    control={
+                      <Checkbox
+                        checked={isAllowed || isDisallowed}
+                        checkedIcon={
+                          isAllowed ? (
+                            <CheckBoxIcon />
+                          ) : (
+                            <IndeterminateCheckBoxIcon />
+                          )
+                        }
+                        icon={<CheckBoxOutlineBlankIcon />}
+                        onChange={() => {
+                          // If checked, add to the array. This means it's allowed.
+                          // If unchecked, remove from the checked array and add to the unchecked array. This means it's disallowed.
+                          // If unchecked and not in the unchecked array, add to the checked array.
+                          const allowedArray = [...sourceFiltersState[writeTo]];
+                          const disallowedArray = [
+                            ...sourceFiltersState[disallowedWriteTo],
+                          ];
+                          if (isAllowed) {
+                            allowedArray.splice(allowedArray.indexOf(value), 1);
+                            disallowedArray.push(value);
+
+                            handleChange(disallowedWriteTo, disallowedArray);
+                          } else if (isDisallowed) {
+                            disallowedArray.splice(
+                              disallowedArray.indexOf(value),
+                              1
+                            );
+                          } else allowedArray.push(value);
+                          return handleChange(
+                            isAllowed || (!isDisallowed && !isAllowed)
+                              ? writeTo
+                              : disallowedWriteTo,
+                            allowedArray
+                          );
+                        }}
+                        color="primary"
+                        inputProps={{ 'aria-label': `${display}` }}
+                      />
+                    }
+                    label={display}
+                  />
+                );
+              })}
+            </FormGroup>
+          );
         case 'checkbox':
           return (
             <FormGroup>
@@ -224,7 +289,11 @@ const FilterSettings = ({
           return (
             <FormGroup>
               {!noDisplay ? (
-                <FormLabel className={css(styles.FormLabel)}>{field}</FormLabel>
+                <FormLabel
+                  className={css(styles.FormLabel, styles.bottomMargin)}
+                >
+                  {field}
+                </FormLabel>
               ) : null}
               <Select
                 variant="standard"
@@ -232,7 +301,6 @@ const FilterSettings = ({
                 onChange={(event) => {
                   handleChange(writeTo, event.target.value);
                 }}
-                className={css(styles.topMargin)}
                 renderValue={(selected) => {
                   const selectedChoice = (fieldChoices as Selectable[]).find(
                     (choice) => choice.value === selected
@@ -260,16 +328,28 @@ const FilterSettings = ({
         default:
           throw new Error(`Unsupported field type ${fieldType} for ${field}.`);
       }
+    },
+    [sourceFiltersState, filterSettings]
+  );
 
-      return null;
-    })
-    .map((x) => <div className={css(styles.Group)}>{x}</div>);
+  // Convert each filter field to a component
+  const filterFields = Object.keys(filterSettings).map(
+    generateSettingsComponent
+  );
+
   return (
     <>
-      {filterFields}
+      {filterFields.map((x) => (
+        <div className={css(styles.Group)}>{x}</div>
+      ))}
       <Button
         variant="contained"
         color="primary"
+        size="large"
+        sx={{
+          marginTop: '-0.5rem',
+          marginBottom: '2rem',
+        }}
         onClick={() => {
           if (onSubmit) onSubmit(sourceFiltersState);
         }}

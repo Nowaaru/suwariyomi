@@ -8,6 +8,7 @@ export type SearchFilters = {
 
 type SearchFilterFieldBase = {
   noDisplay?: boolean;
+  accordion?: boolean;
   writeTo: string;
 };
 
@@ -26,6 +27,13 @@ export type SearchFilterFieldTypeCheckbox = SearchFilterFieldBase & {
   choices: Checkable[];
 };
 
+export type SearchFilterFieldTypeCheckbox3 = SearchFilterFieldBase & {
+  fieldType: 'checkbox3';
+  // The field to write to when the "disallowed" state is enabled
+  disallowedWriteTo: string;
+  choices: Checkable[];
+};
+
 export type SearchFilterFieldTypeSelect = SearchFilterFieldBase & {
   fieldType: 'select';
   choices: Selectable[];
@@ -40,6 +48,7 @@ export type SearchFilterFieldTypeRadio = SearchFilterFieldBase & {
 export type SearchFilterFieldTypes = {
   [categoryName: string]:
     | SearchFilterFieldTypeCheckbox
+    | SearchFilterFieldTypeCheckbox3
     | SearchFilterFieldTypeSelect
     | SearchFilterFieldTypeRadio;
 };
