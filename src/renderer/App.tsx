@@ -5,6 +5,7 @@ import Library from './pages/library';
 import Login from './pages/login';
 import Search from './pages/search';
 import NotFound from './pages/404';
+import View from './pages/view';
 
 export default function App() {
   return (
@@ -14,6 +15,7 @@ export default function App() {
         <Route path="/" element={<Login />} />
         <Route path="/search" element={<Search />} />
         <Route path="/library" element={<Library />} />
+        <Route path="/view" element={<View />} />
       </Routes>
     </Router>
   );
