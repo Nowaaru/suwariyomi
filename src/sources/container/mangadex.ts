@@ -1,4 +1,9 @@
-import { resolveArray, Chapter, Manga } from 'mangadex-full-api';
+import {
+  resolveArray,
+  Chapter,
+  Manga,
+  setGlobalLocale,
+} from 'mangadex-full-api';
 import SourceBase, {
   SearchFilters,
   SearchFilterFieldTypes,
@@ -46,6 +51,7 @@ export default class MangaDex extends SourceBase {
     this.serialize = this.serialize.bind(this);
     this.serializeChapters = this.serializeChapters.bind(this);
     this.search = this.search.bind(this);
+    this.getManga = this.getManga.bind(this);
 
     this.Tags.then((tags) => {
       this.searchFilterFieldTypes['Included Tags'] = {
@@ -62,6 +68,50 @@ export default class MangaDex extends SourceBase {
     }).catch((err) => {
       console.error(err);
     });
+  }
+
+  protected _locale: string = 'en';
+
+  protected _locales: { id: string; name: string }[] = [
+    { id: 'en', name: 'English' },
+    { id: 'zh', name: 'Chinese' },
+    { id: 'ko', name: 'Korean' },
+    { id: 'ja', name: 'Japanese' },
+    { id: 'fr', name: 'French' },
+    { id: 'de', name: 'German' },
+    { id: 'es', name: 'Spanish' },
+    { id: 'it', name: 'Italian' },
+    { id: 'pt', name: 'Portuguese' },
+    { id: 'ru', name: 'Russian' },
+    { id: 'tr', name: 'Turkish' },
+    { id: 'vi', name: 'Vietnamese' },
+    { id: 'th', name: 'Thai' },
+    { id: 'id', name: 'Indonesian' },
+    { id: 'ms', name: 'Malay' },
+    { id: 'nl', name: 'Dutch' },
+    { id: 'pl', name: 'Polish' },
+    { id: 'ar', name: 'Arabic' },
+    { id: 'hi', name: 'Hindi' },
+    { id: 'fa', name: 'Persian' },
+    { id: 'he', name: 'Hebrew' },
+    { id: 'ur', name: 'Urdu' },
+    { id: 'am', name: 'Amharic' },
+    { id: 'bn', name: 'Bengali' },
+    { id: 'my', name: 'Burmese' },
+    { id: 'tl', name: 'Tagalog' },
+    { id: 'ta', name: 'Tamil' },
+    { id: 'te', name: 'Telugu' },
+    { id: 'ml', name: 'Malayalam' },
+    { id: 'kn', name: 'Kannada' },
+    { id: 'si', name: 'Sinhala' },
+  ];
+
+  public override setLocale(locale: string): void {
+    if (this._locales.find((l) => l.id === locale))
+      throw new Error(`Locale ${locale} is not supported by ${this.getName()}`);
+
+    setGlobalLocale(locale);
+    this._locale = locale;
   }
 
   protected _sourceName: string = 'MangaDex';
@@ -220,18 +270,33 @@ export default class MangaDex extends SourceBase {
     return { ...this.searchFilters };
   }
 
-  public async serialize(mangaItem: Manga): Promise<DatabaseManga> {
+  public async getManga(
+    mangaID: string
+  ): Promise<DatabaseManga & Pick<Required<DatabaseManga>, 'Authors'>> {
+    return Manga.get(mangaID).then(
+      (mangaObject) =>
+        this.serialize(mangaObject, true) as unknown as DatabaseManga &
+          Pick<Required<DatabaseManga>, 'Authors'>
+    );
+  }
+
+  public async serialize(
+    mangaItem: Manga,
+    doFull?: boolean
+  ): Promise<DatabaseManga> {
     return {
       Name: mangaItem.localizedTitle.localString,
       MangaID: mangaItem.id,
       SourceID: this.getName(),
-      Authors: null,
+      Authors: doFull ? await this.getAuthors(mangaItem.id) : undefined,
       Synopsis: mangaItem.localizedDescription.localString,
       Tags: mangaItem.tags.map((tag) => tag.localizedName.localString),
       CoverURL: (await mangaItem.getCovers())?.slice(-1)[0]?.image512,
-      Added: null,
-      LastRead: null,
-      Chapters: null,
+      Added: undefined,
+      LastRead: undefined,
+      Chapters: doFull
+        ? await this.serializeChapters(await mangaItem.getFeed())
+        : undefined,
     };
   }
 

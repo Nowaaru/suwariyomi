@@ -67,9 +67,31 @@ export default abstract class SourceBase {
     }[]
   >;
 
+  protected abstract _locale: string;
+
+  protected abstract _locales: Array<{
+    id: string;
+    name: string;
+  }>;
+
   protected abstract searchFilters: any;
 
   protected abstract searchFilterFieldTypes: SearchFilterFieldTypes;
+
+  public setLocale(locale: string): void {
+    this._locale = locale;
+  }
+
+  public getLocale(): string {
+    return this._locale;
+  }
+
+  public getLocales(): Array<{
+    id: string;
+    name: string;
+  }> {
+    return [...this._locales];
+  }
 
   public setFilters(
     searchFilters: typeof SourceBase.prototype.searchFilters
@@ -85,7 +107,15 @@ export default abstract class SourceBase {
     return { ...this.searchFilterFieldTypes };
   }
 
-  public abstract serialize(mangaItem: any): Promise<Manga | false>;
+  // This one requires a record because different sources have different required data
+  public abstract getManga(
+    mangaID: string
+  ): Promise<Manga & Pick<Required<Manga>, 'Authors'>>;
+
+  public abstract serialize(
+    mangaItem: any,
+    doFull?: boolean
+  ): Promise<Manga | false>;
 
   public abstract serializeChapters(chapters: any[]): Promise<Chapter[]>;
 

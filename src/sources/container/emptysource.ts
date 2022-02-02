@@ -17,6 +17,10 @@ export default class EmptySource extends SourceBase {
     this.search = this.search.bind(this);
   }
 
+  protected _locale: string = '';
+
+  protected _locales: { id: string; name: string }[] = [];
+
   protected _sourceName: string = 'EmptySource';
 
   protected searchFilterFieldTypes: SearchFilterFieldTypes = {
@@ -64,6 +68,10 @@ export default class EmptySource extends SourceBase {
 
   public async serializeChapters(): Promise<Chapter[]> {
     return [];
+  }
+
+  public getManga(): Promise<Manga & Pick<Required<Manga>, 'Authors'>> {
+    return {} as unknown as any;
   }
 
   public async getAuthors(): Promise<string[]> {
