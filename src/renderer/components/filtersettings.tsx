@@ -161,17 +161,31 @@ const FilterSettings = ({
                 return (
                   <FormControlLabel
                     key={value}
+                    className={css(styles.FormControlLabel)}
                     control={
                       <Checkbox
+                        className={
+                          isAllowed || isDisallowed
+                            ? css(styles.Red)
+                            : css(styles.FormControlLabel)
+                        }
                         checked={isAllowed || isDisallowed}
                         checkedIcon={
                           isAllowed ? (
-                            <CheckBoxIcon />
+                            <CheckBoxIcon
+                              className={css(styles.Red, styles.FilledWhite)}
+                            />
                           ) : (
-                            <IndeterminateCheckBoxIcon />
+                            <IndeterminateCheckBoxIcon
+                              className={css(styles.Red, styles.FilledWhite)}
+                            />
                           )
                         }
-                        icon={<CheckBoxOutlineBlankIcon />}
+                        icon={
+                          <CheckBoxOutlineBlankIcon
+                            className={css(styles.Red)}
+                          />
+                        }
                         onChange={() => {
                           // If checked, add to the array. This means it's allowed.
                           // If unchecked, remove from the checked array and add to the unchecked array. This means it's disallowed.
