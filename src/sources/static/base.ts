@@ -65,6 +65,17 @@ export default abstract class SourceBase {
     return this._sourceName;
   }
 
+  protected _canDownload: boolean = true;
+
+  public get canDownload(): boolean {
+    return this._canDownload;
+  }
+
+  protected download: () => Promise<boolean> = async () => {
+    console.log('un-built');
+    return false;
+  };
+
   protected abstract Tags: Promise<
     {
       tagName: string;
