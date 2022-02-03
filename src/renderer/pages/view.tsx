@@ -334,6 +334,17 @@ const styles = StyleSheet.create({
   },
 
   chapterContainerBookmarkButton: {},
+
+  startReadingButton: {
+    padding: '8px',
+    fontWeight: 'bold',
+    backgroundColor: '#DF2935',
+    color: 'white',
+    boxSizing: 'border-box',
+    borderRadius: '24px',
+    width: '100%',
+    height: '32px',
+  },
 });
 
 const View = () => {
@@ -424,6 +435,51 @@ const View = () => {
 
   const Authors = currentManga.Authors.slice(0, 4);
   const remainderAuthors = currentManga.Authors.length - Authors.length;
+
+  // Get the chapter to display on the Start Reading button.
+  // If there is a chapter in progress, then display that chapter.
+  // Otherwise, display the first unread chapter.
+
+  const chapterToDisplay = [...currentManga.Chapters].reverse().find((x) => {
+    // Reverse the chapters so that the first chapter is the first index.
+    const foundChapter = chapterData.current[x.ChapterID];
+    if (!foundChapter) return true; // If the chapter is not in the database, then it is unread.
+
+    return (
+      (foundChapter.pageCount > -1 &&
+        foundChapter.currentPage < foundChapter.pageCount) ||
+      foundChapter.currentPage <= -1
+    );
+  }); // We don't need a second find function here because .find() is a linear search; so it will find an in-progess chapter before it finds an unread chapter.
+  const allChaptersRead = currentManga.Chapters.every((x) => {
+    const correspondingChapter = chapterData.current[x.ChapterID];
+    if (!correspondingChapter) return false;
+
+    const { currentPage, pageCount } = correspondingChapter;
+    return currentPage > -1 && pageCount > -1 && currentPage >= pageCount;
+  });
+
+  let ReadingButtonInnerText = 'Start Reading';
+  if (chapterToDisplay) {
+    if (allChaptersRead) {
+      ReadingButtonInnerText = 'All Chapters Read';
+    } else {
+      const foundChapter = chapterData.current[chapterToDisplay.ChapterID];
+      const readChapterData = `${
+        chapterToDisplay.Volume ? `Volume ${chapterToDisplay.Volume} ` : ''
+      }Chapter ${chapterToDisplay.Chapter}`;
+      ReadingButtonInnerText = foundChapter
+        ? `${
+            foundChapter.currentPage > -1 &&
+            foundChapter.currentPage < foundChapter.pageCount
+              ? 'Continue'
+              : 'Start'
+          } Reading ${readChapterData}`
+        : `Start Reading ${readChapterData}`;
+    }
+  }
+
+  // TODO: Implement Select Group button to filter chapters by group. For now, just show all chapters.
   return (
     <div className={css(styles.container, styles.scrollBar)}>
       <div className={css(styles.upperContainer)}>
@@ -544,6 +600,7 @@ const View = () => {
                   currentPage === pageCount;
                 const isBookmarked = foundChapter && foundChapter.isBookmarked;
 
+                // TODO: Add a way to mark a chapter as read (probably by using react-contextify)
                 return (
                   <Paper
                     elevation={3}
@@ -640,8 +697,20 @@ const View = () => {
             </div>
           </div>
           <Paper className={css(styles.utilityContainer)}>
-            {/* If this manga is not in the cache */}
-            {/* First component: Chapter Progress */}
+            {/* If this manga is not in the cache then only show the start reading button */}
+            {/* First component: Reading button */}
+
+            <Button
+              className={css(styles.startReadingButton)}
+              variant="contained"
+              color="primary"
+              onClick={() => {
+                console.log('Start reading');
+              }}
+            >
+              {ReadingButtonInnerText}
+            </Button>
+            {/* Second component: Chapter Progress */}
           </Paper>
         </div>
       </div>
