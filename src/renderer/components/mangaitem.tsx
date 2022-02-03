@@ -1,8 +1,9 @@
 import { StyleSheet, css } from 'aphrodite';
 import { Button } from '@mui/material';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import LazyLoad from 'react-lazyload';
+import PropTypes from 'prop-types';
 import Tag from './tag';
 
 // image assets
@@ -19,7 +20,7 @@ type MangaItemGridProps = {
 };
 
 type MangaItemGenericProps = {
-  coverUrl?: string;
+  coverUrl: string | undefined;
   title: string;
   tags: string[];
   synopsis: string;
@@ -251,38 +252,48 @@ const styles = StyleSheet.create({
   },
 });
 
-const mangaItem = (props: MangaItemProps) => {
-  const mangaTags = props.tags.map((tag) => (
+const MangaItem = ({
+  tags,
+  title,
+  coverUrl,
+  mangaid,
+  source,
+  synopsis,
+  displayType,
+  listDisplayType,
+}: MangaItemProps) => {
+  const Navigation = useNavigate();
+  const mangaTags = tags.map((tag) => (
     <Tag key={tag} name={tag} type="normal" />
   ));
 
-  switch (props.displayType) {
+  switch (displayType) {
     case 'list':
       return (
-        <LazyLoad key={props.title} scrollContainer="#lazyload">
+        <LazyLoad key={title} scrollContainer="#lazyload">
           <div className={css(styles.mangaItemListContainer)}>
             <div className={css(styles.mangaItemCover, styles.listCover)}>
               <button type="button">
                 <img
-                  src={props.coverUrl ?? nocover}
+                  src={coverUrl ?? nocover}
                   className={css(
                     styles.mangaItemListCoverImage,
                     styles.coverImage
                   )}
-                  alt={props.title}
+                  alt={title}
                 />
               </button>
             </div>
             <div className={css(styles.mangaMetadata)}>
               <div className={css(styles.mangaItemInformationMain)}>
-                <h3 className={css(styles.mangaItemTitle)}>{props.title}</h3>
+                <h3 className={css(styles.mangaItemTitle)}>{title}</h3>
                 <div className={css(styles.mangaItemTags)}>{mangaTags}</div>
                 <div className={css(styles.mangaItemSynopsisContainer)}>
                   <p className={css(styles.mangaItemSynopsis)}>
                     {(() => {
                       return (
                         new DOMParser().parseFromString(
-                          props.synopsis || 'No synopsis available.', // Use OR instead of null check to implicitly cast empty strings to boolean.
+                          synopsis || 'No synopsis available.', // Use OR instead of null check to implicitly cast empty strings to boolean.
                           'text/html'
                         ).body.textContent || 'No synopsis available.'
                       );
@@ -297,6 +308,9 @@ const mangaItem = (props: MangaItemProps) => {
                         styles.mangaItemButton
                       )}
                       variant="contained"
+                      onClick={() => {
+                        Navigation(`/view?id=${mangaid}&source=${source}`);
+                      }}
                     >
                       View Chapters
                     </Button>
@@ -318,26 +332,24 @@ const mangaItem = (props: MangaItemProps) => {
       );
     case 'grid':
       return (
-        <LazyLoad key={props.title} scrollContainer="#lazyload">
+        <LazyLoad key={title} scrollContainer="#lazyload">
           <div>
             <Link
               className={css(styles.linkCover, styles.mangaItemGridContainer)}
-              to={`/view?source=${props.source}&id=${props.mangaid}`}
+              to={`/view?source=${source}&id=${mangaid}`}
             >
               <div className={css(styles.mangaItemCover, styles.gridCover)}>
                 <img
-                  src={props.coverUrl ?? nocover}
+                  src={coverUrl ?? nocover}
                   className={css(
                     styles.mangaItemGridCoverImage,
                     styles.coverImage
                   )}
-                  alt={props.title}
+                  alt={title}
                 />
               </div>
               <span className={css(styles.mangaItemGridTitle)}>
-                {props.title.length < 27
-                  ? props.title
-                  : `${props.title.slice(0, 27)}...`}
+                {title.length < 27 ? title : `${title.slice(0, 27)}...`}
               </span>
             </Link>
           </div>
@@ -349,4 +361,4 @@ const mangaItem = (props: MangaItemProps) => {
   }
 };
 
-export default mangaItem;
+export default MangaItem;
