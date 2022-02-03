@@ -2,13 +2,22 @@ import { useRef, useEffect, useState } from 'react';
 import { StyleSheet, css } from 'aphrodite';
 import { URLSearchParams } from 'url';
 import { useNavigate } from 'react-router-dom';
-import { Button, Paper } from '@mui/material';
+import { Button, Checkbox, IconButton, Paper } from '@mui/material';
 
+import moment from 'moment';
+import DownloadIcon from '@mui/icons-material/Download';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import HeartBrokenIcon from '@mui/icons-material/HeartBroken';
+import DownloadDoneIcon from '@mui/icons-material/DownloadDone';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 
-import { FullManga, Manga } from '../../main/util/dbUtil';
+import BookmarkIcon from '@mui/icons-material/Bookmark';
+import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
+
+import useForceUpdate from '../util/hook/useforceupdate';
+
+import { FullManga } from '../../main/util/dbUtil';
+import { ReadDatabaseValue } from '../../main/util/read';
 
 import Tag from '../components/tag';
 import Handler from '../../sources/handler';
@@ -57,6 +66,7 @@ const styles = StyleSheet.create({
   mangaCover: {
     width: 'fit-content',
     height: 'fit-content',
+    marginBottom: '24px',
   },
 
   mangaBannerContainer: {
@@ -133,9 +143,8 @@ const styles = StyleSheet.create({
     fontWeight: 200,
     fontFamily: 'Open Sans, sans-serif',
     marginTop: '8px',
-    marginBottom: '8px',
     maxWidth: '500px',
-    maxHeight: '100px',
+    maxHeight: '120px',
     overflow: 'hidden',
     backgroundColor: '#111111',
     padding: '8px',
@@ -143,6 +152,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     position: 'relative',
     boxShadow: '0px 0px 10px #000000',
+    boxSizing: 'border-box',
     ':after': {
       top: 0,
       left: 0,
@@ -156,9 +166,9 @@ const styles = StyleSheet.create({
   },
 
   interactionButtons: {
-    width: '100%',
+    display: 'inline-flex',
+    width: 'fit-content',
     marginTop: '-12px',
-    display: 'block',
     flexDirection: 'row',
     justifyContent: 'space-evenly',
   },
@@ -174,6 +184,11 @@ const styles = StyleSheet.create({
     ':hover': {
       letterSpacing: '2px',
     },
+  },
+
+  libraryButton: {
+    marginLeft: '68px',
+    display: 'flex',
   },
 
   dataRule: {
@@ -205,7 +220,7 @@ const styles = StyleSheet.create({
   chapters: {
     maxHeight: '300px',
     overflowY: 'auto',
-    overflowX: 'hidden',
+    overflowX: 'visible',
     borderRadius: '8px',
     boxShadow: '0px 0px 10px #000000',
     width: '100%',
@@ -227,9 +242,10 @@ const styles = StyleSheet.create({
 
   chapter: {
     display: 'flex',
+    position: 'relative',
     flexDirection: 'row',
     marginBottom: '8px',
-    height: '64px',
+    height: 'fit-content',
     boxSizing: 'border-box',
     padding: '8px',
     font: '14px Roboto, sans-serif',
@@ -251,7 +267,7 @@ const styles = StyleSheet.create({
   },
 
   chapterTitle: {
-    width: '100%',
+    width: '95%',
     height: '100%',
   },
 
@@ -271,11 +287,59 @@ const styles = StyleSheet.create({
   flex: {
     display: 'flex',
   },
+
+  chapterDateData: {
+    fontSize: '0.7em',
+    fontWeight: 200,
+    fontVariant: 'small-caps',
+    marginTop: '36px',
+    display: 'inline',
+    fontFamily: 'Open Sans, sans-serif',
+    color: 'white',
+  },
+
+  downloadButton: {
+    float: 'right',
+  },
+
+  downloadButtonIcon: {
+    color: 'white',
+    ':hover': {
+      color: '#DF2935',
+    },
+  },
+
+  disabledDownloadButton: {
+    color: 'white',
+    filter: 'brightness(0.4)',
+    ':hover': {
+      color: 'white',
+    },
+  },
+
+  bookmarksButton: {
+    color: 'white',
+  },
+
+  bookmarksButtonFilled: {
+    color: '#DF2935',
+  },
+
+  chapterContainerReadButton: {
+    padding: '8px',
+    fontWeight: 'bold',
+    color: '#DF2935',
+    boxSizing: 'border-box',
+    width: '135px',
+  },
+
+  chapterContainerBookmarkButton: {},
 });
 
 const View = () => {
   const Query = useQuery();
   const Navigate = useNavigate();
+  const chapterData = useRef<ReadDatabaseValue>({});
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
   const [isHovering, setIsHovering] = useState<boolean>(false);
 
@@ -301,8 +365,14 @@ const View = () => {
   }, [id, source, Navigate, mappedFileNamesRef]);
 
   const selectedSource = mappedFileNamesRef.current[0];
-  const mangaData = useRef<FullManga | null>(null);
+  useEffect(() => {
+    const sourceChapters = window.electron.read.get(selectedSource.getName());
+    if (!sourceChapters) return;
 
+    chapterData.current = sourceChapters;
+  }, [selectedSource, isLoaded]);
+
+  const mangaData = useRef<FullManga | null>(null);
   useEffect(() => {
     const cachedManga = window.electron.library.getCachedManga(source, id);
     if (cachedManga) {
@@ -358,6 +428,7 @@ const View = () => {
     <div className={css(styles.container, styles.scrollBar)}>
       <div className={css(styles.upperContainer)}>
         <div className={css(styles.mangaBannerContainer)}>
+          {/* TODO: Add IconURL fields to sources and have a small pin on the top of the cover image that indicates the source */}
           <img
             src={currentManga.CoverURL}
             alt="Banner"
@@ -396,63 +467,61 @@ const View = () => {
         {/* <h1>{Query.get('id')}</h1>
       <h2>{Query.get('source')}</h2> */}
       </div>
-      <div className={css(styles.metadataContainer)}>
-        <div className={css(styles.interactionButtons)}>
-          <Button
-            startIcon={
-              isInLibrary ? (
-                isHovering ? (
-                  <HeartBrokenIcon />
-                ) : (
-                  <FavoriteIcon />
-                )
-              ) : isHovering ? (
-                <FavoriteIcon />
+      <div className={css(styles.interactionButtons)}>
+        <Button
+          startIcon={
+            isInLibrary ? (
+              isHovering ? (
+                <HeartBrokenIcon />
               ) : (
-                <FavoriteBorderIcon />
+                <FavoriteIcon />
               )
-            }
-            variant="contained"
-            color="primary"
-            onMouseEnter={() => setIsHovering(true)}
-            onMouseLeave={() => setIsHovering(false)}
-            onClick={() => {
-              if (isInLibrary) {
-                window.electron.library.removeMangaFromLibrary(source, id);
-                setInLibrary(false);
-              } else {
-                window.electron.library.addMangaToLibrary(
-                  selectedSource.getName(),
-                  currentManga.MangaID
-                );
+            ) : isHovering ? (
+              <FavoriteIcon />
+            ) : (
+              <FavoriteBorderIcon />
+            )
+          }
+          variant="contained"
+          color="primary"
+          onMouseEnter={() => setIsHovering(true)}
+          onMouseLeave={() => setIsHovering(false)}
+          onClick={() => {
+            if (isInLibrary) {
+              window.electron.library.removeMangaFromLibrary(source, id);
+              setInLibrary(false);
+            } else {
+              window.electron.library.addMangaToLibrary(
+                selectedSource.getName(),
+                currentManga.MangaID
+              );
 
-                setInLibrary(true);
-              }
-            }}
-            className={css(styles.interactionButton)}
-            sx={
-              isInLibrary
-                ? {
-                    backgroundColor: '#FFFFFF',
-                    color: '#DF2935',
-                    '&:hover': {
-                      backgroundColor: '#DF2935',
-                      color: '#FFFFFF',
-                    },
-                  }
-                : {
+              setInLibrary(true);
+            }
+          }}
+          className={css(styles.interactionButton, styles.libraryButton)}
+          sx={
+            isInLibrary
+              ? {
+                  backgroundColor: '#FFFFFF',
+                  color: '#DF2935',
+                  '&:hover': {
                     backgroundColor: '#DF2935',
                     color: '#FFFFFF',
-                    '&:hover': {
-                      backgroundColor: '#FFFFFF',
-                      color: '#DF2935',
-                    },
-                  }
-            }
-          >
-            {isInLibrary ? 'In Library' : 'Add To Library'}
-          </Button>
-        </div>
+                  },
+                }
+              : {
+                  backgroundColor: '#DF2935',
+                  color: '#FFFFFF',
+                  '&:hover': {
+                    backgroundColor: '#FFFFFF',
+                    color: '#DF2935',
+                  },
+                }
+          }
+        >
+          {isInLibrary ? 'In Library' : 'Add To Library'}
+        </Button>
       </div>
       <hr className={css(styles.dataRule)} />
       <div className={css(styles.metadataContainer)}>
@@ -460,38 +529,114 @@ const View = () => {
         <div className={css(styles.dataContainer)}>
           <div className={css(styles.chaptersContainer)}>
             <div className={css(styles.chapters, styles.scrollBar)}>
-              {currentManga.Chapters.map((x) => (
-                <Paper
-                  elevation={3}
-                  key={x.ChapterID}
-                  className={css(styles.chapter)}
-                >
-                  <div className={css(styles.chapterTitle)}>
-                    <h3 className={css(styles.chapterTitleHeader)}>
-                      {x.ChapterTitle ||
-                        `${
-                          x.Volume
-                            ? `Volume ${x.Volume} Chapter ${x.Chapter}`
-                            : `Chapter ${x.Chapter}`
-                        }`}
-                    </h3>
-                    {x.ChapterTitle && (
-                      <h4 className={css(styles.chapterNumberData)}>
-                        {x.Volume
-                          ? `VOL. ${x.Volume} CH. ${x.Chapter}`
-                          : `CH. ${x.Chapter}`}
-                      </h4>
-                    )}
-                    {x.Groups && x.Groups.length > 0 ? (
-                      <div className={css(styles.chapterGroups)}>
-                        <span className={css(styles.chapterGroupsText)}>
-                          {x.Groups.join('& ').slice(0, 45)}
-                        </span>
-                      </div>
+              {currentManga.Chapters.map((x) => {
+                const foundChapter = chapterData.current[x.ChapterID] || {};
+
+                const {
+                  pageCount = -1,
+                  currentPage = -1,
+                  lastRead,
+                } = foundChapter;
+                const isRead =
+                  foundChapter &&
+                  currentPage !== -1 &&
+                  pageCount !== -1 &&
+                  currentPage === pageCount;
+                const isBookmarked = foundChapter && foundChapter.isBookmarked;
+
+                return (
+                  <Paper
+                    elevation={3}
+                    key={x.ChapterID}
+                    className={css(styles.chapter)}
+                  >
+                    <div className={css(styles.chapterTitle)}>
+                      <h3 className={css(styles.chapterTitleHeader)}>
+                        {x.ChapterTitle ||
+                          `${
+                            x.Volume
+                              ? `Volume ${x.Volume} Chapter ${x.Chapter}`
+                              : `Chapter ${x.Chapter}`
+                          }`}
+                      </h3>
+                      {x.ChapterTitle && (
+                        <h4 className={css(styles.chapterNumberData)}>
+                          {x.Volume
+                            ? `VOL. ${x.Volume} CH. ${x.Chapter}`
+                            : `CH. ${x.Chapter}`}
+                        </h4>
+                      )}
+                      {x.Groups && x.Groups.length > 0 ? (
+                        <div className={css(styles.chapterGroups)}>
+                          <span className={css(styles.chapterGroupsText)}>
+                            {x.Groups.join(' & ').slice(0, 45)}
+                          </span>
+                        </div>
+                      ) : null}
+                      {x.PublishedAt ? (
+                        <h4 className={css(styles.chapterDateData)}>
+                          {moment(x.PublishedAt).format('MMMM Do YYYY')}
+                        </h4>
+                      ) : null}
+                    </div>
+                    <Button className={css(styles.chapterContainerReadButton)}>
+                      {foundChapter && currentPage !== -1
+                        ? isRead
+                          ? 'Re-read'
+                          : 'Continue'
+                        : 'Read'}
+                    </Button>
+                    <Checkbox
+                      className={css(styles.chapterContainerBookmarkButton)}
+                      checkedIcon={
+                        <BookmarkIcon
+                          className={css(styles.bookmarksButtonFilled)}
+                        />
+                      }
+                      icon={
+                        <BookmarkBorderIcon
+                          className={css(styles.bookmarksButton)}
+                        />
+                      }
+                      onChange={(
+                        event: React.ChangeEvent<HTMLInputElement>
+                      ) => {
+                        const { checked } = event.target;
+                        if (checked)
+                          // TODO: try using array + deconstruction here?
+                          window.electron.read.set(
+                            selectedSource.getName(),
+                            x.ChapterID,
+                            pageCount,
+                            currentPage,
+                            lastRead,
+                            true
+                          );
+                        else
+                          window.electron.read.set(
+                            selectedSource.getName(),
+                            x.ChapterID,
+                            pageCount,
+                            currentPage,
+                            lastRead,
+                            false
+                          );
+                      }}
+                      defaultChecked={isBookmarked}
+                    />
+                    {selectedSource.canDownload ? (
+                      <IconButton className={css(styles.downloadButton)}>
+                        <DownloadIcon
+                          className={css(
+                            styles.downloadButtonIcon,
+                            styles.disabledDownloadButton
+                          )}
+                        />
+                      </IconButton>
                     ) : null}
-                  </div>
-                </Paper>
-              ))}
+                  </Paper>
+                );
+              })}
             </div>
           </div>
           <Paper className={css(styles.utilityContainer)}>
