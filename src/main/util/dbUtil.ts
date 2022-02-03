@@ -40,12 +40,12 @@ const MangaDatabase = new Enmap<
 // to hit when trying to get a manga. If the result is not found, then you should
 // try to get the manga from the source.
 export type Chapter = {
+  PublishedAt: Date;
+
   ChapterID: string;
   Chapter: number | string;
   Volume: number | string;
   ChapterTitle: string;
-  PageCount: number; // -1 if not available, will be set when the chapter is loaded.
-  CurrentPage: number; // -1 if not started
   Groups: string[];
 };
 
