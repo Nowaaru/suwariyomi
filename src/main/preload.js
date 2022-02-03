@@ -39,6 +39,38 @@ contextBridge.exposeInMainWorld('electron', {
       return ipcRenderer.sendSync('get-all-cached-mangas');
     },
   },
+  read: {
+    get: (sourceName) => {
+      return ipcRenderer.sendSync('get-read', sourceName);
+    },
+    set: (
+      sourceName,
+      chapterId,
+      pageCount,
+      currentPage,
+      lastRead,
+      isBookmarked
+    ) => {
+      ipcRenderer.send(
+        'set-read',
+        sourceName,
+        chapterId,
+        pageCount,
+        currentPage,
+        lastRead,
+        isBookmarked
+      );
+    },
+    deleteEntry: (sourceName, chapterId) => {
+      ipcRenderer.send('delete-read', sourceName, chapterId);
+    },
+    deleteSource: (sourceName) => {
+      ipcRenderer.send('delete-source-read', sourceName);
+    },
+    flush: () => {
+      ipcRenderer.send('flush-read');
+    },
+  },
   auth: {
     async generateAuthenticationWindow(windowData, targetLocation) {
       const id = v4();

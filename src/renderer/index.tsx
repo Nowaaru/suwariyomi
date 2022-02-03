@@ -1,6 +1,7 @@
 import { render } from 'react-dom';
 import { IpcRendererEvent } from 'electron';
-import { LibrarySources, FullManga, LibraryManga } from '../main/util/dbUtil';
+import { LibrarySources, FullManga } from '../main/util/dbUtil';
+import { ReadDatabaseValue } from '../main/util/read';
 import Topbar from './components/topbar';
 import App from './App';
 
@@ -25,6 +26,20 @@ declare global {
         ) => FullManga | undefined;
         getCachedMangas: (sourceName: string) => FullManga[];
         getAllCachedMangas: () => FullManga[];
+      };
+      read: {
+        get: (sourceName: string) => ReadDatabaseValue;
+        set: (
+          sourceName: string,
+          chapterId: string,
+          pageCount: number,
+          currentPage: number,
+          lastRead: Date,
+          isBookmarked: boolean
+        ) => void;
+        deleteEntry: (sourceName: string, chapterId: string) => void;
+        deleteSource: (sourceName: string) => void;
+        flush: () => void;
       };
       auth: {
         generateAuthenticationWindow: (

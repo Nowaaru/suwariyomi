@@ -19,6 +19,8 @@ import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 
 import MangaDB from './util/dbUtil';
+import ReadDB from './util/read';
+
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
@@ -110,6 +112,44 @@ ipcMain.on('get-cached-mangas', async (event, sourceName) => {
 
 ipcMain.on('get-all-cached-mangas', async (event) => {
   event.returnValue = await MangaDB.GetAllCachedMangas();
+});
+
+ipcMain.on('get-read', async (event, sourceName) => {
+  event.returnValue = await ReadDB.get(sourceName);
+});
+
+ipcMain.on(
+  'set-read',
+  async (
+    event,
+    sourceName,
+    chapterId,
+    pageCount,
+    currentPage,
+    lastRead,
+    isBookmarked
+  ) => {
+    event.returnValue = await ReadDB.set(
+      sourceName,
+      chapterId,
+      pageCount,
+      currentPage,
+      lastRead,
+      isBookmarked
+    );
+  }
+);
+
+ipcMain.on('delete-read', async (event, sourceName, chapterId) => {
+  event.returnValue = await ReadDB.deleteEntry(sourceName, chapterId);
+});
+
+ipcMain.on('delete-source-read', async (event, sourceName) => {
+  event.returnValue = await ReadDB.deleteSource(sourceName);
+});
+
+ipcMain.on('flush-read', async (event) => {
+  event.returnValue = await ReadDB.flush();
 });
 
 ipcMain.on(
