@@ -15,7 +15,7 @@ import LazyLoad, { forceCheck } from 'react-lazyload';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import parseQuery from '../util/search';
 
-import { Manga as MangaType } from '../../main/util/dbUtil';
+import { FullManga, Manga as MangaType } from '../../main/util/dbUtil';
 import MangaItem from '../components/mangaitem';
 import useQuery from '../util/hook/usequery';
 
@@ -267,20 +267,23 @@ const Library = () => {
   const librarySources = LibraryUtilities.getSources();
   const librarySourcesKeys = Object.keys(librarySources);
   // Filter out sources that are not enabled AND has no manga
-  const sourceList = librarySourcesKeys
+  const sourceList: Record<string, FullManga[]> = {};
+  librarySourcesKeys
     .filter(
       (source) =>
         librarySources[source].Enabled &&
         librarySources[source].Manga.length > 0 &&
         (searchQuery === '' ||
-          librarySources[source].Manga.some((manga) =>
+          (LibraryUtilities.getCachedMangas(source) || []).some((manga) =>
             manga.Name.toLowerCase().includes(searchQuery.toLowerCase())
           ))
     )
-    .map((source) => librarySources[source]);
+    .forEach((source) => {
+      sourceList[source] = LibraryUtilities.getCachedMangas(source);
+    });
 
-  sourceList.forEach((Source) => {
-    Source.Manga.forEach((Manga) => {
+  Object.values(sourceList).forEach((MangaList) => {
+    MangaList.forEach((Manga) => {
       if (searchQuery !== '')
         if (!Manga.Name.toLowerCase().includes(searchQuery.toLowerCase()))
           return;
@@ -304,12 +307,9 @@ const Library = () => {
     });
   });
 
-  sourceList.forEach((sourceObject) => {
+  librarySourcesKeys.forEach((sourceKey) => {
     accordionArray.push(
-      <LazyLoad
-        key={`${sourceObject.Name}-lazyload`}
-        scrollContainer="#lazyload"
-      >
+      <LazyLoad key={`${sourceKey}-lazyload`} scrollContainer="#lazyload">
         <Accordion
           TransitionProps={{
             unmountOnExit: true,
@@ -317,12 +317,12 @@ const Library = () => {
             onEntered: forceCheck,
           }}
           defaultExpanded={
-            searchQuery !== '' && sourceObject.Manga.length <= 45
+            searchQuery !== '' && librarySources[sourceKey].Manga.length <= 45
           }
           classes={{
             root: css(libraryStyleSheet.accordionItem),
           }}
-          key={sourceObject.Name}
+          key={sourceKey}
         >
           <AccordionSummary
             expandIcon={<ExpandMoreIcon htmlColor="#FFFFFF" />}
@@ -342,7 +342,7 @@ const Library = () => {
               }}
               className={css(libraryStyleSheet.accordionText)}
             >
-              {sourceObject.Name}
+              {sourceKey}
             </Typography>
             <Typography
               sx={{
@@ -367,10 +367,9 @@ const Library = () => {
     );
   });
 
-  const filteredMediaList = sourceList
-    .filter((x) => x.Enabled && x.Manga.length > 0)
-    .map((x) => x.Manga.filter((y) => y.Name.length <= 45))
-    .flat();
+  const filteredMediaList = Object.values(sourceList)
+    .flat()
+    .filter((x) => x.Name.toLowerCase().length <= 45);
   if (!readingPrefixTarget)
     readingPrefixTarget =
       filteredMediaList[Math.floor(Math.random() * filteredMediaList.length)];

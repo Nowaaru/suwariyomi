@@ -1,6 +1,6 @@
 import { render } from 'react-dom';
 import { IpcRendererEvent } from 'electron';
-import { Source, Sources, Manga } from '../main/util/dbUtil';
+import { LibrarySources, FullManga, LibraryManga } from '../main/util/dbUtil';
 import Topbar from './components/topbar';
 import App from './App';
 
@@ -11,23 +11,20 @@ declare global {
         getSourceFiles: () => string[];
       };
       library: {
+        getSources: () => LibrarySources;
         flush: () => void;
-        getSource: (sourceName: string) => Source | undefined;
-        getSources: () => Sources;
-        getManga: (sourceName: string, mangaID: string) => Manga | undefined;
-        getMangas: (sourceName: string) => Manga[];
-        getMangaByName: (
+        addMangaToLibrary: (sourceName: string, mangaId: string) => void;
+        removeMangaFromLibrary: (sourceName: string, mangaId: string) => void;
+        getLibraryMangas: (sourceName: string) => string[];
+
+        addMangaToCache: (sourceName: string, fullManga: FullManga) => void;
+        removeMangaFromCache: (sourceName: string, mangaId: string) => void;
+        getCachedManga: (
           sourceName: string,
-          mangaName: string
-        ) => Manga | undefined;
-        getMangasByAuthor: (sourceName: string, authorName: string) => Manga[];
-        addManga: (sourceName: string, manga: Manga) => boolean;
-        updateManga: (sourceName: string, mangaID: string) => boolean;
-        removeManga: (
-          sourceName: string,
-          mangaID: string,
-          manga: Manga
-        ) => boolean;
+          mangaId: string
+        ) => FullManga | undefined;
+        getCachedMangas: (sourceName: string) => FullManga[];
+        getAllCachedMangas: () => FullManga[];
       };
       auth: {
         generateAuthenticationWindow: (

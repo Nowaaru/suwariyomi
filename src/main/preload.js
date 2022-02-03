@@ -9,43 +9,34 @@ contextBridge.exposeInMainWorld('electron', {
   },
   library: {
     flush: () => {
-      ipcRenderer.invoke('flush');
-    },
-    getSource: (sourceName) => {
-      return ipcRenderer.sendSync('get-source', sourceName);
+      ipcRenderer.send('flush-db');
     },
     getSources: () => {
       return ipcRenderer.sendSync('get-sources');
     },
-    getManga: (sourceName, mangaId) => {
-      return ipcRenderer.sendSync('get-manga', sourceName, mangaId);
+    addMangaToLibrary: (sourceName, mangaId) => {
+      ipcRenderer.send('add-manga-to-library', sourceName, mangaId);
     },
-    getMangaByName: (sourceName, mangaName) => {
-      return ipcRenderer.sendSync('get-manga-by-name', sourceName, mangaName);
+    removeMangaFromLibrary: (sourceName, mangaId) => {
+      ipcRenderer.send('remove-manga-from-library', sourceName, mangaId);
     },
-    getMangasByAuthor: (sourceName, authorName) => {
-      return ipcRenderer.sendSync(
-        'get-mangas-by-author',
-        sourceName,
-        authorName
-      );
+    getLibraryMangas: (sourceName) => {
+      return ipcRenderer.sendSync('get-library-mangas', sourceName);
     },
-    addManga: (sourceName, manga) => {
-      return ipcRenderer.sendSync('add-manga', sourceName, manga);
+    addMangaToCache: (sourceName, fullManga) => {
+      ipcRenderer.send('add-manga-to-cache', sourceName, fullManga);
     },
-    removeManga: (sourceName, mangaId) => {
-      return ipcRenderer.sendSync('remove-manga', sourceName, mangaId);
+    removeMangaFromCache: (sourceName, mangaId) => {
+      ipcRenderer.send('remove-manga-from-cache', sourceName, mangaId);
     },
-    updateManga: (sourceName, mangaId, replacementMangaItem) => {
-      return ipcRenderer.sendSync(
-        'update-manga',
-        sourceName,
-        mangaId,
-        replacementMangaItem
-      );
+    getCachedManga: (sourceName, mangaId) => {
+      return ipcRenderer.sendSync('get-cached-manga', sourceName, mangaId);
     },
-    getMangas: (sourceName) => {
-      return ipcRenderer.sendSync('get-mangas', sourceName);
+    getCachedMangas: (sourceName) => {
+      return ipcRenderer.sendSync('get-cached-mangas', sourceName);
+    },
+    getAllCachedMangas: () => {
+      return ipcRenderer.sendSync('get-all-cached-mangas');
     },
   },
   auth: {

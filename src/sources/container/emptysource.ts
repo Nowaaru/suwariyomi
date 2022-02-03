@@ -1,4 +1,4 @@
-import { Manga, Chapter } from '../../main/util/dbUtil';
+import { Manga, Chapter, FullManga } from '../../main/util/dbUtil';
 import SourceBase, {
   SearchFilterFieldTypes,
   SearchFilters,
@@ -70,7 +70,7 @@ export default class EmptySource extends SourceBase {
     return [];
   }
 
-  public getManga(): Promise<Manga & Pick<Required<Manga>, 'Authors'>> {
+  public getManga(): Promise<FullManga> {
     return {} as unknown as any;
   }
 

@@ -11,7 +11,6 @@ import SourceBase, {
 import {
   Manga as DatabaseManga,
   Chapter as DatabaseChapter,
-  MangaWithAuthors,
   FullManga,
 } from '../../main/util/dbUtil';
 

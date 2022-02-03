@@ -20,6 +20,8 @@ const styles = StyleSheet.create({
     height: '100%',
     overflowX: 'hidden',
     overflowY: 'auto',
+    paddingBottom: '6rem',
+    boxSizing: 'border-box',
   },
 
   upperContainer: {
@@ -35,6 +37,21 @@ const styles = StyleSheet.create({
     marginTop: '24px',
     marginLeft: '48px',
     textShadow: '0px 0px 10px #000000',
+  },
+
+  dataContainer: {
+    display: 'flex',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+  },
+
+  utilityContainer: {
+    display: 'flex',
+    width: '45%',
+    marginRight: '24px',
+    padding: '8px',
+    boxSizing: 'border-box',
+    backgroundColor: '#222222',
   },
 
   mangaCover: {
@@ -150,9 +167,10 @@ const styles = StyleSheet.create({
     padding: '8px 12px',
     borderRadius: '24px',
     fontSize: '1em',
+    width: 'fit-content',
     fontWeight: 'bold',
     transition:
-      'letter-spacing 0.5s ease-in-out, background-color 0.3s ease-in-out',
+      'letter-spacing 0.5s ease-in-out, background-color 0.3s ease-in-out, width 0.3s ease-in-out',
     ':hover': {
       letterSpacing: '2px',
     },
@@ -169,10 +187,12 @@ const styles = StyleSheet.create({
   },
 
   chaptersContainer: {
+    display: 'flex',
     width: '50%',
   },
 
   chaptersHeader: {
+    width: '50%',
     fontSize: '1.5em',
     fontFamily: 'Poppins, Open Sans,sans-serif',
     fontWeight: 400,
@@ -182,7 +202,28 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
 
-  chapters: {},
+  chapters: {
+    maxHeight: '300px',
+    overflowY: 'auto',
+    overflowX: 'hidden',
+    borderRadius: '8px',
+    boxShadow: '0px 0px 10px #000000',
+    width: '100%',
+  },
+
+  scrollBar: {
+    '::-webkit-scrollbar': {
+      width: '4px',
+    },
+    '::-webkit-scrollbar-thumb': {
+      backgroundColor: '#FFFFFF',
+      borderRadius: '4px',
+      transition: 'background-color 0.2s ease-in-out',
+      ':hover': {
+        backgroundColor: '#DF2935',
+      },
+    },
+  },
 
   chapter: {
     display: 'flex',
@@ -226,18 +267,24 @@ const styles = StyleSheet.create({
   chapterGroupsText: {
     color: 'rgb(127,127,127)',
   },
+
+  flex: {
+    display: 'flex',
+  },
 });
 
 const View = () => {
   const Query = useQuery();
   const Navigate = useNavigate();
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
+  const [isHovering, setIsHovering] = useState<boolean>(false);
 
-  // Convert Query to Object
   const { id, source } = Object.fromEntries(
     Query as unknown as URLSearchParams
   );
-
+  const [isInLibrary, setInLibrary] = useState<boolean>(
+    !!window.electron.library.getLibraryMangas(source).find((x) => x === id)
+  );
   const mappedFileNamesRef = useRef(
     window.electron.util
       .getSourceFiles()
@@ -257,12 +304,23 @@ const View = () => {
   const mangaData = useRef<FullManga | null>(null);
 
   useEffect(() => {
+    const cachedManga = window.electron.library.getCachedManga(source, id);
+    if (cachedManga) {
+      mangaData.current = cachedManga;
+      setIsLoaded(true);
+
+      return;
+    }
+
     selectedSource
       .getManga(id)
-      .then((x) => (mangaData.current = x))
+      .then((x) => {
+        window.electron.library.addMangaToCache(source, x);
+        return (mangaData.current = x);
+      })
       .then(() => setIsLoaded(true))
       .catch(console.error);
-  }, [selectedSource, id, mangaData]);
+  }, [selectedSource, id, mangaData, source]);
 
   const currentManga: FullManga | null = mangaData.current;
   if (!currentManga) {
@@ -270,10 +328,34 @@ const View = () => {
     return null;
   }
 
+  currentManga.Chapters.sort((a, b) => {
+    const numberifiedA = Number(a.Chapter);
+    const numberifiedB = Number(b.Chapter);
+
+    const numberifiedAVolume = Number(a.Volume);
+    const numberifiedBVolume = Number(b.Volume);
+
+    const isANumber = !Number.isNaN(numberifiedA);
+    const isBNumber = !Number.isNaN(numberifiedB);
+
+    const isAVolumeNumber = !Number.isNaN(numberifiedAVolume);
+    const isBVolumeNumber = !Number.isNaN(numberifiedBVolume);
+
+    const calculatedA =
+      numberifiedA * (isAVolumeNumber ? Math.max(numberifiedAVolume, 1) : 1);
+    const calculatedB =
+      numberifiedB * (isBVolumeNumber ? Math.max(numberifiedBVolume, 1) : 1);
+    if (isANumber && isBNumber) {
+      return -(calculatedA - calculatedB);
+    }
+
+    return -1;
+  });
+
   const Authors = currentManga.Authors.slice(0, 4);
   const remainderAuthors = currentManga.Authors.length - Authors.length;
   return (
-    <div className={css(styles.container)}>
+    <div className={css(styles.container, styles.scrollBar)}>
       <div className={css(styles.upperContainer)}>
         <div className={css(styles.mangaBannerContainer)}>
           <img
@@ -306,7 +388,9 @@ const View = () => {
             ))}
           </div>
           <div className={css(styles.mangaSynopsis)}>
-            {currentManga.Synopsis ?? 'No synopsis available.'}
+            {currentManga.Synopsis && currentManga.Synopsis.length > 0
+              ? currentManga.Synopsis
+              : 'No synopsis available.'}
           </div>
         </div>
         {/* <h1>{Query.get('id')}</h1>
@@ -315,85 +399,105 @@ const View = () => {
       <div className={css(styles.metadataContainer)}>
         <div className={css(styles.interactionButtons)}>
           <Button
-            startIcon={<FavoriteBorderIcon />}
+            startIcon={
+              isInLibrary ? (
+                isHovering ? (
+                  <HeartBrokenIcon />
+                ) : (
+                  <FavoriteIcon />
+                )
+              ) : isHovering ? (
+                <FavoriteIcon />
+              ) : (
+                <FavoriteBorderIcon />
+              )
+            }
             variant="contained"
             color="primary"
-            onClick={() => console.log('Add to list')}
-            className={css(styles.interactionButton)}
-            sx={{
-              backgroundColor: '#DF2935',
-              '&:hover': {
-                backgroundColor: '#FFFFFF',
-                color: '#DF2935',
-              },
+            onMouseEnter={() => setIsHovering(true)}
+            onMouseLeave={() => setIsHovering(false)}
+            onClick={() => {
+              if (isInLibrary) {
+                window.electron.library.removeMangaFromLibrary(source, id);
+                setInLibrary(false);
+              } else {
+                window.electron.library.addMangaToLibrary(
+                  selectedSource.getName(),
+                  currentManga.MangaID
+                );
+
+                setInLibrary(true);
+              }
             }}
+            className={css(styles.interactionButton)}
+            sx={
+              isInLibrary
+                ? {
+                    backgroundColor: '#FFFFFF',
+                    color: '#DF2935',
+                    '&:hover': {
+                      backgroundColor: '#DF2935',
+                      color: '#FFFFFF',
+                    },
+                  }
+                : {
+                    backgroundColor: '#DF2935',
+                    color: '#FFFFFF',
+                    '&:hover': {
+                      backgroundColor: '#FFFFFF',
+                      color: '#DF2935',
+                    },
+                  }
+            }
           >
-            Add to Library
+            {isInLibrary ? 'In Library' : 'Add To Library'}
           </Button>
         </div>
       </div>
       <hr className={css(styles.dataRule)} />
       <div className={css(styles.metadataContainer)}>
-        <div className={css(styles.chaptersContainer)}>
-          <h2 className={css(styles.chaptersHeader)}>Chapters</h2>
-          <div className={css(styles.chapters)}>
-            {currentManga.Chapters.sort((a, b) => {
-              const numberifiedA = Number(a.Chapter);
-              const numberifiedB = Number(b.Chapter);
-
-              const numberifiedAVolume = Number(a.Volume);
-              const numberifiedBVolume = Number(b.Volume);
-
-              const isANumber = !Number.isNaN(numberifiedA);
-              const isBNumber = !Number.isNaN(numberifiedB);
-
-              const isAVolumeNumber = !Number.isNaN(numberifiedAVolume);
-              const isBVolumeNumber = !Number.isNaN(numberifiedBVolume);
-
-              const calculatedA =
-                numberifiedA *
-                (isAVolumeNumber ? Math.max(numberifiedAVolume, 1) : 1);
-              const calculatedB =
-                numberifiedB *
-                (isBVolumeNumber ? Math.max(numberifiedBVolume, 1) : 1);
-              if (isANumber && isBNumber) {
-                return -(calculatedA - calculatedB);
-              }
-
-              return -1;
-            }).map((x) => (
-              <Paper
-                elevation={3}
-                key={x.ChapterID}
-                className={css(styles.chapter)}
-              >
-                <div className={css(styles.chapterTitle)}>
-                  <h3 className={css(styles.chapterTitleHeader)}>
-                    {x.ChapterTitle ||
-                      `${
-                        x.Volume
-                          ? `Volume ${x.Volume} Chapter ${x.Chapter}`
-                          : `Chapter ${x.Chapter}`
-                      }`}
-                  </h3>
-                  {x.ChapterTitle && (
-                    <h4 className={css(styles.chapterNumberData)}>
-                      {x.Volume
-                        ? `VOL. ${x.Volume} CH. ${x.Chapter}`
-                        : `CH. ${x.Chapter}`}
-                    </h4>
-                  )}
-                  {x.Groups && x.Groups.length > 0 ? (
-                    <div className={css(styles.chapterGroups)}>
-                      <span className={css(styles.chapterGroupsText)}>
-                        {x.Groups.join('& ').slice(0, 45)}
-                      </span>
-                    </div>
-                  ) : null}
-                </div>
-              </Paper>
-            ))}
+        <h2 className={css(styles.chaptersHeader)}>Chapters</h2>
+        <div className={css(styles.dataContainer)}>
+          <div className={css(styles.chaptersContainer)}>
+            <div className={css(styles.chapters, styles.scrollBar)}>
+              {currentManga.Chapters.map((x) => (
+                <Paper
+                  elevation={3}
+                  key={x.ChapterID}
+                  className={css(styles.chapter)}
+                >
+                  <div className={css(styles.chapterTitle)}>
+                    <h3 className={css(styles.chapterTitleHeader)}>
+                      {x.ChapterTitle ||
+                        `${
+                          x.Volume
+                            ? `Volume ${x.Volume} Chapter ${x.Chapter}`
+                            : `Chapter ${x.Chapter}`
+                        }`}
+                    </h3>
+                    {x.ChapterTitle && (
+                      <h4 className={css(styles.chapterNumberData)}>
+                        {x.Volume
+                          ? `VOL. ${x.Volume} CH. ${x.Chapter}`
+                          : `CH. ${x.Chapter}`}
+                      </h4>
+                    )}
+                    {x.Groups && x.Groups.length > 0 ? (
+                      <div className={css(styles.chapterGroups)}>
+                        <span className={css(styles.chapterGroupsText)}>
+                          {x.Groups.join('& ').slice(0, 45)}
+                        </span>
+                      </div>
+                    ) : null}
+                  </div>
+                </Paper>
+              ))}
+            </div>
           </div>
+          <Paper className={css(styles.utilityContainer)}>
+            {/* If this manga is not in the cache */}
+            {/* First component: Chapter Progress */}
+          </Paper>
         </div>
       </div>
     </div>

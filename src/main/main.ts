@@ -61,7 +61,7 @@ ipcMain.handle('generate-pkce', async () => {
 });
 
 ipcMain.handle('flush', () => {
-  MangaDB.flush();
+  MangaDB.Flush();
 });
 
 ipcMain.on('get-fs-sources', async (event) => {
@@ -71,47 +71,45 @@ ipcMain.on('get-fs-sources', async (event) => {
   event.returnValue = sources;
 });
 
-ipcMain.on('get-source', (event, sourceName) => {
-  event.returnValue = MangaDB.getSource(sourceName);
-});
-
 ipcMain.on('get-sources', (event) => {
-  event.returnValue = MangaDB.getSources();
+  event.returnValue = MangaDB.GetSources();
 });
 
-ipcMain.on('get-manga', (event, sourceName, mangaId) => {
-  event.returnValue = MangaDB.getManga(sourceName, mangaId);
+ipcMain.on('flush-db', (event) => {
+  MangaDB.Flush();
+  event.returnValue = true;
 });
 
-ipcMain.on('get-manga-by-name', (event, sourceName, mangaName) => {
-  event.returnValue = MangaDB.getMangaByName(sourceName, mangaName);
+ipcMain.on('add-manga-to-library', async (event, sourceName, mangaID) => {
+  event.returnValue = await MangaDB.AddMangaToLibrary(sourceName, mangaID);
 });
 
-ipcMain.on('get-manga-by-author', (event, sourceName, authorName) => {
-  event.returnValue = MangaDB.getMangasByAuthor(sourceName, authorName);
+ipcMain.on('remove-manga-from-library', async (event, sourceName, mangaID) => {
+  event.returnValue = await MangaDB.RemoveMangaFromLibrary(sourceName, mangaID);
 });
 
-ipcMain.on('add-manga', (event, sourceName, manga) => {
-  event.returnValue = MangaDB.addManga(sourceName, manga);
+ipcMain.on('get-library-mangas', async (event, sourceName) => {
+  event.returnValue = await MangaDB.GetLibraryMangas(sourceName);
 });
 
-ipcMain.on('remove-manga', (event, sourceName, mangaId) => {
-  event.returnValue = MangaDB.removeManga(sourceName, mangaId);
+ipcMain.on('add-manga-to-cache', async (event, sourceName, fullManga) => {
+  event.returnValue = await MangaDB.AddMangaToCache(sourceName, fullManga);
 });
 
-ipcMain.on(
-  'update-manga',
-  (event, sourceName, mangaId, replacementMangaItem) => {
-    event.returnValue = MangaDB.updateManga(
-      sourceName,
-      mangaId,
-      replacementMangaItem
-    );
-  }
-);
+ipcMain.on('remove-manga-from-cache', async (event, sourceName, mangaID) => {
+  event.returnValue = await MangaDB.RemoveMangaFromCache(sourceName, mangaID);
+});
 
-ipcMain.on('get-mangas', (event, sourceName) => {
-  event.returnValue = MangaDB.getMangas(sourceName);
+ipcMain.on('get-cached-manga', async (event, sourceName, mangaId) => {
+  event.returnValue = await MangaDB.GetCachedManga(sourceName, mangaId);
+});
+
+ipcMain.on('get-cached-mangas', async (event, sourceName) => {
+  event.returnValue = await MangaDB.GetCachedMangas(sourceName);
+});
+
+ipcMain.on('get-all-cached-mangas', async (event) => {
+  event.returnValue = await MangaDB.GetAllCachedMangas();
 });
 
 ipcMain.on(

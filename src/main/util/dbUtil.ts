@@ -1,42 +1,44 @@
+/* eslint-disable max-classes-per-file */
 import Enmap from 'enmap';
 import { app } from 'electron';
 
-const MangaDatabase = new Enmap({
+const LibraryDatabase = new Enmap<
+  string,
+  {
+    Sources: {
+      [sourceName: string]: {
+        Manga: string[];
+        Enabled: boolean;
+        LastUpdated: number;
+      };
+    };
+  }
+>({
   name: 'library',
   dataDir: app.getPath('userData'),
 });
 
-// Hierarchy:
-/*
-  MangaDatabase {
-    Sources {
-      SourceName {
-        Enabled: boolean - If enabled, it will be shown in library (if manga from the source is in library) and in search results
-        Manga [ - Is an array so we can have sorting methods
-          {
-            Name: string,
-            MangaID: string,
-            Author: string,
-
-            Added: Date, - When the manga was added to the library
-            LastRead: Date,
-            Chapters: [
-              {
-                ChapterID: string,
-                ChapterNumber: number,
-                VolumeNumber: number,
-                ChapterTitle: string,
-                PageCount: number,
-                CurrentPage: number,
-              }
-            ]
-          }
-        ]
-      }
-    }
+const MangaDatabase = new Enmap<
+  string,
+  {
+    Sources: {
+      [sourceName: string]: Record<string, FullManga>;
+    };
   }
-*/
+>({
+  name: 'manga',
+  dataDir: app.getPath('userData'),
+});
 
+// MangaDatabase's purpose is to cache manga data.
+// LibraryDatabase's purpose is to cache library data.
+
+// LibraryDatabase will hold no specific information outside of sources and tags.
+// LibraryDatbase hierarchy: Library -> Source -> {MangaID: Manga}
+
+// MangaDatabase will hold all information regarding Manga. This is the first stop
+// to hit when trying to get a manga. If the result is not found, then you should
+// try to get the manga from the source.
 export type Chapter = {
   ChapterID: string;
   Chapter: number | string;
@@ -85,26 +87,40 @@ export type FullManga = MangaWithAuthors &
 
 export type LibraryManga = FullManga & Pick<Required<Manga>, 'Added'>;
 
-export type Source = {
-  Name: string;
+export type LibrarySource = {
   Enabled: boolean;
-  Manga: Manga[];
-};
-export type Sources = {
-  [sourceName: string]: Source;
+  Manga: string[];
 };
 
-const defaultData = {
+export type LibrarySources = {
+  [sourceName: string]: LibrarySource;
+};
+
+export type CacheSource = Record<string, FullManga[]>;
+
+export type CacheSources = {
+  [sourceName: string]: CacheSource;
+};
+
+const defaultMangaData = {
+  Sources: {
+    MangaDex: {},
+  },
+};
+
+const defaultLibraryData = {
   Sources: {
     MangaDex: {
       Enabled: true,
+      LastUpdated: 0,
       Manga: [],
     },
   },
 };
 
 const enforce = () => {
-  MangaDatabase.ensure('Library', defaultData);
+  MangaDatabase.ensure('CachedManga', defaultMangaData);
+  LibraryDatabase.ensure('Library', defaultLibraryData);
 };
 
 /* Class Methods
@@ -117,86 +133,234 @@ const enforce = () => {
 
 // this literally should not be a class but i'm too lazy to reverse my horrible mistakes
 enforce();
-export default class MangaDB {
-  static flush = () => {
+
+class MangaDB {
+  /**
+   * @name GetSources
+   * @description Gets all the sources.
+   * @returns {Sources} All the sources.
+   * @example
+   * const sources = MangaDB.GetSources();
+   * console.log(sources);
+   * // => {MangaDex: {Name: 'MangaDex', Enabled: true, Manga: [...]}}
+   * console.log(sources.MangaDex.Manga);
+   * // => [...]
+   */
+  static GetSources(): LibrarySources {
+    return LibraryDatabase.get('Library')?.Sources ?? {};
+  }
+
+  /**
+   * @name Flush
+   * @description Flushes both the Library database and the Manga cache.
+   * @returns {boolean} Whether the flush was successful.
+   */
+  static Flush() {
     MangaDatabase.deleteAll();
+    LibraryDatabase.deleteAll();
     enforce();
-  };
-
-  static getSource(sourceName: string): Source | false {
-    return MangaDatabase.get(`Library`, `Sources.${sourceName}`) ?? false;
-  }
-
-  static getSources(): Sources {
-    return MangaDatabase.get('Library', 'Sources') ?? false;
-  }
-
-  static getManga(sourceName: string, mangaID: string): Manga | false {
-    const source = MangaDB.getSource(sourceName);
-    if (!source) return false;
-
-    return source.Manga.find((manga) => manga.MangaID === mangaID) ?? false;
-  }
-
-  static getMangas(sourceName: string): Manga[] {
-    const source = MangaDB.getSource(sourceName);
-    if (!source) return [];
-
-    return source.Manga;
-  }
-
-  static getMangaByName(sourceName: string, mangaName: string): Manga | false {
-    const source = MangaDB.getSource(sourceName);
-    if (!source) return false;
-
-    return (
-      source.Manga.find(
-        (manga) => manga.Name.toLowerCase() === mangaName.toLowerCase()
-      ) ?? false
-    );
-  }
-
-  static getMangasByAuthor(sourceName: string, author: string): Manga[] {
-    const source = MangaDB.getSource(sourceName);
-    if (!source) return [];
-
-    return source.Manga.filter((manga) => {
-      if (!manga.Authors) return false;
-      return manga.Authors.map((x) => x.toLowerCase()).includes(
-        author.toLowerCase()
-      );
-    });
-  }
-
-  static addManga(sourceName: string, manga: Manga): boolean {
-    const source = MangaDB.getSource(sourceName);
-    if (!source) return false;
-    if (source.Manga.find((m) => m.MangaID === manga.MangaID)) return false;
-
-    source.Manga.push(manga);
-    MangaDatabase.set(`Library`, source, `Sources.${sourceName}`);
     return true;
   }
 
-  static removeManga(sourceName: string, mangaID: string): boolean {
-    const source = MangaDB.getSource(sourceName);
-    if (!source) return false;
+  /**
+   * @name AddMangaToLibrary
+   * @description Adds a manga to the library.
+   * @param {string} sourceName - The source that the manga belongs to.
+   * @params {string} mangaID - The ID of the manga.
+   * @returns {boolean} Whether the manga was added to the library.
+   */
+  static AddMangaToLibrary(sourceName: string, mangaID: string): boolean {
+    const library = LibraryDatabase.get('Library');
+    if (!library) return false;
 
-    source.Manga = source.Manga.filter((manga) => manga.MangaID !== mangaID);
-    MangaDatabase.set(`Library`, source, `Sources.${sourceName}`);
+    const source = library.Sources[sourceName];
+    if (source) {
+      if (source.Manga.includes(mangaID)) {
+        return false;
+      }
+      source.Manga.push(mangaID);
+      LibraryDatabase.set('Library', library);
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * @name RemoveMangaFromLibrary
+   * @description Removes a manga from the library.
+   * @param {string} sourceName - The source that the manga belongs to.
+   * @params {string} mangaID - The ID of the manga.
+   * @returns {boolean} Whether the manga was removed from the library.
+   */
+  static RemoveMangaFromLibrary(sourceName: string, mangaID: string): boolean {
+    const library = LibraryDatabase.get('Library');
+    const source = library?.Sources[sourceName];
+    if (source) {
+      const index = source.Manga.indexOf(mangaID);
+      if (index !== -1) {
+        source.Manga.splice(index, 1);
+        LibraryDatabase.set('Library', library);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * @name GetLibraryMangas
+   * @description Gets all the manga from the library.
+   * @param {string} sourceName - The source that the manga belongs to.
+   * @returns {LibraryManga[]} The manga from the library.
+   * @example
+   * const manga = NewMangaDB.GetLibraryMangas('MangaDex');
+   * console.log(manga.length);
+   * // => 10
+   */
+  static GetLibraryMangas(sourceName: string): string[] {
+    const library = LibraryDatabase.get('Library');
+    const source = library?.Sources[sourceName];
+    if (source) {
+      return [...source.Manga];
+    }
+    return [];
+  }
+
+  /**
+   * @name AddMangaToCache
+   * @description Adds a manga to the cache.
+   * @param {string} sourceName - The source that the manga belongs to.
+   * @param {Manga} manga - The manga to add.
+   * @returns {boolean} Whether the manga was added to the cache.
+   * @example
+   * const manga = {
+   * Name: "Manga Name",
+   * MangaID: "{XXXXX-XXXXX-XXXXX-XXXXX}",
+   * SourceID: "MangaDex",
+   * Authors: ["Author 1", "Author 2"],
+   * Synopsis: "Manga Synopsis",
+   * Tags: ["Tag 1", "Tag 2"],
+   * CoverURL: "https://mangadex.org/images/covers/manga_id.jpg",
+   * Added: new Date(),
+   * LastRead: new Date(),
+   * Chapters: [],
+   * };
+   * NewMangaDB.AddMangaToCache('MangaDex', manga);
+   * // => true
+   */
+  static AddMangaToCache(sourceName: string, manga: FullManga): boolean {
+    const cachedManga = MangaDatabase.get('CachedManga');
+    if (!cachedManga) return false;
+
+    const source = cachedManga.Sources[sourceName] || {};
+
+    // We do not have to check if the manga is already in the cache because
+    // this allows us to overwrite manga - for example, if a manga is updated
+    // in the source.
+
+    source[manga.MangaID] = manga;
+    cachedManga.Sources[sourceName] = source;
+    MangaDatabase.set('CachedManga', cachedManga);
     return true;
   }
 
-  static updateManga(
+  /**
+   * @name RemoveMangaFromCache
+   * @description Removes a manga from the cache.
+   * @param {string} sourceName - The source that the manga belongs to.
+   * @param {string} mangaID - The ID of the manga.
+   * @returns {boolean} Whether the manga was removed from the cache.
+   * @example
+   * NewMangaDB.RemoveMangaFromCache('MangaDex', '{XXXXX-XXXXX-XXXXX-XXXXX}');
+   * // => true
+   * @example
+   * NewMangaDB.RemoveMangaFromCache('NonExistantSource', '{XXXXX-XXXXX-XXXXX-XXXXX}');
+   * // => false
+   * @example
+   */
+  static RemoveMangaFromCache(sourceName: string, mangaID: string): boolean {
+    const cachedManga = MangaDatabase.get('CachedManga');
+    if (!cachedManga) return false;
+
+    const source = cachedManga.Sources[sourceName];
+    delete source[mangaID];
+    MangaDatabase.set('CachedManga', cachedManga);
+    return true;
+  }
+
+  /**
+   * @name GetCachedManga
+   * @description Gets a manga from the cache.
+   * @param {string} sourceName - The source that the manga belongs to.
+   * @param {string} mangaID - The ID of the manga.
+   * @returns {FullManga | undefined} The manga from the cache.
+   * @example
+   * const manga = NewMangaDB.GetCachedManga('MangaDex', '{XXXXX-XXXXX-XXXXX-XXXXX}');
+   * if (manga) {
+   * console.log(manga.Name);
+   * }
+   * // => "Manga Name"
+   * @example
+   * const manga = NewMangaDB.GetCachedManga('NonExistantSource', '{XXXXX-XXXXX-XXXXX-XXXXX}');
+   * if (manga) {
+   * console.log(manga.Name);
+   * }
+   * // => undefined
+   */
+  static GetCachedManga(
     sourceName: string,
-    mangaID: string,
-    manga: Manga
-  ): boolean {
-    const source = MangaDB.getSource(sourceName);
-    if (!source) return false;
+    mangaID: string
+  ): FullManga | false {
+    const cachedManga = MangaDatabase.get('CachedManga');
+    if (!cachedManga) return false;
 
-    source.Manga = source.Manga.map((m) => (m.MangaID === mangaID ? manga : m));
-    MangaDatabase.set(`Library`, source, `Sources.${sourceName}`);
-    return true;
+    const source = cachedManga.Sources[sourceName];
+    if (source) {
+      return source[mangaID];
+    }
+    return false;
+  }
+
+  /**
+   * @name GetCachedMangas
+   * @description Gets all the manga from the cache.
+   * @param {string} sourceName - The source that the manga belongs to.
+   * @returns {FullManga[]} The manga from the cache.
+   * @example
+   * const manga = NewMangaDB.GetCachedMangas('MangaDex');
+   * console.log(manga.length);
+   * // => 10
+   * @example
+   * const manga = NewMangaDB.GetCachedMangas('NonExistantSource');
+   * console.log(manga.length);
+   * // => 0
+   */
+  static GetCachedMangas(sourceName: string): FullManga[] | false {
+    const cachedManga = MangaDatabase.get('CachedManga');
+    if (!cachedManga) return false;
+
+    const source = cachedManga.Sources[sourceName];
+    if (source) {
+      return Object.values(source);
+    }
+    return [];
+  }
+
+  /**
+   * @name GetAllCachedMangas
+   * @description Gets all the manga from the cache; regardless of source.
+   * @returns {FullManga[]} The manga from the cache.
+   * @example
+   * const manga = NewMangaDB.GetAllCachedMangas();
+   * console.log(manga.length);
+   * // => 150
+   */
+  static GetAllCachedMangas(): FullManga[] {
+    const cachedManga = MangaDatabase.get('CachedManga');
+    if (!cachedManga) return [];
+
+    const sources = cachedManga.Sources;
+    return Object.values(sources).flatMap((source) => Object.values(source));
   }
 }
+
+export default MangaDB;
