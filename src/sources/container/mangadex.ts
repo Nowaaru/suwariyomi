@@ -308,12 +308,12 @@ export default class MangaDex extends SourceBase {
     return Promise.all(
       chapters.map(async (chapter) => {
         return {
+          PublishedAt: chapter.publishAt,
+
           ChapterID: chapter.id,
           Volume: chapter.volume,
           Chapter: chapter.chapter,
           ChapterTitle: chapter.title,
-          PageCount: -1, // PageCount will be available when they attempt to start reading the chapter
-          CurrentPage: -1,
           Groups: (await resolveArray(chapter.groups)).map(
             (group) => group.name
           ),
