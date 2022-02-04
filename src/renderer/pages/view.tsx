@@ -8,7 +8,14 @@ import {
 } from 'aphrodite';
 import { URLSearchParams } from 'url';
 import { useNavigate } from 'react-router-dom';
-import { Button, Checkbox, IconButton, Paper, Typography } from '@mui/material';
+import {
+  Button,
+  Checkbox,
+  CircularProgress,
+  IconButton,
+  Paper,
+  Typography,
+} from '@mui/material';
 
 import moment from 'moment';
 import DownloadIcon from '@mui/icons-material/Download';
@@ -20,9 +27,9 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
-
 import { FullManga } from '../../main/util/dbUtil';
 import { ReadDatabaseValue } from '../../main/util/read';
+import useMountEffect from '../util/hook/useMountEffect';
 
 import Tag from '../components/tag';
 import Handler from '../../sources/handler';
@@ -39,6 +46,11 @@ const abcdefg: StyleDeclaration<
 */
 
 const styles = StyleSheet.create({
+  circularProgress: {
+    width: '64px',
+    height: '64px',
+  },
+
   container: {
     width: '100%',
     height: '100%',
@@ -47,6 +59,15 @@ const styles = StyleSheet.create({
     paddingBottom: '7rem',
     boxSizing: 'border-box',
     position: 'relative',
+  },
+
+  loadingContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100%',
+    width: '100%',
+    position: 'absolute',
   },
 
   upperContainer: {
@@ -88,7 +109,7 @@ const styles = StyleSheet.create({
     position: 'relative',
     width: 'fit-content',
     height: 'fit-content',
-    marginBottom: '24px',
+    marginBottom: '12px',
   },
 
   sourceIcon: {
@@ -198,9 +219,8 @@ const styles = StyleSheet.create({
   },
 
   interactionButtons: {
-    display: 'inline-flex',
-    width: 'fit-content',
-    marginTop: '-12px',
+    display: 'block',
+    width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-evenly',
   },
@@ -209,7 +229,7 @@ const styles = StyleSheet.create({
     padding: '8px 12px',
     borderRadius: '24px',
     fontSize: '1em',
-    width: 'fit-content',
+    width: '100%',
     fontWeight: 'bold',
     transition:
       'letter-spacing 0.5s ease-in-out, background-color 0.3s ease-in-out, width 0.3s ease-in-out',
@@ -219,13 +239,10 @@ const styles = StyleSheet.create({
   },
 
   libraryButton: {
-    marginLeft: '68px',
     display: 'flex',
   },
 
-  notInLibrary: {
-    marginLeft: '44px',
-  },
+  notInLibrary: {},
 
   dataRule: {
     position: 'relative',
@@ -372,6 +389,7 @@ const styles = StyleSheet.create({
   chapterContainerBookmarkButton: {},
 
   startReadingButton: {
+    fontSize: '0.8em',
     padding: '8px',
     fontWeight: 'bold',
     backgroundColor: '#DF2935',
@@ -522,13 +540,14 @@ const View = () => {
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
   const [isHovering, setIsHovering] = useState<boolean>(false);
   const [scrollTarget, setScrollTarget] = useState<Node | undefined>();
-
-  const { id, source } = Object.fromEntries(
+  const { id, source, backto } = Object.fromEntries(
     Query as unknown as URLSearchParams
   );
+
   const [isInLibrary, setInLibrary] = useState<boolean>(
     !!window.electron.library.getLibraryMangas(source).find((x) => x === id)
   );
+
   const mappedFileNamesRef = useRef(
     window.electron.util
       .getSourceFiles()
@@ -545,15 +564,15 @@ const View = () => {
   }, [id, source, Navigate, mappedFileNamesRef]);
 
   const selectedSource = mappedFileNamesRef.current[0];
-  useEffect(() => {
+  useMountEffect(() => {
     const sourceChapters = window.electron.read.get(selectedSource.getName());
     if (!sourceChapters) return;
 
     chapterData.current = sourceChapters;
-  }, [selectedSource, isLoaded]);
+  });
 
   const mangaData = useRef<FullManga | null>(null);
-  useEffect(() => {
+  useMountEffect(() => {
     const cachedManga = window.electron.library.getCachedManga(source, id);
     if (cachedManga) {
       mangaData.current = cachedManga;
@@ -570,469 +589,483 @@ const View = () => {
       })
       .then(() => setIsLoaded(true))
       .catch(console.error);
-  }, [selectedSource, id, mangaData, source]);
+
+    // Disabling this because this should only run once
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  });
 
   const currentManga: FullManga | null = mangaData.current;
-  if (!currentManga) {
-    console.log(mappedFileNamesRef);
-    return null;
-  }
+  if (currentManga) {
+    currentManga.Chapters.sort((a, b) => {
+      const numberifiedA = Number(a.Chapter);
+      const numberifiedB = Number(b.Chapter);
 
-  currentManga.Chapters.sort((a, b) => {
-    const numberifiedA = Number(a.Chapter);
-    const numberifiedB = Number(b.Chapter);
+      const numberifiedAVolume = Number(a.Volume);
+      const numberifiedBVolume = Number(b.Volume);
 
-    const numberifiedAVolume = Number(a.Volume);
-    const numberifiedBVolume = Number(b.Volume);
+      const isANumber = !Number.isNaN(numberifiedA);
+      const isBNumber = !Number.isNaN(numberifiedB);
 
-    const isANumber = !Number.isNaN(numberifiedA);
-    const isBNumber = !Number.isNaN(numberifiedB);
+      const isAVolumeNumber = !Number.isNaN(numberifiedAVolume);
+      const isBVolumeNumber = !Number.isNaN(numberifiedBVolume);
 
-    const isAVolumeNumber = !Number.isNaN(numberifiedAVolume);
-    const isBVolumeNumber = !Number.isNaN(numberifiedBVolume);
+      const calculatedA =
+        numberifiedA * (isAVolumeNumber ? Math.max(numberifiedAVolume, 1) : 1);
+      const calculatedB =
+        numberifiedB * (isBVolumeNumber ? Math.max(numberifiedBVolume, 1) : 1);
+      if (isANumber && isBNumber) {
+        return -(calculatedA - calculatedB);
+      }
 
-    const calculatedA =
-      numberifiedA * (isAVolumeNumber ? Math.max(numberifiedAVolume, 1) : 1);
-    const calculatedB =
-      numberifiedB * (isBVolumeNumber ? Math.max(numberifiedBVolume, 1) : 1);
-    if (isANumber && isBNumber) {
-      return -(calculatedA - calculatedB);
+      return -1;
+    });
+
+    const Authors = currentManga.Authors.slice(0, 4);
+    const remainderAuthors = currentManga.Authors.length - Authors.length;
+
+    // Get the chapter to display on the Start Reading button.
+    // If there is a chapter in progress, then display that chapter.
+    // Otherwise, display the first unread chapter.
+
+    const chapterToDisplay = [...currentManga.Chapters].reverse().find((x) => {
+      // Reverse the chapters so that the first chapter is the first index.
+      const foundChapter = chapterData.current[x.ChapterID];
+      if (!foundChapter) return true; // If the chapter is not in the database, then it is unread.
+
+      return (
+        (foundChapter.pageCount > -1 &&
+          foundChapter.currentPage < foundChapter.pageCount) ||
+        foundChapter.currentPage <= -1
+      );
+    }); // We don't need a second find function here because .find() is a linear search; so it will find an in-progess chapter before it finds an unread chapter.
+    const allChaptersRead = currentManga.Chapters.every((x) => {
+      const correspondingChapter = chapterData.current[x.ChapterID];
+      if (!correspondingChapter) return false;
+
+      const { currentPage, pageCount } = correspondingChapter;
+      return currentPage > -1 && pageCount > -1 && currentPage >= pageCount;
+    });
+
+    let ReadingButtonInnerText = 'Start Reading';
+    let mangaProgressBar = allChaptersRead ? 100 : 0;
+    if (chapterToDisplay) {
+      if (allChaptersRead) {
+        ReadingButtonInnerText = 'All Chapters Read';
+      } else {
+        const foundChapter = chapterData.current[chapterToDisplay.ChapterID];
+        const readChapterData = `${
+          chapterToDisplay.Volume ? `Volume ${chapterToDisplay.Volume} ` : ''
+        }Chapter ${chapterToDisplay.Chapter}`;
+        ReadingButtonInnerText = foundChapter
+          ? `${
+              foundChapter.currentPage > -1 &&
+              foundChapter.currentPage < foundChapter.pageCount
+                ? 'Continue'
+                : 'Start'
+            } Reading ${readChapterData}`
+          : `Start Reading ${readChapterData}`;
+
+        let { Chapter: mangaProgressCurrent, Volume: mangaProgressScalar = 1 } =
+          chapterToDisplay;
+        let { Chapter: mangaProgressEnd, Volume: mangaProgressEndScalar = 1 } =
+          currentManga.Chapters[0]; // This is [0] because the chapters are sorted in descending order.
+
+        [
+          mangaProgressCurrent,
+          mangaProgressEnd,
+          mangaProgressScalar,
+          mangaProgressEndScalar,
+        ] = [
+          mangaProgressCurrent,
+          mangaProgressEnd,
+          mangaProgressScalar,
+          mangaProgressEndScalar,
+        ].map((x) => (!Number.isNaN(Number(x)) ? Number(x) : 0));
+        // If a source author provided a bad value, then just set it to 0.
+
+        mangaProgressBar =
+          ((mangaProgressCurrent * mangaProgressScalar) /
+            (mangaProgressEnd * mangaProgressEndScalar)) *
+          100;
+      }
     }
 
-    return -1;
-  });
+    const ChaptersNoDuplicates = currentManga.Chapters.filter(
+      (value, index, self) =>
+        self.findIndex(
+          (secondValue) => secondValue.Chapter === value.Chapter
+        ) === index
+    );
 
-  const Authors = currentManga.Authors.slice(0, 4);
-  const remainderAuthors = currentManga.Authors.length - Authors.length;
+    const readChapters = ChaptersNoDuplicates.filter((x) => {
+      const foundChapter = chapterData.current[x.ChapterID];
+      if (!foundChapter) return false;
 
-  // Get the chapter to display on the Start Reading button.
-  // If there is a chapter in progress, then display that chapter.
-  // Otherwise, display the first unread chapter.
+      return (
+        foundChapter.currentPage > -1 &&
+        foundChapter.pageCount > -1 &&
+        foundChapter.currentPage >= foundChapter.pageCount
+      );
+    }); // We use filter instead of some because of a chapter's (soon-to-be-implemented) elapsedTime field.
 
-  const chapterToDisplay = [...currentManga.Chapters].reverse().find((x) => {
-    // Reverse the chapters so that the first chapter is the first index.
-    const foundChapter = chapterData.current[x.ChapterID];
-    if (!foundChapter) return true; // If the chapter is not in the database, then it is unread.
+    // TODO: Implement Select Group button to filter chapters by group. For now, just show all chapters.
+    // TODO: Implement Sort Order button.
+    // TODO: Fix chapters sometimes not being counted properly in the progress bar.
 
     return (
-      (foundChapter.pageCount > -1 &&
-        foundChapter.currentPage < foundChapter.pageCount) ||
-      foundChapter.currentPage <= -1
-    );
-  }); // We don't need a second find function here because .find() is a linear search; so it will find an in-progess chapter before it finds an unread chapter.
-  const allChaptersRead = currentManga.Chapters.every((x) => {
-    const correspondingChapter = chapterData.current[x.ChapterID];
-    if (!correspondingChapter) return false;
-
-    const { currentPage, pageCount } = correspondingChapter;
-    return currentPage > -1 && pageCount > -1 && currentPage >= pageCount;
-  });
-
-  let ReadingButtonInnerText = 'Start Reading';
-  let mangaProgressBar = allChaptersRead ? 100 : 0;
-  if (chapterToDisplay) {
-    if (allChaptersRead) {
-      ReadingButtonInnerText = 'All Chapters Read';
-    } else {
-      const foundChapter = chapterData.current[chapterToDisplay.ChapterID];
-      const readChapterData = `${
-        chapterToDisplay.Volume ? `Volume ${chapterToDisplay.Volume} ` : ''
-      }Chapter ${chapterToDisplay.Chapter}`;
-      ReadingButtonInnerText = foundChapter
-        ? `${
-            foundChapter.currentPage > -1 &&
-            foundChapter.currentPage < foundChapter.pageCount
-              ? 'Continue'
-              : 'Start'
-          } Reading ${readChapterData}`
-        : `Start Reading ${readChapterData}`;
-
-      let { Chapter: mangaProgressCurrent, Volume: mangaProgressScalar = 1 } =
-        chapterToDisplay;
-      let { Chapter: mangaProgressEnd, Volume: mangaProgressEndScalar = 1 } =
-        currentManga.Chapters[0]; // This is [0] because the chapters are sorted in descending order.
-
-      [
-        mangaProgressCurrent,
-        mangaProgressEnd,
-        mangaProgressScalar,
-        mangaProgressEndScalar,
-      ] = [
-        mangaProgressCurrent,
-        mangaProgressEnd,
-        mangaProgressScalar,
-        mangaProgressEndScalar,
-      ].map((x) => (!Number.isNaN(Number(x)) ? Number(x) : 0));
-      // If a source author provided a bad value, then just set it to 0.
-
-      mangaProgressBar =
-        ((mangaProgressCurrent * mangaProgressScalar) /
-          (mangaProgressEnd * mangaProgressEndScalar)) *
-        100;
-    }
-  }
-
-  const ChaptersNoDuplicates = currentManga.Chapters.filter(
-    (value, index, self) =>
-      self.findIndex((secondValue) => secondValue.Chapter === value.Chapter) ===
-      index
-  );
-
-  const readChapters = ChaptersNoDuplicates.filter((x) => {
-    const foundChapter = chapterData.current[x.ChapterID];
-    // if (!foundChapter) return false;
-
-    return true;
-    // return (
-    //   foundChapter.currentPage > -1 &&
-    //   foundChapter.pageCount > -1 &&
-    //   foundChapter.currentPage >= foundChapter.pageCount
-    // );
-  }); // We use filter instead of some because of a chapter's (soon-to-be-implemented) elapsedTime field.
-
-  // TODO: Implement Select Group button to filter chapters by group. For now, just show all chapters.
-  // TODO: Implement Sort Order button.
-  return (
-    <div
-      className={css(styles.container, styles.scrollBar)}
-      ref={(Node) => {
-        if (Node) setScrollTarget(Node);
-      }}
-    >
-      <div className={css(styles.backAppBar)}>
-        <Button
-          className={css(styles.backButton)}
-          onClick={() => {
-            console.log('go back');
-          }}
-          startIcon={<ArrowBackIcon />}
-        >
-          <Typography variant="h6" className={css(styles.backTypography)}>
-            Back
-          </Typography>
-        </Button>
-      </div>
-      <div className={css(styles.upperContainer)}>
-        <div className={css(styles.mangaBannerContainer)}>
-          {/* TODO: Add IconURL fields to sources and have a small pin on the top of the cover image that indicates the source */}
-          <img
-            src={currentManga.CoverURL}
-            alt="Banner"
-            className={css(styles.mangaBanner)}
-          />
+      <div
+        className={css(styles.container, styles.scrollBar)}
+        ref={(Node) => {
+          if (Node) setScrollTarget(Node);
+        }}
+      >
+        <div className={css(styles.backAppBar)}>
+          <Button
+            className={css(styles.backButton)}
+            onClick={() => {
+              Navigate(`/${backto ?? 'library'}`);
+              console.log('go back');
+            }}
+            startIcon={<ArrowBackIcon />}
+          >
+            <Typography variant="h6" className={css(styles.backTypography)}>
+              Back
+            </Typography>
+          </Button>
         </div>
-        <div className={css(styles.metadataContainer)}>
-          <div className={css(styles.mangaCover)}>
+        <div className={css(styles.upperContainer)}>
+          <div className={css(styles.mangaBannerContainer)}>
+            {/* TODO: Add IconURL fields to sources and have a small pin on the top of the cover image that indicates the source */}
             <img
-              className={css(styles.sourceIcon)}
-              src={selectedSource.getIcon()}
-              alt="Source Icon"
-            />
-            <img
-              className={css(styles.mangaCoverImage)}
               src={currentManga.CoverURL}
-              alt={currentManga.Name}
+              alt="Banner"
+              className={css(styles.mangaBanner)}
             />
           </div>
-        </div>
-        <div className={css(styles.metadataContainer, styles.textData)}>
-          <div className={css(styles.mangaTitle)}>
-            <h1 className={css(styles.mangaTitleHeader)}>
-              {currentManga.Name}
-            </h1>
-            <h2 className={css(styles.mangaAuthors)}>{`${Authors.join(', ')}${
-              remainderAuthors > 0 ? ` (+${remainderAuthors})` : ''
-            }`}</h2>
-          </div>
-          <div className={css(styles.mangaTags)}>
-            {currentManga.Tags.map((x) => (
-              <Tag key={x} name={x} type="normal" />
-            ))}
-          </div>
-          <div className={css(styles.mangaSynopsis)}>
-            {currentManga.Synopsis && currentManga.Synopsis.length > 0
-              ? currentManga.Synopsis
-              : 'No synopsis available.'}
-          </div>
-        </div>
-        {/* <h1>{Query.get('id')}</h1>
-      <h2>{Query.get('source')}</h2> */}
-      </div>
-      <div className={css(styles.interactionButtons)}>
-        <Button
-          startIcon={
-            isInLibrary ? (
-              isHovering ? (
-                <HeartBrokenIcon />
-              ) : (
-                <FavoriteIcon />
-              )
-            ) : isHovering ? (
-              <FavoriteIcon />
-            ) : (
-              <FavoriteBorderIcon />
-            )
-          }
-          variant="contained"
-          color="primary"
-          onMouseEnter={() => setIsHovering(true)}
-          onMouseLeave={() => setIsHovering(false)}
-          onClick={() => {
-            if (isInLibrary) {
-              window.electron.library.removeMangaFromLibrary(source, id);
-              setInLibrary(false);
-            } else {
-              window.electron.library.addMangaToLibrary(
-                selectedSource.getName(),
-                currentManga.MangaID
-              );
-
-              setInLibrary(true);
-            }
-          }}
-          className={css(
-            styles.interactionButton,
-            styles.libraryButton,
-            !isInLibrary && styles.notInLibrary
-          )}
-          sx={
-            isInLibrary
-              ? {
-                  backgroundColor: '#FFFFFF',
-                  color: '#DF2935',
-                  '&:hover': {
-                    backgroundColor: '#DF2935',
-                    color: '#FFFFFF',
-                  },
-                }
-              : {
-                  backgroundColor: '#DF2935',
-                  color: '#FFFFFF',
-                  '&:hover': {
-                    backgroundColor: '#FFFFFF',
-                    color: '#DF2935',
-                  },
-                }
-          }
-        >
-          {isInLibrary ? 'In Library' : 'Add To Library'}
-        </Button>
-      </div>
-      <hr className={css(styles.dataRule)} />
-      <div className={css(styles.metadataContainer)}>
-        <h2 className={css(styles.chaptersHeader)}>Chapters</h2>
-        <div className={css(styles.dataContainer)}>
-          <div className={css(styles.chaptersContainer)}>
-            <div className={css(styles.chapters, styles.scrollBar)}>
-              {currentManga.Chapters.map((x) => {
-                const foundChapter = chapterData.current[x.ChapterID] || {};
-
-                const {
-                  pageCount = -1,
-                  currentPage = -1,
-                  lastRead,
-                  timeElapsed = 0,
-                } = foundChapter;
-                const isRead =
-                  foundChapter &&
-                  currentPage !== -1 &&
-                  pageCount !== -1 &&
-                  currentPage === pageCount;
-                const isBookmarked = foundChapter && foundChapter.isBookmarked;
-
-                // TODO: Add a way to mark a chapter as read (probably by using react-contextify)
-                return (
-                  <Paper
-                    elevation={3}
-                    key={x.ChapterID}
-                    className={css(styles.chapter)}
-                  >
-                    <div className={css(styles.chapterTitle)}>
-                      <h3 className={css(styles.chapterTitleHeader)}>
-                        {x.ChapterTitle ||
-                          `${
-                            x.Volume
-                              ? `Volume ${x.Volume} Chapter ${x.Chapter}`
-                              : `Chapter ${x.Chapter}`
-                          }`}
-                      </h3>
-                      {x.ChapterTitle && (
-                        <h4 className={css(styles.chapterNumberData)}>
-                          {x.Volume
-                            ? `VOL. ${x.Volume} CH. ${x.Chapter}`
-                            : `CH. ${x.Chapter}`}
-                        </h4>
-                      )}
-                      {x.Groups && x.Groups.length > 0 ? (
-                        <div className={css(styles.chapterGroups)}>
-                          <span className={css(styles.chapterGroupsText)}>
-                            {x.Groups.join(' & ').slice(0, 45)}
-                          </span>
-                        </div>
-                      ) : null}
-                      {x.PublishedAt ? (
-                        <h4 className={css(styles.chapterDateData)}>
-                          {moment(x.PublishedAt).format('MMMM Do YYYY')}
-                        </h4>
-                      ) : null}
-                    </div>
-                    <Button className={css(styles.chapterContainerReadButton)}>
-                      {foundChapter && currentPage !== -1
-                        ? isRead
-                          ? 'Re-read'
-                          : 'Continue'
-                        : 'Read'}
-                    </Button>
-                    <Checkbox
-                      className={css(styles.chapterContainerBookmarkButton)}
-                      checkedIcon={
-                        <BookmarkIcon
-                          className={css(styles.bookmarksButtonFilled)}
-                        />
-                      }
-                      icon={
-                        <BookmarkBorderIcon
-                          className={css(styles.bookmarksButton)}
-                        />
-                      }
-                      onChange={(
-                        event: React.ChangeEvent<HTMLInputElement>
-                      ) => {
-                        const { checked } = event.target;
-                        if (checked)
-                          // TODO: try using array + deconstruction here?
-                          window.electron.read.set(
-                            selectedSource.getName(),
-                            x.ChapterID,
-                            pageCount,
-                            currentPage,
-                            lastRead,
-                            timeElapsed,
-                            true
-                          );
-                        else
-                          window.electron.read.set(
-                            selectedSource.getName(),
-                            x.ChapterID,
-                            pageCount,
-                            currentPage,
-                            lastRead,
-                            timeElapsed,
-                            false
-                          );
-                      }}
-                      defaultChecked={isBookmarked}
-                    />
-                    {selectedSource.canDownload ? (
-                      <IconButton className={css(styles.downloadButton)}>
-                        <DownloadIcon
-                          className={css(
-                            styles.downloadButtonIcon,
-                            styles.disabledDownloadButton
-                          )}
-                        />
-                      </IconButton>
-                    ) : null}
-                  </Paper>
-                );
-              })}
+          <div className={css(styles.metadataContainer)}>
+            <div className={css(styles.mangaCover)}>
+              <img
+                className={css(styles.sourceIcon)}
+                src={selectedSource.getIcon()}
+                alt="Source Icon"
+              />
+              <img
+                className={css(styles.mangaCoverImage)}
+                src={currentManga.CoverURL}
+                alt={currentManga.Name}
+              />
             </div>
-          </div>
-          <Paper elevation={3} className={css(styles.utilityContainer)}>
-            {/* If this manga is not in the cache then only show the start reading button */}
-            {/* First component: Reading button */}
-            <div className={css(styles.utilityButtonContainer)}>
+            <div className={css(styles.interactionButtons)}>
               <Button
-                className={css(styles.startReadingButton)}
+                startIcon={
+                  isInLibrary ? (
+                    isHovering ? (
+                      <HeartBrokenIcon />
+                    ) : (
+                      <FavoriteIcon />
+                    )
+                  ) : isHovering ? (
+                    <FavoriteIcon />
+                  ) : (
+                    <FavoriteBorderIcon />
+                  )
+                }
                 variant="contained"
                 color="primary"
+                onMouseEnter={() => setIsHovering(true)}
+                onMouseLeave={() => setIsHovering(false)}
                 onClick={() => {
-                  console.log('Start reading');
+                  if (isInLibrary) {
+                    window.electron.library.removeMangaFromLibrary(source, id);
+                    setInLibrary(false);
+                  } else {
+                    window.electron.library.addMangaToLibrary(
+                      selectedSource.getName(),
+                      currentManga.MangaID
+                    );
+
+                    setInLibrary(true);
+                  }
                 }}
+                className={css(
+                  styles.interactionButton,
+                  styles.libraryButton,
+                  !isInLibrary && styles.notInLibrary
+                )}
+                sx={
+                  isInLibrary
+                    ? {
+                        backgroundColor: '#FFFFFF',
+                        color: '#DF2935',
+                        '&:hover': {
+                          backgroundColor: '#DF2935',
+                          color: '#FFFFFF',
+                        },
+                      }
+                    : {
+                        backgroundColor: '#DF2935',
+                        color: '#FFFFFF',
+                        '&:hover': {
+                          backgroundColor: '#FFFFFF',
+                          color: '#DF2935',
+                        },
+                      }
+                }
               >
-                {ReadingButtonInnerText}
+                {isInLibrary ? 'In Library' : 'Add To Library'}
               </Button>
             </div>
-            {isInLibrary ? (
-              <>
-                <hr className={css(styles.extendedDataRule)} />
-                {/* Second component: Manga Progress */}
-                <div className={css(styles.mangaProgressContainer)}>
-                  <div className={css(styles.mangaProgress)}>
-                    <div className={css(styles.mangaProgressText)}>
-                      {readChapters.length} / {ChaptersNoDuplicates.length}
-                    </div>
-                    <div className={css(styles.mangaProgressBar)}>
-                      <div
-                        className={css(styles.mangaProgressBarFiller)}
-                        style={{
-                          width: `${mangaProgressBar}%`,
-                        }}
-                      />
-                    </div>
-                  </div>
-                </div>
-                {/* Third component: Time Elapsed */}
-                <div className={css(styles.timeElapsedContainer)}>
-                  <div className={css(styles.timeElapsed)}>
-                    <div className={css(styles.timeElapsedText)}>
-                      {(() => {
-                        let totalElapsedTime = 0;
-                        currentManga.Chapters.forEach((x) => {
-                          const foundChapter = chapterData.current[
-                            x.ChapterID
-                          ] || { timeElapsed: 0 };
-                          totalElapsedTime += foundChapter.timeElapsed;
-                        });
-                        const momentTimeElapsedDuration = moment.duration(
-                          totalElapsedTime,
-                          'seconds'
-                        );
-
-                        // Get the hours, minutes, and seconds
-                        const [hours, minutes, seconds] = [
-                          momentTimeElapsedDuration.hours(),
-                          momentTimeElapsedDuration.minutes(),
-                          momentTimeElapsedDuration.seconds(),
-                        ];
-
-                        // Convert to elements
-                        return (
-                          <>
-                            <span
-                              className={css(
-                                styles.timeElapsedTextItem,
-                                styles.hours
-                              )}
-                            >
-                              {hours}
-                            </span>
-                            <span
-                              className={css(
-                                styles.timeElapsedTextItem,
-                                styles.minutes
-                              )}
-                            >
-                              {minutes}
-                            </span>
-                            <span
-                              className={css(
-                                styles.timeElapsedTextItem,
-                                styles.seconds
-                              )}
-                            >
-                              {seconds}
-                            </span>
-                          </>
-                        );
-                      })()}
-                    </div>
-                  </div>
-                </div>
-              </>
-            ) : null}
-          </Paper>
+          </div>
+          <div className={css(styles.metadataContainer, styles.textData)}>
+            <div className={css(styles.mangaTitle)}>
+              <h1 className={css(styles.mangaTitleHeader)}>
+                {currentManga.Name}
+              </h1>
+              <h2 className={css(styles.mangaAuthors)}>{`${Authors.join(', ')}${
+                remainderAuthors > 0 ? ` (+${remainderAuthors})` : ''
+              }`}</h2>
+            </div>
+            <div className={css(styles.mangaTags)}>
+              {currentManga.Tags.map((x) => (
+                <Tag key={x} name={x} type="normal" />
+              ))}
+            </div>
+            <div className={css(styles.mangaSynopsis)}>
+              {currentManga.Synopsis && currentManga.Synopsis.length > 0
+                ? currentManga.Synopsis
+                : 'No synopsis available.'}
+            </div>
+          </div>
+          {/* <h1>{Query.get('id')}</h1>
+      <h2>{Query.get('source')}</h2> */}
         </div>
+        <hr className={css(styles.dataRule)} />
+        <div className={css(styles.metadataContainer)}>
+          <h2 className={css(styles.chaptersHeader)}>Chapters</h2>
+          <div className={css(styles.dataContainer)}>
+            <div className={css(styles.chaptersContainer)}>
+              <div className={css(styles.chapters, styles.scrollBar)}>
+                {currentManga.Chapters.map((x) => {
+                  const foundChapter = chapterData.current[x.ChapterID] || {};
+
+                  const {
+                    pageCount = -1,
+                    currentPage = -1,
+                    lastRead,
+                    timeElapsed = 0,
+                  } = foundChapter;
+                  const isRead =
+                    foundChapter &&
+                    currentPage !== -1 &&
+                    pageCount !== -1 &&
+                    currentPage === pageCount;
+                  const isBookmarked =
+                    foundChapter && foundChapter.isBookmarked;
+
+                  // TODO: Add a way to mark a chapter as read (probably by using react-contextify)
+                  return (
+                    <Paper
+                      elevation={3}
+                      key={x.ChapterID}
+                      className={css(styles.chapter)}
+                    >
+                      <div className={css(styles.chapterTitle)}>
+                        <h3 className={css(styles.chapterTitleHeader)}>
+                          {x.ChapterTitle ||
+                            `${
+                              x.Volume
+                                ? `Volume ${x.Volume} Chapter ${x.Chapter}`
+                                : `Chapter ${x.Chapter}`
+                            }`}
+                        </h3>
+                        {x.ChapterTitle && (
+                          <h4 className={css(styles.chapterNumberData)}>
+                            {x.Volume
+                              ? `VOL. ${x.Volume} CH. ${x.Chapter}`
+                              : `CH. ${x.Chapter}`}
+                          </h4>
+                        )}
+                        {x.Groups && x.Groups.length > 0 ? (
+                          <div className={css(styles.chapterGroups)}>
+                            <span className={css(styles.chapterGroupsText)}>
+                              {x.Groups.join(' & ').slice(0, 45)}
+                            </span>
+                          </div>
+                        ) : null}
+                        {x.PublishedAt ? (
+                          <h4 className={css(styles.chapterDateData)}>
+                            {moment(x.PublishedAt).format('MMMM Do YYYY')}
+                          </h4>
+                        ) : null}
+                      </div>
+                      <Button
+                        className={css(styles.chapterContainerReadButton)}
+                      >
+                        {foundChapter && currentPage !== -1
+                          ? isRead
+                            ? 'Re-read'
+                            : 'Continue'
+                          : 'Read'}
+                      </Button>
+                      <Checkbox
+                        className={css(styles.chapterContainerBookmarkButton)}
+                        checkedIcon={
+                          <BookmarkIcon
+                            className={css(styles.bookmarksButtonFilled)}
+                          />
+                        }
+                        icon={
+                          <BookmarkBorderIcon
+                            className={css(styles.bookmarksButton)}
+                          />
+                        }
+                        onChange={(
+                          event: React.ChangeEvent<HTMLInputElement>
+                        ) => {
+                          const { checked } = event.target;
+                          if (checked)
+                            // TODO: try using array + deconstruction here?
+                            window.electron.read.set(
+                              selectedSource.getName(),
+                              x.ChapterID,
+                              pageCount,
+                              currentPage,
+                              lastRead,
+                              timeElapsed,
+                              true
+                            );
+                          else
+                            window.electron.read.set(
+                              selectedSource.getName(),
+                              x.ChapterID,
+                              pageCount,
+                              currentPage,
+                              lastRead,
+                              timeElapsed,
+                              false
+                            );
+                        }}
+                        defaultChecked={isBookmarked}
+                      />
+                      {selectedSource.canDownload ? (
+                        <IconButton className={css(styles.downloadButton)}>
+                          <DownloadIcon
+                            className={css(
+                              styles.downloadButtonIcon,
+                              styles.disabledDownloadButton
+                            )}
+                          />
+                        </IconButton>
+                      ) : null}
+                    </Paper>
+                  );
+                })}
+              </div>
+            </div>
+            <Paper elevation={3} className={css(styles.utilityContainer)}>
+              {/* If this manga is not in the cache then only show the start reading button */}
+              {/* First component: Reading button */}
+              <div className={css(styles.utilityButtonContainer)}>
+                <Button
+                  className={css(styles.startReadingButton)}
+                  variant="contained"
+                  color="primary"
+                  onClick={() => {
+                    console.log('Start reading');
+                  }}
+                >
+                  {ReadingButtonInnerText}
+                </Button>
+              </div>
+              {isInLibrary ? (
+                <>
+                  <hr className={css(styles.extendedDataRule)} />
+                  {/* Second component: Manga Progress */}
+                  <div className={css(styles.mangaProgressContainer)}>
+                    <div className={css(styles.mangaProgress)}>
+                      <div className={css(styles.mangaProgressText)}>
+                        {readChapters.length} / {ChaptersNoDuplicates.length}
+                      </div>
+                      <div className={css(styles.mangaProgressBar)}>
+                        <div
+                          className={css(styles.mangaProgressBarFiller)}
+                          style={{
+                            width: `${mangaProgressBar}%`,
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  {/* Third component: Time Elapsed */}
+                  <div className={css(styles.timeElapsedContainer)}>
+                    <div className={css(styles.timeElapsed)}>
+                      <div className={css(styles.timeElapsedText)}>
+                        {(() => {
+                          let totalElapsedTime = 0;
+                          currentManga.Chapters.forEach((x) => {
+                            const foundChapter = chapterData.current[
+                              x.ChapterID
+                            ] || { timeElapsed: 0 };
+                            totalElapsedTime += foundChapter.timeElapsed;
+                          });
+                          const momentTimeElapsedDuration = moment.duration(
+                            totalElapsedTime,
+                            'seconds'
+                          );
+
+                          // Get the hours, minutes, and seconds
+                          const [hours, minutes, seconds] = [
+                            momentTimeElapsedDuration.hours(),
+                            momentTimeElapsedDuration.minutes(),
+                            momentTimeElapsedDuration.seconds(),
+                          ];
+
+                          // Convert to elements
+                          return (
+                            <>
+                              <span
+                                className={css(
+                                  styles.timeElapsedTextItem,
+                                  styles.hours
+                                )}
+                              >
+                                {hours}
+                              </span>
+                              <span
+                                className={css(
+                                  styles.timeElapsedTextItem,
+                                  styles.minutes
+                                )}
+                              >
+                                {minutes}
+                              </span>
+                              <span
+                                className={css(
+                                  styles.timeElapsedTextItem,
+                                  styles.seconds
+                                )}
+                              >
+                                {seconds}
+                              </span>
+                            </>
+                          );
+                        })()}
+                      </div>
+                    </div>
+                  </div>
+                </>
+              ) : null}
+            </Paper>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={css(styles.container, styles.loadingContainer)}>
+      <div className={css(styles.circularProgress)}>
+        <CircularProgress />
       </div>
     </div>
   );
