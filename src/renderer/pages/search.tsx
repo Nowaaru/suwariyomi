@@ -321,6 +321,7 @@ const SearchPage = () => {
     [sourceName: string]: {
       [searchQuery: string]: {
         filters: SearchFilters;
+        itemCount: number | null;
         pageData: { [page: number]: Manga[] };
       };
     };
@@ -393,6 +394,7 @@ const SearchPage = () => {
     const generateBaseSearchData = () => ({
       [searchData.searchQuery]: {
         filters: mappedFileNames[0].getFilters(),
+        itemCount: null,
         pageData: {},
       },
     });
@@ -425,22 +427,31 @@ const SearchPage = () => {
     const specifiedSourceCurrentValue =
       specificQueryLoadedPages.current[specifiedSource];
     if (!specifiedSourceCurrentValue[searchData.searchQuery])
-      specifiedSourceCurrentValue[searchData.searchQuery] = {
+      specifiedSourceCurrentValue[searchData.searchQuery] =
+        generateBaseSearchData()[searchData.searchQuery]; /* {
         filters: mappedFileNames[0].getFilters(),
+        itemCount: -1,
         pageData: {},
-      };
+      }; */
 
-    if (
-      specifiedSourceCurrentValue[searchData.searchQuery].pageData[queryOffset]
-    )
-      return;
-    console.log('ok so we loading then?');
+    const specifiedSourceCurrentValueSearchQuery =
+      specifiedSourceCurrentValue[searchData.searchQuery];
+    if (specifiedSourceCurrentValueSearchQuery.pageData[queryOffset]) return;
     setLoading(true);
-    beginSearch(mappedFileNames[0])
+    (async () => {
+      if (!specifiedSourceCurrentValueSearchQuery.itemCount)
+        specifiedSourceCurrentValueSearchQuery.itemCount =
+          await mappedFileNames[0].getItemCount();
+
+      console.log('bruhmoment');
+      console.log(specifiedSourceCurrentValueSearchQuery);
+    })()
+      .then(() => beginSearch(mappedFileNames[0]))
       .then((n) => {
         specifiedSourceCurrentValue[searchData.searchQuery].pageData[
           queryOffset
         ] = n;
+
         return setLoading(false); // ?????
       })
       .catch(() => {
@@ -760,6 +771,12 @@ const SearchPage = () => {
       {specifiedSource ? (
         <ShortPagination
           disabled={isLoadingMoreResults}
+          maxpages={Math.ceil(
+            (specificQueryLoadedPages.current[specifiedSource]?.[
+              searchData.searchQuery
+            ]?.itemCount ?? Infinity) /
+              mappedFileNames[0].getFilters()?.results ?? 24
+          )}
           page={queryOffset + 1}
           onUpdate={(page) => {
             setQueryOffset(Math.max(0, page - 1));
