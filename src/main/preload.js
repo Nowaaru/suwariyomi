@@ -49,6 +49,7 @@ contextBridge.exposeInMainWorld('electron', {
       pageCount,
       currentPage,
       lastRead,
+      timeElapsed,
       isBookmarked
     ) => {
       ipcRenderer.send(
@@ -58,6 +59,7 @@ contextBridge.exposeInMainWorld('electron', {
         pageCount,
         currentPage,
         lastRead,
+        timeElapsed,
         isBookmarked
       );
     },

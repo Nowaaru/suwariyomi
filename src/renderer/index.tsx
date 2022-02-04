@@ -35,6 +35,7 @@ declare global {
           pageCount: number,
           currentPage: number,
           lastRead: Date,
+          timeElapsed: number,
           isBookmarked: boolean
         ) => void;
         deleteEntry: (sourceName: string, chapterId: string) => void;

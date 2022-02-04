@@ -7,6 +7,7 @@ export type ReadDatabaseValue = {
     pageCount: number;
     currentPage: number;
     lastRead: Date;
+    timeElapsed: number;
   };
 };
 const ReadDatabase = new Enmap<
@@ -34,6 +35,7 @@ export default class ReadDB {
     pageCount: number,
     currentPage: number,
     lastRead: Date,
+    timeElapsed: number,
     isBookmarked: boolean
   ): Promise<void> {
     const read = await ReadDB.get(sourceID);
@@ -44,6 +46,7 @@ export default class ReadDB {
           pageCount,
           currentPage,
           lastRead,
+          timeElapsed,
         },
       });
     } else {
@@ -52,6 +55,7 @@ export default class ReadDB {
         currentPage,
         lastRead,
         isBookmarked,
+        timeElapsed,
       };
       ReadDatabase.set(sourceID, read);
     }

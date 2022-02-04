@@ -109,8 +109,7 @@ const styles = StyleSheet.create({
   },
 
   mangaBanner: {
-    width: '500%',
-    height: '500%',
+    height: '300vmax',
     objectFit: 'contain',
   },
 
@@ -384,6 +383,7 @@ const styles = StyleSheet.create({
 
   mangaProgressBar: {
     width: '100%',
+    maxWidth: '400px',
     height: '8px',
     backgroundColor: '#DF2935',
     borderRadius: '4px',
@@ -410,6 +410,58 @@ const styles = StyleSheet.create({
     height: '2px',
     backgroundImage:
       'radial-gradient(circle at center,rgb(127,127,127,1) 84%, rgba(127,127,127,0) 85%)',
+  },
+
+  timeElapsedContainer: {
+    marginTop: '8px',
+  },
+
+  timeElapsed: {},
+
+  timeElapsedText: {},
+
+  timeElapsedTextItem: {
+    marginLeft: '6px',
+    fontSize: '1.5rem',
+    fontFamily: 'Poppins, sans-serif',
+    color: 'white',
+  },
+
+  hours: {
+    ':after': {
+      content: '"HOURS"',
+      marginLeft: '6px',
+      marginRight: '6px',
+      fontVariant: 'small-caps',
+      fontSize: '0.6em',
+      fontWeight: 200,
+      color: '#FFFFFF',
+      fontFamily: 'Open Sans, sans-serif',
+    },
+  },
+
+  minutes: {
+    ':after': {
+      content: '"MINUTES"',
+      marginLeft: '6px',
+      fontVariant: 'small-caps',
+      fontSize: '0.6em',
+      fontWeight: 200,
+      color: '#FFFFFF',
+      fontFamily: 'Open Sans, sans-serif',
+    },
+  },
+
+  seconds: {
+    ':after': {
+      content: '"SECONDS"',
+      marginLeft: '6px',
+      fontVariant: 'small-caps',
+      fontSize: '0.6em',
+      fontWeight: 200,
+      color: '#FFFFFF',
+      fontFamily: 'Open Sans, sans-serif',
+    },
   },
 });
 
@@ -704,6 +756,7 @@ const View = () => {
                   pageCount = -1,
                   currentPage = -1,
                   lastRead,
+                  timeElapsed = 0,
                 } = foundChapter;
                 const isRead =
                   foundChapter &&
@@ -779,6 +832,7 @@ const View = () => {
                             pageCount,
                             currentPage,
                             lastRead,
+                            timeElapsed,
                             true
                           );
                         else
@@ -788,6 +842,7 @@ const View = () => {
                             pageCount,
                             currentPage,
                             lastRead,
+                            timeElapsed,
                             false
                           );
                       }}
@@ -843,6 +898,62 @@ const View = () => {
                   </div>
                 </div>
                 {/* Third component: Time Elapsed */}
+                <div className={css(styles.timeElapsedContainer)}>
+                  <div className={css(styles.timeElapsed)}>
+                    <div className={css(styles.timeElapsedText)}>
+                      {(() => {
+                        let totalElapsedTime = 0;
+                        currentManga.Chapters.forEach((x) => {
+                          const foundChapter = chapterData.current[
+                            x.ChapterID
+                          ] || { timeElapsed: 0 };
+                          totalElapsedTime += foundChapter.timeElapsed;
+                        });
+                        const momentTimeElapsedDuration = moment.duration(
+                          totalElapsedTime,
+                          'seconds'
+                        );
+
+                        // Get the hours, minutes, and seconds
+                        const [hours, minutes, seconds] = [
+                          momentTimeElapsedDuration.hours(),
+                          momentTimeElapsedDuration.minutes(),
+                          momentTimeElapsedDuration.seconds(),
+                        ];
+
+                        // Convert to elements
+                        return (
+                          <>
+                            <span
+                              className={css(
+                                styles.timeElapsedTextItem,
+                                styles.hours
+                              )}
+                            >
+                              {hours}
+                            </span>
+                            <span
+                              className={css(
+                                styles.timeElapsedTextItem,
+                                styles.minutes
+                              )}
+                            >
+                              {minutes}
+                            </span>
+                            <span
+                              className={css(
+                                styles.timeElapsedTextItem,
+                                styles.seconds
+                              )}
+                            >
+                              {seconds}
+                            </span>
+                          </>
+                        );
+                      })()}
+                    </div>
+                  </div>
+                </div>
               </>
             ) : null}
           </Paper>
