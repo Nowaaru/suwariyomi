@@ -369,7 +369,7 @@ const SearchPage = () => {
   // This is a hack to make sure that the search query is updated when the user navigates to this page
   useEffect(() => {
     window.electron.cache.set(
-      'specifiedQueryLoadedPages',
+      'specificQueryLoadedPages',
       specificQueryLoadedPages.current
     );
     window.electron.cache.set('offset', queryOffset);
@@ -417,6 +417,8 @@ const SearchPage = () => {
       ) {
         specificQueryLoadedPages.current[specifiedSource] =
           generateBaseSearchData();
+      } else {
+        return;
       }
     }
 
@@ -448,7 +450,7 @@ const SearchPage = () => {
         });
       });
   }, [
-    searchData.searchQuery,
+    searchData,
     mappedFileNames,
     specifiedSource,
     queryOffset,
