@@ -320,14 +320,16 @@ const SearchPage = () => {
         pageData: { [page: number]: Manga[] };
       };
     };
-  }>({});
+  }>(window.electron.cache.get('specificQueryLoadedPages') ?? {});
 
   const pageQueryParams = useQuery();
   const [queryOffset, setQueryOffset] = useState(
-    Number(pageQueryParams.get('offset') || 0)
+    Number(
+      pageQueryParams.get('offset') || window.electron.cache.get('offset') || 0
+    )
   ); // Used for specified source query
   const [specifiedSource, setSpecifiedSource] = useState(
-    pageQueryParams.get('source')
+    pageQueryParams.get('source') || window.electron.cache.get('source') || ''
   );
 
   const mappedFileNamesRef = useRef(
@@ -351,15 +353,28 @@ const SearchPage = () => {
     // if a search is initiated, it is added to this array.
     // this is good because it allows us to keep track of which searches are in progress
     // so we don't have to re-query the same sources
-  }>({
-    searchQuery: (pageQueryParams.get('search') || '').toLowerCase().trim(),
-    initiatedSearches: {},
-    queriedSearches: {
-      // I seriously have no way to make this cleaner.
-      [(pageQueryParams.get('search') || '').toLowerCase().trim()]:
-        generateQueriedSearchData(mappedFileNames),
-    },
-  });
+  }>(
+    window.electron.cache.get('searchdata') ?? {
+      searchQuery: (pageQueryParams.get('search') || '').toLowerCase().trim(),
+      initiatedSearches: {},
+      queriedSearches: {
+        // I seriously have no way to make this cleaner.
+        [(pageQueryParams.get('search') || '').toLowerCase().trim()]:
+          generateQueriedSearchData(mappedFileNames),
+      },
+    }
+  );
+
+  // This is a hack to make sure that the search query is updated when the user navigates to this page
+  useEffect(() => {
+    window.electron.cache.set(
+      'specifiedQueryLoadedPages',
+      specificQueryLoadedPages.current
+    );
+    window.electron.cache.set('offset', queryOffset);
+    window.electron.cache.set('source', specifiedSource);
+    window.electron.cache.set('searchdata', searchData);
+  }, [queryOffset, specifiedSource, searchData, specificQueryLoadedPages]);
 
   // Apply search query to all sources
   mappedFileNames.forEach((source) => {
