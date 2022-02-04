@@ -73,6 +73,7 @@ const styles = StyleSheet.create({
     width: '45%',
     marginRight: '24px',
     padding: '8px',
+    textShadow: '0px 0px 10px #000000',
     boxSizing: 'border-box',
     backgroundColor: '#222222',
   },
@@ -389,7 +390,11 @@ const styles = StyleSheet.create({
     borderRadius: '4px',
   },
 
-  mangaProgressBarFiller: {},
+  mangaProgressBarFiller: {
+    height: '100%',
+    backgroundColor: '#FFFFFF',
+    borderRadius: '4px',
+  },
 
   mangaProgressText: {
     ':after': {
@@ -863,7 +868,7 @@ const View = () => {
               })}
             </div>
           </div>
-          <Paper className={css(styles.utilityContainer)}>
+          <Paper elevation={3} className={css(styles.utilityContainer)}>
             {/* If this manga is not in the cache then only show the start reading button */}
             {/* First component: Reading button */}
             <div className={css(styles.utilityButtonContainer)}>
