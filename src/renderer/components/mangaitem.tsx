@@ -251,6 +251,12 @@ const styles = StyleSheet.create({
   mangaItemViewButton: {
     backgroundColor: '#00BCD4',
   },
+
+  mangaItemCoverButton: {
+    background: 'none',
+    outline: 'none',
+    border: 'none',
+  },
 });
 
 const MangaItem = ({
@@ -276,7 +282,11 @@ const MangaItem = ({
         <LazyLoad key={title} scrollContainer="#lazyload">
           <div className={css(styles.mangaItemListContainer)}>
             <div className={css(styles.mangaItemCover, styles.listCover)}>
-              <button type="button">
+              <button
+                type="button"
+                className={css(styles.mangaItemCoverButton)}
+                onClick={() => Navigation(viewParams)}
+              >
                 <img
                   src={coverUrl ?? nocover}
                   className={css(
