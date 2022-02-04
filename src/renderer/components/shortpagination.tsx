@@ -136,13 +136,19 @@ const styles = StyleSheet.create({
 type PaginationProps = {
   disabled?: boolean;
   page: number;
+  maxpages: number;
   onUpdate?: (page: number) => void;
 };
 const ShortPagination = ({
   disabled = false,
   page,
+  maxpages,
   onUpdate = () => {},
 }: PaginationProps) => {
+  if (maxpages <= 1) throw new Error('maxpages must be greater than 1');
+  if (page < 1) throw new Error('page must be greater than 0');
+  if (page > maxpages) throw new Error('page must be less than maxpages');
+
   const [value, setValue] = useState(String(page)); // display page number
   if (value.length > 5) setValue(value.slice(0, 5));
 
@@ -171,12 +177,12 @@ const ShortPagination = ({
     <Box className={css(styles.paginationbox)}>
       <Paper className={css(styles.paginationBoxInner)}>
         <button
-          disabled={disabled}
+          disabled={disabled || page <= 1}
           type="button"
           className={css(
             styles.paginationbutton,
             styles.left,
-            disabled ? styles.disabled : false
+            disabled || page <= 1 ? styles.disabled : false
           )}
           onClick={() => {
             onValueChange(String(Number(value) - 1));
@@ -200,15 +206,20 @@ const ShortPagination = ({
             onChange={(e: ChangeEvent<HTMLInputElement>) => {
               onValueChange(e.target.value);
             }}
+            onKeyPress={(event) => {
+              if (event.key === 'Enter') {
+                onValueChange(value);
+              }
+            }}
           />
         </div>
         <button
           type="button"
-          disabled={disabled}
+          disabled={disabled || page === maxpages}
           className={css(
             styles.paginationbutton,
             styles.right,
-            disabled ? styles.disabled : false
+            disabled || page === maxpages ? styles.disabled : false
           )}
           onClick={() => {
             onValueChange(String(Number(value) + 1));
