@@ -284,6 +284,10 @@ const generateQueriedSearchData = (
 ) =>
   Object.fromEntries(mappedFileNames.map((source) => [source.getName(), []]));
 
+const mappedFileNamesBase = window.electron.util
+  .getSourceFiles()
+  .map(Handler.getSource);
+
 const beginSearch = (source: InstanceType<typeof SourceBase>) => {
   console.log(`beginSearch on ${source.getName()}`);
   return source
@@ -332,10 +336,7 @@ const SearchPage = () => {
     pageQueryParams.get('source') || window.electron.cache.get('source') || ''
   );
 
-  const mappedFileNamesRef = useRef(
-    window.electron.util.getSourceFiles().map(Handler.getSource)
-  );
-  const mappedFileNames = mappedFileNamesRef.current.filter(
+  const mappedFileNames = mappedFileNamesBase.filter(
     (x) =>
       !specifiedSource ||
       x.getName().toLowerCase() === specifiedSource.toLowerCase()
@@ -399,8 +400,15 @@ const SearchPage = () => {
     if (!Current[specifiedSource]) {
       specificQueryLoadedPages.current[specifiedSource] =
         generateBaseSearchData();
+    } else if (!Current[specifiedSource][searchData.searchQuery]) {
+      specificQueryLoadedPages.current[specifiedSource][
+        searchData.searchQuery
+      ] = generateBaseSearchData()[searchData.searchQuery];
     } else {
       const currentSpecifiedSource = Current[specifiedSource];
+      // Check if the previous search has the same filters.
+      // If it doesn't, clear out the previous search data
+      // and replace it with new data.
       if (
         !isEqual(
           currentSpecifiedSource[searchData.searchQuery].filters,
@@ -591,6 +599,7 @@ const SearchPage = () => {
                 searchIndex.length > 0 ? (
                   searchIndex.map((MangaObject) => (
                     <MangaItem
+                      backto="search"
                       displayType="grid"
                       listDisplayType={null}
                       title={MangaObject.Name}
@@ -655,6 +664,7 @@ const SearchPage = () => {
 
     elementHierarchy = queryData.map((MangaObject: Manga) => (
       <MangaItem
+        backto="search"
         displayType="grid"
         listDisplayType={null}
         title={MangaObject.Name}
@@ -731,7 +741,7 @@ const SearchPage = () => {
 
             const newSearchQueryData = {
               ...searchData,
-              searchQuery: e.target[0].value,
+              searchQuery: e.target[0].value.toLowerCase(),
             };
 
             if (!searchData.queriedSearches[newSearchQueryData.searchQuery]) {
@@ -739,8 +749,11 @@ const SearchPage = () => {
                 newSearchQueryData.searchQuery
               ] = generateQueriedSearchData(mappedFileNames);
             }
+
+            // Having this function before is O.K. because if the query offset is already initially loaded (which it always is for the first page)
+            // then the .search function will not be called.
+            setQueryOffset(0);
             return setSearchData(() => {
-              setQueryOffset(0);
               return newSearchQueryData;
             });
           }}
