@@ -73,6 +73,23 @@ contextBridge.exposeInMainWorld('electron', {
       ipcRenderer.send('flush-read');
     },
   },
+  cache: {
+    get: (key) => {
+      return ipcRenderer.sendSync('get-cache', key);
+    },
+    set: (key, value) => {
+      ipcRenderer.send('set-cache', key, value);
+    },
+    has: (key) => {
+      return ipcRenderer.sendSync('has-cache', key);
+    },
+    delete: (key) => {
+      ipcRenderer.sendSync('delete-cache', key);
+    },
+    flush: () => {
+      ipcRenderer.sendSync('flush-cache');
+    },
+  },
   auth: {
     async generateAuthenticationWindow(windowData, targetLocation) {
       const id = v4();

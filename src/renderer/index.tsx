@@ -48,6 +48,13 @@ declare global {
         deleteSource: (sourceName: string) => void;
         flush: () => void;
       };
+      cache: {
+        get: (key: string) => any;
+        set: (key: string, value: any) => void;
+        has: (key: string) => boolean;
+        delete: (key: string) => void;
+        flush: () => void;
+      };
       auth: {
         generateAuthenticationWindow: (
           windowData: { [key: string]: any },

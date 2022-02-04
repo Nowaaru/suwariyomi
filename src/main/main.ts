@@ -18,6 +18,7 @@ import pkceChallenge from 'pkce-challenge';
 import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 
+import CacheDB from './util/cache';
 import MangaDB from './util/dbUtil';
 import ReadDB from './util/read';
 
@@ -202,12 +203,27 @@ ipcMain.on(
     newWindow.on('close', onClose);
   }
 );
-ipcMain.on('electron-store-get', async (event, val) => {
-  event.returnValue = ElectronStore.get(val);
+
+ipcMain.on('get-cache', async (event, key) => {
+  event.returnValue = await CacheDB.get(key);
 });
-ipcMain.on('electron-store-set', async (_, key, val) => {
-  ElectronStore.set(key, val);
+
+ipcMain.on('set-cache', async (event, key, value) => {
+  await CacheDB.set(key, value);
 });
+
+ipcMain.on('has-cache', async (event, key) => {
+  event.returnValue = await CacheDB.has(key);
+});
+
+ipcMain.on('delete-cache', async (event, key) => {
+  await CacheDB.delete(key);
+});
+
+ipcMain.on('flush-cache', () => {
+  CacheDB.flush();
+});
+
 ipcMain.on('maximize', () => {
   if (mainWindow?.isMaximized()) return mainWindow.unmaximize();
   mainWindow?.maximize();
