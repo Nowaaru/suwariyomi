@@ -18,7 +18,7 @@ export default class Cache {
     return CACHE.has(key);
   }
 
-  public static async delete(key: string): Promise<void> {
-    CACHE.delete(key);
+  public static async delete(...keys: string[]): Promise<void> {
+    CACHE.evict(keys);
   }
 }

@@ -83,8 +83,8 @@ contextBridge.exposeInMainWorld('electron', {
     has: (key) => {
       return ipcRenderer.sendSync('has-cache', key);
     },
-    delete: (key) => {
-      ipcRenderer.sendSync('delete-cache', key);
+    delete: (...keys) => {
+      ipcRenderer.sendSync('delete-cache', ...keys);
     },
     flush: () => {
       ipcRenderer.sendSync('flush-cache');
