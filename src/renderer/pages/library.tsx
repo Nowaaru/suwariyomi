@@ -8,7 +8,7 @@ import {
 } from '@mui/material';
 
 import { StyleSheet, css } from 'aphrodite/no-important';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 import LazyLoad, { forceCheck } from 'react-lazyload';
@@ -253,6 +253,15 @@ let readingPrefixTarget: MangaType | undefined;
 let statusPrefix: string;
 let statusSuffix: string;
 const Library = () => {
+  useEffect(() => {
+    window.electron.cache.delete(
+      'searchdata',
+      'source',
+      'offset',
+      'specifiedQueryLoadedPages'
+    );
+  }, []);
+
   const { library: LibraryUtilities } = window.electron;
   const mangaItemDisplayFormat: 'list' | 'grid' = 'list';
   const pageQueryParams = useQuery();
@@ -296,6 +305,7 @@ const Library = () => {
 
       mangaListArray.push(
         <MangaItem
+          backto="library"
           displayType="list"
           // Disabled because this only exists for testing purposes
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
