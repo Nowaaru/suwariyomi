@@ -5,6 +5,12 @@ import { ReadDatabaseValue } from '../main/util/read';
 import Topbar from './components/topbar';
 import App from './App';
 
+/*
+  TODO: When implementing preferences, have an "ignored groups" list.
+        When a group is ignored, it will not be displayed in the view list.
+        However, if a manga only has chapters translated by that group, it will still be displayed.
+*/
+
 declare global {
   interface Window {
     electron: {

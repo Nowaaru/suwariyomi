@@ -645,6 +645,7 @@ const View = () => {
   }); // We use filter instead of some because of a chapter's (soon-to-be-implemented) elapsedTime field.
 
   // TODO: Implement Select Group button to filter chapters by group. For now, just show all chapters.
+  // TODO: Implement Sort Order button.
   return (
     <div className={css(styles.container, styles.scrollBar)}>
       <div className={css(styles.upperContainer)}>
