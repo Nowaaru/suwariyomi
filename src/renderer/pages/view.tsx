@@ -8,11 +8,12 @@ import {
 } from 'aphrodite';
 import { URLSearchParams } from 'url';
 import { useNavigate } from 'react-router-dom';
-import { Button, Checkbox, IconButton, Paper } from '@mui/material';
+import { Button, Checkbox, IconButton, Paper, Typography } from '@mui/material';
 
 import moment from 'moment';
 import DownloadIcon from '@mui/icons-material/Download';
 import FavoriteIcon from '@mui/icons-material/Favorite';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import HeartBrokenIcon from '@mui/icons-material/HeartBroken';
 import DownloadDoneIcon from '@mui/icons-material/DownloadDone';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
@@ -43,8 +44,9 @@ const styles = StyleSheet.create({
     height: '100%',
     overflowX: 'hidden',
     overflowY: 'auto',
-    paddingBottom: '6rem',
+    paddingBottom: '7rem',
     boxSizing: 'border-box',
+    position: 'relative',
   },
 
   upperContainer: {
@@ -83,9 +85,21 @@ const styles = StyleSheet.create({
   },
 
   mangaCover: {
+    position: 'relative',
     width: 'fit-content',
     height: 'fit-content',
     marginBottom: '24px',
+  },
+
+  sourceIcon: {
+    padding: '4px',
+    position: 'absolute',
+    top: '-16px',
+    left: '-16px',
+    maxHeight: '32px',
+    backgroundColor: '#222222',
+    borderRadius: '16px',
+    objectFit: 'contain',
   },
 
   mangaBannerContainer: {
@@ -386,6 +400,7 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: '400px',
     height: '8px',
+    overflow: 'hidden',
     backgroundColor: '#DF2935',
     borderRadius: '4px',
   },
@@ -468,6 +483,36 @@ const styles = StyleSheet.create({
       fontFamily: 'Open Sans, sans-serif',
     },
   },
+
+  backAppBar: {
+    position: 'relative',
+    left: '24px',
+    width: 'fit-content',
+    maxHeight: '32px',
+    zIndex: 1000,
+  },
+
+  backButton: {
+    backgroundColor: '#DF2935',
+    // darker backgroundcolor
+    borderColor: '#B11B25',
+    borderStyle: 'solid',
+    borderWidth: '2px',
+    borderRadius: '4px',
+    width: '100px',
+    height: '100%',
+    color: '#FFFFFF',
+
+    transition:
+      'color 0.2s ease-in-out, background-color 0.2s ease-in-out, border-color 0.2s ease-in-out',
+    ':hover': {
+      backgroundColor: '#FFFFFF',
+      color: '#DF2935',
+      borderColor: '#D6D6D6',
+    },
+  },
+
+  backTypography: {},
 });
 
 const View = () => {
@@ -476,6 +521,7 @@ const View = () => {
   const chapterData = useRef<ReadDatabaseValue>({});
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
   const [isHovering, setIsHovering] = useState<boolean>(false);
+  const [scrollTarget, setScrollTarget] = useState<Node | undefined>();
 
   const { id, source } = Object.fromEntries(
     Query as unknown as URLSearchParams
@@ -647,7 +693,25 @@ const View = () => {
   // TODO: Implement Select Group button to filter chapters by group. For now, just show all chapters.
   // TODO: Implement Sort Order button.
   return (
-    <div className={css(styles.container, styles.scrollBar)}>
+    <div
+      className={css(styles.container, styles.scrollBar)}
+      ref={(Node) => {
+        if (Node) setScrollTarget(Node);
+      }}
+    >
+      <div className={css(styles.backAppBar)}>
+        <Button
+          className={css(styles.backButton)}
+          onClick={() => {
+            console.log('go back');
+          }}
+          startIcon={<ArrowBackIcon />}
+        >
+          <Typography variant="h6" className={css(styles.backTypography)}>
+            Back
+          </Typography>
+        </Button>
+      </div>
       <div className={css(styles.upperContainer)}>
         <div className={css(styles.mangaBannerContainer)}>
           {/* TODO: Add IconURL fields to sources and have a small pin on the top of the cover image that indicates the source */}
@@ -659,6 +723,11 @@ const View = () => {
         </div>
         <div className={css(styles.metadataContainer)}>
           <div className={css(styles.mangaCover)}>
+            <img
+              className={css(styles.sourceIcon)}
+              src={selectedSource.getIcon()}
+              alt="Source Icon"
+            />
             <img
               className={css(styles.mangaCoverImage)}
               src={currentManga.CoverURL}
