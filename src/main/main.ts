@@ -127,6 +127,7 @@ ipcMain.on(
     pageCount,
     currentPage,
     lastRead,
+    timeElapsed,
     isBookmarked
   ) => {
     event.returnValue = await ReadDB.set(
@@ -135,6 +136,7 @@ ipcMain.on(
       pageCount,
       currentPage,
       lastRead,
+      timeElapsed,
       isBookmarked
     );
   }
