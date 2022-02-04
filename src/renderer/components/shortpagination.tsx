@@ -2,12 +2,13 @@
 import Box from '@mui/material/Box';
 
 import { css, StyleSheet } from 'aphrodite';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, SyntheticEvent } from 'react';
 import type { ChangeEvent } from 'react';
 
+import SearchIcon from '@mui/icons-material/Search';
 import ArrowBackIosNewSharpIcon from '@mui/icons-material/ArrowBackIosNewSharp';
 import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp';
-import { Paper } from '@mui/material';
+import { IconButton, Paper } from '@mui/material';
 
 import propTypes from 'prop-types';
 
@@ -39,6 +40,7 @@ const styles = StyleSheet.create({
 
   paginationinput: {
     display: 'flex',
+    position: 'relative',
     alignItems: 'center',
     justifyContent: 'center',
     width: 'fit-content',
@@ -131,6 +133,40 @@ const styles = StyleSheet.create({
     pointerEvents: 'none',
     cursor: 'not-allowed',
   },
+
+  invisibleButton: {
+    opacity: 0,
+    pointerEvents: 'none',
+  },
+
+  searchButton: {
+    opacity: 1,
+    position: 'absolute',
+    top: '-42px',
+    width: 'fit-content',
+    height: 'fit-content',
+    boxSizing: 'border-box',
+    padding: '4px',
+    borderRadius: '50%',
+    backgroundColor: '#050401',
+    transition: 'top 0s ease-in-out, opacity 0.2s ease-in-out',
+    borderColor: 'transparent',
+    borderWidth: '0px',
+    ':hover': {
+      borderColor: '#FFFFFF',
+      borderWidth: '6px',
+    },
+  },
+
+  searchIcon: {
+    width: '32px',
+    height: '32px',
+    color: '#fff',
+    transition: 'color 0.2s ease-in-out 0s',
+    ':hover': {
+      color: '#DF2935',
+    },
+  },
 });
 
 type PaginationProps = {
@@ -150,21 +186,31 @@ const ShortPagination = ({
   if (page > maxpages) throw new Error('page must be less than maxpages');
 
   const [value, setValue] = useState(String(page)); // display page number
+  const [searchButtonIsVisible, setVisiblity] = useState(false); // display search button if the text input is focused
   if (value.length > 5) setValue(value.slice(0, 5));
 
-  const onValueChange = (newValue: string) => {
+  const onValueChange = (newValue: string, doUpdate = true) => {
+    console.log(newValue, doUpdate);
     if (newValue.length > 5) return setValue(newValue.slice(0, 5));
     const newerValue = newValue.match(/^\d*$/) ? newValue : value;
-    if (newerValue === value) return undefined; // so state doesn't update (no clue if react checks for this internally so better to be safe than sorry!)
+    const newestValue = String(
+      Math.min(Math.max(1, Number(newerValue)), maxpages)
+    ); // i'm genuinely just a terrible person
 
-    const newestValue = String(Math.max(1, Number(newerValue))); // i'm genuinely just a terrible person
-    if (onUpdate) onUpdate(Number(newestValue));
+    if (doUpdate && onUpdate) onUpdate(Number(newestValue));
     return setValue(newestValue);
   };
 
-  const onFocusLost = (event: ChangeEvent<HTMLInputElement>) => {
-    if (!event.target.value || event.target.value.trim().length === 0) {
-      onValueChange(String(page));
+  // I HAVE NO CLUE HOW TO TYPE THIS FUNCTION PROPERLY HELP ME DEAR GOD
+  const onFocusLost = (event: SyntheticEvent<HTMLInputElement, FocusEvent>) => {
+    if (searchButtonIsVisible) setTimeout(() => setVisiblity(false), 100);
+    const eventTargetValue = event.currentTarget?.value as string;
+    const eventWithTarget = (event as unknown as FocusEvent).relatedTarget;
+
+    if (eventWithTarget) {
+      onValueChange(value, true);
+    } else if (!eventWithTarget || eventTargetValue.trim().length === 0) {
+      onValueChange(String(page), false);
     }
   };
 
@@ -176,6 +222,18 @@ const ShortPagination = ({
   return (
     <Box className={css(styles.paginationbox)}>
       <Paper className={css(styles.paginationBoxInner)}>
+        <IconButton
+          className={css(
+            styles.searchButton,
+            !searchButtonIsVisible && styles.invisibleButton
+          )}
+          onClick={() => {
+            onValueChange(String(page));
+          }}
+          disabled={disabled}
+        >
+          <SearchIcon className={css(styles.searchIcon)} />
+        </IconButton>
         <button
           disabled={disabled || page <= 1}
           type="button"
@@ -202,14 +260,12 @@ const ShortPagination = ({
               styles.paginationinputinner,
               disabled ? styles.disabled : false
             )}
+            onFocus={() => {
+              return setVisiblity(true);
+            }}
             onBlur={onFocusLost}
             onChange={(e: ChangeEvent<HTMLInputElement>) => {
-              onValueChange(e.target.value);
-            }}
-            onKeyPress={(event) => {
-              if (event.key === 'Enter') {
-                onValueChange(value);
-              }
+              onValueChange(e.target.value, false);
             }}
           />
         </div>
