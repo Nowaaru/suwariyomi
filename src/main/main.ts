@@ -204,6 +204,13 @@ ipcMain.on(
   }
 );
 
+ipcMain.on('electron-store-get', async (event, val) => {
+  event.returnValue = ElectronStore.get(val);
+});
+ipcMain.on('electron-store-set', async (_, key, val) => {
+  ElectronStore.set(key, val);
+});
+
 ipcMain.on('get-cache', async (event, key) => {
   event.returnValue = await CacheDB.get(key);
 });
@@ -216,8 +223,8 @@ ipcMain.on('has-cache', async (event, key) => {
   event.returnValue = await CacheDB.has(key);
 });
 
-ipcMain.on('delete-cache', async (event, key) => {
-  await CacheDB.delete(key);
+ipcMain.on('delete-cache', async (event, ...keys) => {
+  await CacheDB.delete(...keys);
 });
 
 ipcMain.on('flush-cache', () => {
