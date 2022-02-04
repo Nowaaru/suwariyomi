@@ -254,6 +254,8 @@ export default class MangaDex extends SourceBase {
     sortOrderDirection: 'desc',
   };
 
+  protected _icon: string = 'https://mangadex.org/favicon.ico';
+
   protected Tags: Promise<{ tagName: string; tagID: string }[]> =
     Manga.getAllTags().then((Tags) =>
       Tags.map((Tag) => ({ tagName: Tag.name, tagID: Tag.id }))

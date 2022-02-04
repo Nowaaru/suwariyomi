@@ -8,7 +8,7 @@ import {
 } from '@mui/material';
 
 import { StyleSheet, css } from 'aphrodite/no-important';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 
 import LazyLoad, { forceCheck } from 'react-lazyload';
@@ -18,6 +18,7 @@ import parseQuery from '../util/search';
 import { FullManga, Manga as MangaType } from '../../main/util/dbUtil';
 import MangaItem from '../components/mangaitem';
 import useQuery from '../util/hook/usequery';
+import Handler from '../../sources/handler';
 
 const libraryStyleSheet = StyleSheet.create({
   container: {
@@ -266,6 +267,11 @@ const Library = () => {
   const accordionArray: Array<JSX.Element> = [];
   const librarySources = LibraryUtilities.getSources();
   const librarySourcesKeys = Object.keys(librarySources);
+
+  const mappedFileNamesRef = useRef(
+    window.electron.util.getSourceFiles().map(Handler.getSource)
+  );
+
   // Filter out sources that are not enabled AND has no manga
   const sourceList: Record<string, FullManga[]> = {};
   librarySourcesKeys
@@ -330,7 +336,13 @@ const Library = () => {
             id="panel1a-header"
           >
             <img
-              src="https://mangadex.org/favicon.ico"
+              src={
+                mappedFileNamesRef.current
+                  .filter(
+                    (x) => x.getName().toLowerCase() === sourceKey.toLowerCase()
+                  )
+                  .map((x) => x.getIcon())[0]
+              }
               className={css(libraryStyleSheet.accordionItemIcon)}
               alt="MangaDex"
             />

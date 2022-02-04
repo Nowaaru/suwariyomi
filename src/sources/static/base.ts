@@ -65,6 +65,12 @@ export default abstract class SourceBase {
     return this._sourceName;
   }
 
+  protected _icon: string = '';
+
+  public getIcon(): string {
+    return this._icon;
+  }
+
   protected _canDownload: boolean = true;
 
   public get canDownload(): boolean {
