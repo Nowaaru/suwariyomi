@@ -27,9 +27,10 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
+
+import useMountEffect from '../util/hook/usemounteffect';
 import { FullManga } from '../../main/util/dbUtil';
 import { ReadDatabaseValue } from '../../main/util/read';
-import useMountEffect from '../util/hook/useMountEffect';
 
 import Tag from '../components/tag';
 import Handler from '../../sources/handler';
@@ -215,6 +216,10 @@ const styles = StyleSheet.create({
       height: '100%',
       background:
         'linear-gradient(to top, #111111FF 0%,rgba(17,17,17,0.35) 75%)',
+    },
+    transition: 'max-width 0.1s ease-in-out 0s',
+    '@media (max-width: 760px)': {
+      maxWidth: '95%',
     },
   },
 
