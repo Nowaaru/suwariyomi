@@ -1,5 +1,11 @@
 import { useRef, useEffect, useState } from 'react';
-import { StyleSheet, css } from 'aphrodite';
+import {
+  StyleSheet,
+  css,
+  StyleDeclarationMap,
+  StyleDeclaration,
+  CSSProperties,
+} from 'aphrodite';
 import { URLSearchParams } from 'url';
 import { useNavigate } from 'react-router-dom';
 import { Button, Checkbox, IconButton, Paper } from '@mui/material';
@@ -14,14 +20,22 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 
-import useForceUpdate from '../util/hook/useforceupdate';
-
 import { FullManga } from '../../main/util/dbUtil';
 import { ReadDatabaseValue } from '../../main/util/read';
 
 import Tag from '../components/tag';
 import Handler from '../../sources/handler';
 import useQuery from '../util/hook/usequery';
+/*
+TODO: Use this implementation to implement themeing
+const abcdefg: StyleDeclaration<
+  Record<string, StyleDeclaration | CSSProperties>
+> = {
+  balls: {
+    margin: '10px',
+  },
+};
+*/
 
 const styles = StyleSheet.create({
   container: {
@@ -55,12 +69,16 @@ const styles = StyleSheet.create({
   },
 
   utilityContainer: {
-    display: 'flex',
+    display: 'block',
     width: '45%',
     marginRight: '24px',
     padding: '8px',
     boxSizing: 'border-box',
     backgroundColor: '#222222',
+  },
+
+  utilityButtonContainer: {
+    display: 'flex',
   },
 
   mangaCover: {
@@ -189,6 +207,10 @@ const styles = StyleSheet.create({
   libraryButton: {
     marginLeft: '68px',
     display: 'flex',
+  },
+
+  notInLibrary: {
+    marginLeft: '44px',
   },
 
   dataRule: {
@@ -344,6 +366,50 @@ const styles = StyleSheet.create({
     borderRadius: '24px',
     width: '100%',
     height: '32px',
+    ':hover': {
+      color: '#DF2935',
+      backgroundColor: '#FFFFFF',
+    },
+  },
+
+  mangaProgressContainer: {
+    marginLeft: '4px',
+    marginTop: '8px',
+    fontSize: '1.5em',
+    fontFamily: 'Poppins, Open Sans,sans-serif',
+    color: '#FFFFFF',
+  },
+
+  mangaProgress: {},
+
+  mangaProgressBar: {
+    width: '100%',
+    height: '8px',
+    backgroundColor: '#DF2935',
+    borderRadius: '4px',
+  },
+
+  mangaProgressBarFiller: {},
+
+  mangaProgressText: {
+    ':after': {
+      marginLeft: '6px',
+      content: '"CHAPTERS"',
+      fontVariant: 'small-caps',
+      fontSize: '0.6em',
+      fontWeight: 200,
+      color: '#FFFFFF',
+      fontFamily: 'Open Sans, sans-serif',
+    },
+  },
+
+  extendedDataRule: {
+    width: '100%',
+    opacity: 0.5,
+    border: 'none',
+    height: '2px',
+    backgroundImage:
+      'radial-gradient(circle at center,rgb(127,127,127,1) 84%, rgba(127,127,127,0) 85%)',
   },
 });
 
@@ -460,6 +526,7 @@ const View = () => {
   });
 
   let ReadingButtonInnerText = 'Start Reading';
+  let mangaProgressBar = allChaptersRead ? 100 : 0;
   if (chapterToDisplay) {
     if (allChaptersRead) {
       ReadingButtonInnerText = 'All Chapters Read';
@@ -476,8 +543,49 @@ const View = () => {
               : 'Start'
           } Reading ${readChapterData}`
         : `Start Reading ${readChapterData}`;
+
+      let { Chapter: mangaProgressCurrent, Volume: mangaProgressScalar = 1 } =
+        chapterToDisplay;
+      let { Chapter: mangaProgressEnd, Volume: mangaProgressEndScalar = 1 } =
+        currentManga.Chapters[0]; // This is [0] because the chapters are sorted in descending order.
+
+      [
+        mangaProgressCurrent,
+        mangaProgressEnd,
+        mangaProgressScalar,
+        mangaProgressEndScalar,
+      ] = [
+        mangaProgressCurrent,
+        mangaProgressEnd,
+        mangaProgressScalar,
+        mangaProgressEndScalar,
+      ].map((x) => (!Number.isNaN(Number(x)) ? Number(x) : 0));
+      // If a source author provided a bad value, then just set it to 0.
+
+      mangaProgressBar =
+        ((mangaProgressCurrent * mangaProgressScalar) /
+          (mangaProgressEnd * mangaProgressEndScalar)) *
+        100;
     }
   }
+
+  const ChaptersNoDuplicates = currentManga.Chapters.filter(
+    (value, index, self) =>
+      self.findIndex((secondValue) => secondValue.Chapter === value.Chapter) ===
+      index
+  );
+
+  const readChapters = ChaptersNoDuplicates.filter((x) => {
+    const foundChapter = chapterData.current[x.ChapterID];
+    // if (!foundChapter) return false;
+
+    return true;
+    // return (
+    //   foundChapter.currentPage > -1 &&
+    //   foundChapter.pageCount > -1 &&
+    //   foundChapter.currentPage >= foundChapter.pageCount
+    // );
+  }); // We use filter instead of some because of a chapter's (soon-to-be-implemented) elapsedTime field.
 
   // TODO: Implement Select Group button to filter chapters by group. For now, just show all chapters.
   return (
@@ -555,7 +663,11 @@ const View = () => {
               setInLibrary(true);
             }
           }}
-          className={css(styles.interactionButton, styles.libraryButton)}
+          className={css(
+            styles.interactionButton,
+            styles.libraryButton,
+            !isInLibrary && styles.notInLibrary
+          )}
           sx={
             isInLibrary
               ? {
@@ -699,18 +811,40 @@ const View = () => {
           <Paper className={css(styles.utilityContainer)}>
             {/* If this manga is not in the cache then only show the start reading button */}
             {/* First component: Reading button */}
-
-            <Button
-              className={css(styles.startReadingButton)}
-              variant="contained"
-              color="primary"
-              onClick={() => {
-                console.log('Start reading');
-              }}
-            >
-              {ReadingButtonInnerText}
-            </Button>
-            {/* Second component: Chapter Progress */}
+            <div className={css(styles.utilityButtonContainer)}>
+              <Button
+                className={css(styles.startReadingButton)}
+                variant="contained"
+                color="primary"
+                onClick={() => {
+                  console.log('Start reading');
+                }}
+              >
+                {ReadingButtonInnerText}
+              </Button>
+            </div>
+            {isInLibrary ? (
+              <>
+                <hr className={css(styles.extendedDataRule)} />
+                {/* Second component: Manga Progress */}
+                <div className={css(styles.mangaProgressContainer)}>
+                  <div className={css(styles.mangaProgress)}>
+                    <div className={css(styles.mangaProgressText)}>
+                      {readChapters.length} / {ChaptersNoDuplicates.length}
+                    </div>
+                    <div className={css(styles.mangaProgressBar)}>
+                      <div
+                        className={css(styles.mangaProgressBarFiller)}
+                        style={{
+                          width: `${mangaProgressBar}%`,
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+                {/* Third component: Time Elapsed */}
+              </>
+            ) : null}
           </Paper>
         </div>
       </div>
