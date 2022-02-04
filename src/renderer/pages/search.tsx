@@ -434,6 +434,7 @@ const SearchPage = () => {
       specifiedSourceCurrentValue[searchData.searchQuery].pageData[queryOffset]
     )
       return;
+    console.log('ok so we loading then?');
     setLoading(true);
     beginSearch(mappedFileNames[0])
       .then((n) => {
@@ -465,6 +466,7 @@ const SearchPage = () => {
         searchData.queriedSearches[searchData.searchQuery][
           x.getName() as string
         ];
+
       return (
         searchQueryIndex !== false &&
         searchQueryIndex.length === 0 &&
@@ -476,6 +478,7 @@ const SearchPage = () => {
       searchData.initiatedSearches[source.getName()] = true;
       beginSearch(source)
         .then((MangaData: Array<Manga>) => {
+          console.log(`mangadata frog: ${source.getName()}`);
           const newQueriedSearchesLog = { ...searchData.queriedSearches };
           newQueriedSearchesLog[searchData.searchQuery] =
             newQueriedSearchesLog[searchData.searchQuery] || {}; // Check if it exists beforehand because there might be other sources still loading after this one.
@@ -483,10 +486,12 @@ const SearchPage = () => {
           newQueriedSearchesLog[searchData.searchQuery][source.getName()] =
             MangaData.length > 0 ? MangaData : false;
 
-          return setSearchData({
+          const newSearchData = {
             ...searchData,
             queriedSearches: newQueriedSearchesLog,
-          });
+          };
+
+          return setSearchData(newSearchData);
         })
         .catch(console.error);
     });
@@ -743,6 +748,7 @@ const SearchPage = () => {
 
             const newSearchQueryData = {
               ...searchData,
+              initiatedSearches: {}, // This becomes empty because we're starting a new search
               searchQuery: e.target[0].value.toLowerCase(),
             };
 
@@ -752,6 +758,7 @@ const SearchPage = () => {
               ] = generateQueriedSearchData(mappedFileNames);
             }
 
+            console.log(newSearchQueryData);
             // Having this function before is O.K. because if the query offset is already initially loaded (which it always is for the first page)
             // then the .search function will not be called.
             setQueryOffset(0);
