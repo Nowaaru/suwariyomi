@@ -256,6 +256,7 @@ const styles = StyleSheet.create({
     background: 'none',
     outline: 'none',
     border: 'none',
+    cursor: 'pointer',
   },
 });
 
