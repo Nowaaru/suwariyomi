@@ -82,6 +82,10 @@ export default abstract class SourceBase {
     return false;
   };
 
+  public async getItemCount(): Promise<number> {
+    return 0;
+  }
+
   protected abstract Tags: Promise<
     {
       tagName: string;

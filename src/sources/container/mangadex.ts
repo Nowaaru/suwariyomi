@@ -44,6 +44,35 @@ type MangaDexFilters = SearchFilters & {
   updatedAfter?: string;
 };
 
+const convertToQueryable = ({
+  query: title,
+  tagInclusivity: includedTagsMode,
+  tagExclusivity: excludedTagsMode,
+  includedTags,
+  sortOrderBy,
+  sortOrderDirection,
+  excludedTags,
+  contentRating,
+  results: limit,
+  originalLanguage,
+  offset,
+}: MangaDexFilters) => {
+  return {
+    title,
+    includedTagsMode,
+    excludedTagsMode,
+    order: {
+      [sortOrderBy]: sortOrderDirection,
+    },
+    includedTags,
+    excludedTags,
+    contentRating,
+    limit,
+    originalLanguage,
+    offset: offset * limit,
+  };
+};
+
 // This Shouldn't Be A Class: Part 2
 export default class MangaDex extends SourceBase {
   constructor() {
@@ -324,33 +353,16 @@ export default class MangaDex extends SourceBase {
     );
   }
 
+  public async getItemCount(): Promise<number> {
+    const searchAmount = await Manga.getTotalSearchResults(
+      convertToQueryable(this.searchFilters)
+    );
+
+    return searchAmount;
+  }
+
   public async search(): Promise<Manga[]> {
-    const {
-      query: title,
-      tagInclusivity: includedTagsMode,
-      tagExclusivity: excludedTagsMode,
-      includedTags,
-      sortOrderBy,
-      sortOrderDirection,
-      excludedTags,
-      contentRating,
-      results: limit,
-      originalLanguage,
-      offset,
-    } = this.searchFilters;
-    return Manga.search({
-      title,
-      includedTagsMode,
-      excludedTagsMode,
-      order: {
-        [sortOrderBy]: sortOrderDirection,
-      },
-      includedTags,
-      excludedTags,
-      contentRating,
-      limit,
-      originalLanguage,
-      offset: offset * limit,
-    });
+    const newSearchFilters = convertToQueryable(this.searchFilters);
+    return Manga.search(newSearchFilters);
   }
 }
