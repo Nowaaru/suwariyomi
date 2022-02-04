@@ -26,6 +26,7 @@ type MangaItemGenericProps = {
   synopsis: string;
   source: string;
   mangaid: string;
+  backto: string;
 };
 
 type MangaItemProps = MangaItemGenericProps &
@@ -41,7 +42,7 @@ const styles = StyleSheet.create({
   mangaItemListContainer: {
     marginBottom: '10px',
     width: 'calc(100% - 20px)',
-    maxHeight: '300px',
+    // maxHeight: '300px',
     backgroundColor: '#0c0a0c',
     verticalAlign: 'top',
     overflow: 'hidden',
@@ -261,12 +262,14 @@ const MangaItem = ({
   synopsis,
   displayType,
   listDisplayType,
+  backto,
 }: MangaItemProps) => {
   const Navigation = useNavigate();
   const mangaTags = tags.map((tag) => (
     <Tag key={tag} name={tag} type="normal" />
   ));
 
+  const viewParams = `/view?source=${source}&id=${mangaid}&backto=${backto}`;
   switch (displayType) {
     case 'list':
       return (
@@ -309,7 +312,7 @@ const MangaItem = ({
                       )}
                       variant="contained"
                       onClick={() => {
-                        Navigation(`/view?id=${mangaid}&source=${source}`);
+                        Navigation(viewParams);
                       }}
                     >
                       View Chapters
@@ -336,7 +339,7 @@ const MangaItem = ({
           <div>
             <Link
               className={css(styles.linkCover, styles.mangaItemGridContainer)}
-              to={`/view?source=${source}&id=${mangaid}`}
+              to={viewParams}
             >
               <div className={css(styles.mangaItemCover, styles.gridCover)}>
                 <img
