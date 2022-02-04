@@ -314,7 +314,7 @@ const SearchPage = () => {
   const [currentAlert, setAlert] = useState<{
     message: string;
     severity: 'success' | 'error';
-  } | null>(null);
+  } | null>(null); // TODO: Implement search alert system
 
   const [modalIsOpen, setIsOpen] = useState(false);
   const specificQueryLoadedPages = useRef<{
