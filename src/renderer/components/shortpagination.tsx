@@ -20,12 +20,12 @@ const styles = StyleSheet.create({
     bottom: '15px',
     opacity: 0.75,
     transition: 'opacity 0.2s ease-in-out',
-    ':hover': {
-      opacity: 1,
-    },
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
+    ':hover': {
+      opacity: 1,
+    },
   },
 
   paginationBoxInner: {
@@ -167,6 +167,31 @@ const styles = StyleSheet.create({
       color: '#DF2935',
     },
   },
+
+  pageIndicator: {
+    boxSizing: 'border-box',
+    padding: '6px',
+    backgroundColor: '#050401',
+    fontFamily: '"Poppins", "Roboto", "Helvetica", "Arial", sans-serif',
+    fontSize: '12px',
+    color: '#FFFFFF',
+    fontVariant: 'small-caps',
+    textTransform: 'uppercase',
+    letterSpacing: '0.5px',
+    borderRadius: '4px',
+  },
+
+  minSide: {
+    marginRight: '4px',
+  },
+
+  maxSide: {
+    marginLeft: '4px',
+  },
+
+  startReached: {},
+
+  endReached: {},
 });
 
 type PaginationProps = {
@@ -219,8 +244,18 @@ const ShortPagination = ({
     setValue(String(page));
   }, [page]);
 
+  const endReached = maxpages === Number(page);
   return (
     <Box className={css(styles.paginationbox)}>
+      <span
+        className={css(
+          styles.pageIndicator,
+          styles.minSide,
+          Number(page) === 1 && styles.startReached
+        )}
+      >
+        MIN 1
+      </span>
       <Paper className={css(styles.paginationBoxInner)}>
         <IconButton
           className={css(
@@ -286,6 +321,21 @@ const ShortPagination = ({
           />
         </button>
       </Paper>
+      <span
+        className={css(
+          styles.pageIndicator,
+          styles.maxSide,
+          endReached && styles.endReached
+        )}
+      >
+        {endReached
+          ? 'END REACHED'
+          : `MAX ${
+              Number.isFinite(maxpages) && Number.isSafeInteger(maxpages)
+                ? maxpages
+                : '∞'
+            }`}
+      </span>
     </Box>
   );
 };
