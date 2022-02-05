@@ -1,5 +1,9 @@
 <center><h1><b>座り読み</b></h1></center>
 
+|issues|forks|stars|license|share|
+|------|-----|-----|-------|-----|
+|<img src="https://img.shields.io/github/issues/Nowaaru/suwariyomi" />|<img src="https://img.shields.io/github/forks/Nowaaru/suwariyomi" />|<img src="https://img.shields.io/github/stars/Nowaaru/suwariyomi" />|<img src="https://img.shields.io/github/license/Nowaaru/suwariyomi" />|<img src="https://img.shields.io/twitter/url?url=https%3A%2F%2Fgithub.com%2FNowaaru%2Fsuwariyomi" />
+
 similarly to [Tachiyomi](https://github.com/tachiyomiorg/tachiyomi), suwariyomi is a free and open-source manga reader for <b>windows</b>, <b>linux</b>, and <b>macOS.</b>
 <br />
 
