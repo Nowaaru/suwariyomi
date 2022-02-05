@@ -11,6 +11,10 @@ import App from './App';
         However, if a manga only has chapters translated by that group, it will still be displayed.
 */
 
+/*
+  TODO: Implement settings Enmap.
+*/
+
 declare global {
   interface Window {
     electron: {
