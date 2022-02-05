@@ -19,7 +19,7 @@ import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 
 import CacheDB from './util/cache';
-import MangaDB from './util/dbUtil';
+import MangaDB from './util/manga';
 import ReadDB from './util/read';
 
 import MenuBuilder from './menu';
@@ -227,8 +227,8 @@ ipcMain.on('delete-cache', async (event, ...keys) => {
   event.returnValue = await CacheDB.delete(...keys);
 });
 
-ipcMain.on('flush-cache', () => {
-  CacheDB.flush();
+ipcMain.on('flush-cache', (event) => {
+  event.returnValue = CacheDB.flush();
 });
 
 ipcMain.on('maximize', () => {
