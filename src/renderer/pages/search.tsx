@@ -299,6 +299,12 @@ const beginSearch = (source: InstanceType<typeof SourceBase>) => {
     .then((a) => a.filter((b) => b !== false).map((c) => c as Manga));
 };
 
+const Exclude = (Object: Record<string, any>, ...excludedItems: string[]) => {
+  const newObject = { ...Object };
+  excludedItems.forEach((item) => delete newObject[item]);
+  return newObject;
+};
+
 /* Utility Elements */
 const returnButton = (
   <div className={css(styles.returnButtonContainer)}>
@@ -328,11 +334,17 @@ const SearchPage = () => {
   }>(window.electron.cache.get('specificQueryLoadedPages') ?? {});
 
   const pageQueryParams = useQuery();
-  const [queryOffset, setQueryOffset] = useState(
+  const [queryOffset, SET_QUERY_OFFSET] = useState(
     Number(
       pageQueryParams.get('offset') || window.electron.cache.get('offset') || 0
     )
   ); // Used for specified source query
+
+  const setQueryOffset = (offset: number) => {
+    SET_QUERY_OFFSET(offset);
+    window.electron.cache.set('offset', offset);
+  };
+
   const [specifiedSource, setSpecifiedSource] = useState(
     pageQueryParams.get('source') || window.electron.cache.get('source') || ''
   );
@@ -411,16 +423,18 @@ const SearchPage = () => {
       // Check if the previous search has the same filters.
       // If it doesn't, clear out the previous search data
       // and replace it with new data.
+
       if (
         !isEqual(
-          currentSpecifiedSource[searchData.searchQuery].filters,
-          mappedFileNames[0].getFilters()
-        )
+          Exclude(
+            currentSpecifiedSource[searchData.searchQuery].filters,
+            'offset'
+          ),
+          Exclude(mappedFileNames[0].getFilters(), 'offset')
+        ) // If the filters are different, remove the page data.
       ) {
-        specificQueryLoadedPages.current[specifiedSource] =
-          generateBaseSearchData();
-      } else {
-        return;
+        console.log('or something like that');
+        currentSpecifiedSource[searchData.searchQuery].pageData = {};
       }
     }
 
@@ -428,23 +442,17 @@ const SearchPage = () => {
       specificQueryLoadedPages.current[specifiedSource];
     if (!specifiedSourceCurrentValue[searchData.searchQuery])
       specifiedSourceCurrentValue[searchData.searchQuery] =
-        generateBaseSearchData()[searchData.searchQuery]; /* {
-        filters: mappedFileNames[0].getFilters(),
-        itemCount: -1,
-        pageData: {},
-      }; */
+        generateBaseSearchData()[searchData.searchQuery];
 
     const specifiedSourceCurrentValueSearchQuery =
       specifiedSourceCurrentValue[searchData.searchQuery];
+
     if (specifiedSourceCurrentValueSearchQuery.pageData[queryOffset]) return;
     setLoading(true);
     (async () => {
       if (!specifiedSourceCurrentValueSearchQuery.itemCount)
         specifiedSourceCurrentValueSearchQuery.itemCount =
           await mappedFileNames[0].getItemCount();
-
-      console.log('bruhmoment');
-      console.log(specifiedSourceCurrentValueSearchQuery);
     })()
       .then(() => beginSearch(mappedFileNames[0]))
       .then((n) => {
