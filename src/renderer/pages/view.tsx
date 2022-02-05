@@ -973,10 +973,30 @@ const View = () => {
               <div className={css(styles.utilityButtonContainer)}>
                 <Button
                   className={css(styles.startReadingButton)}
+                  disabled={!!chapterToDisplay && !currentManga.Chapters[0]}
                   variant="contained"
                   color="primary"
                   onClick={() => {
                     console.log('Start reading');
+                    const navigateData = `/read?id=${
+                      currentManga.MangaID
+                    }&source=${source}&chapter=${
+                      (chapterToDisplay ?? currentManga.Chapters[0]).ChapterID
+                    }&page=${(() => {
+                      const foundChapter =
+                        chapterData.current[
+                          (chapterToDisplay ?? currentManga.Chapters[0])
+                            .ChapterID
+                        ];
+
+                      if (foundChapter) {
+                        const { currentPage } = foundChapter;
+                        return currentPage !== -1 ? currentPage : 0;
+                      }
+
+                      return 0;
+                    })()}`;
+                    Navigate(navigateData);
                   }}
                 >
                   {ReadingButtonInnerText}
