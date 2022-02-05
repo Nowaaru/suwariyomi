@@ -15,6 +15,11 @@ import App from './App';
   TODO: Implement settings Enmap.
 */
 
+/*
+  TODO: Fix useQuery hook to actually use the `url` library's `URLSearchParams` class instead of casting in other modules.
+  Points of interest: `useQuery` is used in `src/renderer/pages/reader.tsx` and `src/renderer/pages/view.tsx`.
+*/
+
 declare global {
   interface Window {
     electron: {
