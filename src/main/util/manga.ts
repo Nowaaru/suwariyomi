@@ -41,6 +41,10 @@ const MangaDatabase = new Enmap<
 // try to get the manga from the source.
 export type Chapter = {
   PublishedAt: Date;
+  ReadableAt: Date;
+
+  isExternal: boolean;
+  externalURL: string;
 
   ChapterID: string;
   Chapter: number | string;
