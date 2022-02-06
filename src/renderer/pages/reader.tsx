@@ -11,15 +11,18 @@ import {
   CircularProgress,
 } from '@mui/material';
 
-import SettingsIcon from '@mui/icons-material/Settings';
 import ArrowForwardIosSharp from '@mui/icons-material/ArrowForwardIosSharp';
 import ArrowBackIosNewSharp from '@mui/icons-material/ArrowBackIosNewSharp';
-import { isEqual } from 'lodash';
+import SettingsIcon from '@mui/icons-material/Settings';
+import WarningIcon from '@mui/icons-material/Warning';
+import HomeIcon from '@mui/icons-material/Home';
 
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { StyleSheet, css, CSSProperties, StyleDeclarationMap } from 'aphrodite';
 import { URLSearchParams } from 'url';
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { isEqual } from 'lodash';
+
 import { sortChapters } from '../util/func';
 import { Chapter } from '../../main/util/manga';
 
@@ -282,7 +285,7 @@ const Reader = () => {
     isHovering: false,
     isOpen: false,
   });
-  const [isInIntermediary, setIsInIntermediary] = useState(false);
+  const [isInIntermediary, setIsInIntermediary] = useState<0 | 1 | -1>(-1); // -1: not in intermediary state, 0: going to previous chapter, 1: going to next chapter
   // Intermediary state is for when the user is between
   // two chapters.
 
@@ -356,46 +359,35 @@ const Reader = () => {
   }, [toolbarState]);
 
   // TODO: Clear repitition because this is a mess.
-  const goToPreviousChapter = useCallback(() => {
-    if (readerData.chapters && readerData.currentchapter) {
+  const getChapter = useCallback(
+    (direction: 0 | 1): Chapter | undefined => {
+      if (!readerData.chapters) return undefined;
       const currentChapterIndex = readerData.chapters.findIndex(
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         (x: Chapter) => x.ChapterID === readerData.currentchapter!.ChapterID // disabled because ts cries even though i used an if statement as a guard
       );
 
-      if (currentChapterIndex === -1) return;
-      const previousChapter = readerData.chapters[currentChapterIndex - 1];
+      return readerData.chapters[
+        currentChapterIndex + (direction === 0 ? -1 : 1)
+      ];
+    },
+    [readerData.chapters, readerData.currentchapter]
+  );
+  const changeChapter = useCallback(
+    (direction: 0 | 1) => {
+      const selectedChapter = getChapter(direction);
+      if (!selectedChapter) return;
+
       setIsLoading(true);
-      setIsInIntermediary(false);
+      setIsInIntermediary(-1);
       setReaderData({
         ...readerData,
-        currentchapter: previousChapter,
-        page: previousChapter.PageCount,
+        currentchapter: selectedChapter,
+        page: direction === 0 ? selectedChapter.PageCount : 1,
       });
-    }
-  }, [readerData]);
-
-  const goToNextChapter = useCallback(() => {
-    if (readerData.chapters && readerData.currentchapter) {
-      const currentChapterIndex = readerData.chapters.findIndex(
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        (x: Chapter) => x.ChapterID === readerData.currentchapter!.ChapterID // see above
-      );
-
-      if (
-        currentChapterIndex >= readerData.chapters.length - 1 ||
-        currentChapterIndex === -1
-      )
-        return;
-      setIsLoading(true);
-      setIsInIntermediary(false);
-      setReaderData({
-        ...readerData,
-        currentchapter: readerData.chapters[currentChapterIndex + 1],
-        page: 1,
-      });
-    }
-  }, [readerData]);
+    },
+    [readerData, getChapter]
+  );
 
   useEffect(() => {
     if (readerData.currentchapter) return undefined;
@@ -580,12 +572,12 @@ const Reader = () => {
                 ? currentPage >= currentPageState.length
                 : currentPage <= 1
             ) {
-              if (isInIntermediary)
-                return isRightToLeft
-                  ? goToNextChapter()
-                  : goToPreviousChapter();
+              if (isInIntermediary !== -1)
+                return changeChapter(isInIntermediary);
 
-              return setIsInIntermediary(true);
+              return isRightToLeft
+                ? setIsInIntermediary(1)
+                : setIsInIntermediary(0);
             }
             setReaderData({
               ...readerData,
@@ -616,12 +608,12 @@ const Reader = () => {
                 ? currentPage <= 1
                 : currentPage >= currentPageState.length
             ) {
-              if (isInIntermediary)
-                return isRightToLeft
-                  ? goToPreviousChapter()
-                  : goToNextChapter();
+              if (isInIntermediary !== -1)
+                return changeChapter(isInIntermediary);
 
-              return setIsInIntermediary(true);
+              return isRightToLeft
+                ? setIsInIntermediary(0)
+                : setIsInIntermediary(1);
             }
             return setReaderData({
               ...readerData,
@@ -654,23 +646,94 @@ const Reader = () => {
           </Toolbar>
         </div>
       </div>
-      <div className={css(styles.imageContainer)}>
-        {currentPageState[currentPage - 1].isLoaded ? (
-          <img
-            className={css(styles.mangaImage)}
-            src={currentPageState[currentPage - 1].src}
-            alt={`Page ${currentPage}`}
-          />
-        ) : (
-          <div className={css(styles.loadingContainer)}>
-            <CircularProgress
-              className={css(styles.loading)}
-              color="secondary"
-              size={50}
+      {isInIntermediary === -1 ? (
+        <div className={css(styles.imageContainer)}>
+          {currentPageState[currentPage - 1].isLoaded ? (
+            <img
+              className={css(styles.mangaImage)}
+              src={currentPageState[currentPage - 1].src}
+              alt={`Page ${currentPage}`}
             />
+          ) : (
+            <div className={css(styles.loadingContainer)}>
+              <CircularProgress
+                className={css(styles.loading)}
+                color="secondary"
+                size={50}
+              />
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className={css(styles.intermediaryContainer)}>
+          <div className={css(styles.intermediary)}>
+            {/*
+              Display:
+                - Chapter Name (if present)
+                - Chapter Number and Volume Number (if present)
+                - If the chapter number is greater than the current chapter number + 1
+                  OR the volume number is greater than the current volume number + 1, display a "warning icon"
+                  that tells the user that there are N amount of missing chapters/volumes and that they might
+                  be spoiled if they continue.
+                - If there is no next chapter, display "There's no next chapter" button with a home icon.
+
+                -Next chapter text: Finished / Next
+                -Previous chapter text: Previous / Current
+            */}
+            {(() => {
+              const nextMangaChapter = getChapter(isInIntermediary);
+
+              if (!nextMangaChapter) {
+                return (
+                  <span className={css(styles.noChapterText)}>
+                    {isInIntermediary === 1
+                      ? 'There is no next chapter.'
+                      : 'There is no previous chapter.'}
+                  </span>
+                );
+              }
+
+              const {
+                ChapterTitle: nextTitle,
+                Chapter: nextChapter,
+                Volume: nextVolume,
+              } = nextMangaChapter;
+
+              const { Chapter: currentChapter, Volume: currentVolume } =
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                readerData.currentchapter!; // currentChapter will always be defined due to the isLoading check above.
+
+              const isNextChapterMissing =
+                nextChapter > Number(currentChapter) + 1 ||
+                nextVolume > Number(currentVolume) + 1;
+
+              return (
+                <>
+                  <span>Next Chapter:</span>
+                  <span className={css(styles.chapterTitle)}>{nextTitle}</span>
+                  <span>
+                    {nextChapter}
+                    {nextVolume ? `:${nextVolume}` : ''}
+                  </span>
+                  {isNextChapterMissing && ( // Due to the nature of the logic, this will not show if the previous chapter has a skip.
+                    <div className={css(styles.missingChapterText)}>
+                      <WarningIcon className={css(styles.warningIcon)} />
+                      <span>
+                        {`There are ${
+                          +nextChapter - +currentChapter - 1 // Using unary plus operator to convert because consistently typing "Number" is harrowing.
+                        } chapters missing. You might be spoiled if you continue.`}
+                      </span>
+                      <IconButton onClick={() => Navigate('/library')}>
+                        <HomeIcon className={css(styles.homeIcon)} />
+                      </IconButton>
+                    </div>
+                  )}
+                </>
+              );
+            })()}
           </div>
-        )}
-      </div>
+        </div>
+      )}
       <Sidebar
         outOf={currentPageState.length}
         Page={currentPage}
