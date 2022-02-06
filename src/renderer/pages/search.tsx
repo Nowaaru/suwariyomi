@@ -28,7 +28,7 @@ import SearchIcon from '@mui/icons-material/Search';
 
 import SourceBase, { SearchFilters } from '../../sources/static/base';
 import useQuery from '../util/hook/usequery';
-import { Manga } from '../../main/util/dbUtil';
+import { Manga } from '../../main/util/manga';
 
 import ShortPagination from '../components/shortpagination';
 import MangaItem from '../components/mangaitem';
