@@ -73,6 +73,7 @@ const convertToQueryable = ({
   };
 };
 
+// TODO: If the BiliBili source is present, use it to get external chapters.
 // This Shouldn't Be A Class: Part 2
 export default class MangaDex extends SourceBase {
   constructor() {
