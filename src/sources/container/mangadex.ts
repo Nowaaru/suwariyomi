@@ -303,15 +303,16 @@ export default class MangaDex extends SourceBase {
     return { ...this.searchFilters };
   }
 
-  public async getManga(mangaID: string): Promise<FullManga> {
+  public async getManga(mangaID: string, doFull = false): Promise<FullManga> {
     return Manga.get(mangaID).then(
-      (mangaObject) => this.serialize(mangaObject, true) as unknown as FullManga
+      (mangaObject) =>
+        this.serialize(mangaObject, doFull) as unknown as FullManga
     );
   }
 
   public async serialize(
     mangaItem: Manga,
-    doFull?: boolean
+    doFull = false
   ): Promise<DatabaseManga> {
     return {
       Name: mangaItem.localizedTitle.localString,
@@ -349,20 +350,32 @@ export default class MangaDex extends SourceBase {
     chapters: Chapter[]
   ): Promise<DatabaseChapter[]> {
     return Promise.all(
-      chapters.map(async (chapter) => {
-        return {
-          PublishedAt: chapter.publishAt,
+      chapters
+        .filter(
+          // If the manga is external and there is an external url, that means that
+          // it probably isn't hosted on MangaDex; therefore, no inclusion.
+          // Also, if the manga is not published (readableAt is greater than the current date)
+          // then it is probably not published yet either; therefore, also no inclusion.
+          (x) => !(x.isExternal && x.externalUrl) && x.readableAt <= new Date()
+        )
+        .map(async (chapter) => {
+          return {
+            PublishedAt: chapter.publishAt,
+            ReadableAt: chapter.readableAt,
 
-          ChapterID: chapter.id,
-          Volume: chapter.volume,
-          Chapter: chapter.chapter,
-          PageCount: chapter.pages,
-          ChapterTitle: chapter.title,
-          Groups: (await resolveArray(chapter.groups)).map(
-            (group) => group.name
-          ),
-        };
-      })
+            isExternal: chapter.isExternal,
+            externalURL: chapter.externalUrl,
+
+            ChapterID: chapter.id,
+            Volume: chapter.volume,
+            Chapter: chapter.chapter,
+            PageCount: chapter.pages,
+            ChapterTitle: chapter.title,
+            Groups: (await resolveArray(chapter.groups)).map(
+              (group) => group.name
+            ),
+          };
+        })
     );
   }
 
