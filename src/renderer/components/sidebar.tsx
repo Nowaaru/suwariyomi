@@ -1,4 +1,5 @@
 import { StyleSheet, css } from 'aphrodite';
+import { useRef } from 'react';
 
 export const sidebarStyle = StyleSheet.create({
   sidebar: {
@@ -65,80 +66,82 @@ const SideBar = ({
     isSelected = false as boolean,
   }) => {
     const Colour = `221,4,38`;
-    const selectedStylesheet = StyleSheet.create({
-      itemGradient: {
-        backgroundImage: isSelected
-          ? `linear-gradient(to ${
-              isVertical ? (isRight ? 'right' : 'left') : 'bottom'
-            }, rgba(${
-              isSelected ? '255,255,255' : '0,0,0'
-            },0) 0%,rgba(255,255,255,0.25) 100%)`
-          : 'rgba(0,0,0,255)',
-        zIndex: 1,
-        position: 'relative',
-        top: isSelected ? '-4px' : 'unset',
-        '::before': {
-          content: `""`, // this makes sure that if there are too many pages, the text is not shown
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          opacity: 0,
-          transition: 'top 0.5s, opacity 0.5s',
-          zIndex: -1,
-          backgroundImage: `linear-gradient(to ${
-            isVertical ? (isRight ? 'right' : 'left') : 'bottom'
-          }, rgba(0,0,0,0) 0%,rgba(${Colour},0.25) 100%)`,
-        },
-        ':hover': {
-          transform: 'scale(1.05), translateY(-15px)',
-          top: '-4px',
+    const selectedStylesheet = useRef(
+      StyleSheet.create({
+        itemGradient: {
+          backgroundImage: isSelected
+            ? `linear-gradient(to ${
+                isVertical ? (isRight ? 'right' : 'left') : 'bottom'
+              }, rgba(${
+                isSelected ? '255,255,255' : '0,0,0'
+              },0) 0%,rgba(255,255,255,0.25) 100%)`
+            : 'rgba(0,0,0,255)',
+          zIndex: 1,
+          position: 'relative',
+          top: isSelected ? '-4px' : 'unset',
           '::before': {
-            opacity: 1,
+            content: `""`, // this makes sure that if there are too many pages, the text is not shown
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            opacity: 0,
+            transition: 'top 0.5s, opacity 0.5s',
+            zIndex: -1,
+            backgroundImage: `linear-gradient(to ${
+              isVertical ? (isRight ? 'right' : 'left') : 'bottom'
+            }, rgba(0,0,0,0) 0%,rgba(${Colour},0.25) 100%)`,
+          },
+          ':hover': {
+            transform: 'scale(1.05), translateY(-15px)',
+            top: '-4px',
+            '::before': {
+              opacity: 1,
+            },
           },
         },
-      },
-      bar: {
-        height: isVertical ? '100%' : '3px',
-        width: isVertical ? '3px' : '100%',
-        position: 'absolute',
-        backgroundColor: isSelected ? '#F00' : '#FFF',
-        [`${isVertical ? (isRight ? 'right' : 'left') : 'bottom'}`]: isVertical
-          ? '0%'
-          : '8%',
-        [`${isVertical ? 'top' : ''}`]: 0,
-      },
-      pageNumber: {
-        top: 0,
-        left: 0,
-        bottom: 0,
-        right: 0,
-        [`${isVertical ? (isRight ? 'right' : 'left') : 'bottom'}`]: '65%',
-        textAlign: isVertical ? (isRight ? 'right' : 'left') : 'center',
-        position: 'absolute',
-        verticalAlign: 'middle',
-        fontSize: '0.625em',
-        fontFamily: '"Roboto", sans-serif',
-        fontWeight: 'bolder',
-        display: 'inline-flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        userFocus: 'none',
-        userInput: 'none',
-        'user-select': 'none',
-        color: '#FFF',
-      },
-    });
-
+        bar: {
+          height: isVertical ? '100%' : '3px',
+          width: isVertical ? '3px' : '100%',
+          position: 'absolute',
+          backgroundColor: isSelected ? '#F00' : '#FFF',
+          [`${isVertical ? (isRight ? 'right' : 'left') : 'bottom'}`]:
+            isVertical ? '0%' : '8%',
+          [`${isVertical ? 'top' : ''}`]: 0,
+        },
+        pageNumber: {
+          top: 0,
+          left: 0,
+          bottom: 0,
+          right: 0,
+          [`${isVertical ? (isRight ? 'right' : 'left') : 'bottom'}`]: '65%',
+          textAlign: isVertical ? (isRight ? 'right' : 'left') : 'center',
+          position: 'absolute',
+          verticalAlign: 'middle',
+          fontSize: '0.625em',
+          fontFamily: '"Roboto", sans-serif',
+          fontWeight: 'bolder',
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          userFocus: 'none',
+          userInput: 'none',
+          'user-select': 'none',
+          color: '#FFF',
+        },
+      })
+    );
     const showText = !isTooSmall ? (
-      <span className={css(selectedStylesheet.pageNumber)}>{pageValue}</span>
+      <span className={css(selectedStylesheet.current.pageNumber)}>
+        {pageValue}
+      </span>
     ) : null;
     return (
       <button
         type="button"
         className={css(
-          selectedStylesheet.itemGradient,
+          selectedStylesheet.current.itemGradient,
           !isSmall
             ? isVertical
               ? sidebarStyle.sidebarItemBeforeVertical
@@ -151,7 +154,7 @@ const SideBar = ({
         }}
       >
         {showText}
-        <div className={css(selectedStylesheet.bar)} />
+        <div className={css(selectedStylesheet.current.bar)} />
       </button>
     );
   };
