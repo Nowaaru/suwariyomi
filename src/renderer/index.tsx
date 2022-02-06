@@ -37,6 +37,20 @@ import App from './App';
   can be read on dex.
 */
 
+/*
+  TODO: Import specific components from Material UI instead of using object destructuring.
+  The Material UI library's size is huge (upwards of 117KB!!), and importing that large of
+  a library every page is a waste of resources.
+*/
+
+/*
+  TODO: Hide chapters that aren't in the specified locale language.
+*/
+
+/*
+  TODO: Make all sources singletons.
+*/
+
 declare global {
   interface Window {
     electron: {
