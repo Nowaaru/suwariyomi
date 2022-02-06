@@ -1,6 +1,6 @@
 import { render } from 'react-dom';
 import { IpcRendererEvent } from 'electron';
-import { LibrarySources, FullManga } from '../main/util/dbUtil';
+import { LibrarySources, FullManga } from '../main/util/manga';
 import { ReadDatabaseValue } from '../main/util/read';
 import Topbar from './components/topbar';
 import App from './App';
@@ -18,6 +18,23 @@ import App from './App';
 /*
   TODO: Fix useQuery hook to actually use the `url` library's `URLSearchParams` class instead of casting in other modules.
   Points of interest: `useQuery` is used in `src/renderer/pages/reader.tsx` and `src/renderer/pages/view.tsx`.
+*/
+
+/*
+  TODO: Implement a preferences page.
+*/
+
+/*
+  TODO: Integrate `handler.ts` functionality into the main process so external sources can be added.
+  This needs to be added because sometimes a source might be dependent on another source in order to function;
+  for example, MangaDex can support BiliBili only if the BiliBili source is installed.
+
+  See: https://github.com/tachiyomiorg/tachiyomi-extensions/issues/10243#issuecomment-1001257213
+  So this a valid issue. Bilibili is the only external source that uploads to dex after a date.
+
+  The filter should check if the external url is not null, then if it's bilibili
+  and the publish at date is current or older then allow the chapter because it
+  can be read on dex.
 */
 
 declare global {
