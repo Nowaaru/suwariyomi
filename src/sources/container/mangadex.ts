@@ -12,7 +12,7 @@ import {
   Manga as DatabaseManga,
   Chapter as DatabaseChapter,
   FullManga,
-} from '../../main/util/dbUtil';
+} from '../../main/util/manga';
 
 type TagID = string;
 

@@ -3,7 +3,7 @@ import {
   Chapter,
   MangaWithAuthors,
   FullManga,
-} from '../../main/util/dbUtil';
+} from '../../main/util/manga';
 
 export type SearchFilters = {
   query: string;

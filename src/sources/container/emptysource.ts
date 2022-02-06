@@ -1,4 +1,4 @@
-import { Manga, Chapter, FullManga } from '../../main/util/dbUtil';
+import { Manga, Chapter, FullManga } from '../../main/util/manga';
 import SourceBase, {
   SearchFilterFieldTypes,
   SearchFilters,
@@ -75,6 +75,14 @@ export default class EmptySource extends SourceBase {
   }
 
   public async getAuthors(): Promise<string[]> {
+    return [];
+  }
+
+  public async getChapters(mangaID: string): Promise<Chapter[]> {
+    return [];
+  }
+
+  public async getPages(): Promise<string[]> {
     return [];
   }
 
