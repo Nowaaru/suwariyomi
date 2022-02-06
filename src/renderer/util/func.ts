@@ -1,32 +1,33 @@
 /* eslint-disable import/prefer-default-export */
 import { Chapter } from '../../main/util/manga';
 
+export const getChapterValue = (chapter: Chapter): number => {
+  const numberifiedChapter = Number(chapter.Chapter);
+  const numberifiedChapterVolume = Number(chapter.Volume);
+
+  const isChapterNumber = !Number.isNaN(numberifiedChapter);
+  const isChapterVolumeNumber = !Number.isNaN(numberifiedChapterVolume);
+
+  if (isChapterNumber && isChapterVolumeNumber) {
+    return (
+      numberifiedChapter * (numberifiedChapterVolume + 1) // Add +1 to the volume number in case the volume is weird (i.e., it's 0)
+    );
+  }
+  return isChapterNumber
+    ? numberifiedChapter
+    : isChapterVolumeNumber
+    ? numberifiedChapterVolume
+    : 0;
+};
+
 export const sortChapters = (chapters: Chapter[], isDescending = true) =>
   chapters.sort((a, b) => {
-    const numberifiedA = Number(a.Chapter);
-    const numberifiedB = Number(b.Chapter);
+    const [calculatedA, calculatedB] = [getChapterValue(a), getChapterValue(b)];
+    if (calculatedA === calculatedB)
+      // Sort by date instead
+      return (
+        new Date(a.PublishedAt).getTime() - new Date(b.PublishedAt).getTime()
+      );
 
-    const numberifiedAVolume = Number(a.Volume);
-    const numberifiedBVolume = Number(b.Volume);
-
-    const isANumber = !Number.isNaN(numberifiedA);
-    const isBNumber = !Number.isNaN(numberifiedB);
-
-    const isAVolumeNumber = !Number.isNaN(numberifiedAVolume);
-    const isBVolumeNumber = !Number.isNaN(numberifiedBVolume);
-
-    const calculatedA =
-      numberifiedA * (isAVolumeNumber ? Math.max(numberifiedAVolume, 1) : 1);
-    const calculatedB =
-      numberifiedB * (isBVolumeNumber ? Math.max(numberifiedBVolume, 1) : 1);
-    if (isANumber && isBNumber) {
-      if (calculatedA === calculatedB)
-        // Sort by date instead
-        return (
-          new Date(a.PublishedAt).getTime() - new Date(b.PublishedAt).getTime()
-        );
-      return (isDescending ? -1 : 1) * (calculatedA - calculatedB);
-    }
-
-    return -1;
+    return (isDescending ? -1 : 1) * (calculatedA - calculatedB);
   });
