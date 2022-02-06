@@ -20,6 +20,11 @@ export const sortChapters = (chapters: Chapter[], isDescending = true) =>
     const calculatedB =
       numberifiedB * (isBVolumeNumber ? Math.max(numberifiedBVolume, 1) : 1);
     if (isANumber && isBNumber) {
+      if (calculatedA === calculatedB)
+        // Sort by date instead
+        return (
+          new Date(a.PublishedAt).getTime() - new Date(b.PublishedAt).getTime()
+        );
       return (isDescending ? -1 : 1) * (calculatedA - calculatedB);
     }
 
