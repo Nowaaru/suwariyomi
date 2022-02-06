@@ -1,9 +1,4 @@
-import {
-  Manga,
-  Chapter,
-  MangaWithAuthors,
-  FullManga,
-} from '../../main/util/manga';
+import { Manga, Chapter, FullManga } from '../../main/util/manga';
 
 export type SearchFilters = {
   query: string;
