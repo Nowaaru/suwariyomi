@@ -29,7 +29,7 @@ import BookmarkIcon from '@mui/icons-material/Bookmark';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 
 import useMountEffect from '../util/hook/usemounteffect';
-import { FullManga } from '../../main/util/dbUtil';
+import { FullManga } from '../../main/util/manga';
 import { ReadDatabaseValue } from '../../main/util/read';
 
 import Tag from '../components/tag';
