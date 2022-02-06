@@ -1,39 +1,37 @@
 import { StyleSheet, css } from 'aphrodite';
-import { useRef } from 'react';
+import { useState } from 'react';
 
 export const sidebarStyle = StyleSheet.create({
-  sidebar: {
-    opacity: 0, // this is to make sure that the sidebar is not shown when the page is loaded
-    transition: 'opacity 0.5s',
-    ':hover': {
-      opacity: 1,
-    },
-  },
+  sidebar: {},
+
   vertical: {
     display: 'inline-flex',
     flexDirection: 'column',
     height: '100%',
-    width: '5%',
+    width: '100%',
   },
   horizontal: {
     display: 'inline-flex',
     flexDirection: 'row',
-    height: '5%',
+    height: '100%',
     width: '100%',
   },
   left: {
     left: 0,
     top: 0,
+    borderRadius: '5px 0px',
   },
   right: {
     position: 'absolute',
     right: 0,
     top: 0,
+    borderRadius: '0px 5px',
   },
   bottom: {
     position: 'absolute',
     bottom: 0,
     left: 0,
+    borderRadius: '0px 0px 5px 5px',
   },
   sidebarItem: {
     border: 'none',
@@ -50,125 +48,162 @@ export const sidebarStyle = StyleSheet.create({
   },
 });
 
-const SideBar = ({
+const SidebarItem = ({
+  pageValue = 1 as number,
+  isSelected = false as boolean,
   isVertical = false as boolean,
   isRight = false as boolean,
-  Page = 1 as number,
-  outOf = 16 as number,
+  isTooSmall = false as boolean,
+  isSmall = false as boolean,
+  forceShow = false as boolean,
+  onClick = (() => {}) as (pageNumber: number) => void,
 }) => {
+  console.log(`isVertical: ${isVertical}`);
+  const Colour = `221,4,38`;
+  const selectedStylesheet = StyleSheet.create({
+    itemGradient: {
+      backgroundImage: isSelected
+        ? `linear-gradient(to ${
+            isVertical ? (isRight ? 'right' : 'left') : 'bottom'
+          }, rgba(${
+            isSelected ? '255,255,255' : '0,0,0'
+          },0) 0%,rgba(255,255,255,0.25) 100%)`
+        : 'rgba(0,0,0,255)',
+      zIndex: 1,
+      transition:
+        'opacity 0.2s ease-in-out, top 0.2s ease-in-out, left 0.2s ease-in-out, right 0.2s ease-in-out, bottom 0.2s ease-in-out',
+      position: 'relative',
+      top: !isVertical
+        ? isSelected
+          ? '-4px'
+          : forceShow
+          ? '0px'
+          : '12px'
+        : '0px',
+      left: isVertical // why am i such an awful programmer?
+        ? isSelected
+          ? isRight
+            ? '-4px'
+            : '4px'
+          : forceShow
+          ? '0px'
+          : isRight
+          ? '12px'
+          : '-12px'
+        : '0px',
+      opacity: isSelected ? 1 : forceShow ? 1 : 0,
+      '::before': {
+        content: `""`, // this makes sure that if there are too many pages, the text is not shown
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        opacity: 0,
+        transition:
+          'top 0.5s ease-in-out, left 0.5s ease-in-out, right 0.5s ease-in-out, bottom 0.5s ease-in-out, opacity 0.5s ease-in-out',
+        zIndex: -1,
+        backgroundImage: `linear-gradient(to ${
+          isVertical ? (isRight ? 'right' : 'left') : 'bottom'
+        }, rgba(0,0,0,0) 0%,rgba(${Colour},0.25) 100%)`,
+      },
+      ':hover': {
+        transform: 'scale(1.05), translateY(-15px)',
+        [isVertical ? (isRight ? 'left' : 'right') : 'top']: '-4px',
+        '::before': {
+          opacity: 1,
+        },
+      },
+    },
+    bar: {
+      height: isVertical ? '100%' : '3px',
+      width: isVertical ? '3px' : '100%',
+      position: 'absolute',
+      backgroundColor: isSelected ? '#F00' : '#FFF',
+      [`${isVertical ? (isRight ? 'right' : 'left') : 'bottom'}`]: isVertical
+        ? '0%'
+        : '8%',
+      [`${isVertical ? 'top' : ''}`]: 0,
+    },
+    pageNumber: {
+      top: isVertical ? '0' : '50%',
+      left: isVertical && !isRight ? '0' : '50%',
+      bottom: 0,
+      right: isVertical && isRight ? '0' : '50%',
+      [`${isVertical ? (isRight ? 'right' : 'left') : 'bottom'}`]: '65%',
+      textAlign: isVertical ? (isRight ? 'right' : 'left') : 'center',
+      position: 'absolute',
+      verticalAlign: 'middle',
+      fontSize: '0.625em',
+      fontFamily: '"Roboto", sans-serif',
+      fontWeight: 'bolder',
+      display: 'inline-flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      userFocus: 'none',
+      userInput: 'none',
+      'user-select': 'none',
+      color: '#FFF',
+    },
+  });
+  const showText = !isTooSmall ? (
+    <span className={css(selectedStylesheet.pageNumber)}>{pageValue}</span>
+  ) : null;
+  return (
+    <button
+      type="button"
+      className={css(
+        selectedStylesheet.itemGradient,
+        !isSmall
+          ? isVertical
+            ? sidebarStyle.sidebarItemBeforeVertical
+            : sidebarStyle.sidebarItemBeforeHorizontal
+          : null,
+        sidebarStyle.sidebarItem
+      )}
+      onClick={() => {
+        onClick(pageValue);
+      }}
+    >
+      {showText}
+      <div className={css(selectedStylesheet.bar)} />
+    </button>
+  );
+};
+
+const SideBar = ({
+  isVertical = false,
+  isRight = false,
+  Page = 1,
+  outOf = 16,
+  isRightToLeft = true,
+  onItemClick = (() => {}) as (pageNumber: number) => void,
+}) => {
+  const [isHover, setHover] = useState(false);
   const pageCalculation =
     outOf / (document.getElementById('root') as HTMLElement).offsetWidth;
-  const isTooSmall = pageCalculation >= 1 / 8;
-  const isSmall = pageCalculation >= 1 / 32;
-  console.log(pageCalculation);
-  const SidebarItem = ({
-    pageValue = 1 as number,
-    isSelected = false as boolean,
-  }) => {
-    const Colour = `221,4,38`;
-    const selectedStylesheet = useRef(
-      StyleSheet.create({
-        itemGradient: {
-          backgroundImage: isSelected
-            ? `linear-gradient(to ${
-                isVertical ? (isRight ? 'right' : 'left') : 'bottom'
-              }, rgba(${
-                isSelected ? '255,255,255' : '0,0,0'
-              },0) 0%,rgba(255,255,255,0.25) 100%)`
-            : 'rgba(0,0,0,255)',
-          zIndex: 1,
-          position: 'relative',
-          top: isSelected ? '-4px' : 'unset',
-          '::before': {
-            content: `""`, // this makes sure that if there are too many pages, the text is not shown
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            opacity: 0,
-            transition: 'top 0.5s, opacity 0.5s',
-            zIndex: -1,
-            backgroundImage: `linear-gradient(to ${
-              isVertical ? (isRight ? 'right' : 'left') : 'bottom'
-            }, rgba(0,0,0,0) 0%,rgba(${Colour},0.25) 100%)`,
-          },
-          ':hover': {
-            transform: 'scale(1.05), translateY(-15px)',
-            top: '-4px',
-            '::before': {
-              opacity: 1,
-            },
-          },
-        },
-        bar: {
-          height: isVertical ? '100%' : '3px',
-          width: isVertical ? '3px' : '100%',
-          position: 'absolute',
-          backgroundColor: isSelected ? '#F00' : '#FFF',
-          [`${isVertical ? (isRight ? 'right' : 'left') : 'bottom'}`]:
-            isVertical ? '0%' : '8%',
-          [`${isVertical ? 'top' : ''}`]: 0,
-        },
-        pageNumber: {
-          top: 0,
-          left: 0,
-          bottom: 0,
-          right: 0,
-          [`${isVertical ? (isRight ? 'right' : 'left') : 'bottom'}`]: '65%',
-          textAlign: isVertical ? (isRight ? 'right' : 'left') : 'center',
-          position: 'absolute',
-          verticalAlign: 'middle',
-          fontSize: '0.625em',
-          fontFamily: '"Roboto", sans-serif',
-          fontWeight: 'bolder',
-          display: 'inline-flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          userFocus: 'none',
-          userInput: 'none',
-          'user-select': 'none',
-          color: '#FFF',
-        },
-      })
-    );
-    const showText = !isTooSmall ? (
-      <span className={css(selectedStylesheet.current.pageNumber)}>
-        {pageValue}
-      </span>
-    ) : null;
-    return (
-      <button
-        type="button"
-        className={css(
-          selectedStylesheet.current.itemGradient,
-          !isSmall
-            ? isVertical
-              ? sidebarStyle.sidebarItemBeforeVertical
-              : sidebarStyle.sidebarItemBeforeHorizontal
-            : null,
-          sidebarStyle.sidebarItem
-        )}
-        onClick={() => {
-          console.log(pageValue);
-        }}
-      >
-        {showText}
-        <div className={css(selectedStylesheet.current.bar)} />
-      </button>
-    );
-  };
 
   const items = [];
   for (let i = 0; i < outOf; i++) {
+    const iteration = isRightToLeft ? outOf - i - 1 : i;
     items.push(
-      <SidebarItem pageValue={i + 1} isSelected={Page - 1 === i} key={i} />
+      <SidebarItem
+        pageValue={iteration + 1}
+        isSmall={pageCalculation >= 1 / 32}
+        isTooSmall={pageCalculation >= 1 / 8}
+        isSelected={Page - 1 === iteration}
+        forceShow={isHover}
+        isVertical={isVertical}
+        isRight={isRight}
+        onClick={onItemClick}
+        key={i}
+      />
     );
   }
 
   const containerSpecificStylesheet = StyleSheet.create({
     horizontal: {
-      backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0) 0%,rgba(0,0,0,0.35) 100%)`,
+      backgroundImage: `linear-gradient(to top, rgba(0,0,0,0.45) 65%,rgba(0,0,0,0) 100%)`,
     },
     verticalL: {
       backgroundImage: `linear-gradient(to left, rgba(0,0,0,0) 0%,rgba(0,0,0,0.35) 100%)`,
@@ -177,12 +212,14 @@ const SideBar = ({
       backgroundImage: `linear-gradient(to right, rgba(0,0,0,0) 0%,rgba(0,0,0,0.35) 100%)`,
     },
     container: {
-      width: '100%',
-      height: isVertical ? '95%' : '100%',
       position: 'absolute',
+      width: isVertical ? '5%' : '100%',
+      [isVertical ? (isRight ? 'right' : 'left') : 'bottom']: '0',
+      height: isVertical ? '95%' : '5%',
       marginTop: isVertical ? '1%' : '0%',
       display: 'flex',
       alignItems: 'center',
+      zIndex: 250000,
     },
   });
 
@@ -191,6 +228,7 @@ const SideBar = ({
       ? containerSpecificStylesheet.verticalR
       : containerSpecificStylesheet.verticalL
     : containerSpecificStylesheet.horizontal;
+
   return (
     <div className={css(containerSpecificStylesheet.container)}>
       <div
@@ -204,6 +242,14 @@ const SideBar = ({
             : sidebarStyle.bottom,
           sidebarStyle.sidebar
         )}
+        onMouseEnter={() => {
+          console.log('enter');
+          setHover(true);
+        }}
+        onMouseLeave={() => {
+          console.log('leave');
+          setHover(false);
+        }}
       >
         {items}
       </div>
