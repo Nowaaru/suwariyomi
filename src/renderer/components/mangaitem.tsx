@@ -334,6 +334,9 @@ const MangaItem = ({
                         styles.mangaItemButton
                       )}
                       variant="contained"
+                      onClick={() => {
+                        console.log('read');
+                      }}
                     >
                       Start Reading
                     </Button>
