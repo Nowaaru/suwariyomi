@@ -227,8 +227,9 @@ ipcMain.on('delete-cache', async (event, ...keys) => {
   event.returnValue = await CacheDB.delete(...keys);
 });
 
-ipcMain.on('flush-cache', (event) => {
-  event.returnValue = CacheDB.flush();
+ipcMain.on('flush-cache', async (event) => {
+  await CacheDB.flush();
+  return (event.returnValue = true);
 });
 
 ipcMain.on('maximize', () => {
