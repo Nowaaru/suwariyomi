@@ -1,3 +1,4 @@
+/* eslint-disable no-continue */
 /* eslint global-require: off, no-console: off, promise/always-return: off */
 
 /**
