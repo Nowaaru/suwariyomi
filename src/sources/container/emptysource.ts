@@ -78,7 +78,7 @@ export default class EmptySource extends SourceBase {
     return [];
   }
 
-  public async getChapters(mangaID: string): Promise<Chapter[]> {
+  public async getChapters(): Promise<Chapter[]> {
     return [];
   }
 
