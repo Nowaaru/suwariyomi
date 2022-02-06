@@ -32,6 +32,8 @@ import useMountEffect from '../util/hook/usemounteffect';
 import { FullManga } from '../../main/util/manga';
 import { ReadDatabaseValue } from '../../main/util/read';
 
+import { sortChapters } from '../util/func';
+
 import Tag from '../components/tag';
 import Handler from '../../sources/handler';
 import useQuery from '../util/hook/usequery';
@@ -601,29 +603,7 @@ const View = () => {
 
   const currentManga: FullManga | null = mangaData.current;
   if (currentManga) {
-    currentManga.Chapters.sort((a, b) => {
-      const numberifiedA = Number(a.Chapter);
-      const numberifiedB = Number(b.Chapter);
-
-      const numberifiedAVolume = Number(a.Volume);
-      const numberifiedBVolume = Number(b.Volume);
-
-      const isANumber = !Number.isNaN(numberifiedA);
-      const isBNumber = !Number.isNaN(numberifiedB);
-
-      const isAVolumeNumber = !Number.isNaN(numberifiedAVolume);
-      const isBVolumeNumber = !Number.isNaN(numberifiedBVolume);
-
-      const calculatedA =
-        numberifiedA * (isAVolumeNumber ? Math.max(numberifiedAVolume, 1) : 1);
-      const calculatedB =
-        numberifiedB * (isBVolumeNumber ? Math.max(numberifiedBVolume, 1) : 1);
-      if (isANumber && isBNumber) {
-        return -(calculatedA - calculatedB);
-      }
-
-      return -1;
-    });
+    sortChapters(currentManga.Chapters);
 
     const Authors = currentManga.Authors.slice(0, 4);
     const remainderAuthors = currentManga.Authors.length - Authors.length;
