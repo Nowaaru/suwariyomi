@@ -15,7 +15,7 @@ import LazyLoad, { forceCheck } from 'react-lazyload';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import parseQuery from '../util/search';
 
-import { FullManga, Manga as MangaType } from '../../main/util/dbUtil';
+import { FullManga, Manga as MangaType } from '../../main/util/manga';
 import MangaItem from '../components/mangaitem';
 import useQuery from '../util/hook/usequery';
 import Handler from '../../sources/handler';
