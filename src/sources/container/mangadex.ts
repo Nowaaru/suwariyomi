@@ -333,6 +333,17 @@ export default class MangaDex extends SourceBase {
     return (await resolveArray(manga.authors)).map((x) => x.name);
   }
 
+  public async getPages(chapterID: string): Promise<string[]> {
+    const chapter = await Chapter.get(chapterID);
+    console.log(chapter);
+    return chapter.getReadablePages();
+  }
+
+  public async getChapters(mangaID: string): Promise<DatabaseChapter[]> {
+    const manga = await Manga.get(mangaID);
+    return this.serializeChapters(await manga.getFeed());
+  }
+
   public async serializeChapters(
     chapters: Chapter[]
   ): Promise<DatabaseChapter[]> {

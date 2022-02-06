@@ -133,8 +133,12 @@ export default abstract class SourceBase {
     return { ...this.searchFilterFieldTypes };
   }
 
-  // This one requires a record because different sources have different required data
-  public abstract getManga(mangaID: string): Promise<FullManga>;
+  public abstract getManga(
+    mangaID: string,
+    doFull: boolean
+  ): Promise<FullManga>;
+
+  public abstract getChapters(mangaID: string): Promise<Chapter[]>;
 
   public abstract serialize(
     mangaItem: any,
