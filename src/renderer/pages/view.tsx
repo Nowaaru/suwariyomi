@@ -249,6 +249,10 @@ const styles = StyleSheet.create({
     display: 'flex',
   },
 
+  disabledButton: {
+    filter: 'grayscale(100%)',
+  },
+
   notInLibrary: {},
 
   dataRule: {
@@ -589,7 +593,7 @@ const View = () => {
     }
 
     selectedSource
-      .getManga(id)
+      .getManga(id, false)
       .then((x) => {
         window.electron.library.addMangaToCache(source, x);
         return (mangaData.current = x);
@@ -623,56 +627,55 @@ const View = () => {
         foundChapter.currentPage <= -1
       );
     }); // We don't need a second find function here because .find() is a linear search; so it will find an in-progess chapter before it finds an unread chapter.
-    const allChaptersRead = currentManga.Chapters.every((x) => {
-      const correspondingChapter = chapterData.current[x.ChapterID];
-      if (!correspondingChapter) return false;
+    const allChaptersRead =
+      currentManga.Chapters.every((x) => {
+        const correspondingChapter = chapterData.current[x.ChapterID];
+        if (!correspondingChapter) return false;
 
-      const { currentPage, pageCount } = correspondingChapter;
-      return currentPage > -1 && pageCount > -1 && currentPage >= pageCount;
-    });
+        const { currentPage, pageCount } = correspondingChapter;
+        return currentPage > -1 && pageCount > -1 && currentPage >= pageCount;
+      }) || currentManga.Chapters.length === 0;
 
     let ReadingButtonInnerText = 'Start Reading';
     let mangaProgressBar = allChaptersRead ? 100 : 0;
-    if (chapterToDisplay) {
-      if (allChaptersRead) {
-        ReadingButtonInnerText = 'All Chapters Read';
-      } else {
-        const foundChapter = chapterData.current[chapterToDisplay.ChapterID];
-        const readChapterData = `${
-          chapterToDisplay.Volume ? `Volume ${chapterToDisplay.Volume} ` : ''
-        }Chapter ${chapterToDisplay.Chapter}`;
-        ReadingButtonInnerText = foundChapter
-          ? `${
-              foundChapter.currentPage > -1 &&
-              foundChapter.currentPage < foundChapter.pageCount
-                ? 'Continue'
-                : 'Start'
-            } Reading ${readChapterData}`
-          : `Start Reading ${readChapterData}`;
+    if (allChaptersRead) {
+      ReadingButtonInnerText = 'All Chapters Read';
+    } else if (chapterToDisplay) {
+      const foundChapter = chapterData.current[chapterToDisplay.ChapterID];
+      const readChapterData = `${
+        chapterToDisplay.Volume ? `Volume ${chapterToDisplay.Volume} ` : ''
+      }Chapter ${chapterToDisplay.Chapter}`;
+      ReadingButtonInnerText = foundChapter
+        ? `${
+            foundChapter.currentPage > -1 &&
+            foundChapter.currentPage < foundChapter.pageCount
+              ? 'Continue'
+              : 'Start'
+          } Reading ${readChapterData}`
+        : `Start Reading ${readChapterData}`;
 
-        let { Chapter: mangaProgressCurrent, Volume: mangaProgressScalar = 1 } =
-          chapterToDisplay;
-        let { Chapter: mangaProgressEnd, Volume: mangaProgressEndScalar = 1 } =
-          currentManga.Chapters[0]; // This is [0] because the chapters are sorted in descending order.
+      let { Chapter: mangaProgressCurrent, Volume: mangaProgressScalar = 1 } =
+        chapterToDisplay;
+      let { Chapter: mangaProgressEnd, Volume: mangaProgressEndScalar = 1 } =
+        currentManga.Chapters[0]; // This is [0] because the chapters are sorted in descending order.
 
-        [
-          mangaProgressCurrent,
-          mangaProgressEnd,
-          mangaProgressScalar,
-          mangaProgressEndScalar,
-        ] = [
-          mangaProgressCurrent,
-          mangaProgressEnd,
-          mangaProgressScalar,
-          mangaProgressEndScalar,
-        ].map((x) => (!Number.isNaN(Number(x)) ? Number(x) : 0));
-        // If a source author provided a bad value, then just set it to 0.
+      [
+        mangaProgressCurrent,
+        mangaProgressEnd,
+        mangaProgressScalar,
+        mangaProgressEndScalar,
+      ] = [
+        mangaProgressCurrent,
+        mangaProgressEnd,
+        mangaProgressScalar,
+        mangaProgressEndScalar,
+      ].map((x) => (!Number.isNaN(Number(x)) ? Number(x) : 0));
+      // If a source author provided a bad value, then just set it to 0.
 
-        mangaProgressBar =
-          ((mangaProgressCurrent * mangaProgressScalar) /
-            (mangaProgressEnd * mangaProgressEndScalar)) *
-          100;
-      }
+      mangaProgressBar =
+        ((mangaProgressCurrent * mangaProgressScalar) /
+          (mangaProgressEnd * mangaProgressEndScalar)) *
+        100;
     }
 
     const ChaptersNoDuplicates = currentManga.Chapters.filter(
@@ -952,8 +955,14 @@ const View = () => {
               {/* First component: Reading button */}
               <div className={css(styles.utilityButtonContainer)}>
                 <Button
-                  className={css(styles.startReadingButton)}
-                  disabled={!!chapterToDisplay && !currentManga.Chapters[0]}
+                  className={css(
+                    styles.startReadingButton,
+                    allChaptersRead && styles.disabledButton
+                  )}
+                  disabled={
+                    (!!chapterToDisplay && !currentManga.Chapters[0]) ||
+                    allChaptersRead
+                  }
                   variant="contained"
                   color="primary"
                   onClick={() => {
@@ -971,10 +980,10 @@ const View = () => {
 
                       if (foundChapter) {
                         const { currentPage } = foundChapter;
-                        return currentPage !== -1 ? currentPage : 0;
+                        return currentPage !== -1 ? currentPage : 1;
                       }
 
-                      return 0;
+                      return 1;
                     })()}`;
                     Navigate(navigateData);
                   }}
