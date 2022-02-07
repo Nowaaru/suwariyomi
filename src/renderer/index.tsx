@@ -51,6 +51,13 @@ import App from './App';
   TODO: Make all sources singletons.
 */
 
+/*
+  TODO: Make sourceBase.search(x, _) have _ be the "exclude" parameter.
+  The exclude parameter is a list of strings that should be excluded from the search.
+  More-intensive requests should check the exclude parameter to see if the request should be made.
+  Otherwise, the function should call delete on the field.
+*/
+
 declare global {
   interface Window {
     electron: {
