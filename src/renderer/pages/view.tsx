@@ -898,6 +898,17 @@ const View = () => {
                       </div>
                       <Button
                         className={css(styles.chapterContainerReadButton)}
+                        onClick={() => {
+                          Navigate(
+                            `/read?id=${
+                              currentManga.MangaID
+                            }&source=${source}&chapter=${x.ChapterID}&page=${
+                              currentPage >= x.PageCount
+                                ? 1
+                                : Math.max(1, currentPage) // In case the page is -1.
+                            }`
+                          );
+                        }}
                       >
                         {foundChapter && currentPage !== -1
                           ? isRead
