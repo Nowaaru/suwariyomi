@@ -46,11 +46,15 @@ export type Chapter = {
   isExternal: boolean;
   externalURL: string;
 
-  ChapterID: string;
-  Chapter: number | string;
-  PageCount: number;
-  Volume: number | string;
+  translatedLanguage: string;
+
   ChapterTitle: string;
+  ChapterID: string;
+
+  Chapter: number | string;
+  Volume: number | string;
+  PageCount: number;
+
   Groups: string[];
 };
 

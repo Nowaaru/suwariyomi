@@ -31,3 +31,14 @@ export const sortChapters = (chapters: Chapter[], isDescending = true) =>
 
     return (isDescending ? -1 : 1) * (calculatedA - calculatedB);
   });
+
+export const filterChaptersToLanguage = (
+  chapters: Chapter[],
+  targetLanguage = 'en'
+) =>
+  chapters.filter(
+    (x) => x.translatedLanguage.toLowerCase() === targetLanguage.toLowerCase()
+  );
+
+export const clamp = (value: number, min: number, max: number) =>
+  Math.min(max, Math.max(min, value));

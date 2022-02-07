@@ -32,7 +32,7 @@ import useMountEffect from '../util/hook/usemounteffect';
 import { FullManga } from '../../main/util/manga';
 import { ReadDatabaseValue } from '../../main/util/read';
 
-import { sortChapters } from '../util/func';
+import { filterChaptersToLanguage, sortChapters } from '../util/func';
 
 import Tag from '../components/tag';
 import Handler from '../../sources/handler';
@@ -586,6 +586,10 @@ const View = () => {
   useMountEffect(() => {
     const cachedManga = window.electron.library.getCachedManga(source, id);
     if (cachedManga) {
+      cachedManga.Chapters = filterChaptersToLanguage(
+        cachedManga.Chapters,
+        'en' //
+      );
       mangaData.current = cachedManga;
       setIsLoaded(true);
 
@@ -593,10 +597,16 @@ const View = () => {
     }
 
     selectedSource
-      .getManga(id, false)
+      .getManga(id, true)
       .then((x) => {
         window.electron.library.addMangaToCache(source, x);
-        return (mangaData.current = x);
+
+        const newData = { ...x };
+        newData.Chapters = filterChaptersToLanguage(
+          newData.Chapters,
+          'en' //
+        );
+        return (mangaData.current = newData);
       })
       .then(() => setIsLoaded(true))
       .catch(console.error);
@@ -607,8 +617,8 @@ const View = () => {
 
   const currentManga: FullManga | null = mangaData.current;
   if (currentManga) {
+    console.log(currentManga);
     sortChapters(currentManga.Chapters);
-
     const Authors = currentManga.Authors.slice(0, 4);
     const remainderAuthors = currentManga.Authors.length - Authors.length;
 

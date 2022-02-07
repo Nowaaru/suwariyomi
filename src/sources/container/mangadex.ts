@@ -84,6 +84,7 @@ export default class MangaDex extends SourceBase {
     this.search = this.search.bind(this);
     this.getManga = this.getManga.bind(this);
 
+    this.setLocale('en');
     this.Tags.then((tags) => {
       this.searchFilterFieldTypes['Included Tags'] = {
         fieldType: 'checkbox3',
@@ -138,7 +139,7 @@ export default class MangaDex extends SourceBase {
   ];
 
   public override setLocale(locale: string): void {
-    if (this._locales.find((l) => l.id === locale))
+    if (!this._locales.find((l) => l.id === locale))
       throw new Error(`Locale ${locale} is not supported by ${this.getName()}`);
 
     setGlobalLocale(locale);
@@ -365,6 +366,7 @@ export default class MangaDex extends SourceBase {
 
             isExternal: chapter.isExternal,
             externalURL: chapter.externalUrl,
+            translatedLanguage: chapter.translatedLanguage,
 
             ChapterID: chapter.id,
             Volume: chapter.volume,
