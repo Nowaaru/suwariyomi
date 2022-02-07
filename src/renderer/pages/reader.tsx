@@ -9,6 +9,7 @@ import {
   Toolbar,
   IconButton,
   CircularProgress,
+  Icon,
 } from '@mui/material';
 
 import ArrowForwardIosSharp from '@mui/icons-material/ArrowForwardIosSharp';
@@ -23,7 +24,7 @@ import { URLSearchParams } from 'url';
 import { useNavigate } from 'react-router-dom';
 import { isEqual } from 'lodash';
 
-import { sortChapters } from '../util/func';
+import { filterChaptersToLanguage, sortChapters } from '../util/func';
 import { Chapter } from '../../main/util/manga';
 
 import Handler from '../../sources/handler';
@@ -37,9 +38,8 @@ import useMountEffect from '../util/hook/usemounteffect';
 const stylesObject = {
   container: {
     display: 'block',
-    position: 'absolute',
     width: '100vw',
-    height: 'calc(100vh - 42px)',
+    height: '100%',
   },
   sidebar: {
     display: 'block',
@@ -171,7 +171,7 @@ const stylesObject = {
     zIndex: -1024,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: '0px',
+    padding: '2%',
   },
 
   loadingContainer: {
@@ -194,7 +194,8 @@ const stylesObject = {
   mangaImage: {
     display: 'flex',
     maxHeight: '95%',
-    maxWidth: '65%',
+    // maxWidth: '65%',
+    userSelect: 'none',
   },
 
   button: {
@@ -207,6 +208,7 @@ const stylesObject = {
     cursor: 'pointer',
     justifyContent: 'center',
     alignItems: 'center',
+    userSelect: 'none',
   },
   leftButton: {
     width: '40%',
@@ -238,6 +240,68 @@ const stylesObject = {
   arrowR: {
     fontSize: '6em',
     color: '#00000066',
+  },
+
+  intermediaryContainer: {
+    display: 'flex',
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+
+  intermediary: {
+    display: 'flex',
+    color: 'white',
+  },
+
+  intermediaryInner: {
+    display: 'block',
+  },
+
+  intermediaryItem: {
+    display: 'flex',
+    width: '100%',
+    height: 'fit-content',
+  },
+
+  noChapterText: {},
+
+  chapterTitle: {},
+
+  missingChapterTextContainer: {
+    marginTop: '25px',
+  },
+
+  missingChapterText: {
+    fontFamily: '"Roboto", sans-serif',
+  },
+
+  warningIcon: {
+    position: 'relative',
+    verticalAlign: 'middle',
+    marginRight: '10px',
+    color: '#FFD600',
+  },
+
+  homeIcon: {
+    position: 'relative',
+    verticalAlign: 'middle',
+    width: '48px',
+    height: '48px',
+    color: '#CF1925',
+    transition: 'all 0.5s ease-out',
+    ':hover': {
+      color: '#DF2935',
+    },
+  },
+
+  homeIconContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: '10px',
   },
 };
 
@@ -299,7 +363,7 @@ const Reader = () => {
   const queryParameters = useQuery();
   const Navigate = useNavigate();
 
-  const isRightToLeft = true; // Set to true for debug; will be set by settings in production
+  const isRightToLeft = false; // Set to true for debug; will be set by settings in production
 
   const {
     source: sourceId = 'MangaDex',
@@ -313,7 +377,20 @@ const Reader = () => {
     currentchapter: Chapter | undefined;
     page: number | undefined;
   }>({
-    chapters: undefined,
+    chapters: (() => {
+      // todo: im tired. fix this. cant do it now. brain pain.
+      const cachedChapters = window.electron.library.getCachedManga(
+        sourceId,
+        mangaId
+      )?.Chapters;
+      if (cachedChapters)
+        return sortChapters(
+          filterChaptersToLanguage(cachedChapters, 'en'),
+          false
+        );
+
+      return undefined;
+    })(),
     currentchapter: undefined,
     page: Number.isNaN(Number(pageNumber)) ? 1 : Number(pageNumber),
   });
@@ -332,13 +409,12 @@ const Reader = () => {
 
   useMountEffect(() => {
     if (selectedSource && !readerData.chapters) {
-      console.log(`Loading ${selectedSource.getName()}`);
       selectedSource
         .getChapters(mangaId)
         .then((x) =>
           setReaderData({
             ...readerData,
-            chapters: sortChapters(x, false),
+            chapters: sortChapters(filterChaptersToLanguage(x), false),
           })
         )
         .catch(console.log);
@@ -350,7 +426,6 @@ const Reader = () => {
 
     const moveTimeout = setTimeout(() => {
       if (toolbarState.isHovering) return undefined;
-      console.log('Removing toolbar.');
       settoolbarState({ ...toolbarState, isOpen: false });
       return true;
     }, 1500);
@@ -386,7 +461,7 @@ const Reader = () => {
         page: direction === 0 ? selectedChapter.PageCount : 1,
       });
     },
-    [readerData, getChapter]
+    [getChapter, readerData]
   );
 
   useEffect(() => {
@@ -422,19 +497,14 @@ const Reader = () => {
   }, [readerData.currentchapter, pageState]);
 
   useEffect(() => {
-    console.log(readerData);
-    console.log('ye');
     if (!readerData.chapters || !readerData.currentchapter) return;
-    console.log('called and balled!');
     Promise.resolve(readerData.currentchapter)
       .then(async (currentChapter) => {
-        console.log(currentChapter);
         if (!currentChapter) return false;
         if (pageState[currentChapter.ChapterID]) {
           return true;
         }
 
-        console.log('passed');
         // Set empty page state as a placeholder.
         setPageState((prevState) => ({
           ...prevState,
@@ -494,6 +564,51 @@ const Reader = () => {
   // This is here in case a bug occurs OR a user tries to access a source that doesn't exist.
   // typically via a direct link / protocol.
 
+  const currentPage = readerData.page ?? 1;
+  const currentPageState =
+    pageState[readerData.currentchapter?.ChapterID ?? chapterId];
+
+  const handleClick = useCallback(
+    (goTo: -1 | 1) => {
+      if (!currentPageState) return;
+      const readOrderDirection = (isRightToLeft ? -goTo : goTo) as -1 | 1;
+      const normalizedDirection = readOrderDirection === -1 ? 0 : 1;
+
+      const isAtStart = currentPage === 1;
+      const isAtEnd = currentPage === currentPageState.length;
+
+      if (
+        (isAtStart && readOrderDirection === -1) ||
+        (isAtEnd && readOrderDirection === 1)
+      ) {
+        if (isInIntermediary !== -1) {
+          // if they're in an intermediary state...
+          if (
+            // TODO: Optimize if statement
+            normalizedDirection !== isInIntermediary // if the direction they picked is different than the intermediary state direction...
+          ) {
+            setIsInIntermediary(-1); // reset intermediary state!
+          } else return changeChapter(normalizedDirection); // otherwise, just change the chapter.
+        } else return setIsInIntermediary(normalizedDirection); // otherwise, set the intermediary state!
+      } else if (isInIntermediary !== -1) {
+        return setIsInIntermediary(-1);
+      }
+
+      setReaderData({
+        ...readerData,
+        page: currentPage + readOrderDirection,
+      });
+    },
+    [
+      currentPageState,
+      isRightToLeft,
+      currentPage,
+      readerData,
+      isInIntermediary,
+      changeChapter,
+    ]
+  );
+
   const goBack = () => {
     Navigate('/library');
   };
@@ -510,10 +625,6 @@ const Reader = () => {
       ]
     );
 
-  const currentPageState =
-    pageState[readerData.currentchapter?.ChapterID ?? chapterId];
-
-  const currentPage = readerData.page ?? 1;
   if (!isLoading) {
     if (
       currentPage < 1 ||
@@ -551,7 +662,6 @@ const Reader = () => {
       className={css(styles.container)}
       onMouseMove={() => {
         if (toolbarState.isHovering || toolbarState.isOpen) return;
-        console.log('Setting toolbar to open.');
         settoolbarState({ ...toolbarState, isOpen: true });
       }}
     >
@@ -561,35 +671,17 @@ const Reader = () => {
           styles.button,
           toolbarState.isOpen ? styles.visible : styles.invisible
         )}
+        onClick={() => handleClick(-1)}
+        onKeyPress={() => handleClick(-1)}
         onMouseEnter={onToolbarEnter}
         onMouseLeave={onToolbarLeave}
+        role="button"
+        tabIndex={isRightToLeft ? 0 : -1}
       >
         {/* TODO: Remove repitition here - because, believe it or not, this is also a mess. */}
-        <IconButton
-          onClick={() => {
-            if (
-              isRightToLeft
-                ? currentPage >= currentPageState.length
-                : currentPage <= 1
-            ) {
-              if (isInIntermediary !== -1)
-                return changeChapter(isInIntermediary);
-
-              return isRightToLeft
-                ? setIsInIntermediary(1)
-                : setIsInIntermediary(0);
-            }
-            setReaderData({
-              ...readerData,
-              page: isRightToLeft
-                ? Math.min(currentPageState.length, currentPage + 1)
-                : Math.min(currentPage - 1, 1),
-            });
-          }}
-          className={css(styles.buttonIcon, styles.rightButtonIcon)}
-        >
+        <div className={css(styles.buttonIcon, styles.leftButtonIcon)}>
           <ArrowBackIosNewSharp className={css(styles.arrowL)} />
-        </IconButton>
+        </div>
       </div>
       <div
         className={css(
@@ -597,34 +689,17 @@ const Reader = () => {
           styles.button,
           toolbarState.isOpen ? styles.visible : styles.invisible
         )}
+        onClick={() => handleClick(1)}
+        onKeyPress={() => handleClick(1)}
         onMouseEnter={onToolbarEnter}
         onMouseLeave={onToolbarLeave}
+        role="button"
+        tabIndex={isRightToLeft ? -1 : 0}
       >
-        <IconButton
-          className={css(styles.buttonIcon, styles.leftButtonIcon)}
-          onClick={() => {
-            if (
-              isRightToLeft
-                ? currentPage <= 1
-                : currentPage >= currentPageState.length
-            ) {
-              if (isInIntermediary !== -1)
-                return changeChapter(isInIntermediary);
-
-              return isRightToLeft
-                ? setIsInIntermediary(0)
-                : setIsInIntermediary(1);
-            }
-            return setReaderData({
-              ...readerData,
-              page: isRightToLeft
-                ? Math.max(currentPage - 1, 1)
-                : Math.min(currentPageState.length, currentPage + 1),
-            });
-          }}
-        >
+        {/* TODO: Remove repitition here - because, believe it or not, this is also a mess. */}
+        <div className={css(styles.buttonIcon, styles.rightButtonIcon)}>
           <ArrowForwardIosSharp className={css(styles.arrowR)} />
-        </IconButton>
+        </div>
       </div>
       <div
         className={css(
@@ -667,7 +742,8 @@ const Reader = () => {
       ) : (
         <div className={css(styles.intermediaryContainer)}>
           <div className={css(styles.intermediary)}>
-            {/*
+            <div className={css(styles.intermediaryInner)}>
+              {/*
               Display:
                 - Chapter Name (if present)
                 - Chapter Number and Volume Number (if present)
@@ -680,57 +756,109 @@ const Reader = () => {
                 -Next chapter text: Finished / Next
                 -Previous chapter text: Previous / Current
             */}
-            {(() => {
-              const nextMangaChapter = getChapter(isInIntermediary);
+              {(() => {
+                const nextMangaChapter = getChapter(isInIntermediary);
+                if (!nextMangaChapter) {
+                  return (
+                    <span className={css(styles.noChapterText)}>
+                      {isInIntermediary === 1
+                        ? 'There is no next chapter.'
+                        : 'There is no previous chapter.'}
+                    </span>
+                  );
+                }
 
-              if (!nextMangaChapter) {
+                const {
+                  ChapterTitle: nextTitle,
+                  Chapter: nextChapter,
+                  Volume: nextVolume = 1,
+                } = nextMangaChapter;
+
+                const { Chapter: currentChapter, Volume: currentVolume = 1 } =
+                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                  readerData.currentchapter!; // currentChapter will always be defined due to the isLoading check above.
+
+                // The next chapter is declared as "missing" IF (or):
+                // - The next chapter is greater than the current chapter + 1
+                // - The next volume is greater than the current volume + 1
+                // If there is no volume, the assumed volume is 1 minus the next volume (if it is present, otherwise it is 1).
+
+                const [
+                  roundedCurrentChapter,
+                  roundedCurrentVolume,
+                  roundedNextChapter,
+                  roundedNextVolume,
+                ] = [
+                  currentChapter,
+                  currentVolume,
+                  nextChapter,
+                  nextVolume,
+                ].map((num) => Math.round(num));
+
+                const isNextChapterMissing =
+                  roundedNextChapter > roundedCurrentChapter + 1 ||
+                  roundedNextVolume > roundedCurrentVolume + 1;
+
+                const volumesMissing =
+                  roundedNextVolume - roundedCurrentVolume - 1;
+                const chaptersMissing =
+                  roundedNextChapter - roundedCurrentChapter - 1; // Subtract 1 because the current chapter is included.
+
                 return (
-                  <span className={css(styles.noChapterText)}>
-                    {isInIntermediary === 1
-                      ? 'There is no next chapter.'
-                      : 'There is no previous chapter.'}
-                  </span>
-                );
-              }
-
-              const {
-                ChapterTitle: nextTitle,
-                Chapter: nextChapter,
-                Volume: nextVolume,
-              } = nextMangaChapter;
-
-              const { Chapter: currentChapter, Volume: currentVolume } =
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                readerData.currentchapter!; // currentChapter will always be defined due to the isLoading check above.
-
-              const isNextChapterMissing =
-                nextChapter > Number(currentChapter) + 1 ||
-                nextVolume > Number(currentVolume) + 1;
-
-              return (
-                <>
-                  <span>Next Chapter:</span>
-                  <span className={css(styles.chapterTitle)}>{nextTitle}</span>
-                  <span>
-                    {nextChapter}
-                    {nextVolume ? `:${nextVolume}` : ''}
-                  </span>
-                  {isNextChapterMissing && ( // Due to the nature of the logic, this will not show if the previous chapter has a skip.
-                    <div className={css(styles.missingChapterText)}>
-                      <WarningIcon className={css(styles.warningIcon)} />
-                      <span>
-                        {`There are ${
-                          +nextChapter - +currentChapter - 1 // Using unary plus operator to convert because consistently typing "Number" is harrowing.
-                        } chapters missing. You might be spoiled if you continue.`}
-                      </span>
-                      <IconButton onClick={() => Navigate('/library')}>
-                        <HomeIcon className={css(styles.homeIcon)} />
-                      </IconButton>
+                  <>
+                    <div className={css(styles.intermediaryItem)}>
+                      Next Chapter:
                     </div>
-                  )}
-                </>
-              );
-            })()}
+                    <div
+                      className={css(
+                        styles.chapterTitle,
+                        styles.intermediaryItem
+                      )}
+                    >
+                      {nextTitle}
+                    </div>
+                    <div className={css(styles.intermediaryItem)}>
+                      {nextChapter}
+                      {nextVolume ? `:${nextVolume}` : ''}
+                    </div>
+                    {isNextChapterMissing && ( // Due to the nature of the logic, this will not show if the previous chapter has a skip.
+                      <div className={css(styles.missingChapterTextContainer)}>
+                        <WarningIcon className={css(styles.warningIcon)} />
+                        <span className={css(styles.missingChapterText)}>
+                          {/* Grammar... :( */}
+                          {/* TODO: When locales are implemented, extract and generalize this. */}
+                          {(() => {
+                            // Determine what the singular/plural form of the word is.
+                            const displayVolume =
+                              volumesMissing > 1 ? 'volumes' : 'volume';
+                            const displayChapter =
+                              chaptersMissing > 1 ? 'chapters' : 'chapter';
+
+                            const isAre = (num: number) =>
+                              num > 1 ? 'are' : 'is';
+                            const baseDisplayText =
+                              volumesMissing <= 0
+                                ? `There ${isAre(
+                                    chaptersMissing
+                                  )} ${chaptersMissing} ${displayChapter}`
+                                : `There ${isAre(
+                                    volumesMissing
+                                  )} ${volumesMissing} ${displayVolume}`;
+
+                            return `${baseDisplayText} missing. You might be spoiled if you continue.`;
+                          })()}
+                        </span>
+                        <div className={css(styles.homeIconContainer)}>
+                          <IconButton onClick={() => Navigate('/library')}>
+                            <HomeIcon className={css(styles.homeIcon)} />
+                          </IconButton>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                );
+              })()}
+            </div>
           </div>
         </div>
       )}
@@ -740,6 +868,7 @@ const Reader = () => {
         isRightToLeft={isRightToLeft}
         onItemClick={(newPage: number) => {
           console.log(`Navigating to page ${newPage}.`);
+          if (isInIntermediary !== -1) setIsInIntermediary(-1);
           setReaderData({ ...readerData, page: newPage });
         }}
       />
