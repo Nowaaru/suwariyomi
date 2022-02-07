@@ -58,7 +58,6 @@ const SidebarItem = ({
   forceShow = false as boolean,
   onClick = (() => {}) as (pageNumber: number) => void,
 }) => {
-  console.log(`isVertical: ${isVertical}`);
   const Colour = `221,4,38`;
   const selectedStylesheet = StyleSheet.create({
     itemGradient: {
@@ -243,11 +242,9 @@ const SideBar = ({
           sidebarStyle.sidebar
         )}
         onMouseEnter={() => {
-          console.log('enter');
           setHover(true);
         }}
         onMouseLeave={() => {
-          console.log('leave');
           setHover(false);
         }}
       >
