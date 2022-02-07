@@ -284,12 +284,8 @@ const generateQueriedSearchData = (
 ) =>
   Object.fromEntries(mappedFileNames.map((source) => [source.getName(), []]));
 
-const mappedFileNamesBase = window.electron.util
-  .getSourceFiles()
-  .map(Handler.getSource);
-
 const beginSearch = (source: InstanceType<typeof SourceBase>) => {
-  console.log(`beginSearch on ${source.getName()}`);
+  console.log(source);
   return source
     .search()
     .then((x) => x.map((y) => source.serialize(y, false)))
@@ -349,7 +345,11 @@ const SearchPage = () => {
     pageQueryParams.get('source') || window.electron.cache.get('source') || ''
   );
 
-  const mappedFileNames = mappedFileNamesBase.filter(
+  const mappedFileNamesBase = useRef(
+    window.electron.util.getSourceFiles().map(Handler.getSource)
+  );
+
+  const mappedFileNames = mappedFileNamesBase.current.filter(
     (x) =>
       !specifiedSource ||
       x.getName().toLowerCase() === specifiedSource.toLowerCase()
@@ -392,10 +392,11 @@ const SearchPage = () => {
 
   // Apply search query to all sources
   mappedFileNames.forEach((source) => {
-    const sourceFilters: SearchFilters = { ...source.getFilters() };
-    sourceFilters.offset = specifiedSource ? queryOffset : 0; // Handled by the source module itself
-    sourceFilters.query = searchData.searchQuery;
-    source.setFilters(sourceFilters);
+    source.setFilters({
+      ...source.getFilters(),
+      offset: specifiedSource ? queryOffset : 0,
+      query: searchData.searchQuery,
+    });
   });
 
   useEffect(() => {
@@ -433,8 +434,10 @@ const SearchPage = () => {
           Exclude(mappedFileNames[0].getFilters(), 'offset')
         ) // If the filters are different, remove the page data.
       ) {
-        console.log('or something like that');
+        currentSpecifiedSource[searchData.searchQuery].filters =
+          mappedFileNames[0].getFilters();
         currentSpecifiedSource[searchData.searchQuery].pageData = {};
+        console.log(currentSpecifiedSource[searchData.searchQuery]);
       }
     }
 
@@ -449,20 +452,26 @@ const SearchPage = () => {
 
     if (specifiedSourceCurrentValueSearchQuery.pageData[queryOffset]) return;
     setLoading(true);
-    (async () => {
-      if (!specifiedSourceCurrentValueSearchQuery.itemCount)
-        specifiedSourceCurrentValueSearchQuery.itemCount =
-          await mappedFileNames[0].getItemCount();
-    })()
+    Promise.resolve()
       .then(() => beginSearch(mappedFileNames[0]))
       .then((n) => {
         specifiedSourceCurrentValue[searchData.searchQuery].pageData[
           queryOffset
         ] = n;
 
+        console.log(n);
+        return true;
+      })
+      .then(async () => {
+        if (!specifiedSourceCurrentValueSearchQuery.itemCount)
+          specifiedSourceCurrentValueSearchQuery.itemCount =
+            await mappedFileNames[0].getItemCount();
+
         return setLoading(false); // ?????
       })
-      .catch(() => {
+      .catch((err) => {
+        console.log('error bruh moment!');
+        console.log(err);
         setAlert({
           message:
             'An error occurred while searching. You might have been rate limited.\nTry again later.',
@@ -675,6 +684,7 @@ const SearchPage = () => {
       />
     ));
   }
+
   return (
     <>
       <Modal
@@ -779,11 +789,14 @@ const SearchPage = () => {
       {specifiedSource ? (
         <ShortPagination
           disabled={isLoadingMoreResults}
-          maxpages={Math.ceil(
-            (specificQueryLoadedPages.current[specifiedSource]?.[
-              searchData.searchQuery
-            ]?.itemCount ?? Infinity) /
-              mappedFileNames[0].getFilters()?.results ?? 24
+          maxpages={Math.max(
+            1,
+            Math.ceil(
+              (specificQueryLoadedPages.current[specifiedSource]?.[
+                searchData.searchQuery
+              ]?.itemCount ?? Infinity) /
+                mappedFileNames[0].getFilters()?.results ?? 24
+            )
           )}
           page={queryOffset + 1}
           onUpdate={(page) => {
