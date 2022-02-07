@@ -429,9 +429,10 @@ const SearchPage = () => {
         !isEqual(
           Exclude(
             currentSpecifiedSource[searchData.searchQuery].filters,
-            'offset'
+            'offset',
+            'query'
           ),
-          Exclude(mappedFileNames[0].getFilters(), 'offset')
+          Exclude(mappedFileNames[0].getFilters(), 'offset', 'query')
         ) // If the filters are different, remove the page data.
       ) {
         currentSpecifiedSource[searchData.searchQuery].filters =
