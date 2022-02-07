@@ -206,7 +206,7 @@ const ShortPagination = ({
   maxpages,
   onUpdate = () => {},
 }: PaginationProps) => {
-  if (maxpages <= 1) throw new Error('maxpages must be greater than 1');
+  if (maxpages < 1) throw new Error('maxpages must be greater than 1');
   if (page < 1) throw new Error('page must be greater than 0');
   if (page > maxpages) throw new Error('page must be less than maxpages');
 
