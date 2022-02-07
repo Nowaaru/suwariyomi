@@ -369,8 +369,8 @@ export default class MangaDex extends SourceBase {
             translatedLanguage: chapter.translatedLanguage,
 
             ChapterID: chapter.id,
-            Volume: chapter.volume,
-            Chapter: chapter.chapter,
+            Volume: chapter.volume ? +chapter.volume : undefined,
+            Chapter: +chapter.chapter,
             PageCount: chapter.pages,
             ChapterTitle: chapter.title,
             Groups: (await resolveArray(chapter.groups)).map(

@@ -51,8 +51,8 @@ export type Chapter = {
   ChapterTitle: string;
   ChapterID: string;
 
-  Chapter: number | string;
-  Volume: number | string;
+  Chapter: number;
+  Volume: number | undefined;
   PageCount: number;
 
   Groups: string[];
