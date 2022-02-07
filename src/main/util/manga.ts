@@ -52,7 +52,7 @@ export type Chapter = {
   ChapterID: string;
 
   Chapter: number;
-  Volume: number | undefined;
+  Volume?: number;
   PageCount: number;
 
   Groups: string[];
