@@ -6,6 +6,9 @@ contextBridge.exposeInMainWorld('electron', {
     getSourceFiles: () => {
       return ipcRenderer.sendSync('get-fs-sources');
     },
+    openInBrowser: (url) => {
+      ipcRenderer.send('open-in-browser', url);
+    },
   },
   library: {
     flush: () => {

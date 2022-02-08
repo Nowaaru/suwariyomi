@@ -220,6 +220,10 @@ ipcMain.on('set-cache', async (event, key, value) => {
   await CacheDB.set(key, value);
 });
 
+ipcMain.on('open-in-browser', async (e, url: string) => {
+  shell.openExternal(url);
+});
+
 ipcMain.on('has-cache', async (event, key) => {
   event.returnValue = await CacheDB.has(key);
 });

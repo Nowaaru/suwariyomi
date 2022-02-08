@@ -63,6 +63,7 @@ declare global {
     electron: {
       util: {
         getSourceFiles: () => string[];
+        openInBrowser: (url: string) => void;
       };
       library: {
         getSources: () => LibrarySources;
