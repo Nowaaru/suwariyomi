@@ -206,6 +206,10 @@ const stylesObject = {
 
   cropIconContainer: {},
 
+  globeIconContainer: {},
+
+  globeIcon: {},
+
   cropToggleIcon: {},
 
   uncropped: {},
