@@ -65,6 +65,7 @@ suwariyomi endeavors to be a community-driven application; those who
 want something to be implemented can implement it themselves with ease and in order to generate that ease, people have to point out flaws in
 the application; so <b>get to making issues</b> and <b>pull requests</b>!
 <br/><br/>
+
 <h3><b><i>if you are comitting...</i></b></h3>
 follow these guidelines!
 <h6><code>(some things might not be applicable)</code></h6>
