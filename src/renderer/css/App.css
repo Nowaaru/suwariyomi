@@ -27,6 +27,7 @@ input::-webkit-inner-spin-button {
 #topbar {
   height: 32px;
   box-sizing: border-box;
-  margin: 4px 0px 0px 4px;
+  margin-top: 4px;
+  margin-right: 4px;
   position: relative;
 }
