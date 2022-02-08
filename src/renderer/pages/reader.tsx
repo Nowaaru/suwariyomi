@@ -9,13 +9,22 @@ import {
   Toolbar,
   IconButton,
   CircularProgress,
-  Icon,
+  Tooltip,
+  ButtonGroup,
 } from '@mui/material';
 
 import ArrowForwardIosSharp from '@mui/icons-material/ArrowForwardIosSharp';
 import ArrowBackIosNewSharp from '@mui/icons-material/ArrowBackIosNewSharp';
+import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
+import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
+import LooksOneIcon from '@mui/icons-material/LooksOne'; // Used for the double-
+import LooksTwoIcon from '@mui/icons-material/LooksTwo';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import CropFreeIcon from '@mui/icons-material/CropFree';
 import SettingsIcon from '@mui/icons-material/Settings';
 import WarningIcon from '@mui/icons-material/Warning';
+import PublicIcon from '@mui/icons-material/Public';
+import CropIcon from '@mui/icons-material/Crop';
 import HomeIcon from '@mui/icons-material/Home';
 
 import { useEffect, useState, useRef, useCallback } from 'react';
@@ -77,6 +86,10 @@ const stylesObject = {
     color: '#DF2935',
   },
 
+  noCursor: {
+    cursor: 'none',
+  },
+
   dialogTitle: {
     color: 'white',
     backgroundColor: 'transparent',
@@ -86,18 +99,21 @@ const stylesObject = {
     display: 'flex',
     position: 'fixed',
     width: '100%',
-    height: '42px',
+    height: '48px',
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'transparent',
     bottom: '52px',
     zIndex: 2e4,
+    // padding: '12px 0px',
+    padding: '-6px',
+    boxSizing: 'border-box',
     transition: 'opacity 0.2s ease-in-out 0s',
   },
 
   toolbar: {
-    backgroundColor: '#111111',
+    backgroundColor: '#111111EE',
     display: 'flex',
     height: '100%',
     width: '300px',
@@ -133,18 +149,76 @@ const stylesObject = {
   },
 
   toolbarIcon: {
+    position: 'absolute',
     color: 'white',
+    margin: '0px 4px',
+    width: '100%',
+    height: '100%',
+    top: '0px',
+    transition: 'all 0.5s ease-out, top 0.2s ease-out',
+    ':hover': {
+      color: '#DF2935',
+      top: '-2px',
+    },
+  },
+
+  toolbarButton: {
+    position: 'relative',
+    width: '36px',
+    height: '36px',
+    marginRight: '6px',
+  },
+
+  iconHorizontal: {
+    ':after': {
+      margin: '0px -3px',
+      position: 'absolute',
+      content: '""',
+      top: '0px',
+      right: '0px',
+      height: '100%',
+      pointerEvents: 'none',
+      backgroundColor: 'white',
+      width: '1px',
+      boxSize: 'border-box',
+    },
+  },
+
+  noLine: {
+    ':after': {
+      display: 'none',
+    },
   },
 
   pageSlider: { display: 'flex' },
 
+  doublePageToggleIcon: {},
+
+  doublePage: {},
+
+  singlePage: {},
+
   settingsIconContainer: {},
+
+  doublePageIconContainer: {},
+
+  chapterIconContainer: {},
+
+  cropIconContainer: {},
+
+  cropToggleIcon: {},
+
+  uncropped: {},
+
+  cropped: {},
+
+  iconVertical: {},
+
+  chapterIcon: {},
 
   settingsIcon: {
     transform: 'rotate(0deg)',
-    transition: 'all 0.5s ease-out',
     ':hover': {
-      color: '#DF2935',
       transform: 'rotate(90deg)',
     },
 
@@ -171,7 +245,7 @@ const stylesObject = {
     zIndex: -1024,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: '2%',
+    padding: '0px 32px 48px 32px',
   },
 
   loadingContainer: {
@@ -194,7 +268,7 @@ const stylesObject = {
   mangaImage: {
     display: 'flex',
     maxHeight: '95%',
-    // maxWidth: '65%',
+    maxWidth: '65%',
     userSelect: 'none',
   },
 
@@ -266,7 +340,7 @@ const stylesObject = {
     height: 'fit-content',
   },
 
-  noChapterText: {},
+  noChapterText: { fontFamily: '"Roboto", sans-serif' },
 
   chapterTitle: {},
 
@@ -345,7 +419,8 @@ const errorDialog = (
 
 const Reader = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const [toolbarState, settoolbarState] = useState({
+  const [toolbarState, setToolbarState] = useState({
+    isButtonHover: false,
     isHovering: false,
     isOpen: false,
   });
@@ -363,7 +438,38 @@ const Reader = () => {
   const queryParameters = useQuery();
   const Navigate = useNavigate();
 
-  const isRightToLeft = false; // Set to true for debug; will be set by settings in production
+  const [readerSettings, setReaderSettings] = useState<{
+    isDoublePage: boolean;
+    /*
+      Reading style explanation:
+        Vertical is for long-strips, but it's still "page-based.",
+        Continuous vertical is the same as above, but instead of it being "page-based," you now have to scroll to see the next page.
+        Webtoon is for webtoons, however, the image is flipped.
+        Right-to-left and left-to-right is self-explanatory.
+  */
+    cropStyle: 1 | 2; // 1 is free-form, 2 is crop to first and last vertical and horizontal pixel. (not implemented yet)
+    readingStyle:
+      | 'right-to-left'
+      | 'vertical'
+      | 'webtoon'
+      | 'left-to-right'
+      | 'continuous-vertical';
+  }>({
+    cropStyle: 1,
+    isDoublePage: false,
+    readingStyle: 'left-to-right',
+  });
+
+  const isRightToLeft = readerSettings.readingStyle === 'right-to-left';
+  const isPageCropped = readerSettings.cropStyle === 1;
+  const { isDoublePage } = readerSettings;
+
+  const setReaderSetting = (key: keyof typeof readerSettings, value: any) => {
+    return setReaderSettings({
+      ...readerSettings,
+      [key]: value,
+    });
+  };
 
   const {
     source: sourceId = 'MangaDex',
@@ -426,7 +532,7 @@ const Reader = () => {
 
     const moveTimeout = setTimeout(() => {
       if (toolbarState.isHovering) return undefined;
-      settoolbarState({ ...toolbarState, isOpen: false });
+      setToolbarState({ ...toolbarState, isOpen: false });
       return true;
     }, 1500);
 
@@ -648,32 +754,76 @@ const Reader = () => {
       </Button>,
     ]);
 
-  const onToolbarEnter = () => {
-    settoolbarState({ ...toolbarState, isHovering: true });
+  const onToolbarEnter = (buttonHover = false) => {
+    setToolbarState({
+      ...toolbarState,
+      isHovering: !buttonHover,
+      isButtonHover: buttonHover,
+    });
   };
   const onToolbarLeave = () => {
-    settoolbarState({ ...toolbarState, isHovering: false });
+    setToolbarState({
+      ...toolbarState,
+      isHovering: false,
+      isButtonHover: false,
+    });
   };
 
+  const doToolbarShow =
+    toolbarState.isOpen || toolbarState.isHovering
+      ? styles.visible
+      : styles.invisible;
+
+  const doButtonShow =
+    toolbarState.isButtonHover || toolbarState.isHovering
+      ? styles.visible
+      : styles.invisible;
+
+  const doCursorShow =
+    toolbarState.isHovering || toolbarState.isButtonHover || toolbarState.isOpen
+      ? false
+      : styles.noCursor;
+  let isVertical = false;
+  let isScrollBased = false;
+  {
+    const verticalKeys: Array<typeof readerSettings.readingStyle> = [
+      'vertical',
+      'continuous-vertical',
+      'webtoon',
+    ];
+
+    const scrollBasedKeys: Array<typeof readerSettings.readingStyle> = [
+      'continuous-vertical',
+      'webtoon',
+    ];
+
+    [isScrollBased, isVertical] = [
+      scrollBasedKeys.includes(readerSettings.readingStyle),
+      verticalKeys.includes(readerSettings.readingStyle),
+    ];
+  }
+
+  const iconKey = isVertical ? styles.iconVertical : styles.iconHorizontal;
   return isLoading ? (
     <div>Loading...</div>
   ) : (
     <div
-      className={css(styles.container)}
       onMouseMove={() => {
         if (toolbarState.isHovering || toolbarState.isOpen) return;
-        settoolbarState({ ...toolbarState, isOpen: true });
+        setToolbarState({ ...toolbarState, isOpen: true });
       }}
+      className={css(styles.container, doCursorShow)}
     >
       <div
         className={css(
           styles.leftButton,
           styles.button,
-          toolbarState.isOpen ? styles.visible : styles.invisible
+          doButtonShow,
+          doCursorShow
         )}
         onClick={() => handleClick(-1)}
-        onKeyPress={() => handleClick(-1)}
-        onMouseEnter={onToolbarEnter}
+        onKeyPress={() => {}}
+        onMouseEnter={() => onToolbarEnter(true)}
         onMouseLeave={onToolbarLeave}
         role="button"
         tabIndex={isRightToLeft ? 0 : -1}
@@ -687,11 +837,12 @@ const Reader = () => {
         className={css(
           styles.rightButton,
           styles.button,
-          toolbarState.isOpen ? styles.visible : styles.invisible
+          doButtonShow,
+          doCursorShow
         )}
         onClick={() => handleClick(1)}
-        onKeyPress={() => handleClick(1)}
-        onMouseEnter={onToolbarEnter}
+        onKeyPress={() => {}}
+        onMouseEnter={() => onToolbarEnter(true)}
         onMouseLeave={onToolbarLeave}
         role="button"
         tabIndex={isRightToLeft ? -1 : 0}
@@ -701,22 +852,128 @@ const Reader = () => {
           <ArrowForwardIosSharp className={css(styles.arrowR)} />
         </div>
       </div>
-      <div
-        className={css(
-          styles.toolbarContainer,
-          toolbarState.isOpen ? styles.visible : styles.invisible
-        )}
-      >
+      <div className={css(styles.toolbarContainer, doToolbarShow)}>
         <div
           className={css(styles.toolbar)}
-          onMouseEnter={onToolbarEnter}
+          onMouseEnter={() => onToolbarEnter(false)}
           onMouseLeave={onToolbarLeave}
         >
           <Toolbar className={css(styles.toolbarInner)}>
-            <IconButton className={css(styles.settingsIconContainer)}>
-              <SettingsIcon
-                className={css(styles.settingsIcon, styles.toolbarIcon)}
-              />
+            {/* TODO: Try and remove repetition as much as possible. */}
+            <IconButton
+              className={css(
+                styles.chapterIconContainer,
+                styles.toolbarButton,
+                iconKey
+              )}
+              onClick={() => {}} // This opens the chapter list.
+            >
+              <Tooltip title="Chapters" placement="top">
+                <FormatListBulletedIcon
+                  className={css(styles.toolbarIcon, styles.chapterIcon)}
+                />
+              </Tooltip>
+            </IconButton>
+            <IconButton
+              className={css(
+                styles.globeIconContainer,
+                styles.toolbarButton,
+                iconKey
+              )}
+              onClick={() => {
+                window.electron.util.openInBrowser(
+                  selectedSource.getUrl(mangaId)
+                );
+              }} // This opens the manga page in a browser.
+            >
+              <Tooltip title="Open in Browser" placement="top">
+                <PublicIcon
+                  className={css(styles.toolbarIcon, styles.globeIcon)}
+                />
+              </Tooltip>
+            </IconButton>
+            {!isScrollBased ? (
+              <IconButton
+                onClick={() =>
+                  setReaderSetting('isDoublePage', !readerSettings.isDoublePage)
+                }
+                className={css(
+                  styles.doublePageIconContainer,
+                  styles.toolbarButton,
+                  iconKey
+                )}
+              >
+                <Tooltip
+                  title={isDoublePage ? 'Double Page' : 'Single Page'}
+                  placement="top"
+                >
+                  {readerSettings.isDoublePage ? (
+                    <LooksTwoIcon
+                      className={css(
+                        styles.doublePageToggleIcon,
+                        styles.doublePage,
+                        styles.toolbarIcon
+                      )}
+                    />
+                  ) : (
+                    <LooksOneIcon
+                      className={css(
+                        styles.doublePageToggleIcon,
+                        styles.singlePage,
+                        styles.toolbarIcon
+                      )}
+                    />
+                  )}
+                </Tooltip>
+              </IconButton>
+            ) : (
+              <IconButton
+                onClick={() =>
+                  setReaderSetting('cropStyle', isPageCropped ? 2 : 1)
+                }
+                className={css(
+                  styles.cropIconContainer,
+                  styles.toolbarButton,
+                  iconKey
+                )}
+              >
+                <Tooltip
+                  title={isPageCropped ? 'Cropped' : 'Uncropped'}
+                  placement="top"
+                >
+                  {isPageCropped ? (
+                    <CropIcon
+                      className={css(
+                        styles.cropToggleIcon,
+                        styles.cropped,
+                        styles.toolbarIcon
+                      )}
+                    />
+                  ) : (
+                    <CropFreeIcon
+                      className={css(
+                        styles.cropToggleIcon,
+                        styles.uncropped,
+                        styles.toolbarIcon
+                      )}
+                    />
+                  )}
+                </Tooltip>
+              </IconButton>
+            )}
+            <IconButton
+              className={css(
+                styles.settingsIconContainer,
+                styles.noLine,
+                styles.toolbarButton,
+                iconKey
+              )}
+            >
+              <Tooltip title="Settings" placement="top">
+                <SettingsIcon
+                  className={css(styles.settingsIcon, styles.toolbarIcon)}
+                />
+              </Tooltip>
             </IconButton>
           </Toolbar>
         </div>
@@ -807,15 +1064,9 @@ const Reader = () => {
                 return (
                   <>
                     <div className={css(styles.intermediaryItem)}>
-                      Next Chapter:
-                    </div>
-                    <div
-                      className={css(
-                        styles.chapterTitle,
-                        styles.intermediaryItem
-                      )}
-                    >
-                      {nextTitle}
+                      <div className={css(styles.chapterTitle)}>
+                        {nextTitle}
+                      </div>
                     </div>
                     <div className={css(styles.intermediaryItem)}>
                       {nextChapter}
@@ -865,7 +1116,7 @@ const Reader = () => {
       <Sidebar
         outOf={currentPageState.length}
         Page={currentPage}
-        isRightToLeft={isRightToLeft}
+        isRightToLeft={readerSettings.readingStyle === 'right-to-left'}
         onItemClick={(newPage: number) => {
           console.log(`Navigating to page ${newPage}.`);
           if (isInIntermediary !== -1) setIsInIntermediary(-1);
