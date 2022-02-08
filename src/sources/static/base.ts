@@ -133,6 +133,8 @@ export default abstract class SourceBase {
     doFull: boolean
   ): Promise<FullManga>;
 
+  public abstract getUrl(mangaID: string): string;
+
   public abstract getChapters(mangaID: string): Promise<Chapter[]>;
 
   public abstract serialize(

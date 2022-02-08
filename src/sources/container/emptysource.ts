@@ -70,6 +70,10 @@ export default class EmptySource extends SourceBase {
     return [];
   }
 
+  public getUrl(): string {
+    return '';
+  }
+
   public getManga(): Promise<FullManga> {
     return {} as unknown as any;
   }

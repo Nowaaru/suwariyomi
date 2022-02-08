@@ -347,6 +347,10 @@ export default class MangaDex extends SourceBase {
     return this.serializeChapters(await manga.getFeed());
   }
 
+  public getUrl(mangaID: string): string {
+    return `https://mangadex.org/manga/${mangaID}`;
+  }
+
   public async serializeChapters(
     chapters: Chapter[]
   ): Promise<DatabaseChapter[]> {
