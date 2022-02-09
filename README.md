@@ -96,7 +96,7 @@ follow these guidelines!
   - we don't want to misinterpret what you say and close your issue despite it being a valid or necessary addition to the app. **be clear!**
 - if you're reporting a bug, once again, be **clear and concise**.
   - give us as much information as possible, **treat us as if we're babies**! if we can't reproduce something after a handful of attempts, we'll mark it as **`invalid`** and **close it**. to reduce room for error, tell us everything!
-  - if you have a clue as to why this might be happening, **let us know** it doesn't matter whether you're wrong or not, it would at least narrow down what the issue possibly be. everyone is knowledgeable! 😁
+  - if you have a clue as to why this might be happening, **let us know**! it doesn't matter whether you're wrong or not, it would at least narrow down what the issue could possibly be. everyone is knowledgeable! 😁
 
 <h2><b>how to build</b></h2>
 clone the repository and install the dependencies:
