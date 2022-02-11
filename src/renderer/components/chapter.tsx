@@ -112,12 +112,14 @@ const styles = StyleSheet.create({
 const Chapter = ({
   downloadable,
   dbchapter,
+  className,
   chapter,
   source,
   manga,
 }: {
   downloadable: boolean;
   dbchapter: ReadDatabaseValue[string];
+  className?: string;
   chapter: DatabaseChapter;
   source: string;
   manga: DatabaseManga;
@@ -129,7 +131,7 @@ const Chapter = ({
     currentPage = -1,
     lastRead,
     timeElapsed = 0,
-  } = dbchapter;
+  } = dbchapter ?? {};
   const isRead =
     dbchapter &&
     currentPage !== -1 &&
@@ -141,7 +143,9 @@ const Chapter = ({
     <Paper
       elevation={3}
       key={chapter.ChapterID}
-      className={css(styles.chapter)}
+      className={`${css(styles.chapter)}${className ? ` ${className}` : ''}`}
+      // Aphrodite says **not** to do this, but unfortunately it also provides no overload to join string declarations via the css function.
+      // So, in short, this sucks. I'm sorry.
     >
       <div className={css(styles.chapterTitle)}>
         <h3 className={css(styles.chapterTitleHeader)}>
@@ -244,6 +248,10 @@ const Chapter = ({
       ) : null}
     </Paper>
   );
+};
+
+Chapter.defaultProps = {
+  className: '',
 };
 
 export default Chapter;
