@@ -88,7 +88,7 @@ declare global {
           chapterId: string,
           pageCount: number,
           currentPage: number,
-          lastRead: Date | -1,
+          lastRead: number | -1,
           timeElapsed: number,
           isBookmarked: boolean
         ) => void;
