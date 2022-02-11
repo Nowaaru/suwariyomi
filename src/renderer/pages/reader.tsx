@@ -741,6 +741,29 @@ const Reader = () => {
   const currentPageState =
     pageState[readerData.currentchapter?.ChapterID ?? chapterId];
 
+  const changePage = useCallback(
+    (newPageNumber: number) => {
+      if (!readerData.currentchapter) return;
+      if (newPageNumber !== currentPage) {
+        window.electron.read.set(
+          selectedSource.getName(),
+          readerData.currentchapter.ChapterID, // CurrentChapter will alway
+          readerData.currentchapter.PageCount,
+          newPageNumber,
+          Date.now(),
+          0,
+          false
+        );
+
+        return setReaderData({
+          ...readerData,
+          page: newPageNumber,
+        });
+      }
+    },
+    [readerData, currentPage, selectedSource]
+  );
+
   const handleClick = useCallback(
     (goTo: -1 | 1) => {
       if (!currentPageState) return;
@@ -770,18 +793,15 @@ const Reader = () => {
         return setIsInIntermediary(-1);
       }
 
-      setReaderData({
-        ...readerData,
-        page: currentPage + readOrderGoTo,
-      });
+      changePage(currentPage + readOrderGoTo);
     },
     [
       currentPageState,
       isRightToLeft,
       currentPage,
-      readerData,
       isInIntermediary,
       changeChapter,
+      changePage,
     ]
   );
 
