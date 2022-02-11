@@ -1205,9 +1205,11 @@ const Reader = () => {
                           })()}
                         </span>
                         <div className={css(styles.homeIconContainer)}>
-                          <IconButton onClick={() => Navigate('/library')}>
-                            <HomeIcon className={css(styles.homeIcon)} />
-                          </IconButton>
+                          <Tooltip title="Return to Manga Page">
+                            <IconButton onClick={() => Navigate(-1)}>
+                              <HomeIcon className={css(styles.homeIcon)} />
+                            </IconButton>
+                          </Tooltip>
                         </div>
                       </div>
                     )}
