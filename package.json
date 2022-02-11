@@ -1,6 +1,6 @@
 {
   "name": "suwariyomi",
-  "description": "manga reader made with electron-react-boilerplate. inspired by tachiyomi",
+  "description": "Manga reader made with electron-react-boilerplate. Inspired by tachiyomi.",
   "scripts": {
     "build": "concurrently \"npm run build:main\" \"npm run build:renderer\"",
     "build:main": "cross-env NODE_ENV=production TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.main.prod.ts",
