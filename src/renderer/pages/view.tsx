@@ -1,40 +1,23 @@
 import { useRef, useEffect, useState } from 'react';
-import {
-  StyleSheet,
-  css,
-  StyleDeclarationMap,
-  StyleDeclaration,
-  CSSProperties,
-} from 'aphrodite';
+import { StyleSheet, css } from 'aphrodite';
 import { URLSearchParams } from 'url';
 import { useNavigate } from 'react-router-dom';
-import {
-  Button,
-  Checkbox,
-  CircularProgress,
-  IconButton,
-  Paper,
-  Typography,
-} from '@mui/material';
+import { Button, CircularProgress, Paper, Typography } from '@mui/material';
 
 import moment from 'moment';
-import DownloadIcon from '@mui/icons-material/Download';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import HeartBrokenIcon from '@mui/icons-material/HeartBroken';
-import DownloadDoneIcon from '@mui/icons-material/DownloadDone';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 
-import BookmarkIcon from '@mui/icons-material/Bookmark';
-import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
-
 import useMountEffect from '../util/hook/usemounteffect';
+
 import { FullManga } from '../../main/util/manga';
 import { ReadDatabaseValue } from '../../main/util/read';
-
 import { filterChaptersToLanguage, sortChapters } from '../util/func';
 
 import Tag from '../components/tag';
+import Chapter from '../components/chapter';
 import Handler from '../../sources/handler';
 import useQuery from '../util/hook/usequery';
 /*
@@ -304,102 +287,8 @@ const styles = StyleSheet.create({
     },
   },
 
-  chapter: {
-    display: 'flex',
-    position: 'relative',
-    flexDirection: 'row',
-    marginBottom: '8px',
-    height: 'fit-content',
-    boxSizing: 'border-box',
-    padding: '8px',
-    font: '14px Roboto, sans-serif',
-    backgroundColor: '#222222',
-    boxShadow: '0px 0px 5px #000000',
-  },
-
-  chapterNumberData: {
-    // This only shows when there is a chapter title.
-    // This is because if there is no chapter title, then the chapter number is
-    // the chapter title.
-    fontSize: '0.8em',
-    fontWeight: 200,
-    fontVariant: 'small-caps',
-    marginRight: '8px',
-    display: 'inline',
-    fontFamily: 'Open Sans, sans-serif',
-    color: 'white',
-  },
-
-  chapterTitle: {
-    width: '95%',
-    height: '100%',
-  },
-
-  chapterTitleHeader: {
-    display: 'inline',
-    marginRight: '8px',
-    color: '#FFFFFF',
-    textShadow: 'none',
-  },
-
-  chapterGroups: {},
-
-  chapterGroupsText: {
-    color: 'rgb(127,127,127)',
-  },
-
   flex: {
     display: 'flex',
-  },
-
-  chapterDateData: {
-    fontSize: '0.7em',
-    fontWeight: 200,
-    fontVariant: 'small-caps',
-    marginTop: '36px',
-    display: 'inline',
-    fontFamily: 'Open Sans, sans-serif',
-    color: 'white',
-  },
-
-  downloadButton: {
-    float: 'right',
-  },
-
-  downloadButtonIcon: {
-    color: 'white',
-    ':hover': {
-      color: '#DF2935',
-    },
-  },
-
-  disabledDownloadButton: {
-    color: 'white',
-    filter: 'brightness(0.4)',
-    ':hover': {
-      color: 'white',
-    },
-  },
-
-  bookmarksButton: {
-    color: 'white',
-  },
-
-  bookmarksButtonFilled: {
-    color: '#DF2935',
-  },
-
-  chapterContainerReadButton: {
-    padding: '8px',
-    fontWeight: 'bold',
-    color: '#DF2935',
-    boxSizing: 'border-box',
-    width: '135px',
-    top: '50%',
-  },
-
-  chapterContainerBookmarkButton: {
-    color: '#DF2935',
   },
 
   startReadingButton: {
@@ -849,137 +738,16 @@ const View = () => {
                 {currentManga.Chapters.map((x) => {
                   const foundChapter = chapterData.current[x.ChapterID] || {};
 
-                  const {
-                    pageCount = -1,
-                    currentPage = -1,
-                    lastRead,
-                    timeElapsed = 0,
-                  } = foundChapter;
-                  const isRead =
-                    foundChapter &&
-                    currentPage !== -1 &&
-                    pageCount !== -1 &&
-                    currentPage === pageCount;
-                  const isBookmarked =
-                    foundChapter && foundChapter.isBookmarked;
-
                   // TODO: Add a way to mark a chapter as read (probably by using react-contextify)
                   return (
-                    <Paper
-                      elevation={3}
+                    <Chapter
                       key={x.ChapterID}
-                      className={css(styles.chapter)}
-                    >
-                      <div className={css(styles.chapterTitle)}>
-                        <h3 className={css(styles.chapterTitleHeader)}>
-                          {x.ChapterTitle ||
-                            `${
-                              x.Volume
-                                ? `Volume ${x.Volume} Chapter ${x.Chapter}`
-                                : `Chapter ${x.Chapter}`
-                            }`}
-                        </h3>
-                        {x.ChapterTitle && (
-                          <h4 className={css(styles.chapterNumberData)}>
-                            {x.Volume
-                              ? `VOL. ${x.Volume} CH. ${x.Chapter}`
-                              : `CH. ${x.Chapter}`}
-                          </h4>
-                        )}
-                        {x.Groups && x.Groups.length > 0 ? (
-                          <div className={css(styles.chapterGroups)}>
-                            <span className={css(styles.chapterGroupsText)}>
-                              {x.Groups.join(' & ').slice(0, 45)}
-                            </span>
-                          </div>
-                        ) : null}
-                        {x.PublishedAt ? (
-                          <h4 className={css(styles.chapterDateData)}>
-                            {moment(x.PublishedAt).format('MMMM Do YYYY')}
-                          </h4>
-                        ) : null}
-                      </div>
-                      <Button
-                        className={css(styles.chapterContainerReadButton)}
-                        sx={{
-                          '&:hover': {
-                            backgroundColor: 'transparent !important',
-                          },
-                        }}
-                        onClick={() => {
-                          Navigate(
-                            `/read?id=${currentManga.MangaID}&title=${
-                              currentManga.Name
-                            }&source=${source}&chapter=${x.ChapterID}&page=${
-                              currentPage >= x.PageCount
-                                ? 1
-                                : Math.max(1, currentPage) // In case the page is -1.
-                            }`
-                          );
-                        }}
-                      >
-                        {foundChapter && currentPage !== -1
-                          ? isRead
-                            ? 'Re-read'
-                            : 'Continue'
-                          : 'Read'}
-                      </Button>
-                      <Checkbox
-                        className={css(styles.chapterContainerBookmarkButton)}
-                        sx={{
-                          '&:hover': {
-                            backgroundColor: 'transparent !important',
-                          },
-                        }}
-                        checkedIcon={
-                          <BookmarkIcon
-                            className={css(styles.bookmarksButtonFilled)}
-                          />
-                        }
-                        icon={
-                          <BookmarkBorderIcon
-                            className={css(styles.bookmarksButton)}
-                          />
-                        }
-                        onChange={(
-                          event: React.ChangeEvent<HTMLInputElement>
-                        ) => {
-                          const { checked } = event.target;
-                          if (checked)
-                            // TODO: try using array + deconstruction here?
-                            window.electron.read.set(
-                              selectedSource.getName(),
-                              x.ChapterID,
-                              pageCount,
-                              currentPage,
-                              lastRead,
-                              timeElapsed,
-                              true
-                            );
-                          else
-                            window.electron.read.set(
-                              selectedSource.getName(),
-                              x.ChapterID,
-                              pageCount,
-                              currentPage,
-                              lastRead,
-                              timeElapsed,
-                              false
-                            );
-                        }}
-                        defaultChecked={isBookmarked}
-                      />
-                      {selectedSource.canDownload ? (
-                        <IconButton className={css(styles.downloadButton)}>
-                          <DownloadIcon
-                            className={css(
-                              styles.downloadButtonIcon,
-                              styles.disabledDownloadButton
-                            )}
-                          />
-                        </IconButton>
-                      ) : null}
-                    </Paper>
+                      downloadable={selectedSource.canDownload}
+                      dbchapter={foundChapter}
+                      chapter={x}
+                      source={selectedSource.getName()}
+                      manga={currentManga}
+                    />
                   );
                 })}
               </div>
