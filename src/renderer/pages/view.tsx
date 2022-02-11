@@ -741,6 +741,17 @@ const View = () => {
                   // TODO: Add a way to mark a chapter as read (probably by using react-contextify)
                   return (
                     <Chapter
+                      onReadClick={() => {
+                        Navigate(
+                          `/read?id=${currentManga.MangaID}&title=${
+                            currentManga.Name
+                          }&source=${source}&chapter=${x.ChapterID}&page=${
+                            foundChapter.currentPage >= x.PageCount
+                              ? 1
+                              : Math.max(1, foundChapter.currentPage) // In case the page is -1.
+                          }`
+                        );
+                      }}
                       key={x.ChapterID}
                       downloadable={selectedSource.canDownload}
                       dbchapter={foundChapter}

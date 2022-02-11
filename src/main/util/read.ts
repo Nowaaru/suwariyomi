@@ -6,7 +6,7 @@ export type ReadDatabaseValue = {
     isBookmarked: boolean;
     pageCount: number;
     currentPage: number;
-    lastRead: Date;
+    lastRead: Date | -1;
     timeElapsed: number;
   };
 };
@@ -34,7 +34,7 @@ export default class ReadDB {
     chapterID: string,
     pageCount: number,
     currentPage: number,
-    lastRead: Date,
+    lastRead: Date | -1,
     timeElapsed: number,
     isBookmarked: boolean
   ): Promise<void> {

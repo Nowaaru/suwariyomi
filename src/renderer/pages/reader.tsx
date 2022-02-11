@@ -1,3 +1,9 @@
+// Most of the non-null assertion lints are incorrect;
+// as TypeScript cannot determine whether a value is null or undefined
+// based off of another value.
+// ..or so I'm told.
+
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable consistent-return */
 import {
   Button,
@@ -10,7 +16,6 @@ import {
   IconButton,
   CircularProgress,
   Tooltip,
-  ButtonGroup,
 } from '@mui/material';
 
 import ArrowForwardIosSharp from '@mui/icons-material/ArrowForwardIosSharp';
@@ -40,8 +45,9 @@ import Handler from '../../sources/handler';
 import Sidebar from '../components/sidebar';
 import useQuery from '../util/hook/usequery';
 import SourceBase from '../../sources/static/base';
-import useMountEffect from '../util/hook/usemounteffect';
 import LoadingModal from '../components/loading';
+import ChapterModal from '../components/chaptermodal';
+import useMountEffect from '../util/hook/usemounteffect';
 
 // TOOD: Implement zooming in at the cursor position.
 
@@ -232,14 +238,19 @@ const stylesObject = {
     },
   },
 
-  invisible: {
+  invisibleButton: {
+    opacity: 0,
+  },
+
+  invisibleToolbar: {
+    display: 'none',
     opacity: 0,
   },
 
   visible: {
+    display: 'flex',
     opacity: 1,
   },
-
   // Pagination-based view
   imageContainer: {
     boxSizing: 'border-box',
@@ -479,6 +490,7 @@ const Reader = () => {
     isHovering: false,
     isOpen: false,
   });
+  const [chapterModalOpen, setChapterModalOpen] = useState(false);
   const [isInIntermediary, setIsInIntermediary] = useState<0 | 1 | -1>(-1); // -1: not in intermediary state, 0: going to previous chapter, 1: going to next chapter
   // Intermediary state is for when the user is between
   // two chapters.
@@ -512,10 +524,10 @@ const Reader = () => {
   }>({
     cropStyle: 1,
     isDoublePage: false,
-    readingStyle: 'left-to-right',
+    readingStyle: 'right-to-left',
   });
 
-  const isRightToLeft = readerSettings.readingStyle === 'right-to-left';
+  const isRightToLeft = false;
   const isPageCropped = readerSettings.cropStyle === 1;
   const { isDoublePage } = readerSettings;
 
@@ -600,12 +612,11 @@ const Reader = () => {
     (direction: 0 | 1): Chapter | undefined => {
       if (!readerData.chapters) return undefined;
       const currentChapterIndex = readerData.chapters.findIndex(
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         (x: Chapter) => x.ChapterID === readerData.currentchapter!.ChapterID // disabled because ts cries even though i used an if statement as a guard
       );
 
       return readerData.chapters[
-        currentChapterIndex + (direction === 0 ? -1 : 1)
+        currentChapterIndex + (direction === 0 ? 1 : -1)
       ];
     },
     [readerData.chapters, readerData.currentchapter]
@@ -733,32 +744,35 @@ const Reader = () => {
   const handleClick = useCallback(
     (goTo: -1 | 1) => {
       if (!currentPageState) return;
-      const readOrderDirection = (isRightToLeft ? -goTo : goTo) as -1 | 1;
-      const normalizedDirection = readOrderDirection === -1 ? 0 : 1;
 
       const isAtStart = currentPage === 1;
       const isAtEnd = currentPage === currentPageState.length;
 
-      if (
-        (isAtStart && readOrderDirection === -1) ||
-        (isAtEnd && readOrderDirection === 1)
-      ) {
-        if (isInIntermediary !== -1) {
-          // if they're in an intermediary state...
-          if (
-            // TODO: Optimize if statement
-            normalizedDirection !== isInIntermediary // if the direction they picked is different than the intermediary state direction...
-          ) {
-            setIsInIntermediary(-1); // reset intermediary state!
-          } else return changeChapter(normalizedDirection); // otherwise, just change the chapter.
-        } else return setIsInIntermediary(normalizedDirection); // otherwise, set the intermediary state!
-      } else if (isInIntermediary !== -1) {
+      console.log(isAtStart, isAtEnd);
+
+      // Left is -1 naturally; so it decreases the page count. However, in RTL it should be changed to 1 to increment.
+      const readOrderGoTo = isRightToLeft ? -goTo : goTo;
+      const normalizedGoTo = readOrderGoTo === -1 ? 0 : 1;
+
+      if (isInIntermediary === -1 && (isAtStart || isAtEnd)) {
+        if (
+          (isAtStart && normalizedGoTo === 0) ||
+          (isAtEnd && normalizedGoTo === 1)
+        ) {
+          return setIsInIntermediary(normalizedGoTo);
+        }
+      }
+
+      if (isInIntermediary !== -1) {
+        if (normalizedGoTo === isInIntermediary)
+          return changeChapter(normalizedGoTo);
+
         return setIsInIntermediary(-1);
       }
 
       setReaderData({
         ...readerData,
-        page: currentPage + readOrderDirection,
+        page: currentPage + readOrderGoTo,
       });
     },
     [
@@ -826,17 +840,20 @@ const Reader = () => {
   };
 
   const doToolbarShow =
-    toolbarState.isOpen || toolbarState.isHovering
+    (toolbarState.isOpen || toolbarState.isHovering) && !chapterModalOpen
       ? styles.visible
-      : styles.invisible;
+      : styles.invisibleToolbar;
 
   const doButtonShow =
-    toolbarState.isButtonHover || toolbarState.isHovering
+    (toolbarState.isButtonHover || toolbarState.isHovering) && !chapterModalOpen
       ? styles.visible
-      : styles.invisible;
+      : styles.invisibleButton;
 
   const doCursorShow =
-    toolbarState.isHovering || toolbarState.isButtonHover || toolbarState.isOpen
+    toolbarState.isHovering ||
+    toolbarState.isButtonHover ||
+    toolbarState.isOpen ||
+    chapterModalOpen
       ? false
       : styles.noCursor;
   let isVertical = false;
@@ -870,6 +887,26 @@ const Reader = () => {
       }}
       className={css(styles.container, doCursorShow)}
     >
+      <ChapterModal
+        chapters={readerData.chapters!}
+        current={readerData.currentchapter!.ChapterID}
+        source={selectedSource.getName()}
+        open={chapterModalOpen}
+        manga={mangaId}
+        onClose={() => setChapterModalOpen(false)}
+        onChange={(newChapterId) => {
+          setIsLoading(true);
+          setChapterModalOpen(false);
+          setReaderData((previous) => ({
+            ...previous,
+            currentchapter:
+              previous.chapters!.find((x) => x.ChapterID === newChapterId) ??
+              previous.chapters![0],
+            page: 1,
+          }));
+        }}
+      />
+
       {/* TODO: Move topbar to their own component */}
       <div className={css(styles.topbarContainer, doToolbarShow)}>
         <div className={css(styles.topbar)}>
@@ -936,7 +973,21 @@ const Reader = () => {
                 styles.toolbarButton,
                 iconKey
               )}
-              onClick={() => {}} // This opens the chapter list.
+            >
+              <Tooltip title="Library" placement="top">
+                <MenuBookIcon
+                  className={css(styles.toolbarIcon, styles.chapterIcon)}
+                  onClick={() => Navigate(-1)}
+                />
+              </Tooltip>
+            </IconButton>
+            <IconButton
+              className={css(
+                styles.chapterIconContainer,
+                styles.toolbarButton,
+                iconKey
+              )}
+              onClick={() => setChapterModalOpen(true)} // This opens the chapter list.
             >
               <Tooltip title="Chapters" placement="top">
                 <FormatListBulletedIcon
@@ -1085,6 +1136,7 @@ const Reader = () => {
             */}
               {(() => {
                 const nextMangaChapter = getChapter(isInIntermediary);
+                console.log(isInIntermediary);
                 if (!nextMangaChapter) {
                   return (
                     <span className={css(styles.noChapterText)}>
@@ -1099,25 +1151,22 @@ const Reader = () => {
                   nextMangaChapter;
 
                 const { Chapter: currentChapter, Volume: currentVolume } =
-                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                  readerData.currentchapter!; // currentChapter will always be defined due to the isLoading check above.
+                  readerData.currentchapter!;
 
                 // The next chapter is declared as "missing" IF (or):
                 // - The next chapter is greater than the current chapter + 1
                 // - The next volume is greater than the current volume + 1
                 // If there is no volume, the assumed volume is 1 minus the next volume (if it is present, otherwise it is 1).
 
-                const [
-                  roundedCurrentChapter,
-                  roundedCurrentVolume,
-                  roundedNextChapter,
-                  roundedNextVolume,
-                ] = [
+                const [roundedCurrentChapter, roundedCurrentVolume] = [
                   currentChapter,
                   currentVolume,
+                ].map((num) => (num ? Math.floor(num) : NaN));
+
+                const [roundedNextChapter, roundedNextVolume] = [
                   nextChapter,
                   nextVolume,
-                ].map((num) => (num ? Math.round(num) : NaN));
+                ].map((num) => (num ? Math.ceil(num) : NaN));
 
                 const isNextChapterMissing =
                   roundedNextChapter > roundedCurrentChapter + 1 ||
@@ -1223,7 +1272,7 @@ const Reader = () => {
       <Sidebar
         outOf={currentPageState.length}
         Page={currentPage}
-        isRightToLeft={readerSettings.readingStyle === 'right-to-left'}
+        isRightToLeft={isRightToLeft}
         onItemClick={(newPage: number) => {
           if (isInIntermediary !== -1) setIsInIntermediary(-1);
           setReaderData({ ...readerData, page: newPage });

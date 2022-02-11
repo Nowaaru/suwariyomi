@@ -110,6 +110,8 @@ const styles = StyleSheet.create({
 });
 
 const Chapter = ({
+  onReadClick,
+
   downloadable,
   dbchapter,
   className,
@@ -117,8 +119,10 @@ const Chapter = ({
   source,
   manga,
 }: {
+  onReadClick: (chapterId: string) => void;
+
   downloadable: boolean;
-  dbchapter: ReadDatabaseValue[string];
+  dbchapter?: ReadDatabaseValue[string];
   className?: string;
   chapter: DatabaseChapter;
   source: string;
@@ -129,7 +133,7 @@ const Chapter = ({
   const {
     pageCount = -1,
     currentPage = -1,
-    lastRead,
+    lastRead = -1,
     timeElapsed = 0,
   } = dbchapter ?? {};
   const isRead =
@@ -183,15 +187,7 @@ const Chapter = ({
             backgroundColor: 'transparent !important',
           },
         }}
-        onClick={() => {
-          Navigate(
-            `/read?id=${manga.MangaID}&title=${
-              manga.Name
-            }&source=${source}&chapter=${chapter.ChapterID}&page=${
-              currentPage >= chapter.PageCount ? 1 : Math.max(1, currentPage) // In case the page is -1.
-            }`
-          );
-        }}
+        onClick={(x) => onReadClick(chapter.ChapterID)}
       >
         {dbchapter && currentPage !== -1
           ? isRead
@@ -251,6 +247,7 @@ const Chapter = ({
 };
 
 Chapter.defaultProps = {
+  dbchapter: {},
   className: '',
 };
 
