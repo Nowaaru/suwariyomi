@@ -1,4 +1,4 @@
-import { Paper, Button, Checkbox, IconButton } from '@mui/material';
+import { Paper, Button, Checkbox, IconButton, Tooltip } from '@mui/material';
 import { StyleSheet, css } from 'aphrodite';
 import { useNavigate } from 'react-router-dom';
 
@@ -62,13 +62,21 @@ const styles = StyleSheet.create({
     color: 'rgb(127,127,127)',
   },
 
-  chapterContainerReadButton: {
+  chapterContainerReadButtonContainer: {
+    width: 'fit-content',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    boxSizing: 'border-box',
     padding: '8px',
+  },
+
+  chapterContainerReadButton: {
+    display: 'flex',
     fontWeight: 'bold',
     color: '#DF2935',
-    boxSizing: 'border-box',
-    width: '135px',
-    top: '50%',
+    minWidth: '80px',
   },
 
   chapterContainerBookmarkButton: {
@@ -180,21 +188,32 @@ const Chapter = ({
           </h4>
         ) : null}
       </div>
-      <Button
-        className={css(styles.chapterContainerReadButton)}
-        sx={{
-          '&:hover': {
-            backgroundColor: 'transparent !important',
-          },
-        }}
-        onClick={(x) => onReadClick(chapter.ChapterID)}
-      >
-        {dbchapter && currentPage !== -1
-          ? isRead
-            ? 'Re-read'
-            : 'Continue'
-          : 'Read'}
-      </Button>
+      <div className={css(styles.chapterContainerReadButtonContainer)}>
+        <Tooltip
+          title={
+            currentPage !== -1
+              ? `Page ${currentPage} / ${chapter.PageCount}`
+              : 'Unread'
+          }
+          placement="top"
+        >
+          <Button
+            className={css(styles.chapterContainerReadButton)}
+            sx={{
+              '&:hover': {
+                backgroundColor: '#FFFFFF11 !important',
+              },
+            }}
+            onClick={() => onReadClick(chapter.ChapterID)}
+          >
+            {dbchapter && currentPage !== -1
+              ? isRead
+                ? 'Re-read'
+                : 'Continue'
+              : 'Read'}
+          </Button>
+        </Tooltip>
+      </div>
       <Checkbox
         className={css(styles.chapterContainerBookmarkButton)}
         sx={{
