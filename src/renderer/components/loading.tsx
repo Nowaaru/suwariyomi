@@ -1,18 +1,15 @@
-import '../css/Loading.css';
+import { CircularProgress, Backdrop } from '@mui/material';
 
-const Loading = ({ loadingText = 'Loading' as string }) => {
+const LoadingModal = ({ className }: { className?: string }) => {
   return (
-    <div className="loading center">
-      <div className="loadingio-spinner-pulse-p5j86z5hvvm">
-        <div className="ldio-t5svxtfp8uc">
-          <div />
-          <div />
-          <div />
-        </div>
-      </div>
-      <span className="loadingText">{loadingText}</span>
-    </div>
+    <Backdrop open className={className}>
+      <CircularProgress color="inherit" />
+    </Backdrop>
   );
 };
 
-export default Loading;
+LoadingModal.defaultProps = {
+  className: '',
+};
+
+export default LoadingModal;
