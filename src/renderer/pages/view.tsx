@@ -779,7 +779,6 @@ const View = () => {
                   variant="contained"
                   color="primary"
                   onClick={() => {
-                    console.log('Start reading');
                     const navigateData = `/read?id=${
                       currentManga.MangaID
                     }&source=${source}&chapter=${
