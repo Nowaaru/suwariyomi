@@ -395,9 +395,12 @@ const styles = StyleSheet.create({
     color: '#DF2935',
     boxSizing: 'border-box',
     width: '135px',
+    top: '50%',
   },
 
-  chapterContainerBookmarkButton: {},
+  chapterContainerBookmarkButton: {
+    color: '#DF2935',
+  },
 
   startReadingButton: {
     fontSize: '0.8em',
@@ -898,6 +901,11 @@ const View = () => {
                       </div>
                       <Button
                         className={css(styles.chapterContainerReadButton)}
+                        sx={{
+                          '&:hover': {
+                            backgroundColor: 'transparent !important',
+                          },
+                        }}
                         onClick={() => {
                           Navigate(
                             `/read?id=${currentManga.MangaID}&title=${
@@ -918,6 +926,11 @@ const View = () => {
                       </Button>
                       <Checkbox
                         className={css(styles.chapterContainerBookmarkButton)}
+                        sx={{
+                          '&:hover': {
+                            backgroundColor: 'transparent !important',
+                          },
+                        }}
                         checkedIcon={
                           <BookmarkIcon
                             className={css(styles.bookmarksButtonFilled)}
