@@ -41,6 +41,7 @@ import Sidebar from '../components/sidebar';
 import useQuery from '../util/hook/usequery';
 import SourceBase from '../../sources/static/base';
 import useMountEffect from '../util/hook/usemounteffect';
+import LoadingModal from '../components/loading';
 
 // TOOD: Implement zooming in at the cursor position.
 
@@ -381,6 +382,56 @@ const stylesObject = {
     alignItems: 'center',
     marginTop: '10px',
   },
+
+  loadingModal: {
+    color: 'white',
+  },
+
+  chapterHeader: {
+    fontFamily: '"Roboto", sans-serif',
+  },
+
+  chapterSecondHeader: {},
+
+  chapterFirstHeader: {
+    marginBottom: '16px',
+  },
+
+  topbarContainer: {
+    top: '64px',
+    display: 'flex',
+    position: 'absolute',
+    width: '100%',
+    height: '45px',
+    transition: 'all 0.5s ease-out',
+  },
+
+  topbar: {
+    display: 'flex',
+    width: 'fit-content',
+    height: 'fit-content',
+    boxSizing: 'border-box',
+    padding: '8px',
+    backgroundColor: '#111111EE',
+    borderRadius: '10px',
+    margin: '0px auto',
+  },
+
+  topbarTitle: {
+    fontFamily: '"Poppins", sans-serif',
+    color: 'white',
+
+    fontSize: '1.2em',
+    verticalAlign: 'middle',
+    height: 'fit-content',
+  },
+
+  topbarIcon: {
+    verticalAlign: 'middle',
+    maxWidth: '1.2em',
+    maxHeight: '1.2em',
+    marginRight: '10px',
+  },
 };
 
 type StylesObject = Record<
@@ -478,6 +529,7 @@ const Reader = () => {
   const {
     source: sourceId = 'MangaDex',
     id: mangaId = '',
+    title: mangaTitle = mangaId,
     chapter: chapterId = '',
     page: pageNumber = '1',
   } = Object.fromEntries(queryParameters as unknown as URLSearchParams);
@@ -536,7 +588,7 @@ const Reader = () => {
 
     const moveTimeout = setTimeout(() => {
       if (toolbarState.isHovering) return undefined;
-      setToolbarState({ ...toolbarState, isOpen: false });
+      setToolbarState({ ...toolbarState, isOpen: false, isButtonHover: false });
       return true;
     }, 1500);
 
@@ -809,7 +861,7 @@ const Reader = () => {
 
   const iconKey = isVertical ? styles.iconVertical : styles.iconHorizontal;
   return isLoading ? (
-    <div>Loading...</div>
+    <LoadingModal className={css(styles.loadingModal)} />
   ) : (
     <div
       onMouseMove={() => {
@@ -818,6 +870,20 @@ const Reader = () => {
       }}
       className={css(styles.container, doCursorShow)}
     >
+      {/* TODO: Move topbar to their own component */}
+      <div className={css(styles.topbarContainer, doToolbarShow)}>
+        <div className={css(styles.topbar)}>
+          <span className={css(styles.topbarTitle)}>
+            <img
+              src={selectedSource.getIcon()}
+              className={css(styles.topbarIcon)}
+              alt={selectedSource.getName()}
+            />
+            {mangaTitle}
+          </span>
+        </div>
+      </div>
+      {/* TODO: Move buttons to their own component */}
       <div
         className={css(
           styles.leftButton,
@@ -827,7 +893,7 @@ const Reader = () => {
         )}
         onClick={() => handleClick(-1)}
         onKeyPress={() => {}}
-        onMouseEnter={() => onToolbarEnter(true)}
+        onMouseMove={() => onToolbarEnter(true)}
         onMouseLeave={onToolbarLeave}
         role="button"
         tabIndex={isRightToLeft ? 0 : -1}
@@ -846,12 +912,11 @@ const Reader = () => {
         )}
         onClick={() => handleClick(1)}
         onKeyPress={() => {}}
-        onMouseEnter={() => onToolbarEnter(true)}
+        onMouseMove={() => onToolbarEnter(true)}
         onMouseLeave={onToolbarLeave}
         role="button"
         tabIndex={isRightToLeft ? -1 : 0}
       >
-        {/* TODO: Remove repitition here - because, believe it or not, this is also a mess. */}
         <div className={css(styles.buttonIcon, styles.rightButtonIcon)}>
           <ArrowForwardIosSharp className={css(styles.arrowR)} />
         </div>
@@ -864,6 +929,7 @@ const Reader = () => {
         >
           <Toolbar className={css(styles.toolbarInner)}>
             {/* TODO: Try and remove repetition as much as possible. */}
+            {/* TODO: Extract toolbar to its own component. */}
             <IconButton
               className={css(
                 styles.chapterIconContainer,
@@ -1029,13 +1095,10 @@ const Reader = () => {
                   );
                 }
 
-                const {
-                  ChapterTitle: nextTitle,
-                  Chapter: nextChapter,
-                  Volume: nextVolume = 1,
-                } = nextMangaChapter;
+                const { Chapter: nextChapter, Volume: nextVolume } =
+                  nextMangaChapter;
 
-                const { Chapter: currentChapter, Volume: currentVolume = 1 } =
+                const { Chapter: currentChapter, Volume: currentVolume } =
                   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                   readerData.currentchapter!; // currentChapter will always be defined due to the isLoading check above.
 
@@ -1054,7 +1117,7 @@ const Reader = () => {
                   currentVolume,
                   nextChapter,
                   nextVolume,
-                ].map((num) => Math.round(num));
+                ].map((num) => (num ? Math.round(num) : NaN));
 
                 const isNextChapterMissing =
                   roundedNextChapter > roundedCurrentChapter + 1 ||
@@ -1065,16 +1128,54 @@ const Reader = () => {
                 const chaptersMissing =
                   roundedNextChapter - roundedCurrentChapter - 1; // Subtract 1 because the current chapter is included.
 
+                const isGoingToNextChapter = isInIntermediary === 1;
+                const targetChapterText = (
+                  <span>{`${
+                    !Number.isNaN(nextVolume) ? `Volume ${nextVolume} ` : ``
+                  }Chapter ${nextChapter}`}</span>
+                );
+
+                const currentChapterText = (
+                  <span>{`${
+                    !Number.isNaN(currentVolume)
+                      ? `Volume ${currentVolume} `
+                      : ``
+                  }Chapter ${currentChapter}`}</span>
+                );
+
                 return (
                   <>
                     <div className={css(styles.intermediaryItem)}>
-                      <div className={css(styles.chapterTitle)}>
-                        {nextTitle}
+                      <div
+                        className={css(
+                          styles.chapterFirstHeader,
+                          styles.chapterHeader
+                        )}
+                      >
+                        <div>
+                          {isGoingToNextChapter ? `Finished:` : `Previous:`}
+                        </div>
+                        <div>
+                          {isGoingToNextChapter
+                            ? currentChapterText
+                            : targetChapterText}
+                        </div>
                       </div>
                     </div>
                     <div className={css(styles.intermediaryItem)}>
-                      {nextChapter}
-                      {nextVolume ? `:${nextVolume}` : ''}
+                      <div
+                        className={css(
+                          styles.chapterSecondHeader,
+                          styles.chapterHeader
+                        )}
+                      >
+                        <div>{isGoingToNextChapter ? `Next:` : `Current:`}</div>
+                        <span>
+                          {isGoingToNextChapter
+                            ? targetChapterText
+                            : currentChapterText}
+                        </span>
+                      </div>
                     </div>
                     {isNextChapterMissing && ( // Due to the nature of the logic, this will not show if the previous chapter has a skip.
                       <div className={css(styles.missingChapterTextContainer)}>
@@ -1122,7 +1223,6 @@ const Reader = () => {
         Page={currentPage}
         isRightToLeft={readerSettings.readingStyle === 'right-to-left'}
         onItemClick={(newPage: number) => {
-          console.log(`Navigating to page ${newPage}.`);
           if (isInIntermediary !== -1) setIsInIntermediary(-1);
           setReaderData({ ...readerData, page: newPage });
         }}
