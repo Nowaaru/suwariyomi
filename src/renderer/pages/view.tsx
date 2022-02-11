@@ -900,8 +900,8 @@ const View = () => {
                         className={css(styles.chapterContainerReadButton)}
                         onClick={() => {
                           Navigate(
-                            `/read?id=${
-                              currentManga.MangaID
+                            `/read?id=${currentManga.MangaID}&title=${
+                              currentManga.Name
                             }&source=${source}&chapter=${x.ChapterID}&page=${
                               currentPage >= x.PageCount
                                 ? 1
@@ -992,7 +992,7 @@ const View = () => {
                       currentManga.MangaID
                     }&source=${source}&chapter=${
                       (chapterToDisplay ?? currentManga.Chapters[0]).ChapterID
-                    }&page=${(() => {
+                    }&title=${currentManga.Name}&page=${(() => {
                       const foundChapter =
                         chapterData.current[
                           (chapterToDisplay ?? currentManga.Chapters[0])

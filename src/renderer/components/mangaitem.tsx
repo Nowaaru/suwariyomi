@@ -276,7 +276,7 @@ const MangaItem = ({
     <Tag key={tag} name={tag} type="normal" />
   ));
 
-  const viewParams = `/view?source=${source}&id=${mangaid}&backto=${backto}`;
+  const viewParams = `/view?source=${source}&title=${title}&id=${mangaid}&backto=${backto}`;
   switch (displayType) {
     case 'list':
       return (
