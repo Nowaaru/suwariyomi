@@ -623,7 +623,7 @@ const SearchPage = () => {
                           ).body.textContent || 'No synopsis available.'
                         );
                       })()}
-                      key={MangaObject.Name}
+                      key={MangaObject.MangaID}
                     />
                   ))
                 ) : (
