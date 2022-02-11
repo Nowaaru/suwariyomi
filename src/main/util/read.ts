@@ -6,7 +6,7 @@ export type ReadDatabaseValue = {
     isBookmarked: boolean;
     pageCount: number;
     currentPage: number;
-    lastRead: number | -1;
+    lastRead: number | -1; // Emphasize -1 as a special value
     timeElapsed: number;
   };
 };
