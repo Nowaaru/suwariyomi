@@ -329,6 +329,7 @@ export default class MangaDex extends SourceBase {
         ? await this.serializeChapters(
             await mangaItem.getFeed({
               translatedLanguage: [this._locale], // TODO: See above.
+              limit: Infinity,
             })
           )
         : undefined,
