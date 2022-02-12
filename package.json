@@ -11,7 +11,7 @@
     "postinstall": "npx patch-package && ts-node .erb/scripts/check-native-dep.js && electron-builder install-app-deps && cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.renderer.dev.dll.ts && opencollective-postinstall",
     "start": "ts-node ./.erb/scripts/check-port-in-use.js && npm run start:renderer",
     "start:main": "cross-env NODE_ENV=development electron -r ts-node/register/transpile-only ./src/main/main.ts",
-    "start:renderer": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack serve --config ./.erb/configs/webpack.config.renderer.dev.ts",
+    "start:renderer": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack serve --no-client-overlay-warnings --config ./.erb/configs/webpack.config.renderer.dev.ts",
     "test": "",
     "prepare": "husky install"
   },
@@ -218,14 +218,13 @@
     "ts-node": "^10.4.0",
     "typescript": "^4.5.4",
     "url-loader": "^4.1.1",
-    "webpack": "^5.65.0",
+    "webpack": "^5.68.0",
     "webpack-bundle-analyzer": "^4.5.0",
-    "webpack-cli": "^4.9.1",
+    "webpack-cli": "^4.9.2",
     "webpack-dev-server": "^4.7.1",
     "webpack-merge": "^5.8.0"
   },
   "dependencies": {
-    "@bit/lekanmedia.shared-ui.search-bar": "^1.0.9",
     "@emotion/css": "^11.7.1",
     "@emotion/styled": "^11.6.0",
     "@mui/icons-material": "^5.2.5",
