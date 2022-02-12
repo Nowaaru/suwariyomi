@@ -102,7 +102,7 @@ export default class MangaDex extends SourceBase {
     });
   }
 
-  protected _locale: string = 'en';
+  protected _locale: string = 'en'; // TODO: Change this to Permitted Locales.
 
   protected _locales: { id: string; name: string }[] = [
     { id: 'en', name: 'English' },
@@ -326,7 +326,11 @@ export default class MangaDex extends SourceBase {
       Added: undefined,
       LastRead: undefined,
       Chapters: doFull
-        ? await this.serializeChapters(await mangaItem.getFeed())
+        ? await this.serializeChapters(
+            await mangaItem.getFeed({
+              translatedLanguage: [this._locale], // TODO: See above.
+            })
+          )
         : undefined,
     };
   }
