@@ -84,9 +84,10 @@ follow these guidelines!
 
   - being rude or passive-aggressive does nothing to help; all it does is brew unwanted argument. if you are unable to successfully follow this guideline, **you will be blocked from collaborating in this repository.** be kind!
   <br/>
-  <h3><b><i>if you are making an issue...</i></b></h3>
-  follow these guidelines!
-  <h6><code>(some things might not be applicable)</code></h6>
+  
+<h3><b><i>if you are making an issue...</i></b></h3>
+follow these guidelines!
+<h6><code>(some things might not be applicable)</code></h6>
 
 - make sure your issue is in the right spot!
   - if you're looking to report an issue or suggest a feature for an extension, we don't do that here! you should instead check the **extensions repository** instead of looking here.
