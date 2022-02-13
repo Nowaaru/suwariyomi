@@ -4,32 +4,44 @@ const ReaderButton = ({
   className,
   divClassName,
 
+  disabled,
   onClick,
   onMouseMove,
   onMouseLeave,
   clickIcon,
 }: {
-  className: string;
-  divClassName: string;
+  className?: string;
+  divClassName?: string;
 
-  onClick: VoidFunction;
-  onMouseMove: VoidFunction;
-  onMouseLeave: VoidFunction;
-  clickIcon: JSX.Element;
+  disabled?: boolean;
+  onClick?: VoidFunction;
+  onMouseMove?: VoidFunction;
+  onMouseLeave?: VoidFunction;
+  clickIcon?: JSX.Element;
 }) => {
-  return (
+  return !disabled ? (
     <div
       className={className}
       onClick={onClick}
       onKeyPress={() => {}}
-      onMouseMove={onMouseMove}
+      onMouseMoveCapture={onMouseMove}
       onMouseLeave={onMouseLeave}
       role="button"
       tabIndex={-1}
     >
       <div className={divClassName}>{clickIcon}</div>
     </div>
-  );
+  ) : null;
+};
+
+ReaderButton.defaultProps = {
+  className: '',
+  divClassName: '',
+  disabled: false,
+  onClick: () => {},
+  onMouseMove: () => {},
+  onMouseLeave: () => {},
+  clickIcon: <div />,
 };
 
 export default ReaderButton;

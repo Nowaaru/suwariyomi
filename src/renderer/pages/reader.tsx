@@ -18,6 +18,8 @@ import {
   Tooltip,
 } from '@mui/material';
 
+import KeyboardArrowUpOutlinedIcon from '@mui/icons-material/KeyboardArrowUpOutlined';
+import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined';
 import ArrowForwardIosSharp from '@mui/icons-material/ArrowForwardIosSharp';
 import ArrowBackIosNewSharp from '@mui/icons-material/ArrowBackIosNewSharp';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
@@ -307,6 +309,23 @@ const stylesObject = {
     alignItems: 'center',
     userSelect: 'none',
   },
+
+  topButton: {
+    top: '0px',
+    width: '100%',
+    height: '30%',
+  },
+
+  topButtonIcon: {},
+
+  bottomButton: {
+    bottom: '0px',
+    width: '100%',
+    height: '30%',
+  },
+
+  bottomButtonIcon: {},
+
   leftButton: {
     width: '40%',
     height: '100%',
@@ -327,6 +346,18 @@ const stylesObject = {
 
   buttonIcon: {
     color: 'white',
+  },
+
+  arrowT: {
+    fontSize: '6em',
+    color: '#00000066',
+    transform: 'rotate(90deg)',
+  },
+
+  arrowB: {
+    fontSize: '6em',
+    color: '#00000066',
+    transform: 'rotate(90deg)',
   },
 
   arrowL: {
@@ -963,16 +994,17 @@ const Reader = () => {
       <>
         <ReaderButton
           className={css(
-            styles.leftButton,
+            styles.topButton,
             styles.button,
             doButtonShow,
             doCursorShow
           )}
-          divClassName={css(styles.buttonIcon, styles.leftButtonIcon)}
-          onClick={() => handleClick(-1)}
+          disabled={isLoading}
+          divClassName={css(styles.buttonIcon, styles.topButtonIcon)}
+          onClick={() => handleClick(1)}
           onMouseMove={() => onToolbarEnter(true)}
           onMouseLeave={onToolbarLeave}
-          clickIcon={<ArrowBackIosNewSharp className={css(styles.arrowL)} />}
+          clickIcon={<ArrowBackIosNewSharp className={css(styles.arrowT)} />}
         />
         <ReaderButton
           className={css(
@@ -981,6 +1013,7 @@ const Reader = () => {
             doButtonShow,
             doCursorShow
           )}
+          disabled={isLoading}
           divClassName={css(styles.buttonIcon, styles.leftButtonIcon)}
           onClick={() => handleClick(-1)}
           onMouseMove={() => onToolbarEnter(true)}
@@ -989,16 +1022,17 @@ const Reader = () => {
         />
         <ReaderButton
           className={css(
-            styles.leftButton,
+            styles.bottomButton,
             styles.button,
             doButtonShow,
             doCursorShow
           )}
-          divClassName={css(styles.buttonIcon, styles.leftButtonIcon)}
+          disabled={isLoading}
+          divClassName={css(styles.buttonIcon, styles.bottomButtonIcon)}
           onClick={() => handleClick(-1)}
           onMouseMove={() => onToolbarEnter(true)}
           onMouseLeave={onToolbarLeave}
-          clickIcon={<ArrowBackIosNewSharp className={css(styles.arrowL)} />}
+          clickIcon={<ArrowForwardIosSharp className={css(styles.arrowB)} />}
         />
         <ReaderButton
           className={css(
@@ -1007,6 +1041,7 @@ const Reader = () => {
             doButtonShow,
             doCursorShow
           )}
+          disabled={isLoading}
           divClassName={css(styles.buttonIcon, styles.rightButtonIcon)}
           onClick={() => handleClick(1)}
           onMouseMove={() => onToolbarEnter(true)}
