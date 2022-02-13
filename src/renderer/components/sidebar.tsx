@@ -187,7 +187,6 @@ const SideBar = ({
     outOf / (document.getElementById('root') as HTMLElement).offsetWidth;
 
   const items = [];
-  console.clear();
   for (let i = 0; i < outOf; doublePageDisplay ? (i += 2) : i++) {
     const iteration = isRightToLeft
       ? outOf - i - (outOf % 2 === 0 && doublePageDisplay ? 2 : 1)
