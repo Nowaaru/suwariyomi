@@ -48,9 +48,16 @@ import SourceBase from '../../sources/static/base';
 import LoadingModal from '../components/loading';
 import ChapterModal from '../components/chaptermodal';
 import useMountEffect from '../util/hook/usemounteffect';
+import ReaderButton from '../components/readerbutton';
 
-// TOOD: Implement zooming in at the cursor position.
+type ViewStyles =
+  | 'right-to-left'
+  | 'vertical'
+  | 'webtoon'
+  | 'left-to-right'
+  | 'continuous-vertical';
 
+// TODO: Implement zooming in at the cursor position.
 const stylesObject = {
   container: {
     display: 'block',
@@ -515,12 +522,7 @@ const Reader = () => {
         Right-to-left and left-to-right is self-explanatory.
   */
     cropStyle: 1 | 2; // 1 is free-form, 2 is crop to first and last vertical and horizontal pixel. (not implemented yet)
-    readingStyle:
-      | 'right-to-left'
-      | 'vertical'
-      | 'webtoon'
-      | 'left-to-right'
-      | 'continuous-vertical';
+    readingStyle: ViewStyles;
   }>({
     cropStyle: 1,
     isDoublePage: false,
@@ -957,44 +959,61 @@ const Reader = () => {
           </span>
         </div>
       </div>
-      {/* TODO: Move buttons to their own component */}
-      <div
-        className={css(
-          styles.leftButton,
-          styles.button,
-          doButtonShow,
-          doCursorShow
-        )}
-        onClick={() => handleClick(-1)}
-        onKeyPress={() => {}}
-        onMouseMove={() => onToolbarEnter(true)}
-        onMouseLeave={onToolbarLeave}
-        role="button"
-        tabIndex={isRightToLeft ? 0 : -1}
-      >
-        {/* TODO: Remove repitition here - because, believe it or not, this is also a mess. */}
-        <div className={css(styles.buttonIcon, styles.leftButtonIcon)}>
-          <ArrowBackIosNewSharp className={css(styles.arrowL)} />
-        </div>
-      </div>
-      <div
-        className={css(
-          styles.rightButton,
-          styles.button,
-          doButtonShow,
-          doCursorShow
-        )}
-        onClick={() => handleClick(1)}
-        onKeyPress={() => {}}
-        onMouseMove={() => onToolbarEnter(true)}
-        onMouseLeave={onToolbarLeave}
-        role="button"
-        tabIndex={isRightToLeft ? -1 : 0}
-      >
-        <div className={css(styles.buttonIcon, styles.rightButtonIcon)}>
-          <ArrowForwardIosSharp className={css(styles.arrowR)} />
-        </div>
-      </div>
+      {/* Fragment is only here for grouping purposes */}
+      <>
+        <ReaderButton
+          className={css(
+            styles.leftButton,
+            styles.button,
+            doButtonShow,
+            doCursorShow
+          )}
+          divClassName={css(styles.buttonIcon, styles.leftButtonIcon)}
+          onClick={() => handleClick(-1)}
+          onMouseMove={() => onToolbarEnter(true)}
+          onMouseLeave={onToolbarLeave}
+          clickIcon={<ArrowBackIosNewSharp className={css(styles.arrowL)} />}
+        />
+        <ReaderButton
+          className={css(
+            styles.leftButton,
+            styles.button,
+            doButtonShow,
+            doCursorShow
+          )}
+          divClassName={css(styles.buttonIcon, styles.leftButtonIcon)}
+          onClick={() => handleClick(-1)}
+          onMouseMove={() => onToolbarEnter(true)}
+          onMouseLeave={onToolbarLeave}
+          clickIcon={<ArrowBackIosNewSharp className={css(styles.arrowL)} />}
+        />
+        <ReaderButton
+          className={css(
+            styles.leftButton,
+            styles.button,
+            doButtonShow,
+            doCursorShow
+          )}
+          divClassName={css(styles.buttonIcon, styles.leftButtonIcon)}
+          onClick={() => handleClick(-1)}
+          onMouseMove={() => onToolbarEnter(true)}
+          onMouseLeave={onToolbarLeave}
+          clickIcon={<ArrowBackIosNewSharp className={css(styles.arrowL)} />}
+        />
+        <ReaderButton
+          className={css(
+            styles.rightButton,
+            styles.button,
+            doButtonShow,
+            doCursorShow
+          )}
+          divClassName={css(styles.buttonIcon, styles.rightButtonIcon)}
+          onClick={() => handleClick(1)}
+          onMouseMove={() => onToolbarEnter(true)}
+          onMouseLeave={onToolbarLeave}
+          clickIcon={<ArrowForwardIosSharp className={css(styles.arrowR)} />}
+        />
+      </>
       <div className={css(styles.toolbarContainer, doToolbarShow)}>
         <div
           className={css(styles.toolbar)}
