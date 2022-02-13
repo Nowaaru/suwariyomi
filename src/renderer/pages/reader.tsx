@@ -52,12 +52,82 @@ import ChapterModal from '../components/chaptermodal';
 import useMountEffect from '../util/hook/usemounteffect';
 import ReaderButton from '../components/readerbutton';
 
-type ViewStyles =
-  | 'right-to-left'
-  | 'vertical'
-  | 'webtoon'
+type ViewStyles = 'horizontal' | 'vertical' | 'continuous-vertical';
+
+type TapStyles =
+  | 'default'
   | 'left-to-right'
-  | 'continuous-vertical';
+  | 'right-to-left'
+  | 'top-to-bottom'
+  | 'bottom-to-top'
+  | 'kindle'
+  | 'l-shape'
+  | 'edge'
+  | 'none';
+
+type OneOrNegativeOneOrNull = 1 | -1 | null;
+type TapStylesPageEffectsValueKeys = 'top' | 'bottom' | 'left' | 'right';
+
+const TapStylesPageEffects: {
+  [style in Exclude<TapStyles, 'default'>]: {
+    [key in TapStylesPageEffectsValueKeys]: OneOrNegativeOneOrNull;
+  };
+} = {
+  'left-to-right': {
+    top: null,
+    left: -1,
+    bottom: null,
+    right: 1,
+  },
+  'right-to-left': {
+    top: null,
+    left: 1,
+    bottom: null,
+    right: -1,
+  },
+  'top-to-bottom': {
+    top: -1,
+    left: null,
+    bottom: 1,
+    right: null,
+  },
+  'bottom-to-top': {
+    top: 1,
+    left: null,
+    bottom: -1,
+    right: null,
+  },
+  kindle: {
+    top: null,
+    left: 1,
+    bottom: null,
+    right: 1,
+  },
+  'l-shape': {
+    top: -1,
+    left: -1,
+    bottom: 1,
+    right: 1,
+  },
+  edge: {
+    top: null,
+    left: 1,
+    right: 1,
+    bottom: -1,
+  },
+  none: {
+    top: null,
+    left: null,
+    bottom: null,
+    right: null,
+  },
+};
+
+const viewStyleDefaults: { [key in ViewStyles]: TapStyles } = {
+  horizontal: 'left-to-right',
+  vertical: 'top-to-bottom',
+  'continuous-vertical': 'none',
+};
 
 // TODO: Implement zooming in at the cursor position.
 const stylesObject = {
@@ -273,6 +343,10 @@ const stylesObject = {
     padding: '0px 32px 48px 32px',
   },
 
+  scrollBased: {
+    padding: '0px 32px 0px 32px',
+  },
+
   loadingContainer: {
     display: 'flex',
     position: 'absolute',
@@ -348,27 +422,22 @@ const stylesObject = {
     color: 'white',
   },
 
-  arrowT: {
+  arrow: {
     fontSize: '6em',
     color: '#00000066',
+  },
+
+  arrowT: {
     transform: 'rotate(90deg)',
   },
 
   arrowB: {
-    fontSize: '6em',
-    color: '#00000066',
     transform: 'rotate(90deg)',
   },
 
-  arrowL: {
-    fontSize: '6em',
-    color: '#00000066',
-  },
+  arrowL: {},
 
-  arrowR: {
-    fontSize: '6em',
-    color: '#00000066',
-  },
+  arrowR: {},
 
   intermediaryContainer: {
     display: 'flex',
@@ -493,6 +562,13 @@ type StylesObject = Record<
 // if you're a typescript god and you know how to do it, please submit a PR.
 const styles = StyleSheet.create<StylesObject>(stylesObject as any);
 
+const TapIcons = {
+  top: <ArrowBackIosNewSharp className={css(styles.arrow, styles.arrowT)} />,
+  bottom: <ArrowForwardIosSharp className={css(styles.arrow, styles.arrowB)} />,
+  left: <ArrowBackIosNewSharp className={css(styles.arrow, styles.arrowL)} />,
+  right: <ArrowForwardIosSharp className={css(styles.arrow, styles.arrowR)} />,
+};
+
 const errorDialog = (
   errorTitle = 'Error',
   errorMessage = 'An error occurred. Please try again later.',
@@ -554,13 +630,37 @@ const Reader = () => {
   */
     cropStyle: 1 | 2; // 1 is free-form, 2 is crop to first and last vertical and horizontal pixel. (not implemented yet)
     readingStyle: ViewStyles;
+    tappingStyle: TapStyles;
+    invertTapping: boolean;
   }>({
     cropStyle: 1,
     isDoublePage: false,
-    readingStyle: 'right-to-left',
+    invertTapping: false,
+    readingStyle: 'vertical',
+    tappingStyle: 'default',
   });
 
-  const isRightToLeft = readerSettings.readingStyle === 'right-to-left';
+  const associatedTappingStyle =
+    readerSettings.tappingStyle === 'default'
+      ? viewStyleDefaults[readerSettings.readingStyle]
+      : readerSettings.tappingStyle;
+
+  const tappingLayout = {
+    ...TapStylesPageEffects[
+      associatedTappingStyle as Exclude<TapStyles, 'default'> // associatedTappingStyle should never be 'default', for some reason TS is complaining.
+    ],
+  };
+
+  // If invertTapping is true, then iterate through tappingLayout and change -1 to 1 and vice versa.
+  if (readerSettings.invertTapping) {
+    Object.keys(tappingLayout).forEach((key) => {
+      if (tappingLayout[key as TapStylesPageEffectsValueKeys]) {
+        tappingLayout[key as TapStylesPageEffectsValueKeys]! *= -1;
+      }
+    });
+  }
+
+  const isRightToLeft = readerSettings.tappingStyle === 'right-to-left';
   const isPageCropped = readerSettings.cropStyle === 1;
   const isDoublePage =
     readerSettings.isDoublePage &&
@@ -926,12 +1026,10 @@ const Reader = () => {
     const verticalKeys: Array<typeof readerSettings.readingStyle> = [
       'vertical',
       'continuous-vertical',
-      'webtoon',
     ];
 
     const scrollBasedKeys: Array<typeof readerSettings.readingStyle> = [
       'continuous-vertical',
-      'webtoon',
     ];
 
     [isScrollBased, isVertical] = [
@@ -947,6 +1045,46 @@ const Reader = () => {
 
   const nextPageObject = currentPageState?.[currentPage];
   const isNextPageLoaded = nextPageObject?.isLoaded ?? false;
+
+  // This garbage is only here because TypeScript
+  // does not like mapping an array of one type to
+  // an array of another type.
+
+  // Even worse, it doesn't let me contentrate a primitive type
+  // (string) into a specific type (string which is top | bottom | left | right).
+  // So I have to do this nonsense; going against every convention known to man.
+  // If there were such thing as war crimes but for code, I would be
+  // a dead man walking.
+
+  // This is why we can't have nice things. Because this language never agrees
+  // with anything.
+
+  // I hate TypeScript.
+  const buttonLayouts = Object.keys(tappingLayout)
+    .filter((x) => tappingLayout[x as TapStylesPageEffectsValueKeys]) // Filter out null values
+    .map((x) => (
+      <ReaderButton
+        className={css(
+          styles[`${x as TapStylesPageEffectsValueKeys}Button`], // I.
+          styles.button,
+          doButtonShow,
+          doCursorShow
+        )}
+        disabled={isLoading}
+        divClassName={css(
+          styles.buttonIcon,
+          styles[`${x as TapStylesPageEffectsValueKeys}ButtonIcon`] // hate.
+        )}
+        onClick={
+          () => handleClick(tappingLayout[x as TapStylesPageEffectsValueKeys]!) // this.
+        }
+        onMouseMove={() => onToolbarEnter(true)}
+        onMouseLeave={onToolbarLeave}
+        clickIcon={TapIcons[x as TapStylesPageEffectsValueKeys]} // language.
+      />
+    ));
+
+  console.log(tappingLayout);
   return isLoading ? (
     <LoadingModal className={css(styles.loadingModal)} />
   ) : (
@@ -990,65 +1128,7 @@ const Reader = () => {
           </span>
         </div>
       </div>
-      {/* Fragment is only here for grouping purposes */}
-      <>
-        <ReaderButton
-          className={css(
-            styles.topButton,
-            styles.button,
-            doButtonShow,
-            doCursorShow
-          )}
-          disabled={isLoading}
-          divClassName={css(styles.buttonIcon, styles.topButtonIcon)}
-          onClick={() => handleClick(1)}
-          onMouseMove={() => onToolbarEnter(true)}
-          onMouseLeave={onToolbarLeave}
-          clickIcon={<ArrowBackIosNewSharp className={css(styles.arrowT)} />}
-        />
-        <ReaderButton
-          className={css(
-            styles.leftButton,
-            styles.button,
-            doButtonShow,
-            doCursorShow
-          )}
-          disabled={isLoading}
-          divClassName={css(styles.buttonIcon, styles.leftButtonIcon)}
-          onClick={() => handleClick(-1)}
-          onMouseMove={() => onToolbarEnter(true)}
-          onMouseLeave={onToolbarLeave}
-          clickIcon={<ArrowBackIosNewSharp className={css(styles.arrowL)} />}
-        />
-        <ReaderButton
-          className={css(
-            styles.bottomButton,
-            styles.button,
-            doButtonShow,
-            doCursorShow
-          )}
-          disabled={isLoading}
-          divClassName={css(styles.buttonIcon, styles.bottomButtonIcon)}
-          onClick={() => handleClick(-1)}
-          onMouseMove={() => onToolbarEnter(true)}
-          onMouseLeave={onToolbarLeave}
-          clickIcon={<ArrowForwardIosSharp className={css(styles.arrowB)} />}
-        />
-        <ReaderButton
-          className={css(
-            styles.rightButton,
-            styles.button,
-            doButtonShow,
-            doCursorShow
-          )}
-          disabled={isLoading}
-          divClassName={css(styles.buttonIcon, styles.rightButtonIcon)}
-          onClick={() => handleClick(1)}
-          onMouseMove={() => onToolbarEnter(true)}
-          onMouseLeave={onToolbarLeave}
-          clickIcon={<ArrowForwardIosSharp className={css(styles.arrowR)} />}
-        />
-      </>
+      {buttonLayouts}
       <div className={css(styles.toolbarContainer, doToolbarShow)}>
         <div
           className={css(styles.toolbar)}
@@ -1204,8 +1284,13 @@ const Reader = () => {
           </Toolbar>
         </div>
       </div>
-      {isInIntermediary === -1 ? (
-        <div className={css(styles.imageContainer)}>
+      {isInIntermediary === -1 || isScrollBased ? (
+        <div
+          className={css(
+            styles.imageContainer,
+            isScrollBased && styles.scrollBased
+          )}
+        >
           {/* If the current page is loaded AND they're not in double page / the next page is loaded... */}
           {isCurrentPageLoaded &&
           (!isDoublePage || !nextPageObject || isNextPageLoaded) ? (
