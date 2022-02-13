@@ -50,6 +50,8 @@ export const sidebarStyle = StyleSheet.create({
 
 const SidebarItem = ({
   pageValue = 1 as number,
+  pageDisplay = String(pageValue) as string,
+  doublePage = false as boolean,
   isSelected = false as boolean,
   isVertical = false as boolean,
   isRight = false as boolean,
@@ -126,9 +128,10 @@ const SidebarItem = ({
     },
     pageNumber: {
       top: isVertical ? '0' : '50%',
-      left: isVertical && !isRight ? '0' : '50%',
+      left: doublePage ? '0' : isVertical && !isRight ? '0' : '50%',
       bottom: 0,
       right: isVertical && isRight ? '0' : '50%',
+      [isVertical ? 'height' : 'width']: doublePage ? '100%' : 'unset',
       [`${isVertical ? (isRight ? 'right' : 'left') : 'bottom'}`]: '65%',
       textAlign: isVertical ? (isRight ? 'right' : 'left') : 'center',
       position: 'absolute',
@@ -146,7 +149,7 @@ const SidebarItem = ({
     },
   });
   const showText = !isTooSmall ? (
-    <span className={css(selectedStylesheet.pageNumber)}>{pageValue}</span>
+    <span className={css(selectedStylesheet.pageNumber)}>{pageDisplay}</span>
   ) : null;
   return (
     <button
@@ -176,6 +179,7 @@ const SideBar = ({
   Page = 1,
   outOf = 16,
   isRightToLeft = true,
+  doublePageDisplay = false,
   onItemClick = (() => {}) as (pageNumber: number) => void,
 }) => {
   const [isHover, setHover] = useState(false);
@@ -183,11 +187,23 @@ const SideBar = ({
     outOf / (document.getElementById('root') as HTMLElement).offsetWidth;
 
   const items = [];
-  for (let i = 0; i < outOf; i++) {
-    const iteration = isRightToLeft ? outOf - i - 1 : i;
+  console.clear();
+  for (let i = 0; i < outOf; doublePageDisplay ? (i += 2) : i++) {
+    const iteration = isRightToLeft
+      ? outOf - i - (outOf % 2 === 0 && doublePageDisplay ? 2 : 1)
+      : i;
+    // If doublePageDisplay is true and the page count is an even number, then
     items.push(
       <SidebarItem
         pageValue={iteration + 1}
+        doublePage={doublePageDisplay}
+        pageDisplay={String(
+          // If doublePageDisplay is true and there is a page after the current page, then display "P1 - P2"; otherwise just P1.
+          // If doublePageDisplay is false, then display P1.
+          doublePageDisplay && iteration + 2 <= outOf
+            ? `${iteration + 1} - ${iteration + 2}`
+            : iteration + 1
+        )}
         isSmall={pageCalculation >= 1 / 32}
         isTooSmall={pageCalculation >= 1 / 8}
         isSelected={Page - 1 === iteration}

@@ -36,7 +36,7 @@ import { useEffect, useState, useRef, useCallback } from 'react';
 import { StyleSheet, css, CSSProperties, StyleDeclarationMap } from 'aphrodite';
 import { URLSearchParams } from 'url';
 import { useNavigate } from 'react-router-dom';
-import { isEqual } from 'lodash';
+import { clamp, isEqual } from 'lodash';
 
 import { filterChaptersToLanguage, sortChapters } from '../util/func';
 import { Chapter } from '../../main/util/manga';
@@ -527,9 +527,13 @@ const Reader = () => {
     readingStyle: 'right-to-left',
   });
 
-  const isRightToLeft = false;
+  const isRightToLeft = readerSettings.readingStyle === 'right-to-left';
   const isPageCropped = readerSettings.cropStyle === 1;
-  const { isDoublePage } = readerSettings;
+  const isDoublePage =
+    readerSettings.isDoublePage &&
+    !['webtoon', 'vertical', 'continuous-vertical'].includes(
+      readerSettings.readingStyle
+    ); // Double page is only for horizontal-based reading styles, such as right-to-left and left-to-right.
 
   const setReaderSetting = (key: keyof typeof readerSettings, value: any) => {
     return setReaderSettings({
@@ -769,7 +773,9 @@ const Reader = () => {
       if (!currentPageState) return;
 
       const isAtStart = currentPage === 1;
-      const isAtEnd = currentPage === currentPageState.length;
+      const isAtEnd =
+        // Add 1 to account for the double page clamping the page to 1 before the end on even pages.
+        currentPage + (isDoublePage ? 1 : 0) >= currentPageState.length;
 
       console.log(isAtStart, isAtEnd);
 
@@ -793,9 +799,14 @@ const Reader = () => {
         return setIsInIntermediary(-1);
       }
 
-      changePage(currentPage + readOrderGoTo);
+      changePage(
+        isDoublePage
+          ? clamp(currentPage + readOrderGoTo * 2, 1, currentPageState.length)
+          : currentPage + readOrderGoTo
+      );
     },
     [
+      isDoublePage,
       currentPageState,
       isRightToLeft,
       currentPage,
@@ -897,6 +908,12 @@ const Reader = () => {
   }
 
   const iconKey = isVertical ? styles.iconVertical : styles.iconHorizontal;
+
+  const currentPageObject = currentPageState?.[currentPage - 1];
+  const isCurrentPageLoaded = currentPageObject?.isLoaded ?? false;
+
+  const nextPageObject = currentPageState?.[currentPage];
+  const isNextPageLoaded = nextPageObject?.isLoaded ?? false;
   return isLoading ? (
     <LoadingModal className={css(styles.loadingModal)} />
   ) : (
@@ -1035,9 +1052,23 @@ const Reader = () => {
             </IconButton>
             {!isScrollBased ? (
               <IconButton
-                onClick={() =>
-                  setReaderSetting('isDoublePage', !readerSettings.isDoublePage)
-                }
+                onClick={() => {
+                  setReaderSetting(
+                    'isDoublePage',
+                    !readerSettings.isDoublePage
+                  );
+                  // If the user is on an even page, then decrease the page number by 1.
+                  // Otherwise, since the user has technically seen *both* pages, increase the page number by 1.
+                  // This is to make sure that:
+                  //  1. The pages don't overflow (and potentially error out).
+                  //  2. The lightbar shows the correct page underline.
+                  if (currentPage % 2 === 0) {
+                    if (isDoublePage)
+                      // We can use isDoublePage here because it hasn't updated yet
+                      changePage(currentPage + 1);
+                    else changePage(currentPage - 1);
+                  }
+                }}
                 className={css(
                   styles.doublePageIconContainer,
                   styles.toolbarButton,
@@ -1121,12 +1152,23 @@ const Reader = () => {
       </div>
       {isInIntermediary === -1 ? (
         <div className={css(styles.imageContainer)}>
-          {currentPageState[currentPage - 1].isLoaded ? (
-            <img
-              className={css(styles.mangaImage)}
-              src={currentPageState[currentPage - 1].src}
-              alt={`Page ${currentPage}`}
-            />
+          {/* If the current page is loaded AND they're not in double page / the next page is loaded... */}
+          {isCurrentPageLoaded &&
+          (!isDoublePage || !nextPageObject || isNextPageLoaded) ? (
+            <>
+              {isNextPageLoaded && isDoublePage ? (
+                <img
+                  className={css(styles.mangaImage)}
+                  src={nextPageObject.src}
+                  alt={`Page ${currentPage + 1}`}
+                />
+              ) : null}
+              <img
+                className={css(styles.mangaImage)}
+                src={currentPageObject.src}
+                alt={`Page ${currentPage}`}
+              />
+            </>
           ) : (
             <div className={css(styles.loadingContainer)}>
               <CircularProgress
@@ -1293,6 +1335,7 @@ const Reader = () => {
         outOf={currentPageState.length}
         Page={currentPage}
         isRightToLeft={isRightToLeft}
+        doublePageDisplay={isDoublePage}
         onItemClick={(newPage: number) => {
           if (isInIntermediary !== -1) setIsInIntermediary(-1);
           setReaderData({ ...readerData, page: newPage });
