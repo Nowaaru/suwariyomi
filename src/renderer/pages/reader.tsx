@@ -632,12 +632,14 @@ const Reader = () => {
     readingStyle: ViewStyles;
     tappingStyle: TapStyles;
     invertTapping: boolean;
+    sidebarStyle: 'bottom' | 'left' | 'right';
   }>({
     cropStyle: 1,
     isDoublePage: false,
     invertTapping: false,
     readingStyle: 'vertical',
     tappingStyle: 'default',
+    sidebarStyle: 'bottom',
   });
 
   const associatedTappingStyle =
@@ -1475,6 +1477,8 @@ const Reader = () => {
         Page={currentPage}
         isRightToLeft={isRightToLeft}
         doublePageDisplay={isDoublePage}
+        isVertical={readerSettings.sidebarStyle !== 'bottom'}
+        isRight={readerSettings.sidebarStyle === 'right'}
         onItemClick={(newPage: number) => {
           if (isInIntermediary !== -1) setIsInIntermediary(-1);
           setReaderData({ ...readerData, page: newPage });
