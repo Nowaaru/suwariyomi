@@ -1,5 +1,5 @@
 import { RefObject, useEffect, useRef, useState } from 'react';
-import useMountEffect from './useMountEffect';
+import useMountEffect from './usemounteffect';
 
 export default function useOnScreen(
   scrollContainer: RefObject<HTMLDivElement | null>,
