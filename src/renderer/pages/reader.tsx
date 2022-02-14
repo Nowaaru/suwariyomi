@@ -16,6 +16,7 @@ import {
   IconButton,
   CircularProgress,
   Tooltip,
+  useScrollTrigger,
 } from '@mui/material';
 
 import KeyboardArrowUpOutlinedIcon from '@mui/icons-material/KeyboardArrowUpOutlined';
@@ -34,11 +35,18 @@ import PublicIcon from '@mui/icons-material/Public';
 import CropIcon from '@mui/icons-material/Crop';
 import HomeIcon from '@mui/icons-material/Home';
 
-import { useEffect, useState, useRef, useCallback } from 'react';
+import {
+  useEffect,
+  useState,
+  useRef,
+  useCallback,
+  useMemo,
+  useLayoutEffect,
+} from 'react';
 import { StyleSheet, css, CSSProperties, StyleDeclarationMap } from 'aphrodite';
 import { URLSearchParams } from 'url';
 import { useNavigate } from 'react-router-dom';
-import { clamp, isEqual } from 'lodash';
+import { clamp, isEqual, throttle } from 'lodash';
 
 import { filterChaptersToLanguage, sortChapters } from '../util/func';
 import { Chapter } from '../../main/util/manga';
@@ -47,10 +55,12 @@ import Handler from '../../sources/handler';
 import Sidebar from '../components/sidebar';
 import useQuery from '../util/hook/usequery';
 import SourceBase from '../../sources/static/base';
+import useThrottle from '../util/hook/usethrottle';
 import LoadingModal from '../components/loading';
 import ChapterModal from '../components/chaptermodal';
-import useMountEffect from '../util/hook/usemounteffect';
+import useOnScreen from '../util/hook/useonscreen';
 import ReaderButton from '../components/readerbutton';
+import useMountEffect from '../util/hook/usemounteffect';
 
 type ViewStyles = 'horizontal' | 'vertical' | 'continuous-vertical';
 
@@ -136,6 +146,7 @@ const stylesObject = {
     width: '100vw',
     height: '100%',
   },
+
   sidebar: {
     display: 'block',
     top: '0px',
@@ -337,14 +348,32 @@ const stylesObject = {
     position: 'absolute',
     width: '100%',
     height: '100%',
-    zIndex: -1024,
     justifyContent: 'center',
     alignItems: 'center',
     padding: '0px 32px 48px 32px',
+    zIndex: -1024,
+    '::-webkit-scrollbar': {
+      width: '4px',
+    },
+    '::-webkit-scrollbar-thumb': {
+      background: '#FFFFFF',
+      ':hover': {
+        background: '#DF2935',
+      },
+    },
   },
 
   scrollBased: {
-    padding: '0px 32px 0px 32px',
+    display: 'flex',
+    justifyContent: 'unset',
+    alignItems: 'center',
+    flexDirection: 'column',
+    overflowY: 'auto',
+    zIndex: 1024,
+  },
+
+  disableScroll: {
+    overflow: 'hidden',
   },
 
   loadingContainer: {
@@ -357,17 +386,57 @@ const stylesObject = {
     padding: '0px',
   },
 
+  continuousScrollLoadingContainer: {
+    display: 'flex',
+    width: '150px',
+    height: '400px',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: '0px',
+  },
+
   loading: {
     color: 'white',
   },
 
   // Webtoon / Long-strip view
 
+  continuousScrollHeader: {
+    marginBottom: '32px',
+  },
+
+  continuousScrollIntermediary: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'column',
+    width: '35%',
+    flexGrow: 0,
+    flexShrink: 0,
+    flexBasis: '400px',
+    backgroundColor: '#000000EE',
+    margin: '12px',
+    boxSizing: 'border-box',
+  },
+
+  continuousScrollPreviousChapterIntermediary: {},
+
+  continuousScrollNextChapterIntermediary: {},
+
+  continuousScrollNoChapterIntermediary: {},
+
   // All views
   mangaImage: {
     display: 'flex',
     maxHeight: '95%',
     maxWidth: '65%',
+    userSelect: 'none',
+  },
+
+  loadingImage: {
+    display: 'flex',
+    height: '65%',
+    width: '45%',
     userSelect: 'none',
   },
 
@@ -516,6 +585,7 @@ const stylesObject = {
   },
 
   topbarContainer: {
+    zIndex: 2048,
     top: '64px',
     display: 'flex',
     position: 'absolute',
@@ -549,6 +619,17 @@ const stylesObject = {
     maxWidth: '1.2em',
     maxHeight: '1.2em',
     marginRight: '10px',
+  },
+
+  continuousScrollIntermediaryButton: {
+    boxSizing: 'border-box',
+    padding: '8px',
+    color: '#DF2935',
+    backgroundColor: 'transparent',
+    ':hover': {
+      backgroundColor: '#DF293522',
+      color: '#CF1925',
+    },
   },
 };
 
@@ -597,6 +678,14 @@ const errorDialog = (
   </Dialog>
 );
 
+type PageItem = {
+  isLoaded: boolean;
+  didError: boolean;
+  chapter: string;
+  page: number; // 1-indexed
+  src: string;
+};
+
 const Reader = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [toolbarState, setToolbarState] = useState({
@@ -604,18 +693,38 @@ const Reader = () => {
     isHovering: false,
     isOpen: false,
   });
+  const [scrollY, setScrollYABSOLUTE] = useState(0);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const setScrollY = useCallback(
+    throttle(
+      (y: number) => {
+        setScrollYABSOLUTE(y);
+      },
+      100,
+      { leading: false, trailing: true }
+    ),
+    [setScrollYABSOLUTE]
+  );
+
+  const imageContainerRef = useRef<HTMLDivElement>(null);
+  const [bottomIntermediaryObject, setBottomIntermediaryObject] =
+    useState<HTMLDivElement | null>(null);
+  const [topIntermediaryObject, setTopIntermediaryObject] =
+    useState<HTMLDivElement | null>(null);
+  const [topRefOnScreen, bottomRefOnScreen] = [
+    useOnScreen(imageContainerRef, topIntermediaryObject),
+    useOnScreen(imageContainerRef, bottomIntermediaryObject),
+  ];
+
   const [chapterModalOpen, setChapterModalOpen] = useState(false);
   const [isInIntermediary, setIsInIntermediary] = useState<0 | 1 | -1>(-1); // -1: not in intermediary state, 0: going to previous chapter, 1: going to next chapter
   // Intermediary state is for when the user is between
   // two chapters.
 
   const [pageState, setPageState] = useState<{
-    [chapterId: string]: Array<{
-      isLoaded: boolean;
-      didError: boolean;
-      src: string;
-    }>;
+    [chapterId: string]: Array<PageItem>;
   }>({});
+
   const queryParameters = useQuery();
   const Navigate = useNavigate();
 
@@ -637,11 +746,18 @@ const Reader = () => {
     cropStyle: 1,
     isDoublePage: false,
     invertTapping: false,
-    readingStyle: 'vertical',
+    readingStyle: 'horizontal',
     tappingStyle: 'default',
     sidebarStyle: 'bottom',
   });
 
+  // useEffect(() => {
+  //   const currentRef = imageContainerRef.current;
+  //   if (currentRef) {
+  //   }
+  // }, [imageContainerRef]);
+
+  readerSettings.readingStyle = 'horizontal';
   const associatedTappingStyle =
     readerSettings.tappingStyle === 'default'
       ? viewStyleDefaults[readerSettings.readingStyle]
@@ -708,6 +824,9 @@ const Reader = () => {
     page: Number.isNaN(Number(pageNumber)) ? 1 : Number(pageNumber),
   });
 
+  const currentPageState =
+    pageState[readerData.currentchapter?.ChapterID ?? chapterId];
+
   let selectedSource: SourceBase;
   {
     const mappedFileNamesRef = useRef<SourceBase[]>(
@@ -747,6 +866,16 @@ const Reader = () => {
   }, [toolbarState]);
 
   // TODO: Clear repitition because this is a mess.
+  const getAbsoluteChapter = useCallback(
+    (num: number) => readerData.chapters?.[num],
+    [readerData.chapters]
+  );
+
+  const getChapterNumber = useCallback(
+    (id: string) => readerData.chapters?.findIndex((x) => x.ChapterID === id),
+    [readerData.chapters]
+  );
+
   const getChapter = useCallback(
     (direction: 0 | 1): Chapter | undefined => {
       if (!readerData.chapters) return undefined;
@@ -827,9 +956,11 @@ const Reader = () => {
         setPageState((previousState) => {
           const newPageState = {
             ...previousState,
-            [currentChapter.ChapterID]: Pages.map((page) => ({
+            [currentChapter.ChapterID]: Pages.map((page, number) => ({
               isLoaded: false,
               didError: false,
+              chapter: currentChapter.ChapterID,
+              page: number + 1, // add 1 because the page number starts at 1 and js is zero-indexed
               src: page,
             })),
           };
@@ -872,18 +1003,53 @@ const Reader = () => {
       })
       .catch(console.log);
   }, [readerData, chapterId, selectedSource, pageState]);
-  // No selected source dialog
-  // This is here in case a bug occurs OR a user tries to access a source that doesn't exist.
-  // typically via a direct link / protocol.
+  const doToolbarShow =
+    (toolbarState.isOpen || toolbarState.isHovering) && !chapterModalOpen
+      ? styles.visible
+      : styles.invisibleToolbar;
+
+  const doButtonShow =
+    (toolbarState.isButtonHover || toolbarState.isHovering) && !chapterModalOpen
+      ? styles.visible
+      : styles.invisibleButton;
+
+  const doCursorShow =
+    toolbarState.isHovering ||
+    toolbarState.isButtonHover ||
+    toolbarState.isOpen ||
+    chapterModalOpen
+      ? false
+      : styles.noCursor;
+  let isVertical = false;
+  let isScrollBased = false;
+  {
+    const verticalKeys: Array<ViewStyles> = ['vertical', 'continuous-vertical'];
+
+    const scrollBasedKeys: Array<ViewStyles> = ['continuous-vertical'];
+
+    [isScrollBased, isVertical] = [
+      scrollBasedKeys.includes(readerSettings.readingStyle),
+      verticalKeys.includes(readerSettings.readingStyle),
+    ];
+  }
 
   const currentPage = readerData.page ?? 1;
-  const currentPageState =
-    pageState[readerData.currentchapter?.ChapterID ?? chapterId];
+  const iconKey = isVertical ? styles.iconVertical : styles.iconHorizontal;
+
+  const currentPageObject = currentPageState?.[currentPage - 1];
+  const isCurrentPageLoaded = currentPageObject?.isLoaded ?? false;
+
+  const nextPageObject = currentPageState?.[currentPage];
+  const isNextPageLoaded = nextPageObject?.isLoaded ?? false;
 
   const changePage = useCallback(
-    (newPageNumber: number) => {
+    (
+      newPageNumber: number,
+      doScrollBasedChange?: boolean,
+      scrollType?: 'auto' | 'smooth'
+    ) => {
       if (!readerData.currentchapter) return;
-      if (newPageNumber !== currentPage) {
+      if (doScrollBasedChange || newPageNumber !== currentPage) {
         window.electron.read.set(
           selectedSource.getName(),
           readerData.currentchapter.ChapterID, // CurrentChapter will alway
@@ -894,13 +1060,30 @@ const Reader = () => {
           false
         );
 
+        if (isScrollBased && doScrollBasedChange) {
+          // Get respective page object from chapter and id.
+          const pageObject = document.getElementById(
+            `chapter-:${readerData.currentchapter.ChapterID}:-page-:${newPageNumber}:`
+          );
+          if (pageObject) {
+            // Scroll to the page object.
+            pageObject.scrollIntoView({
+              behavior: scrollType || 'smooth',
+              block: 'center',
+              inline: 'center',
+            });
+
+            return; // We return here because the reader automatically detects the page change due to the automatic scrolling.
+          }
+        }
+
         return setReaderData({
           ...readerData,
           page: newPageNumber,
         });
       }
     },
-    [readerData, currentPage, selectedSource]
+    [readerData, currentPage, selectedSource, isScrollBased]
   );
 
   const handleClick = useCallback(
@@ -911,8 +1094,6 @@ const Reader = () => {
       const isAtEnd =
         // Add 1 to account for the double page clamping the page to 1 before the end on even pages.
         currentPage + (isDoublePage ? 1 : 0) >= currentPageState.length;
-
-      console.log(isAtStart, isAtEnd);
 
       // Left is -1 naturally; so it decreases the page count. However, in RTL it should be changed to 1 to increment.
       const readOrderGoTo = isRightToLeft ? -goTo : goTo;
@@ -950,6 +1131,95 @@ const Reader = () => {
       changePage,
     ]
   );
+
+  const getPageFromPoint = useCallback(
+    (
+      pointToCheckX = window.innerWidth / 2,
+      pointToCheckY = window.innerHeight / 2
+    ) => {
+      const Elements = document.elementsFromPoint(pointToCheckX, pointToCheckY);
+
+      const getDataFromID = (elementID = '') =>
+        elementID?.match(/chapter-:(.+?):-page-:(\d+?):/);
+
+      const foundElement = Elements.filter((element) => {
+        // Get chapterID and Page from the element.
+        const elementID = element.id;
+        const Match = getDataFromID(elementID);
+        if (!Match) return false;
+
+        const [chapterID, page] = Match.slice(1); // Remove the first element of the array since it is the whole match.
+        if (chapterID && page) {
+          return true;
+        }
+
+        return false;
+      })?.map((element) => {
+        // Get chapterID and Page from the element.
+        const elementID = element.id;
+        const Match = elementID?.match(/chapter-:(.+?):-page-:(\d+?):/);
+        if (!Match) return undefined;
+
+        const [chapterID, page] = Match.slice(1); // Remove the first element of the array since it is the whole match.
+        if (chapterID && page) {
+          return { chapterID, page };
+        }
+
+        return undefined;
+      })[0];
+
+      return foundElement;
+    },
+    []
+  );
+
+  useEffect(() => {
+    if (isLoading) return;
+    if (!isScrollBased) return;
+    if (!readerData.currentchapter?.ChapterID) return;
+
+    console.log('bruhbreuh page change');
+    const { page: pageAtCenter } =
+      getPageFromPoint(undefined, window.innerHeight / 1.25) ?? {}; // Check slightly below the center of the screen.
+    if (!pageAtCenter || Number(pageAtCenter) !== readerData.page) {
+      setTimeout(() => {
+        // give time to the page to load.
+        // shouldn't have to do this but oh wel i guess?
+        changePage(Number(readerData.page), true, 'smooth');
+      }, 100);
+    }
+
+    // Disabling the following eslint because this is only supposed to run when the currentChapter changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [readerData.currentchapter, isLoading]);
+
+  useEffect(() => {
+    if (isLoading) return;
+    if (!isScrollBased) return;
+    if (!readerData.currentchapter?.ChapterID) return;
+
+    // Get page(s) at the center of the screen.
+    const { chapterID, page: foundPage } = getPageFromPoint() ?? {};
+    if (chapterID && foundPage && readerData.page !== Number(foundPage)) {
+      changePage(Number(foundPage), false);
+      setReaderData((previousState) => {
+        return {
+          ...previousState,
+          currentchapter:
+            previousState.chapters?.find((x) => x.ChapterID === chapterID) ??
+            previousState.currentchapter,
+        };
+      });
+    }
+  }, [
+    scrollY,
+    isLoading,
+    changePage,
+    isScrollBased,
+    readerData.page,
+    getPageFromPoint,
+    readerData.currentchapter,
+  ]);
 
   const goBack = () => {
     Navigate('/library');
@@ -1005,49 +1275,6 @@ const Reader = () => {
     });
   };
 
-  const doToolbarShow =
-    (toolbarState.isOpen || toolbarState.isHovering) && !chapterModalOpen
-      ? styles.visible
-      : styles.invisibleToolbar;
-
-  const doButtonShow =
-    (toolbarState.isButtonHover || toolbarState.isHovering) && !chapterModalOpen
-      ? styles.visible
-      : styles.invisibleButton;
-
-  const doCursorShow =
-    toolbarState.isHovering ||
-    toolbarState.isButtonHover ||
-    toolbarState.isOpen ||
-    chapterModalOpen
-      ? false
-      : styles.noCursor;
-  let isVertical = false;
-  let isScrollBased = false;
-  {
-    const verticalKeys: Array<typeof readerSettings.readingStyle> = [
-      'vertical',
-      'continuous-vertical',
-    ];
-
-    const scrollBasedKeys: Array<typeof readerSettings.readingStyle> = [
-      'continuous-vertical',
-    ];
-
-    [isScrollBased, isVertical] = [
-      scrollBasedKeys.includes(readerSettings.readingStyle),
-      verticalKeys.includes(readerSettings.readingStyle),
-    ];
-  }
-
-  const iconKey = isVertical ? styles.iconVertical : styles.iconHorizontal;
-
-  const currentPageObject = currentPageState?.[currentPage - 1];
-  const isCurrentPageLoaded = currentPageObject?.isLoaded ?? false;
-
-  const nextPageObject = currentPageState?.[currentPage];
-  const isNextPageLoaded = nextPageObject?.isLoaded ?? false;
-
   // This garbage is only here because TypeScript
   // does not like mapping an array of one type to
   // an array of another type.
@@ -1086,7 +1313,10 @@ const Reader = () => {
       />
     ));
 
-  console.log(tappingLayout);
+  // If it's scroll based and there are pages to display, then we can show the pages.
+  // So, when loading is true, we can put loading indicators on the top and bottom.
+  // Otherwise, show nothing but the loading indicator.
+
   return isLoading ? (
     <LoadingModal className={css(styles.loadingModal)} />
   ) : (
@@ -1106,6 +1336,7 @@ const Reader = () => {
         onClose={() => setChapterModalOpen(false)}
         onChange={(newChapterId) => {
           setIsLoading(true);
+          if (isScrollBased) setPageState({});
           setChapterModalOpen(false);
           setReaderData((previous) => ({
             ...previous,
@@ -1288,37 +1519,206 @@ const Reader = () => {
       </div>
       {isInIntermediary === -1 || isScrollBased ? (
         <div
+          key="ImageContainer"
           className={css(
             styles.imageContainer,
-            isScrollBased && styles.scrollBased
+            isScrollBased && styles.scrollBased,
+            isLoading && styles.disableScroll
           )}
+          id="image-container"
+          onScrollCapture={() => {
+            if (isScrollBased) {
+              if (!isLoading) {
+                setScrollY(
+                  document.getElementById('image-container')!.scrollTop
+                );
+              }
+            }
+          }}
+          ref={imageContainerRef} // We need this to be able to use HTML DOM to scroll.
         >
-          {/* If the current page is loaded AND they're not in double page / the next page is loaded... */}
-          {isCurrentPageLoaded &&
-          (!isDoublePage || !nextPageObject || isNextPageLoaded) ? (
-            <>
-              {isNextPageLoaded && isDoublePage ? (
-                <img
-                  className={css(styles.mangaImage)}
-                  src={nextPageObject.src}
-                  alt={`Page ${currentPage + 1}`}
-                />
-              ) : null}
-              <img
-                className={css(styles.mangaImage)}
-                src={currentPageObject.src}
-                alt={`Page ${currentPage}`}
-              />
-            </>
-          ) : (
-            <div className={css(styles.loadingContainer)}>
-              <CircularProgress
-                className={css(styles.loading)}
-                color="secondary"
-                size={50}
-              />
-            </div>
-          )}
+          {/* If they're in continuous vertical mode, then show all the images at once. */}
+          {(() => {
+            if (!isScrollBased) {
+              if (isCurrentPageLoaded) {
+                if (
+                  !isDoublePage || // If it's not in double page, then we can just show the image.
+                  (isDoublePage && nextPageObject && isNextPageLoaded) // If it's a double page, then we need to make sure the next page is loaded.
+                )
+                  return (
+                    <>
+                      {isNextPageLoaded && isDoublePage ? (
+                        <img
+                          className={css(styles.mangaImage)}
+                          src={nextPageObject.src}
+                          alt={`Page ${currentPage + 1}`}
+                        />
+                      ) : null}
+                      <img
+                        className={css(styles.mangaImage)}
+                        src={currentPageObject.src}
+                        alt={`Page ${currentPage}`}
+                      />
+                    </>
+                  );
+              }
+              return (
+                <div className={css(styles.loadingContainer)}>
+                  <CircularProgress
+                    className={css(styles.loading)}
+                    color="secondary"
+                    size={50}
+                  />
+                </div>
+              );
+            }
+            return currentPageState.map((page, index) => {
+              const previousChapterExists = getAbsoluteChapter(
+                (getChapterNumber(page.chapter) || 0) + 1
+              );
+
+              const nextChapterExists = getAbsoluteChapter(
+                (getChapterNumber(page.chapter) || 0) - 1
+              );
+
+              // The addition and subtraction might seem swapped,
+              // but they're this way because readerData.chapters is
+              // in reverse order.
+
+              const { Volume: nextVolume, Chapter: nextChapter } =
+                nextChapterExists || {};
+
+              const { Volume: previousVolume, Chapter: previousChapter } =
+                previousChapterExists || {};
+
+              const { Volume: currentVolume, Chapter: currentChapter } =
+                readerData.currentchapter || {};
+
+              const generateChapterText = (
+                volume?: number,
+                chapter?: number
+              ) => (
+                <span
+                  className={css(
+                    styles.chapterHeader,
+                    styles.continuousScrollHeader
+                  )}
+                >{`${!Number.isNaN(volume) ? `Volume ${volume} ` : ``}Chapter ${
+                  chapter || "You shouldn't be seeing this. 👀"
+                }`}</span>
+              );
+
+              const IntermediaryPreviousChapter = (
+                <div
+                  className={css(
+                    styles.intermediary,
+                    styles.continuousScrollIntermediary,
+                    styles.continuousScrollPreviousChapterIntermediary
+                  )}
+                  ref={(Node) => setTopIntermediaryObject(Node)}
+                  key={`previous-${page.chapter}`}
+                >
+                  <span className={css(styles.chapterHeader)}>Previous:</span>
+                  {generateChapterText(previousVolume, previousChapter)}
+
+                  <span className={css(styles.chapterHeader)}>Current:</span>
+                  {generateChapterText(currentVolume, currentChapter)}
+
+                  <Button
+                    className={css(styles.continuousScrollIntermediaryButton)}
+                    onClick={() => {
+                      changeChapter(0);
+                    }}
+                  >
+                    Previous Chapter
+                  </Button>
+                </div>
+              );
+
+              const IntermediaryNextChapter = (
+                <div
+                  className={css(
+                    styles.intermediary,
+                    styles.continuousScrollIntermediary,
+                    styles.continuousScrollNextChapterIntermediary
+                  )}
+                  key={`next-${page.chapter}`}
+                  ref={(Node) => setBottomIntermediaryObject(Node)}
+                >
+                  <span className={css(styles.chapterHeader)}>Finished:</span>
+                  {generateChapterText(currentVolume, currentChapter)}
+
+                  <span className={css(styles.chapterHeader)}>Next:</span>
+                  {generateChapterText(nextVolume, nextChapter)}
+
+                  <Button
+                    className={css(styles.continuousScrollIntermediaryButton)}
+                    onClick={() => {
+                      changeChapter(1);
+                    }}
+                  >
+                    Next Chapter
+                  </Button>
+                </div>
+              );
+
+              const IntermediaryNoChapter = (text: string) => (
+                <div
+                  className={css(
+                    styles.intermediary,
+                    styles.continuousScrollIntermediary,
+                    styles.continuousScrollNoChapterIntermediary
+                  )}
+                  key={`no-${text}`}
+                >
+                  <span className={css(styles.noChapterText)}>{text}</span>
+                </div>
+              );
+
+              const pageIsAtStartOfChapter = page.page === 1;
+              const pageIsAtEndOfChapter =
+                (readerData.currentchapter?.PageCount ?? 1) === page.page;
+
+              if (page.isLoaded) {
+                return (
+                  <>
+                    {pageIsAtStartOfChapter &&
+                    page.chapter === readerData.currentchapter?.ChapterID // If the page is at the start of the chapter...
+                      ? previousChapterExists // If the previous chapter exists
+                        ? IntermediaryPreviousChapter // Show the previous chapter intermediary.
+                        : IntermediaryNoChapter('There is no previous chapter.') // Otherwise, display that there's no chapter.
+                      : null}
+                    <img
+                      className={css(styles.mangaImage)}
+                      id={`chapter-:${page.chapter}:-page-:${page.page}:`}
+                      src={page.src}
+                      alt={`Page ${index + 1}`}
+                      key={page.src}
+                    />
+                    {pageIsAtEndOfChapter &&
+                    page.chapter === readerData.currentchapter?.ChapterID // If the page is at the end of the chapter...
+                      ? nextChapterExists // If the next chapter exists
+                        ? IntermediaryNextChapter // Show the next chapter intermediary.
+                        : IntermediaryNoChapter('There is no next chapter.') // Otherwise, display that there's no chapter.
+                      : null}
+                  </>
+                );
+              }
+
+              return (
+                <div
+                  className={css(styles.continuousScrollLoadingContainer)}
+                  key={page.src}
+                >
+                  <CircularProgress
+                    className={css(styles.loading)}
+                    color="secondary"
+                    size={50}
+                  />
+                </div>
+              );
+            });
+          })()}
         </div>
       ) : (
         <div className={css(styles.intermediaryContainer)}>
@@ -1339,7 +1739,6 @@ const Reader = () => {
             */}
               {(() => {
                 const nextMangaChapter = getChapter(isInIntermediary);
-                console.log(isInIntermediary);
                 if (!nextMangaChapter) {
                   return (
                     <span className={css(styles.noChapterText)}>
@@ -1481,7 +1880,7 @@ const Reader = () => {
         isRight={readerSettings.sidebarStyle === 'right'}
         onItemClick={(newPage: number) => {
           if (isInIntermediary !== -1) setIsInIntermediary(-1);
-          setReaderData({ ...readerData, page: newPage });
+          changePage(newPage, true);
         }}
       />
     </div>
