@@ -2,7 +2,6 @@ import { render } from 'react-dom';
 import { IpcRendererEvent } from 'electron';
 import { LibrarySources, FullManga } from '../main/util/manga';
 import { ReadDatabaseValue } from '../main/util/read';
-import Topbar from './components/topbar';
 import App from './App';
 
 /*
@@ -149,5 +148,4 @@ if (!window.electron.store.get('authorization'))
     },
   });
 
-render(<Topbar />, document.getElementById('topbar'));
-render(<App />, document.getElementById('root'));
+render(<App />, document.body);

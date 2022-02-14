@@ -16,10 +16,11 @@ export const Styling = StyleSheet.create({
 
   topbar: {
     backgroundColor: '#11111100',
-    height: '100%',
+    position: 'fixed',
+    height: '32px',
     width: '100%',
     '-webkit-app-region': 'drag',
-    zIndex: 260,
+    zIndex: Number.MAX_SAFE_INTEGER,
   },
   icon: {
     position: 'absolute',
@@ -35,12 +36,13 @@ export const Styling = StyleSheet.create({
     backgroundColor: '#1AAA1A',
   },
   buttonContainer: {
-    position: 'relative',
+    position: 'absolute',
     display: 'flex',
     alignItems: 'center',
     float: 'right',
     width: '128px',
     height: 'inherit',
+    right: 0,
   },
   inner: {
     position: 'relative',

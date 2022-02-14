@@ -3,11 +3,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap');
 
+html {
+  width: 100vw !important;
+  height: 100vh !important;
+}
+
 body {
-  background-color: #111111;
-  overflow: hidden;
-  margin: 0;
-  margin-top: 4px;
+  width: 100vw !important;
+  height: 100vh !important;
+  background-color: #111111 !important;
+  overflow: hidden !important;
+  position: absolute !important;
 }
 
 button {
@@ -18,17 +24,4 @@ input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
-}
-
-#root {
-  width: 100vw;
-  height: 100vh;
-  position: relative;
-}
-#topbar {
-  height: 32px;
-  box-sizing: border-box;
-  margin-top: 4px;
-  margin-right: 4px;
-  position: relative;
 }
