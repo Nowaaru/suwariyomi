@@ -23,6 +23,7 @@ input::-webkit-inner-spin-button {
 #root {
   width: 100vw;
   height: 100vh;
+  position: relative;
 }
 #topbar {
   height: 32px;
