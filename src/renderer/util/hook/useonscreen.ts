@@ -1,21 +1,29 @@
-import { RefObject, useState } from 'react';
+import { RefObject, useEffect, useRef, useState } from 'react';
 import useMountEffect from './useMountEffect';
 
-export default function useOnScreen(ref: RefObject<Element>) {
+export default function useOnScreen(
+  scrollContainer: RefObject<HTMLDivElement | null>,
+  elementToObserve: HTMLDivElement | null
+) {
   const [isIntersecting, setIntersecting] = useState(false);
 
-  const observer = new IntersectionObserver(([entry]) =>
-    setIntersecting(entry.isIntersecting)
-  );
+  useEffect(() => {
+    if (!elementToObserve) return () => {};
+    if (!scrollContainer.current) return () => {};
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIntersecting(entry.isIntersecting);
+      },
+      {
+        root: scrollContainer.current,
+        threshold: 0.5,
+      }
+    );
 
-  useMountEffect(() => {
-    if (!ref.current) return () => {};
-    observer.observe(ref.current);
-    // Remove the observer as soon as the component is unmounted
+    observer.observe(elementToObserve);
     return () => {
       observer.disconnect();
     };
-  });
-
+  }, [scrollContainer, elementToObserve]);
   return isIntersecting;
 }
