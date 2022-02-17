@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
     color: '#ffffff',
   },
 
-  White: {
+  selectComponentSelected: {
     color: '#ffffff',
   },
 
@@ -316,7 +316,7 @@ const FilterSettings = ({
                     (choice) => choice.value === selected
                   );
                   return selectedChoice ? (
-                    <Typography className={css(styles.White)}>
+                    <Typography className={css(styles.selectComponentSelected)}>
                       {selectedChoice.label}
                     </Typography>
                   ) : (
