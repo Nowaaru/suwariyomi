@@ -287,7 +287,7 @@ const createWindow = async () => {
     width: 1024,
     height: 728,
     minWidth: 727, // i see it. 727. when you see it. 727. when you see it. the funny number. blue zenith 727pp cookiezi.
-    minHeight: 547,
+    minHeight: 825,
     icon: getAssetPath('icon.png'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
