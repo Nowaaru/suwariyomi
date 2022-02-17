@@ -53,7 +53,7 @@ const defaultTestSettings = {
     scaleTypePaged: 'fit-screen',
     cropBordersPaged: false,
     pageLayoutPaged: 'single-page',
-    // zoomStartPosition: 'automatic'
+    zoomStartPosition: 'automatic',
     navLayoutWebtoon: 'top-to-bottom',
     invertTappingWebtoon: false,
     cropBordersWebtoon: false,
@@ -61,8 +61,6 @@ const defaultTestSettings = {
     pageLayoutWebtoon: 'single-page',
     invertDoublePagesWebtoon: false,
     allowZoomOutWebtoon: false,
-    // If the next chapter has the same chapter number but a different group, skip it.
-    // This usually just means that the chapter was translated by two different translators.
   },
   downloads: {
     location: '/downloads',
@@ -243,19 +241,19 @@ const settingsSchemata: {
         { label: 'Double Page', value: 'double-page' },
       ],
     },
-    // zoomStartPosition: {
-    //   type: 'select',
-    //   label: 'Zoom Start Position',
-    //   description: 'The position to start the zoom at.',
-    //   default: 'automatic',
-    //   options: [
-    //     { label: 'Automatic', value: 'automatic' },
-    //     { label: 'Fit Screen', value: 'fit-screen' },
-    //     { label: 'Fit Width', value: 'fit-width' },
-    //     { label: 'Fit Height', value: 'fit-height' },
-    //     { label: 'Fit Content', value: 'fit-content' },
-    //   ],
-    // },
+    zoomStartPosition: {
+      type: 'select',
+      label: 'Zoom Start Position',
+      description: 'The position to start the zoom at.',
+      default: 'automatic',
+      options: [
+        { label: 'Automatic', value: 'automatic' },
+        { label: 'Fit Screen', value: 'fit-screen' },
+        { label: 'Fit Width', value: 'fit-width' },
+        { label: 'Fit Height', value: 'fit-height' },
+        { label: 'Fit Content', value: 'fit-content' },
+      ],
+    },
     navLayoutWebtoon: {
       type: 'select',
       label: 'Page Layout (Webtoon)',
@@ -413,6 +411,7 @@ const settingsSchemata: {
   backup: {},
   security: {},
 };
+
 const stylesObject = {
   container: {
     width: '96%',
