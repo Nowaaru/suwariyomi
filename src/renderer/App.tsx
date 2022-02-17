@@ -9,10 +9,12 @@ import Search from './pages/search';
 import NotFound from './pages/404';
 import View from './pages/view';
 import Reader from './pages/reader';
+import Settings from './pages/settings';
 
 const styles = StyleSheet.create({
   root: {
     top: '36px',
+    color: 'white',
     position: 'relative',
     height: 'calc(100% - 36px)',
     width: '100vw',
@@ -27,11 +29,12 @@ export default function App() {
         <Router>
           <Routes>
             <Route path="*" element={<NotFound />} />
-            <Route path="/" element={<Login />} />
+            <Route path="/" element={<Settings />} />
             <Route path="/search" element={<Search />} />
             <Route path="/library" element={<Library />} />
             <Route path="/view" element={<View />} />
             <Route path="/read" element={<Reader />} />
+            <Route path="/login" element={<Login />} />
           </Routes>
         </Router>
       </div>
