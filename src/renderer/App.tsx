@@ -30,12 +30,13 @@ export default function App() {
         <Router>
           <Routes>
             <Route path="*" element={<NotFound />} />
-            <Route path="/" element={<Settings />} />
+            <Route path="/" element={<Library />} />
             <Route path="/search" element={<Search />} />
             <Route path="/library" element={<Library />} />
             <Route path="/view" element={<View />} />
             <Route path="/read" element={<Reader />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/settings" element={<Settings />} />
           </Routes>
         </Router>
       </div>
