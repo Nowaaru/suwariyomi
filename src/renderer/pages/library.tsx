@@ -102,13 +102,17 @@ const libraryStyleSheet = StyleSheet.create({
     backgroundColor: '#080708',
   },
 
-  profilePaperIcon: {
+  heatmapContainer: {
     '@media (max-width: 900px)': {
       display: 'none',
     },
     position: 'relative',
     width: '192px',
     height: '192px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'column',
   },
 
   infoPaperBlock: {
@@ -297,7 +301,33 @@ const Library = () => {
       sourceList[source] = LibraryUtilities.getCachedMangas(source);
     });
 
-  Object.values(sourceList).forEach((MangaList) => {
+  const sourceListValues = Object.values(sourceList);
+
+  const allChapters = mappedFileNamesRef.current
+    .map((x) => window.electron.read.get(x.getName()))
+    .filter((x) => x !== undefined)
+    .flatMap((x) => Object.values(x));
+
+  const allManga = allChapters.filter(
+    (x) =>
+      sourceListValues.flat().findIndex((y) => x.mangaid === y.MangaID) === -1 // Remove mangas that are present in the library already.
+  );
+
+  // This hassle is to ensure that manga that might not be in the library
+  // but was still read at some point are still displayed in the statistics.
+  const allMangaCount =
+    allManga.reduce((acc) => acc + 1, 0) + sourceListValues.flat().length;
+
+  const allChapterCount = allChapters.filter(
+    (x) => x.currentPage >= x.pageCount
+  ).length;
+
+  const allPageCount = allChapters.reduce(
+    (acc, x) => Math.max(0, acc + x.currentPage), // pageCount is -1 if the chapter is unread.
+    0
+  );
+
+  sourceListValues.forEach((MangaList) => {
     MangaList.forEach((Manga) => {
       if (searchQuery !== '')
         if (!Manga.Name.toLowerCase().includes(searchQuery.toLowerCase()))
@@ -389,7 +419,7 @@ const Library = () => {
     );
   });
 
-  const filteredMediaList = Object.values(sourceList)
+  const filteredMediaList = sourceListValues
     .flat()
     .filter((x) => x.Name.toLowerCase().length <= 45);
   if (!readingPrefixTarget)
@@ -469,7 +499,7 @@ const Library = () => {
           <Paper
             elevation={6}
             className={css(
-              libraryStyleSheet.profilePaperIcon,
+              libraryStyleSheet.heatmapContainer,
               libraryStyleSheet.paperObject
             )}
           />
@@ -523,20 +553,7 @@ const Library = () => {
                     libraryStyleSheet.mangaStatsSpan
                   )}
                 >
-                  47
-                </span>
-              </div>
-              <div className={css(libraryStyleSheet.mangaStatsItem)}>
-                <h3 className={css(libraryStyleSheet.infoPaperHeaderBase)}>
-                  Volumes Read
-                </h3>
-                <span
-                  className={css(
-                    libraryStyleSheet.infoPaperHeaderBase,
-                    libraryStyleSheet.mangaStatsSpan
-                  )}
-                >
-                  82
+                  {allMangaCount}
                 </span>
               </div>
               <div className={css(libraryStyleSheet.mangaStatsItem)}>
@@ -549,7 +566,20 @@ const Library = () => {
                     libraryStyleSheet.mangaStatsSpan
                   )}
                 >
-                  1900
+                  {allChapterCount}
+                </span>
+              </div>
+              <div className={css(libraryStyleSheet.mangaStatsItem)}>
+                <h3 className={css(libraryStyleSheet.infoPaperHeaderBase)}>
+                  Pages Read
+                </h3>
+                <span
+                  className={css(
+                    libraryStyleSheet.infoPaperHeaderBase,
+                    libraryStyleSheet.mangaStatsSpan
+                  )}
+                >
+                  {allPageCount}
                 </span>
               </div>
             </div>
