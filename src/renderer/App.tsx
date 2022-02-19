@@ -15,7 +15,6 @@ const styles = StyleSheet.create({
   root: {
     height: 'calc(100% - 32px)',
     width: '100vw',
-    backgroundColor: '#111111',
     overflow: 'hidden',
     position: 'absolute',
     bottom: 0,
