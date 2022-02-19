@@ -13,17 +13,18 @@ import Settings from './pages/settings';
 
 const styles = StyleSheet.create({
   root: {
-    top: '36px',
-    color: 'white',
-    position: 'relative',
-    height: 'calc(100% - 36px)',
+    height: 'calc(100% - 32px)',
     width: '100vw',
+    backgroundColor: '#111111',
+    overflow: 'hidden',
+    position: 'absolute',
+    bottom: 0,
   },
 });
 
 export default function App() {
   return (
-    <>
+    <div>
       <Topbar />
       <div className={css(styles.root)} id="root">
         <Router>
@@ -38,6 +39,6 @@ export default function App() {
           </Routes>
         </Router>
       </div>
-    </>
+    </div>
   );
 }
