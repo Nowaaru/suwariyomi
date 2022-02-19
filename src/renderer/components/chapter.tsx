@@ -236,7 +236,8 @@ const Chapter = ({
               currentPage,
               lastRead,
               timeElapsed,
-              true
+              true,
+              manga.MangaID
             );
           else
             window.electron.read.set(
@@ -246,7 +247,8 @@ const Chapter = ({
               currentPage,
               lastRead,
               timeElapsed,
-              false
+              false,
+              manga.MangaID
             );
         }}
         defaultChecked={isBookmarked}

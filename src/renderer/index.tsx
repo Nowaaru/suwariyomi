@@ -89,7 +89,8 @@ declare global {
           currentPage: number,
           lastRead: number | -1,
           timeElapsed: number,
-          isBookmarked: boolean
+          isBookmarked: boolean,
+          mangaId: string
         ) => void;
         deleteEntry: (sourceName: string, chapterId: string) => void;
         deleteSource: (sourceName: string) => void;

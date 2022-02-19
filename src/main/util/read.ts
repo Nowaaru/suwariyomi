@@ -8,6 +8,7 @@ export type ReadDatabaseValue = {
     currentPage: number;
     lastRead: number | -1; // Emphasize -1 as a special value
     timeElapsed: number;
+    mangaid?: string;
   };
 };
 const ReadDatabase = new Enmap<
@@ -36,7 +37,8 @@ export default class ReadDB {
     currentPage: number,
     lastRead: number | -1,
     timeElapsed: number,
-    isBookmarked: boolean
+    isBookmarked: boolean,
+    mangaid?: string
   ): Promise<void> {
     const read = await ReadDB.get(sourceID);
     if (!read) {
@@ -47,6 +49,7 @@ export default class ReadDB {
           currentPage,
           lastRead,
           timeElapsed,
+          mangaid,
         },
       });
     } else {
@@ -56,6 +59,7 @@ export default class ReadDB {
         lastRead,
         isBookmarked,
         timeElapsed,
+        mangaid,
       };
       ReadDatabase.set(sourceID, read);
     }

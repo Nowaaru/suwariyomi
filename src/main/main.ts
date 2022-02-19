@@ -131,7 +131,8 @@ ipcMain.on(
     currentPage,
     lastRead,
     timeElapsed,
-    isBookmarked
+    isBookmarked,
+    mangaid
   ) => {
     event.returnValue = await ReadDB.set(
       sourceName,
@@ -140,7 +141,8 @@ ipcMain.on(
       currentPage,
       lastRead,
       timeElapsed,
-      isBookmarked
+      isBookmarked,
+      mangaid
     );
   }
 );

@@ -53,7 +53,8 @@ contextBridge.exposeInMainWorld('electron', {
       currentPage,
       lastRead,
       timeElapsed,
-      isBookmarked
+      isBookmarked,
+      mangaid
     ) => {
       ipcRenderer.send(
         'set-read',
@@ -63,7 +64,8 @@ contextBridge.exposeInMainWorld('electron', {
         currentPage,
         lastRead,
         timeElapsed,
-        isBookmarked
+        isBookmarked,
+        mangaid
       );
     },
     deleteEntry: (sourceName, chapterId) => {
