@@ -495,6 +495,10 @@ const Settings = () => {
     window.electron.settings.overwrite(settings);
   }, [settings]);
 
+  useEffect(() => {
+    setTimesClicked(0);
+  }, [settingsLocation]);
+
   // TODO: Cross-check the settings schema with the actual settings
   // to ensure that the settings are valid and that there are
   // no settings that are not in the schema.
