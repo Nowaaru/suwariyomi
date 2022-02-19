@@ -131,6 +131,13 @@ declare global {
         set: (key: string, value: any) => void;
         flush: () => void;
       };
+      settings: {
+        get: (key: string) => any;
+        getAll: () => { [key: string]: any };
+        set: (key: string, value: any) => void;
+        overwrite: (settings: { [key: string]: any }) => void;
+        flush: () => void;
+      };
     };
   }
 }

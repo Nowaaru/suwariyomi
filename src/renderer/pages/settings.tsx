@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { StyleSheet, css } from 'aphrodite';
 import {
   Tab,
@@ -6,8 +6,8 @@ import {
   Box,
   IconButton,
   Tooltip,
-  MenuItem,
   Typography,
+  Button,
 } from '@mui/material';
 
 import CodeIcon from '@mui/icons-material/Code';
@@ -25,69 +25,14 @@ import SettingsBackupRestoreTwoToneIcon from '@mui/icons-material/SettingsBackup
 import { useNavigate } from 'react-router-dom';
 import { mapValues } from 'lodash';
 
+import type { DefaultSettings } from '../../main/util/settings';
+
 import Select from '../components/select';
 import Switch from '../components/switch';
 
-const defaultTestSettings = {
-  // The default settings for the application
-  general: {
-    locale: 'en',
-    dateFormat: 'MM/DD/YYYY',
-    autoUpdate: true,
-  },
-  library: {
-    refreshCovers: false,
-    ignoreArticles: false,
-    searchSuggestions: false,
-    updateOngoingManga: false,
-  },
-  appearance: {
-    theme: 'dark',
-  },
-  reader: {
-    skipChaptersOfDifferentGroup: false,
-    skipChaptersMarkedRead: false,
-    readingMode: 'right-to-left',
-    navLayoutPaged: 'right-to-left',
-    invertTappingPaged: false,
-    scaleTypePaged: 'fit-screen',
-    cropBordersPaged: false,
-    pageLayoutPaged: 'single-page',
-    zoomStartPosition: 'automatic',
-    navLayoutWebtoon: 'top-to-bottom',
-    invertTappingWebtoon: false,
-    cropBordersWebtoon: false,
-    sidePaddingWebtoon: 'none',
-    pageLayoutWebtoon: 'single-page',
-    invertDoublePagesWebtoon: false,
-    allowZoomOutWebtoon: false,
-  },
-  downloads: {
-    location: '/downloads',
-    saveChaptersAsCBZ: false,
-    removeWhenMarkedRead: false,
-    removeAfterRead: 'never', // 0 = never; 1 = last read chapter; 2 = second to last read chapter; 3 = third to last read chapter, so on...
-    downloadNewChapters: false,
-    deleteRemovedChapters: false, // Delete downloaded chapters if the source has removed the chapter from the website
-  },
-  browse: {
-    checkForUpdates: true,
-    onlySearchPinned: false,
-    showNSFWSources: true,
-  },
-  tracking: {
-    syncChaptersAfterReading: true,
-    trackWhenAddingToLibrary: false,
-  },
-  backup: {},
-  security: {},
-  advanced: {
-    sendCrashReports: true,
-  },
-};
 const settingsSchemata: {
-  [settingsContainer in keyof typeof defaultTestSettings]: {
-    [containerKey in keyof typeof defaultTestSettings[settingsContainer]]: {
+  [settingsContainer in keyof DefaultSettings]: {
+    [containerKey in keyof DefaultSettings[settingsContainer]]: {
       type: 'select' | 'switch' | 'switch' | 'managed'; // where Managed means that the component is provided by the developer and not the app
       label?: string;
       description?: string;
@@ -246,13 +191,7 @@ const settingsSchemata: {
       label: 'Zoom Start Position',
       description: 'The position to start the zoom at.',
       default: 'automatic',
-      options: [
-        { label: 'Automatic', value: 'automatic' },
-        { label: 'Fit Screen', value: 'fit-screen' },
-        { label: 'Fit Width', value: 'fit-width' },
-        { label: 'Fit Height', value: 'fit-height' },
-        { label: 'Fit Content', value: 'fit-content' },
-      ],
+      options: [{ label: 'Automatic', value: 'automatic' }],
     },
     navLayoutWebtoon: {
       type: 'select',
@@ -276,12 +215,6 @@ const settingsSchemata: {
       label: 'Invert Tapping (Webtoon)',
       description:
         'Invert the way you tap to navigate to the next/previous page.',
-      default: false,
-    },
-    cropBordersWebtoon: {
-      type: 'switch',
-      label: 'Crop Borders (Webtoon)',
-      description: 'Crop the borders of the pages.',
       default: false,
     },
     pageLayoutWebtoon: {
@@ -511,10 +444,23 @@ const stylesObject = {
     color: '#DF2935',
     // backgroundColor: '#FFFFFF',
   },
+
+  resetButton: {
+    border: '1px solid #DF2935',
+    color: '#DF2935',
+    minWidth: '150px',
+    width: 'fit-content',
+    height: '42px',
+    ':hover': {
+      backgroundColor: '#DF2935',
+      color: '#FFFFFF',
+      fontWeight: 'bold',
+    },
+  },
 };
 
 const categoryIcons: {
-  [key in keyof typeof defaultTestSettings]: JSX.Element;
+  [key in keyof DefaultSettings]: JSX.Element;
 } = {
   general: <TuneRoundedIcon />,
   appearance: <PaletteOutlinedIcon />,
@@ -528,21 +474,30 @@ const categoryIcons: {
   advanced: <CodeIcon />,
 };
 
-// TODO: Convert all functions to use memoized functions that only update when the corresponding settings change
 // i.e., SettingsGeneral.tsx should only update when the General settings change, and SettingsReader.tsx should
 // only update when the Reader settings change
+const settingsResetText = [
+  'Reset',
+  'Are you sure?',
+  'Really really sure?',
+  'Actually?',
+  'Okay...',
+  'No going back now!',
+];
 const Settings = () => {
-  const [settings, setSettings] = useState(defaultTestSettings);
+  const [settings, setSettings] = useState(window.electron.settings.getAll());
   const [settingsLocation, setSettingsLocation] =
-    useState<keyof typeof defaultTestSettings>('general');
+    useState<keyof DefaultSettings>('general');
+  const [timesClicked, setTimesClicked] = useState(0);
   const Navigate = useNavigate();
+
+  useEffect(() => {
+    window.electron.settings.overwrite(settings);
+  }, [settings]);
 
   // TODO: Cross-check the settings schema with the actual settings
   // to ensure that the settings are valid and that there are
   // no settings that are not in the schema.
-
-  const settingsKeys = Object.keys(settings);
-  const schemaKeys = Object.keys(settingsSchemata);
 
   // @ts-ignore Aphrodite sucks.
   const styles = StyleSheet.create(stylesObject);
@@ -570,7 +525,7 @@ const Settings = () => {
           },
         }}
       >
-        {(Object.keys(settings) as Array<keyof typeof settings>).map((key) => {
+        {(Object.keys(settings) as Array<keyof DefaultSettings>).map((key) => {
           return (
             <Tab
               key={key}
@@ -590,94 +545,126 @@ const Settings = () => {
         })}
       </Tabs>
       <div className={css(styles.settingContainer)}>
-        {Object.values(
-          mapValues(settingsSchemata[settingsLocation], (value, key) => {
-            const {
-              type,
-              label,
-              description,
-              options,
-              default: defaultValue,
-            } = value;
+        {[
+          ...Object.values(
+            mapValues(settingsSchemata[settingsLocation], (value, key) => {
+              const {
+                type,
+                label,
+                description,
+                options,
+                default: defaultValue,
+              } = value;
 
-            const serializedOptions: {
-              [optionValue: string]: string;
-            } = {};
+              const serializedOptions: {
+                [optionValue: string]: string;
+              } = {};
 
-            if (options) {
-              (options as { label: string; value: string }[]).forEach(
-                (option) => {
-                  serializedOptions[option.value] = option.label;
-                }
-              );
-            }
-
-            // @ts-ignore Typescript is a godawful language.
-            const currentValue = settings[settingsLocation][key];
-            let elementToDisplay: JSX.Element | null = null;
-            switch (type) {
-              case 'select':
-                elementToDisplay = (
-                  <Select
-                    value={String(currentValue ?? defaultValue)}
-                    values={serializedOptions}
-                    onChange={(event) => {
-                      setSettings((prevSettings) => {
-                        const newSettings = {
-                          ...prevSettings,
-                          [settingsLocation]: {
-                            ...prevSettings[settingsLocation],
-                            [key]: event.target?.value ?? defaultValue,
-                          },
-                        };
-
-                        return newSettings;
-                      });
-                    }}
-                  />
+              if (options) {
+                (options as { label: string; value: string }[]).forEach(
+                  (option) => {
+                    serializedOptions[option.value] = option.label;
+                  }
                 );
-                break;
-              case 'switch':
-                elementToDisplay = (
-                  <Switch
-                    checked={currentValue ?? defaultValue}
-                    onChange={(
-                      event: React.ChangeEvent<HTMLInputElement>,
-                      isChecked: boolean
-                    ) => {
-                      setSettings((prevSettings) => {
-                        const newSettings = {
-                          ...prevSettings,
-                          [settingsLocation]: {
-                            ...prevSettings[settingsLocation],
-                            [key]: isChecked,
-                          },
-                        };
+              }
 
-                        return newSettings;
-                      });
-                    }}
-                  />
-                );
-                break;
-              default:
-                elementToDisplay = null;
-                break;
-            }
+              // @ts-ignore Typescript is a godawful language.
+              const currentValue = settings[settingsLocation][key];
+              let elementToDisplay: JSX.Element | null = null;
+              switch (type) {
+                case 'select':
+                  elementToDisplay = (
+                    <Select
+                      value={String(currentValue ?? defaultValue)}
+                      values={serializedOptions}
+                      onChange={(event) => {
+                        setSettings((prevSettings) => {
+                          const newSettings = {
+                            ...prevSettings,
+                            [settingsLocation]: {
+                              ...prevSettings[settingsLocation],
+                              [key]: event.target?.value ?? defaultValue,
+                            },
+                          };
 
-            return (
-              <Box key={key} className={css(styles.optionContainer)}>
-                <Typography className={css(styles.optionLabel)}>
-                  {label}
-                  <Typography className={css(styles.optionLabelDescription)}>
-                    {description}
+                          return newSettings;
+                        });
+                      }}
+                    />
+                  );
+                  break;
+                case 'switch':
+                  elementToDisplay = (
+                    <Switch
+                      checked={currentValue ?? defaultValue}
+                      onChange={(
+                        event: React.ChangeEvent<HTMLInputElement>,
+                        isChecked: boolean
+                      ) => {
+                        setSettings((prevSettings) => {
+                          const newSettings = {
+                            ...prevSettings,
+                            [settingsLocation]: {
+                              ...prevSettings[settingsLocation],
+                              [key]: isChecked,
+                            },
+                          };
+
+                          return newSettings;
+                        });
+                      }}
+                    />
+                  );
+                  break;
+                default:
+                  elementToDisplay = null;
+                  break;
+              }
+
+              return (
+                <Box key={key} className={css(styles.optionContainer)}>
+                  <Typography className={css(styles.optionLabel)}>
+                    {label}
+                    <Typography className={css(styles.optionLabelDescription)}>
+                      {description}
+                    </Typography>
                   </Typography>
+                  {elementToDisplay}
+                </Box>
+              );
+            })
+          ),
+          settingsLocation === 'advanced' && (
+            <Box className={css(styles.optionContainer)}>
+              <Typography className={css(styles.optionLabel)}>
+                Reset to Default Settings
+                <Typography className={css(styles.optionLabelDescription)}>
+                  {`This can't be undone! If you want to proceed, click the button ${
+                    settingsResetText.length - timesClicked
+                  } time${
+                    settingsResetText.length - timesClicked === 1 ? '' : 's'
+                  }.`}
                 </Typography>
-                {elementToDisplay}
-              </Box>
-            );
-          })
-        )}
+              </Typography>
+              <Button
+                variant="outlined"
+                className={css(styles.resetButton)}
+                color="secondary"
+                onClick={() => {
+                  if (timesClicked >= settingsResetText.length - 1) {
+                    window.electron.settings.flush();
+                    setSettings(window.electron.settings.getAll());
+                    setTimesClicked(0);
+                  } else {
+                    setTimesClicked(timesClicked + 1);
+                  }
+                }}
+              >
+                {settingsResetText[timesClicked]}
+              </Button>
+            </Box>
+          ),
+        ]}
       </div>
     </div>
   );

@@ -177,4 +177,21 @@ contextBridge.exposeInMainWorld('electron', {
       ipcRenderer.send('electron-store-flush');
     },
   },
+  settings: {
+    get(val) {
+      return ipcRenderer.sendSync('settings-get', val);
+    },
+    getAll() {
+      return ipcRenderer.sendSync('settings-get-all');
+    },
+    set(property, val) {
+      ipcRenderer.send('settings-set', property, val);
+    },
+    overwrite(settings) {
+      ipcRenderer.send('settings-set-all', settings);
+    },
+    flush() {
+      ipcRenderer.send('settings-flush');
+    },
+  },
 });

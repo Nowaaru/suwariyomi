@@ -22,6 +22,7 @@ import { autoUpdater } from 'electron-updater';
 import CacheDB from './util/cache';
 import MangaDB from './util/manga';
 import ReadDB from './util/read';
+import Settings from './util/settings';
 
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
@@ -208,6 +209,7 @@ ipcMain.on(
 ipcMain.on('electron-store-get', async (event, val) => {
   event.returnValue = ElectronStore.get(val);
 });
+
 ipcMain.on('electron-store-set', async (_, key, val) => {
   ElectronStore.set(key, val);
 });
@@ -235,6 +237,29 @@ ipcMain.on('delete-cache', async (event, ...keys) => {
 ipcMain.on('flush-cache', async (event) => {
   await CacheDB.flush();
   return (event.returnValue = true);
+});
+
+ipcMain.on('settings-get', async (event, key) => {
+  event.returnValue = Settings.getSetting(key) ?? false;
+});
+
+ipcMain.on('settings-set-all', async (event, newSettings) => {
+  Settings.setSettings(newSettings);
+  event.returnValue = true;
+});
+
+ipcMain.on('settings-set', async (event, key, value) => {
+  Settings.setSetting(key, value);
+  event.returnValue = true;
+});
+
+ipcMain.on('settings-get-all', async (event) => {
+  event.returnValue = Settings.getAllSettings() ?? false;
+});
+
+ipcMain.on('settings-flush', async (event) => {
+  await Settings.flushSettings();
+  event.returnValue = true;
 });
 
 ipcMain.on('maximize', () => {
