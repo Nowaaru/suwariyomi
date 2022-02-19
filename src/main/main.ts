@@ -27,6 +27,18 @@ import Settings from './util/settings';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
+// Create folders for themes, locales, and plugins.
+const createFolders = () => {
+  const folders = ['themes', 'locales', 'plugins'].filter(
+    (x) => !fs.existsSync(path.join(app.getPath('userData'), x))
+  );
+  folders.forEach((x) => {
+    fs.mkdirSync(path.join(app.getPath('userData'), x));
+  });
+};
+
+createFolders();
+
 const ElectronStore = new Store();
 export default class AppUpdater {
   constructor() {
