@@ -48,6 +48,7 @@
           "x64"
         ]
       },
+      "icon": "assets/icons/icon.icns",
       "type": "distribution",
       "hardenedRuntime": true,
       "entitlements": "assets/entitlements.mac.plist",
@@ -71,13 +72,20 @@
     "win": {
       "target": [
         "nsis"
-      ]
+      ],
+      "icon": "assets/icons/icon.ico"
     },
     "linux": {
       "target": [
         "appimage"
       ],
-      "category": "development"
+      "category": "development",
+      "icon": "assets/icons/icon.png"
+    },
+    "nsis": {
+      "installerIcon": "assets/icons/icon.ico",
+      "uninstallerIcon": "assets/icons/icon.ico",
+      "uninstallDisplayName": "Uninstall Suwariyomi"
     },
     "directories": {
       "app": "release/app",
