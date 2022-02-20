@@ -4,7 +4,7 @@
 | --------------------------------------------------------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------- | ---------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
 | <img src="https://img.shields.io/github/issues/Nowaaru/suwariyomi" /> | <img src="https://img.shields.io/github/forks/Nowaaru/suwariyomi" /> | <img src="https://img.shields.io/github/stars/Nowaaru/suwariyomi" /> | <img src="https://img.shields.io/github/license/Nowaaru/suwariyomi" /> | <a href="https://www.codefactor.io/repository/github/nowaaru/suwariyomi/overview/main"><img src="https://www.codefactor.io/repository/github/nowaaru/suwariyomi/badge/main" alt="CodeFactor" /></a> | <img src="https://img.shields.io/twitter/url?url=https%3A%2F%2Fgithub.com%2FNowaaru%2Fsuwariyomi" /> |
 
-similarly to [Tachiyomi](https://github.com/tachiyomiorg/tachiyomi), suwariyomi is a free and open-source manga reader for <b>windows</b>, <b>linux</b>, and <b>macOS.</b>
+similarly to [Tachiyomi](https://github.com/tachiyomiorg/tachiyomi), suwariyomi is a free and open-source manga reader for <b>windows</b>.
 <br />
 
 this application is **_incomplete._** some features are bound to change; and some could be removed **entirely.**
@@ -83,8 +83,8 @@ follow these guidelines!
 - if you are commenting or proposing changes to a PR, be **respectful** and clearly state your gripe.
 
   - being rude or passive-aggressive does nothing to help; all it does is brew unwanted argument. if you are unable to successfully follow this guideline, **you will be blocked from collaborating in this repository.** be kind!
-  <br/>
-  
+    <br/>
+
 <h3><b><i>if you are making an issue...</i></b></h3>
 follow these guidelines!
 <h6><code>(some things might not be applicable)</code></h6>
