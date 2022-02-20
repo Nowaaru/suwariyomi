@@ -19,6 +19,7 @@ import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
+
 // Create folders for themes, locales, and plugins.
 const createFolders = () => {
   const folders = ['themes', 'locales', 'plugins', 'sources'].filter(
