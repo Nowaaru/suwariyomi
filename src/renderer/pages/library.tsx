@@ -481,23 +481,25 @@ const Library = () => {
 
   return (
     <div className={css(libraryStyleSheet.container)}>
-      <div className={css(libraryStyleSheet.searchbarContainer)}>
-        <div className={css(libraryStyleSheet.searchbarContainerInner)}>
-          <TextField
-            label="Search manga..."
-            placeholder={`pages>10 "Slice of Life" "Kemonomimi" "Romance" "Fantasy"`}
-            className={css(libraryStyleSheet.searchbar)}
-            variant="filled"
-            defaultValue={searchQuery}
-            error={!parsedSearch}
-            helperText={parsedSearch ? '' : 'Mismatched quotation marks.'}
-            onChange={(e) => {
-              forceCheck();
-              setSearchQuery(e.target.value.trim());
-            }}
-          />
+      {!hasNoSources ? (
+        <div className={css(libraryStyleSheet.searchbarContainer)}>
+          <div className={css(libraryStyleSheet.searchbarContainerInner)}>
+            <TextField
+              label="Search manga..."
+              placeholder={`pages>10 "Slice of Life" "Kemonomimi" "Romance" "Fantasy"`}
+              className={css(libraryStyleSheet.searchbar)}
+              variant="filled"
+              defaultValue={searchQuery}
+              error={!parsedSearch}
+              helperText={parsedSearch ? '' : 'Mismatched quotation marks.'}
+              onChange={(e) => {
+                forceCheck();
+                setSearchQuery(e.target.value.trim());
+              }}
+            />
+          </div>
         </div>
-      </div>
+      ) : null}
       <div id="lazyload" className={css(libraryStyleSheet.libraryContainer)}>
         <div className={css(libraryStyleSheet.welcomeContainer)}>
           <Paper
