@@ -287,6 +287,8 @@ const Library = () => {
     window.electron.util.getSourceFiles().map(Handler.getSource)
   );
 
+  const hasNoSources = mappedFileNamesRef.current.length <= 0;
+
   // Filter out sources that are not enabled AND has no manga
   const sourceList: Record<string, FullManga[]> = {};
   librarySourcesKeys
@@ -598,7 +600,7 @@ const Library = () => {
                 fontWeight: 'bold',
               }}
             >
-              {decidedFlavorText[0]}
+              {hasNoSources ? 'You have no sources.' : decidedFlavorText[0]}
             </Typography>
             <Typography
               sx={{
@@ -606,15 +608,27 @@ const Library = () => {
                 fontSize: '16px',
               }}
             >
-              {decidedFlavorText[1]}{' '}
+              {hasNoSources ? "Let's get" : decidedFlavorText[1]}{' '}
               <Link
-                to={`/search?${currentSearchParams.toString()}`}
+                to={
+                  hasNoSources
+                    ? '/'
+                    : `/search?${currentSearchParams.toString()}`
+                }
+                onClick={() => {
+                  if (hasNoSources)
+                    window.electron.util.openInBrowser(
+                      'https://github.com/Nowaaru/suwariyomi-sources'
+                    );
+                }}
                 className={css(
                   libraryStyleSheet.infoPaperHeaderBase,
                   libraryStyleSheet.infoHighlight
                 )}
               >
-                {decidedFlavorText[decidedFlavorText.length - 1]}
+                {hasNoSources
+                  ? 'some more.'
+                  : decidedFlavorText[decidedFlavorText.length - 1]}
               </Link>
             </Typography>
           </div>
