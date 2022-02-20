@@ -9,6 +9,7 @@
  * When running `npm run build` or `npm run build:main`, this file is compiled to
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
+
 import path from 'path';
 import fs from 'fs';
 import log from 'electron-log';
@@ -16,21 +17,8 @@ import Store from 'electron-store';
 import pkceChallenge from 'pkce-challenge';
 import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
-import CacheDB from './util/cache';
-import MangaDB from './util/manga';
-import ReadDB from './util/read';
-import Settings from './util/settings';
-
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
-
-export default class AppUpdater {
-  constructor() {
-    log.transports.file.level = 'info';
-    autoUpdater.logger = log;
-    autoUpdater.checkForUpdatesAndNotify();
-  }
-}
 // Create folders for themes, locales, and plugins.
 const createFolders = () => {
   const folders = ['themes', 'locales', 'plugins', 'sources'].filter(
@@ -41,6 +29,23 @@ const createFolders = () => {
   });
 };
 createFolders();
+
+/* eslint-disable-next-line import/first */
+import CacheDB from './util/cache';
+/* eslint-disable-next-line import/first */
+import MangaDB from './util/manga';
+/* eslint-disable-next-line import/first */
+import ReadDB from './util/read';
+/* eslint-disable-next-line import/first */
+import Settings from './util/settings';
+
+export default class AppUpdater {
+  constructor() {
+    log.transports.file.level = 'info';
+    autoUpdater.logger = log;
+    autoUpdater.checkForUpdatesAndNotify();
+  }
+}
 
 const ElectronStore = new Store();
 log.info('app starting');
