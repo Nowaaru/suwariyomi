@@ -1,6 +1,13 @@
+/* eslint-disable global-require */
+/* eslint-disable import/no-dynamic-require */
 /* eslint-disable max-classes-per-file */
 import Enmap from 'enmap';
+import path from 'path';
+import fs from 'fs';
 import { app } from 'electron';
+
+const requireFunc =
+  typeof __webpack_require__ === 'function' ? __non_webpack_require__ : require;
 
 const LibraryDatabase = new Enmap<
   string,
@@ -98,6 +105,7 @@ export type LibraryManga = FullManga & Pick<Required<Manga>, 'Added'>;
 
 export type LibrarySource = {
   Enabled: boolean;
+  LastUpdated: number;
   Manga: string[];
 };
 
@@ -111,21 +119,48 @@ export type CacheSources = {
   [sourceName: string]: CacheSource;
 };
 
-const defaultMangaData = {
+const defaultMangaData: {
   Sources: {
-    MangaDex: {},
+    [sourceName: string]: Record<string, FullManga>;
+  };
+} = {
+  Sources: {
+    // MangaDex: {},
   },
 };
 
-const defaultLibraryData = {
+const defaultLibraryData: {
+  Sources: LibrarySources;
+} = {
   Sources: {
-    MangaDex: {
-      Enabled: true,
-      LastUpdated: 0,
-      Manga: [],
-    },
+    // MangaDex: {
+    // Enabled: true,
+    // LastUpdated: 0,
+    // Manga: [],
+    // },
   },
 };
+
+// Sources have two names: SourceName, where that is used to distinguish itself from other sources; and _metadata.Name, for visual purposes.
+// Get all currently installed manga sources and introduce them to the defaultLibraryData and defaultMangaData objects.
+const sourcesPath = path.resolve(path.join(app.getPath('userData'), 'sources'));
+const allSources = fs.readdirSync(sourcesPath);
+
+allSources.forEach((source) => {
+  const Source = requireFunc(`${sourcesPath}\\${source}\\main.js`);
+  if (!Source) return;
+  if (defaultLibraryData.Sources[Source.SourceName]) return;
+
+  const sourceObject = new Source();
+  const sourceName = sourceObject.getName();
+  defaultLibraryData.Sources[sourceName] = {
+    Enabled: true,
+    Manga: [],
+    LastUpdated: Date.now(),
+  };
+
+  defaultMangaData.Sources[sourceName] = {};
+});
 
 const enforce = () => {
   MangaDatabase.ensure('CachedManga', defaultMangaData);
