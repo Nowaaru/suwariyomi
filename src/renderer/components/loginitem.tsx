@@ -17,7 +17,12 @@ const AniListIntegrationHandler = async () => {
         title: 'AniList Login',
         darkTheme: true,
         backgroundColor: '#111',
-        webPreferences: { contextIsolation: false },
+        webPreferences: {
+          contextIsolation: true,
+          nodeIntegration: false,
+          nodeIntegrationInWorker: false,
+          nodeIntegrationInSubFrames: false,
+        },
       },
       'https://anilist.co/api/v2/oauth/authorize?client_id=7246&response_type=token'
     )

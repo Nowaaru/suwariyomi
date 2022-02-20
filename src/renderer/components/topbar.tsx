@@ -1,5 +1,5 @@
 import { StyleSheet, css } from 'aphrodite';
-import icon from '../../../assets/icons/32x32.png';
+import icon from '../../../assets/icons/main/32x32.png';
 
 export const Styling = StyleSheet.create({
   button: {
@@ -58,13 +58,11 @@ export const Styling = StyleSheet.create({
   },
 });
 
-const { ipcRenderer } = window.electron;
-const doExit = () => ipcRenderer.exit();
-const doMinimize = () => ipcRenderer.minimize();
-const doMaximize = () => ipcRenderer.maximize();
-
 const Topbar = () => {
-  console.log('what???');
+  const { ipcRenderer } = window.electron;
+  const doExit = () => ipcRenderer.exit();
+  const doMinimize = () => ipcRenderer.minimize();
+  const doMaximize = () => ipcRenderer.maximize();
   return (
     <div className={css(Styling.topbar)}>
       <div className={css(Styling.icon)}>

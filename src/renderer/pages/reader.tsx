@@ -51,10 +51,10 @@ import { clamp, isEqual, throttle } from 'lodash';
 import { filterChaptersToLanguage, sortChapters } from '../util/func';
 import { Chapter } from '../../main/util/manga';
 
-import Handler from '../../sources/handler';
+import Handler from '../../main/sources/handler';
 import Sidebar from '../components/sidebar';
 import useQuery from '../util/hook/usequery';
-import SourceBase from '../../sources/static/base';
+import SourceBase from '../../main/sources/static/base';
 import useThrottle from '../util/hook/usethrottle';
 import LoadingModal from '../components/loading';
 import ChapterModal from '../components/chaptermodal';
@@ -1042,6 +1042,14 @@ const Reader = () => {
   const nextPageObject = currentPageState?.[currentPage];
   const isNextPageLoaded = nextPageObject?.isLoaded ?? false;
 
+  const chapterIsBookmarked = useMemo(() => {
+    if (!readerData.currentchapter) return false;
+    const currentChapter = window.electron.read.get(selectedSource.getName())?.[
+      readerData.currentchapter.ChapterID
+    ];
+    return currentChapter?.isBookmarked ?? false;
+  }, [readerData.currentchapter, selectedSource]);
+
   const changePage = useCallback(
     (
       newPageNumber: number,
@@ -1057,7 +1065,8 @@ const Reader = () => {
           newPageNumber,
           Date.now(),
           0,
-          false
+          chapterIsBookmarked,
+          mangaId
         );
 
         if (isScrollBased && doScrollBasedChange) {
@@ -1083,7 +1092,14 @@ const Reader = () => {
         });
       }
     },
-    [readerData, currentPage, selectedSource, isScrollBased]
+    [
+      readerData,
+      currentPage,
+      selectedSource,
+      isScrollBased,
+      chapterIsBookmarked,
+      mangaId,
+    ]
   );
 
   const handleClick = useCallback(

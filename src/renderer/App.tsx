@@ -21,6 +21,8 @@ const styles = StyleSheet.create({
   },
 });
 
+window.electron.log.info('app.jsx reached');
+
 export default function App() {
   return (
     <div>

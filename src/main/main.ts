@@ -9,8 +9,6 @@
  * When running `npm run build` or `npm run build:main`, this file is compiled to
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
-import 'core-js/stable';
-import 'regenerator-runtime/runtime';
 import path from 'path';
 import fs from 'fs';
 import log from 'electron-log';
@@ -18,7 +16,6 @@ import Store from 'electron-store';
 import pkceChallenge from 'pkce-challenge';
 import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
-
 import CacheDB from './util/cache';
 import MangaDB from './util/manga';
 import ReadDB from './util/read';
@@ -27,19 +24,6 @@ import Settings from './util/settings';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
-// Create folders for themes, locales, and plugins.
-const createFolders = () => {
-  const folders = ['themes', 'locales', 'plugins'].filter(
-    (x) => !fs.existsSync(path.join(app.getPath('userData'), x))
-  );
-  folders.forEach((x) => {
-    fs.mkdirSync(path.join(app.getPath('userData'), x));
-  });
-};
-
-createFolders();
-
-const ElectronStore = new Store();
 export default class AppUpdater {
   constructor() {
     log.transports.file.level = 'info';
@@ -47,8 +31,22 @@ export default class AppUpdater {
     autoUpdater.checkForUpdatesAndNotify();
   }
 }
+// Create folders for themes, locales, and plugins.
+const createFolders = () => {
+  const folders = ['themes', 'locales', 'plugins', 'sources'].filter(
+    (x) => !fs.existsSync(path.join(app.getPath('userData'), x))
+  );
+  folders.forEach((x) => {
+    fs.mkdirSync(path.join(app.getPath('userData'), x));
+  });
+};
+createFolders();
+
+const ElectronStore = new Store();
+log.info('app starting');
 
 let mainWindow: BrowserWindow | null = null;
+log.info('ipc creating');
 ipcMain.on('ipc-example', async (event, arg) => {
   const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
   console.log(msgTemplate(arg));
@@ -81,10 +79,13 @@ ipcMain.handle('flush', () => {
   MangaDB.Flush();
 });
 
+const sourcesPath = path.resolve(path.join(app.getPath('userData'), 'sources'));
+ipcMain.on('get-sources-path', (event) => {
+  event.returnValue = sourcesPath;
+});
+
 ipcMain.on('get-fs-sources', async (event) => {
-  const sources = await fs.readdirSync(
-    path.join(__dirname, '../sources/container')
-  );
+  const sources = await fs.readdirSync(sourcesPath);
   event.returnValue = sources;
 });
 
@@ -283,6 +284,8 @@ ipcMain.on('maximize', () => {
   return true;
 });
 
+log.info('ipc listeners set');
+
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
   sourceMapSupport.install();
@@ -291,9 +294,11 @@ if (process.env.NODE_ENV === 'production') {
 const isDevelopment =
   process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
 
-if (isDevelopment) {
-  require('electron-debug')();
-}
+// if (isDevelopment) {
+require('electron-debug')();
+// }
+
+log.info('electron-debug set');
 
 const installExtensions = async () => {
   const installer = require('electron-devtools-installer');
@@ -310,9 +315,11 @@ const installExtensions = async () => {
 
 const createWindow = async () => {
   if (isDevelopment) {
+    log.info('installing extensions');
     await installExtensions();
   }
 
+  log.info('resources path');
   const RESOURCES_PATH = app.isPackaged
     ? path.join(process.resourcesPath, 'assets')
     : path.join(__dirname, '../../assets');
@@ -321,6 +328,7 @@ const createWindow = async () => {
     return path.join(RESOURCES_PATH, ...paths);
   };
 
+  log.info('creating window');
   mainWindow = new BrowserWindow({
     show: false,
     width: 1024,
@@ -330,18 +338,22 @@ const createWindow = async () => {
     icon: getAssetPath('icon.png'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
-      nodeIntegrationInSubFrames: false,
       nodeIntegration: true,
+      contextIsolation: false,
+      nodeIntegrationInSubFrames: true, // Authentication window is a subframe; enabling this would be a vulnerability
     },
     titleBarStyle: process.platform === 'win32' ? 'hidden' : 'default',
   });
-  console.log(process.platform);
+
+  log.info('loading index.html');
   mainWindow.loadURL(resolveHtmlPath('index.html'));
 
+  log.info('showing window');
   mainWindow.on('ready-to-show', () => {
     if (!mainWindow) {
       throw new Error('"mainWindow" is not defined');
     }
+    log.info('showing window');
     if (process.env.START_MINIMIZED) {
       mainWindow.minimize();
     } else {
@@ -350,14 +362,17 @@ const createWindow = async () => {
   });
 
   mainWindow.on('closed', () => {
+    log.info('closed');
     mainWindow = null;
   });
 
+  log.info('menubuilder');
   const menuBuilder = new MenuBuilder(mainWindow);
   menuBuilder.buildMenu();
   (process as any).appMenu = menuBuilder; //eslint-disable-line
 
   // Open urls in the user's browser
+  log.info('on');
   mainWindow.webContents.on('new-window', (event, url) => {
     event.preventDefault();
     shell.openExternal(url);
@@ -365,8 +380,10 @@ const createWindow = async () => {
 
   // Remove this if your app does not use auto updates
   // eslint-disable-next-line
-  new AppUpdater();
+  // new AppUpdater();
 };
+
+log.info('createWindow set');
 
 /**
  * Add event listeners...
@@ -380,6 +397,7 @@ app.on('window-all-closed', () => {
   }
 });
 
+log.info('window-all-closed set');
 app
   .whenReady()
   .then(() => {
@@ -391,3 +409,5 @@ app
     });
   })
   .catch(console.log);
+
+log.info('stuff ready!!');

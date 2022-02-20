@@ -18,7 +18,7 @@ import parseQuery from '../util/search';
 import { FullManga, Manga as MangaType } from '../../main/util/manga';
 import MangaItem from '../components/mangaitem';
 import useQuery from '../util/hook/usequery';
-import Handler from '../../sources/handler';
+import Handler from '../../main/sources/handler';
 
 const libraryStyleSheet = StyleSheet.create({
   container: {
@@ -252,6 +252,8 @@ const noResultsFlavorTexts = [
   ['End of the road.', 'Want to', 'start building?'],
   ['Nobody here but us chickens.', 'Want to', 'search globally?'],
 ];
+
+window.electron.log.info('rendering library started');
 
 let readingPrefixTarget: MangaType | undefined;
 let statusPrefix: string;

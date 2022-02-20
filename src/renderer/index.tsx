@@ -1,3 +1,4 @@
+import { functions } from 'electron-log';
 import { render } from 'react-dom';
 import { IpcRendererEvent } from 'electron';
 import { LibrarySources, FullManga } from '../main/util/manga';
@@ -60,8 +61,10 @@ import App from './App';
 declare global {
   interface Window {
     electron: {
+      log: typeof functions;
       util: {
         getSourceFiles: () => string[];
+        getSourceDirectory: () => string;
         openInBrowser: (url: string) => void;
       };
       library: {

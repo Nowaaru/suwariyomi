@@ -1,10 +1,16 @@
-const { contextBridge, ipcRenderer } = require('electron');
+const { ipcRenderer } = require('electron');
 const { v4 } = require('uuid');
+const log = require('electron-log');
 
-contextBridge.exposeInMainWorld('electron', {
+log.info('preload.js: started');
+window.electron = {
+  log: log.functions,
   util: {
     getSourceFiles: () => {
       return ipcRenderer.sendSync('get-fs-sources');
+    },
+    getSourceDirectory: () => {
+      return ipcRenderer.sendSync('get-sources-path');
     },
     openInBrowser: (url) => {
       ipcRenderer.send('open-in-browser', url);
@@ -196,4 +202,4 @@ contextBridge.exposeInMainWorld('electron', {
       ipcRenderer.send('settings-flush');
     },
   },
-});
+};

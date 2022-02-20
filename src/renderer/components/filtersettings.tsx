@@ -22,7 +22,7 @@ import type {
   Selectable,
   Checkable,
   SearchFilterFieldTypeCheckbox3,
-} from '../../sources/static/base';
+} from '../../main/sources/static/base';
 
 type GenericSourceFilterType = {
   [key: string]: any;

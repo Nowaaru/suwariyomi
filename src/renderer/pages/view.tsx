@@ -18,7 +18,7 @@ import { filterChaptersToLanguage, sortChapters } from '../util/func';
 
 import Tag from '../components/tag';
 import Chapter from '../components/chapter';
-import Handler from '../../sources/handler';
+import Handler from '../../main/sources/handler';
 import useQuery from '../util/hook/usequery';
 /*
 TODO: Use this implementation to implement themeing

@@ -26,7 +26,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CloseIcon from '@mui/icons-material/Close';
 import SearchIcon from '@mui/icons-material/Search';
 
-import SourceBase, { SearchFilters } from '../../sources/static/base';
+import SourceBase, { SearchFilters } from '../../main/sources/static/base';
 import useQuery from '../util/hook/usequery';
 import { Manga } from '../../main/util/manga';
 
@@ -34,7 +34,7 @@ import ShortPagination from '../components/shortpagination';
 import MangaItem from '../components/mangaitem';
 import SearchBar from '../components/search';
 import Filter from '../components/filter';
-import Handler from '../../sources/handler';
+import Handler from '../../main/sources/handler';
 import FilterSettings from '../components/filtersettings';
 
 const styles = StyleSheet.create({
@@ -564,7 +564,14 @@ const SearchPage = () => {
               }
             >
               <img
-                src="https://mangadex.org/favicon.ico"
+                src={
+                  mappedFileNames
+                    .find(
+                      (x) =>
+                        x.getName().toLowerCase() === sourceString.toLowerCase()
+                    )
+                    ?.getIcon() ?? ''
+                }
                 className={css(styles.accordionItemIcon)}
                 alt="MangaDex"
               />

@@ -4,7 +4,7 @@
 
 import webpack from 'webpack';
 import webpackPaths from './webpack.paths';
-import NodePolyFillPlugin from 'node-polyfill-webpack-plugin';
+// import NodePolyFillPlugin from 'node-polyfill-webpack-plugin';
 import { dependencies as externals } from '../../release/app/package.json';
 
 const configuration: webpack.Configuration = {
@@ -73,14 +73,7 @@ const configuration: webpack.Configuration = {
     alias: {
       process: 'process/browser.js',
     },
-    fallback: {
-      path: require.resolve('path-browserify'),
-      https: require.resolve('https-browserify'),
-      http: require.resolve('stream-http'),
-      fs: false,
-      net: false,
-      tls: false,
-    },
+    fallback: {},
   },
 
   plugins: [
@@ -88,14 +81,9 @@ const configuration: webpack.Configuration = {
       NODE_ENV: 'production',
     }),
     new webpack.ProvidePlugin({
-      process: 'process/browser.js',
-      Buffer: ['buffer', 'Buffer'],
-    }),
-    new webpack.ProvidePlugin({
       React: 'react',
       ReactDOM: 'react-dom',
     }),
-    new NodePolyFillPlugin(),
   ],
 };
 
