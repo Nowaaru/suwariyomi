@@ -149,10 +149,10 @@ const allSources = fs.readdirSync(sourcesPath);
 allSources.forEach((source) => {
   const Source = requireFunc(`${sourcesPath}\\${source}\\main.js`);
   if (!Source) return;
-  if (defaultLibraryData.Sources[Source.SourceName]) return;
 
   const sourceObject = new Source();
   const sourceName = sourceObject.getName();
+  if (defaultLibraryData.Sources[sourceName]) return;
   defaultLibraryData.Sources[sourceName] = {
     Enabled: true,
     Manga: [],
