@@ -4,6 +4,7 @@
 import Enmap from 'enmap';
 import path from 'path';
 import fs from 'fs';
+import log from 'electron-log';
 import { app } from 'electron';
 
 const requireFunc =
@@ -159,14 +160,22 @@ fs.watch(sourcesPath, { recursive: true }, () => {
 
     const sourceObject = new Source();
     const sourceName = sourceObject.getName();
+
+    const currentLibraryData = LibraryDatabase.get('Library');
+    const currentMangaData = MangaDatabase.get('CachedManga');
     if (defaultLibraryData.Sources[sourceName]) return;
-    defaultLibraryData.Sources[sourceName] = {
+    if (!currentLibraryData || !currentMangaData) return;
+
+    currentLibraryData.Sources[sourceName] = {
       Enabled: true,
+      LastUpdated: 0,
       Manga: [],
-      LastUpdated: Date.now(),
     };
 
-    defaultMangaData.Sources[sourceName] = {};
+    currentMangaData.Sources[sourceName] = {};
+    log.info(`Source installed: ${sourceName}`);
+    LibraryDatabase.set('Library', currentLibraryData);
+    MangaDatabase.set('CachedManga', currentMangaData);
   });
 });
 const enforce = () => {

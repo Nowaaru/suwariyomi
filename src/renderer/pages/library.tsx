@@ -288,7 +288,6 @@ const Library = () => {
   );
 
   const hasNoSources = mappedFileNamesRef.current.length <= 0;
-
   // Filter out sources that are not enabled AND has no manga
   const sourceList: Record<string, FullManga[]> = {};
   librarySourcesKeys
