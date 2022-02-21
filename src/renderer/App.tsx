@@ -2,7 +2,7 @@ import './css/App.css';
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import { StyleSheet, css } from 'aphrodite';
 
-import Topbar from './components/Topbar';
+import Topbar from './components/topbar';
 import Library from './pages/library';
 import Login from './pages/login';
 import Search from './pages/search';
