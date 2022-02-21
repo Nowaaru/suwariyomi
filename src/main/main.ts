@@ -19,25 +19,9 @@ import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
-
-// Create folders for themes, locales, and plugins.
-const createFolders = () => {
-  const folders = ['themes', 'locales', 'plugins', 'sources'].filter(
-    (x) => !fs.existsSync(path.join(app.getPath('userData'), x))
-  );
-  folders.forEach((x) => {
-    fs.mkdirSync(path.join(app.getPath('userData'), x));
-  });
-};
-createFolders();
-
-/* eslint-disable-next-line import/first */
 import CacheDB from './util/cache';
-/* eslint-disable-next-line import/first */
 import MangaDB from './util/manga';
-/* eslint-disable-next-line import/first */
 import ReadDB from './util/read';
-/* eslint-disable-next-line import/first */
 import Settings from './util/settings';
 
 export default class AppUpdater {
