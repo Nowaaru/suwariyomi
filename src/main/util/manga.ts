@@ -151,23 +151,24 @@ if (!fs.existsSync(sourcesPath)) {
   fs.mkdirSync(sourcesPath);
 }
 
-const allSources = fs.readdirSync(sourcesPath);
-allSources.forEach((source) => {
-  const Source = requireFunc(`${sourcesPath}\\${source}\\main.js`);
-  if (!Source) return;
+fs.watch(sourcesPath, { recursive: true }, () => {
+  const allSources = fs.readdirSync(sourcesPath);
+  allSources.forEach((source) => {
+    const Source = requireFunc(`${sourcesPath}\\${source}\\main.js`);
+    if (!Source) return;
 
-  const sourceObject = new Source();
-  const sourceName = sourceObject.getName();
-  if (defaultLibraryData.Sources[sourceName]) return;
-  defaultLibraryData.Sources[sourceName] = {
-    Enabled: true,
-    Manga: [],
-    LastUpdated: Date.now(),
-  };
+    const sourceObject = new Source();
+    const sourceName = sourceObject.getName();
+    if (defaultLibraryData.Sources[sourceName]) return;
+    defaultLibraryData.Sources[sourceName] = {
+      Enabled: true,
+      Manga: [],
+      LastUpdated: Date.now(),
+    };
 
-  defaultMangaData.Sources[sourceName] = {};
+    defaultMangaData.Sources[sourceName] = {};
+  });
 });
-
 const enforce = () => {
   MangaDatabase.ensure('CachedManga', defaultMangaData);
   LibraryDatabase.ensure('Library', defaultLibraryData);
