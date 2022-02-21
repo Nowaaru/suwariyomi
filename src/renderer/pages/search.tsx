@@ -730,13 +730,15 @@ const SearchPage = () => {
           </div>
         </Paper>
       </Modal>
-      <Filter
-        onClick={() => {
-          setIsOpen(!modalIsOpen);
-        }}
-        disabled={isLoadingMoreResults}
-        scrollTarget={scrollTarget ?? window}
-      />
+      {specifiedSource ? (
+        <Filter
+          onClick={() => {
+            setIsOpen(!modalIsOpen);
+          }}
+          disabled={isLoadingMoreResults}
+          scrollTarget={scrollTarget ?? window}
+        />
+      ) : null}
       <div
         id="lazyload"
         ref={(node) => {
