@@ -350,7 +350,9 @@ const FilterSettings = ({
   return (
     <>
       {filterFields.map((x) => (
-        <div className={css(styles.Group)}>{x}</div>
+        <div className={css(styles.Group)} key={`${x.key}-container-div`}>
+          {x}
+        </div>
       ))}
       <Button
         variant="contained"

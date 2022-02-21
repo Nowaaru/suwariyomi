@@ -717,7 +717,7 @@ const View = () => {
             </div>
             <div className={css(styles.mangaTags)}>
               {currentManga.Tags.map((x) => (
-                <Tag key={x} name={x} type="normal" />
+                <Tag key={`${x}-manga-tag`} name={x} type="normal" />
               ))}
             </div>
             <div className={css(styles.mangaSynopsis)}>
@@ -752,7 +752,7 @@ const View = () => {
                           }`
                         );
                       }}
-                      key={x.ChapterID}
+                      key={`${x.ChapterID}-chapter`}
                       downloadable={selectedSource.canDownload}
                       dbchapter={foundChapter}
                       chapter={x}
