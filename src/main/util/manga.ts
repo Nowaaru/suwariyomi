@@ -143,9 +143,15 @@ const defaultLibraryData: {
 
 // Sources have two names: SourceName, where that is used to distinguish itself from other sources; and _metadata.Name, for visual purposes.
 // Get all currently installed manga sources and introduce them to the defaultLibraryData and defaultMangaData objects.
-const sourcesPath = path.resolve(path.join(app.getPath('userData'), 'sources'));
-const allSources = fs.readdirSync(sourcesPath);
+const sourcesPath = path.normalize(
+  path.join(app.getPath('userData'), 'sources')
+);
 
+if (!fs.existsSync(sourcesPath)) {
+  fs.mkdirSync(sourcesPath);
+}
+
+const allSources = fs.readdirSync(sourcesPath);
 allSources.forEach((source) => {
   const Source = requireFunc(`${sourcesPath}\\${source}\\main.js`);
   if (!Source) return;
