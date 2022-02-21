@@ -21,6 +21,7 @@ export const Styling = StyleSheet.create({
     width: '100%',
     '-webkit-app-region': 'drag',
     zIndex: Number.MAX_SAFE_INTEGER,
+    paddingLeft: '8px',
   },
   icon: {
     position: 'absolute',
