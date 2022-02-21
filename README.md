@@ -11,8 +11,9 @@ this application is **_incomplete._** some features are bound to change; and som
 
 <h2><b>downloads</b></h2>
 
-downloads currently do not exist. <br />
-if you wish to test the application, please observe the "how to build" section.
+downloads are available [here](https://github.com/Nowaaru/suwariyomi/releases).
+
+found a bug or problem? make an issue!
 
 <h2><b>features</b></h2>
 
