@@ -349,8 +349,8 @@ const FilterSettings = ({
 
   return (
     <>
-      {filterFields.map((x) => (
-        <div className={css(styles.Group)} key={`${x.key}-container-div`}>
+      {filterFields.map((x, i) => (
+        <div className={css(styles.Group)} key={`${i + 1}-container-div`}>
           {x}
         </div>
       ))}
