@@ -1621,7 +1621,9 @@ const Reader = () => {
                     styles.chapterHeader,
                     styles.continuousScrollHeader
                   )}
-                >{`${!Number.isNaN(volume) ? `Volume ${volume} ` : ``}Chapter ${
+                >{`${
+                  !Number.isNaN(Number(volume)) ? `Volume ${volume} ` : ``
+                }Chapter ${
                   chapter || "You shouldn't be seeing this. 👀"
                 }`}</span>
               );
