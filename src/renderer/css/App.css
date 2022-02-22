@@ -6,14 +6,18 @@
 html {
   width: 100vw !important;
   height: 100vh !important;
+  min-width: 727px;
+  min-height: 825px;
 }
 
 body {
-  width: 100vw !important;
-  height: 100vh !important;
+  width: 100% !important;
+  height: 100% !important;
   background-color: #111111 !important;
   overflow: hidden !important;
   position: absolute !important;
+  min-width: 727px;
+  min-height: 825px;
 }
 
 button {

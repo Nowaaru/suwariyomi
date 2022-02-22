@@ -14,10 +14,14 @@ import Settings from './pages/settings';
 const styles = StyleSheet.create({
   root: {
     height: 'calc(100% - 32px)',
-    width: '100vw',
+    width: '100%',
     overflow: 'hidden',
     position: 'absolute',
     bottom: 0,
+  },
+  main: {
+    height: '100%',
+    width: '100%',
   },
 });
 
@@ -25,7 +29,7 @@ window.electron.log.info('app.jsx reached');
 
 export default function App() {
   return (
-    <div>
+    <div className={css(styles.main)}>
       <Topbar />
       <div className={css(styles.root)} id="root">
         <Router>

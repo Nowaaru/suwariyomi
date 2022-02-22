@@ -28,7 +28,7 @@ const libraryStyleSheet = StyleSheet.create({
   container: {
     display: 'block',
     position: 'absolute',
-    width: '100vw',
+    width: '100%',
     height: 'calc(100vh - 42px)',
   },
 

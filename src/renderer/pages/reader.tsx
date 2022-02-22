@@ -143,7 +143,7 @@ const viewStyleDefaults: { [key in ViewStyles]: TapStyles } = {
 const stylesObject = {
   container: {
     display: 'block',
-    width: '100vw',
+    width: '100%',
     height: '100%',
   },
 
