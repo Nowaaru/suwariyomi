@@ -438,7 +438,7 @@ const SearchPage = () => {
         currentSpecifiedSource[searchData.searchQuery].filters =
           mappedFileNames[0].getFilters();
         currentSpecifiedSource[searchData.searchQuery].pageData = {};
-        console.log(currentSpecifiedSource[searchData.searchQuery]);
+        currentSpecifiedSource[searchData.searchQuery].itemCount = null;
       }
     }
 
