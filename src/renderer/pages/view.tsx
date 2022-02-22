@@ -2,7 +2,13 @@ import { useRef, useEffect, useState } from 'react';
 import { StyleSheet, css } from 'aphrodite';
 import { URLSearchParams } from 'url';
 import { useNavigate } from 'react-router-dom';
-import { Button, CircularProgress, Paper, Typography } from '@mui/material';
+import {
+  Button,
+  CircularProgress,
+  Paper,
+  Tooltip,
+  Typography,
+} from '@mui/material';
 
 import moment from 'moment';
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -640,11 +646,13 @@ const View = () => {
           </div>
           <div className={css(styles.metadataContainer)}>
             <div className={css(styles.mangaCover)}>
-              <img
-                className={css(styles.sourceIcon)}
-                src={selectedSource.getIcon()}
-                alt="Source Icon"
-              />
+              <Tooltip title={selectedSource.getName()} placement="right">
+                <img
+                  className={css(styles.sourceIcon)}
+                  src={selectedSource.getIcon()}
+                  alt="Source Icon"
+                />
+              </Tooltip>
               <img
                 className={css(styles.mangaCoverImage)}
                 src={currentManga.CoverURL}
