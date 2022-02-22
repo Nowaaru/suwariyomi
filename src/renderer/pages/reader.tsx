@@ -1050,6 +1050,27 @@ const Reader = () => {
     return currentChapter?.isBookmarked ?? false;
   }, [readerData.currentchapter, selectedSource]);
 
+  const setRead = useCallback(
+    (
+      currentChapterId = chapterId,
+      chapterPageCount: number,
+      chapterPageNumber: number,
+      isBookmarked = chapterIsBookmarked
+    ) => {
+      return window.electron.read.set(
+        selectedSource.getName(),
+        currentChapterId, // CurrentChapter will alway
+        chapterPageCount,
+        chapterPageNumber,
+        Date.now(),
+        0,
+        isBookmarked,
+        mangaId
+      );
+    },
+    [chapterId, chapterIsBookmarked, mangaId, selectedSource]
+  );
+
   const changePage = useCallback(
     (
       newPageNumber: number,
@@ -1058,15 +1079,11 @@ const Reader = () => {
     ) => {
       if (!readerData.currentchapter) return;
       if (doScrollBasedChange || newPageNumber !== currentPage) {
-        window.electron.read.set(
-          selectedSource.getName(),
+        setRead(
           readerData.currentchapter.ChapterID, // CurrentChapter will alway
           readerData.currentchapter.PageCount,
           newPageNumber,
-          Date.now(),
-          0,
-          chapterIsBookmarked,
-          mangaId
+          chapterIsBookmarked
         );
 
         if (isScrollBased && doScrollBasedChange) {
@@ -1092,19 +1109,13 @@ const Reader = () => {
         });
       }
     },
-    [
-      readerData,
-      currentPage,
-      selectedSource,
-      isScrollBased,
-      chapterIsBookmarked,
-      mangaId,
-    ]
+    [readerData, currentPage, isScrollBased, chapterIsBookmarked, setRead]
   );
 
   const handleClick = useCallback(
     (goTo: -1 | 1) => {
       if (!currentPageState) return;
+      if (!readerData.currentchapter) return;
 
       const isAtStart = currentPage === 1;
       const isAtEnd =
@@ -1125,8 +1136,21 @@ const Reader = () => {
       }
 
       if (isInIntermediary !== -1) {
-        if (normalizedGoTo === isInIntermediary)
+        if (normalizedGoTo === isInIntermediary) {
+          // If the user is in double-page mode, forcefully set the reader database's page to the final page.
+          // This is because double-page mode relies on the first page and not the last page, therefore, if a
+          // page ends evenly, the reader will think that they're on the second-to-last page rather than the
+          // acutal last page.
+
+          if (isDoublePage)
+            setRead(
+              readerData.currentchapter.ChapterID,
+              readerData.currentchapter.PageCount,
+              readerData.currentchapter.PageCount
+            );
+
           return changeChapter(normalizedGoTo);
+        }
 
         return setIsInIntermediary(-1);
       }
@@ -1138,6 +1162,7 @@ const Reader = () => {
       );
     },
     [
+      readerData.currentchapter,
       isDoublePage,
       currentPageState,
       isRightToLeft,
@@ -1145,6 +1170,7 @@ const Reader = () => {
       isInIntermediary,
       changeChapter,
       changePage,
+      setRead,
     ]
   );
 
