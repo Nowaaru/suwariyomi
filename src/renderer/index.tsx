@@ -12,50 +12,7 @@ import App from './App';
 */
 
 /*
-  TODO: Implement settings Enmap.
-*/
-
-/*
-  TODO: Fix useQuery hook to actually use the `url` library's `URLSearchParams` class instead of casting in other modules.
-  Points of interest: `useQuery` is used in `src/renderer/pages/reader.tsx` and `src/renderer/pages/view.tsx`.
-*/
-
-/*
   TODO: Implement a preferences page.
-*/
-
-/*
-  TODO: Integrate `handler.ts` functionality into the main process so external sources can be added.
-  This needs to be added because sometimes a source might be dependent on another source in order to function;
-  for example, MangaDex can support BiliBili only if the BiliBili source is installed.
-
-  See: https://github.com/tachiyomiorg/tachiyomi-extensions/issues/10243#issuecomment-1001257213
-  So this a valid issue. Bilibili is the only external source that uploads to dex after a date.
-
-  The filter should check if the external url is not null, then if it's bilibili
-  and the publish at date is current or older then allow the chapter because it
-  can be read on dex.
-*/
-
-/*
-  TODO: Import specific components from Material UI instead of using object destructuring.
-  The Material UI library's size is huge (upwards of 117KB!!), and importing that large of
-  a library every page is a waste of resources.
-*/
-
-/*
-  TODO: Hide chapters that aren't in the specified locale language.
-*/
-
-/*
-  TODO: Make all sources singletons.
-*/
-
-/*
-  TODO: Make sourceBase.search(x, _) have _ be the "exclude" parameter.
-  The exclude parameter is a list of strings that should be excluded from the search.
-  More-intensive requests should check the exclude parameter to see if the request should be made.
-  Otherwise, the function should call delete on the field.
 */
 
 declare global {

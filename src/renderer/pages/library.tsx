@@ -292,14 +292,6 @@ const Library = () => {
   );
 
   const forceUpdate = useForceUpdate();
-
-  /*
-    TODO: Instead of only looking at the cache, read `window.electron.library.getLibraryMangas()` and cross-check with the cache.
-    If a library manga cannot be found in the cache, then make a request to the source and update the cache.
-
-    Currently, there is a bug present that displays *cached manga* instead of *library manga*.
-  */
-
   const hasNoSources = mappedFileNamesRef.current.length <= 0;
   // Filter out sources that are not enabled AND has no manga
   const sourceList: Record<string, FullManga[]> = {};
