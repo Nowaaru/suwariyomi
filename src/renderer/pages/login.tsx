@@ -2,7 +2,6 @@ import '../css/Login.css';
 import { StyleSheet, css } from 'aphrodite';
 import { useNavigate } from 'react-router-dom';
 
-import thumbnails from '../../../assets/data/thumbnail.json';
 import anilist from '../../../assets/icons/login/anilist/transparent.png';
 import myanimelist from '../../../assets/icons/login/myanimelist/transparent.png';
 
