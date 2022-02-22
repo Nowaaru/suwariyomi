@@ -1798,17 +1798,20 @@ const Reader = () => {
                 const isGoingToNextChapter = isInIntermediary === 1;
                 const targetChapterText = (
                   <span>{`${
-                    !Number.isNaN(nextVolume) ? `Volume ${nextVolume} ` : ``
+                    !Number.isNaN(roundedNextVolume)
+                      ? `Volume ${nextVolume} `
+                      : ``
                   }Chapter ${nextChapter}`}</span>
-                );
+                ); // Using roundedNextVolume because that resolves to NaN if there is no next volume.
 
+                console.log(Number.isNaN(nextVolume));
                 const currentChapterText = (
                   <span>{`${
-                    !Number.isNaN(currentVolume)
+                    !Number.isNaN(roundedCurrentVolume)
                       ? `Volume ${currentVolume} `
                       : ``
                   }Chapter ${currentChapter}`}</span>
-                );
+                ); // See above.
 
                 return (
                   <>
