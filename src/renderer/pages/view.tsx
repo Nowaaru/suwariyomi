@@ -223,9 +223,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     transition:
       'letter-spacing 0.5s ease-in-out, background-color 0.3s ease-in-out, width 0.3s ease-in-out',
-    ':hover': {
-      letterSpacing: '2px',
-    },
   },
 
   libraryButton: {
@@ -236,7 +233,16 @@ const styles = StyleSheet.create({
     filter: 'grayscale(100%)',
   },
 
-  notInLibrary: {},
+  notInLibrary: {
+    transition:
+      'letter-spacing 0s ease-in-out, background-color 0.3s ease-in-out, width 0.3s ease-in-out',
+  },
+
+  inLibrary: {
+    ':hover': {
+      letterSpacing: '2px',
+    },
+  },
 
   dataRule: {
     position: 'relative',
@@ -575,9 +581,9 @@ const View = () => {
       // If a source author provided a bad value, then just set it to 0.
 
       mangaProgressBar =
-        ((mangaProgressCurrent * mangaProgressScalar) /
-          (mangaProgressEnd * mangaProgressEndScalar)) *
-        100;
+        ((Math.max(0, mangaProgressCurrent - 1) * mangaProgressScalar) /
+          (Math.max(0, mangaProgressEnd - 1) * mangaProgressEndScalar)) *
+        100; // Subtract one because the chapters are 1-indexed.
     }
 
     const ChaptersNoDuplicates = currentManga.Chapters.filter(
@@ -680,7 +686,7 @@ const View = () => {
                 className={css(
                   styles.interactionButton,
                   styles.libraryButton,
-                  !isInLibrary && styles.notInLibrary
+                  isInLibrary ? styles.inLibrary : styles.notInLibrary
                 )}
                 sx={
                   isInLibrary
