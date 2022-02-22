@@ -10,6 +10,8 @@ import {
 import { StyleSheet, css } from 'aphrodite/no-important';
 import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { userInfo } from 'os';
+import { capitalize } from 'lodash';
 
 import LazyLoad, { forceCheck } from 'react-lazyload';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -267,6 +269,8 @@ const Library = () => {
       'specifiedQueryLoadedPages'
     );
   }, []);
+
+  const userName = useRef(userInfo().username);
 
   const { library: LibraryUtilities } = window.electron;
   const mangaItemDisplayFormat: 'list' | 'grid' = 'list';
@@ -583,7 +587,9 @@ const Library = () => {
                 libraryStyleSheet.infoPaperHeaderMain
               )}
             >
-              Welcome back, Noire.
+              {userName.current?.length <= 10
+                ? `Welcome back, ${capitalize(userName.current)}.`
+                : 'Welcome back.'}
             </h1>
             <h4
               className={css(
