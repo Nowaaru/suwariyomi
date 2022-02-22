@@ -1562,23 +1562,33 @@ const Reader = () => {
                   !isDoublePage || // If it's not in double page, then we can just show the image.
                   (isDoublePage && !nextPageObject) || // If it's in double page, but there's no next page, then we can just show the first image.
                   (isDoublePage && nextPageObject && isNextPageLoaded) // If it's a double page, then we need to make sure the next page is loaded.
-                )
-                  return (
-                    <>
-                      {nextPageObject && isDoublePage ? (
-                        <img
-                          className={css(styles.mangaImage)}
-                          src={nextPageObject.src}
-                          alt={`Page ${currentPage + 1}`}
-                        />
-                      ) : null}
+                ) {
+                  const firstPage = (
+                    <img
+                      className={css(styles.mangaImage)}
+                      src={currentPageObject.src}
+                      alt={`Page ${currentPage}`}
+                    />
+                  );
+
+                  const secondPage =
+                    nextPageObject && isDoublePage ? (
                       <img
                         className={css(styles.mangaImage)}
-                        src={currentPageObject.src}
-                        alt={`Page ${currentPage}`}
+                        src={nextPageObject.src}
+                        alt={`Page ${currentPage + 1}`}
                       />
+                    ) : null;
+
+                  const orderToDisplay = [firstPage, secondPage];
+                  return (
+                    <>
+                      {isRightToLeft
+                        ? orderToDisplay.reverse()
+                        : orderToDisplay}
                     </>
                   );
+                }
               }
               return (
                 <div className={css(styles.loadingContainer)}>
