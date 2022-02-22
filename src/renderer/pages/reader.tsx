@@ -1326,6 +1326,7 @@ const Reader = () => {
         onMouseMove={() => onToolbarEnter(true)}
         onMouseLeave={onToolbarLeave}
         clickIcon={TapIcons[x as TapStylesPageEffectsValueKeys]} // language.
+        key={`readerButton${x.toUpperCase()}`}
       />
     ));
 
@@ -1709,7 +1710,7 @@ const Reader = () => {
                       id={`chapter-:${page.chapter}:-page-:${page.page}:`}
                       src={page.src}
                       alt={`Page ${index + 1}`}
-                      key={page.src}
+                      key={`${page.src}-normal-scroll`}
                     />
                     {pageIsAtEndOfChapter &&
                     page.chapter === readerData.currentchapter?.ChapterID // If the page is at the end of the chapter...
@@ -1724,7 +1725,7 @@ const Reader = () => {
               return (
                 <div
                   className={css(styles.continuousScrollLoadingContainer)}
-                  key={page.src}
+                  key={`${page.src}-continuousScroll`}
                 >
                   <CircularProgress
                     className={css(styles.loading)}
