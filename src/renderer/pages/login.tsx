@@ -97,56 +97,10 @@ const LoginMenu = () => {
 };
 
 const Login = () => {
-  /* Get all thumbnails and array-ify them */
-  const thumbnailsArray = thumbnails.data.Page.mediaList;
-  const elementArray: Array<JSX.Element> = [];
-  const carouselArray: Array<JSX.Element> = [];
-  thumbnailsArray.forEach(({ media }) => {
-    if (!media.coverImage.color) return;
-
-    elementArray.push(
-      <div className="background-item" key={media.coverImage.extraLarge}>
-        <img
-          src={media.coverImage.extraLarge}
-          key={`${media.coverImage.extraLarge}-image`}
-          alt=""
-        />
-      </div>
-    );
-  });
-
-  // for (let i = 0; i < 4; i += 1) {
-  //   const owlCarousel = (
-  //     <OwlCarousel
-  //       className={`owl-carousel-${i}`}
-  //       dots={false}
-  //       mouseDrag={false}
-  //       loop
-  //       autoplay
-  //       items={16}
-  //       autoplaySpeed={6000}
-  //       smartSpeed={6000}
-  //       center
-  //       seamless
-  //       margin={0}
-  //       key={`owl-carousel-${i}`}
-  //     >
-  //       {elementArray}
-  //     </OwlCarousel>
-  //   );
-  //   carouselArray.push(
-  //     <div className="carousel-item" key={i}>
-  //       <div className="carousel-item-inner" key={i}>
-  //         {owlCarousel}
-  //       </div>
-  //     </div>
-  //   );
-  // }
-
   return (
     <div className="login-main">
       <LoginMenu />
-      <div id="login-background">{carouselArray}</div>
+      <div id="login-background" />
     </div>
   );
 };
