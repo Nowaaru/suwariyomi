@@ -19,6 +19,8 @@ import { FullManga, Manga as MangaType } from '../../main/util/manga';
 import MangaItem from '../components/mangaitem';
 import useQuery from '../util/hook/usequery';
 import Handler from '../../main/sources/handler';
+import useMountEffect from '../util/hook/usemounteffect';
+import useForceUpdate from '../util/hook/useforceupdate';
 
 const libraryStyleSheet = StyleSheet.create({
   container: {
@@ -253,8 +255,6 @@ const noResultsFlavorTexts = [
   ['Nobody here but us chickens.', 'Want to', 'search globally?'],
 ];
 
-window.electron.log.info('rendering library started');
-
 let readingPrefixTarget: MangaType | undefined;
 let statusPrefix: string;
 let statusSuffix: string;
@@ -287,6 +287,15 @@ const Library = () => {
     window.electron.util.getSourceFiles().map(Handler.getSource)
   );
 
+  const forceUpdate = useForceUpdate();
+
+  /*
+    TODO: Instead of only looking at the cache, read `window.electron.library.getLibraryMangas()` and cross-check with the cache.
+    If a library manga cannot be found in the cache, then make a request to the source and update the cache.
+
+    Currently, there is a bug present that displays *cached manga* instead of *library manga*.
+  */
+
   const hasNoSources = mappedFileNamesRef.current.length <= 0;
   // Filter out sources that are not enabled AND has no manga
   const sourceList: Record<string, FullManga[]> = {};
@@ -301,8 +310,61 @@ const Library = () => {
           ))
     )
     .forEach((source) => {
-      sourceList[source] = LibraryUtilities.getCachedMangas(source);
+      sourceList[source] = LibraryUtilities.getLibraryMangas(source)
+        .map((x) =>
+          LibraryUtilities.getCachedMangas(source).find((y) => y.MangaID === x)
+        )
+        .filter((x) => x) as FullManga[]; // Remove all undefined values
     });
+
+  useMountEffect(() => {
+    // Filter out all mangas that are already present in the cache.
+    const allKeys: Record<string, string[]> = {};
+    Object.keys(sourceList).forEach((source) => {
+      window.electron.library.getLibraryMangas(source).forEach((mangaID) => {
+        // Determine if the manga is already in the cache
+        const mangaIsInCache = sourceList[source].some(
+          (manga) => manga.MangaID === mangaID
+        );
+        if (!mangaIsInCache) {
+          allKeys[source] = allKeys[source] || [];
+          allKeys[source].push(mangaID);
+        }
+      });
+    });
+
+    // Request all manga that are not in the cache
+    Object.keys(allKeys).forEach((source) => {
+      const mangaIDs = allKeys[source];
+      if (mangaIDs.length > 0) {
+        const foundSource = mappedFileNamesRef.current.find(
+          (sourceObject) => sourceObject.getName() === source
+        );
+
+        if (foundSource) {
+          foundSource
+            .getMangas(mangaIDs, true)
+            .then((mangaList) => {
+              return mangaList.forEach(async (manga) => {
+                window.electron.library.addMangaToCache(
+                  foundSource.getName(),
+                  await manga
+                );
+
+                // Force the Library component to re-render
+                forceUpdate();
+              });
+            })
+            .catch((error) => {
+              window.electron.log.error(
+                `Failed to get manga from ${source}:`,
+                error
+              );
+            });
+        }
+      }
+    });
+  });
 
   const sourceListValues = Object.values(sourceList);
 
