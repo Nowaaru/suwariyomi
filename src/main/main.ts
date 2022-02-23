@@ -267,6 +267,11 @@ ipcMain.on('settings-flush', async (event) => {
   event.returnValue = true;
 });
 
+ipcMain.on('get-app-version', (event) => {
+  const version = app.getVersion();
+  event.returnValue = version;
+});
+
 ipcMain.on('maximize', () => {
   if (mainWindow?.isMaximized()) return mainWindow.unmaximize();
   mainWindow?.maximize();
@@ -300,7 +305,7 @@ const installExtensions = async () => {
       extensions.map((name) => installer[name]),
       forceDownload
     )
-    .catch(console.log);
+    .catch(log.error);
 };
 
 const createWindow = async () => {
@@ -398,6 +403,6 @@ app
       if (mainWindow === null) createWindow();
     });
   })
-  .catch(console.log);
+  .catch(log.error);
 
 log.info('stuff ready!!');

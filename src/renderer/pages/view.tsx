@@ -470,7 +470,6 @@ const View = () => {
       .filter((x) => x.getName().toLowerCase() === source.toLowerCase())
   );
 
-  console.log(Query);
   useEffect(() => {
     if (mappedFileNamesRef.current.length === 0) return Navigate('/404');
     if (!id || !source) return Navigate('/404');
@@ -521,7 +520,6 @@ const View = () => {
 
   const currentManga: FullManga | null = mangaData.current;
   if (currentManga) {
-    console.log(currentManga);
     sortChapters(currentManga.Chapters);
     const Authors = currentManga.Authors.slice(0, 4);
     const remainderAuthors = currentManga.Authors.length - Authors.length;
@@ -626,7 +624,6 @@ const View = () => {
             className={css(styles.backButton)}
             onClick={() => {
               Navigate(`/${backto ?? 'library'}`);
-              console.log('go back');
             }}
             startIcon={<ArrowBackIcon />}
           >

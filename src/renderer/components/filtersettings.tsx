@@ -160,7 +160,6 @@ const FilterSettings = ({
                 const isDisallowed =
                   sourceFiltersState[disallowedWriteTo].includes(value);
 
-                console.log(isDisallowed);
                 return (
                   <FormControlLabel
                     key={value}

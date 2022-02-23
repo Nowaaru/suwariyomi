@@ -29,12 +29,10 @@ const AniListIntegrationHandler = async () => {
     .then((returnData) => {
       if (!returnData) return false;
 
-      console.log(returnData);
       const previousAuthorization = window.electron.store.get('authorization');
       previousAuthorization.anilist = returnData;
       window.electron.store.set('authorization', previousAuthorization);
 
-      console.log(previousAuthorization);
       return true;
     })
     .catch(console.error);
@@ -43,9 +41,7 @@ const AniListIntegrationHandler = async () => {
 const MyAnimeListIntegrationHandler = async () => {
   const Authentication = Mal.auth('0d6dcc52b59961cf75acf698e8eaefde');
   const PKCE = await window.electron.auth.generatePKCE();
-  console.log('wtf');
   const authorizationURL = Authentication.getOAuthUrl(PKCE.code_challenge);
-  console.log(authorizationURL);
   return window.electron.auth
     .generateAuthenticationWindow(
       {
@@ -148,7 +144,6 @@ class LoginItem extends React.Component<ComponentProps, ComponentProps> {
 
     this.state = this.props;
     this.handleClick = this.handleClick.bind(this);
-    console.log('state:', this.state);
   }
 
   handleClick = async () => {

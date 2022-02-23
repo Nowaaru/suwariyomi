@@ -335,7 +335,7 @@ const MangaItem = ({
                       )}
                       variant="contained"
                       onClick={() => {
-                        console.log('read');
+                        window.electron.log.info('read');
                       }}
                     >
                       Start Reading

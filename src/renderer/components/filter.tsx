@@ -96,7 +96,6 @@ const FilterButton = ({ onClick, scrollTarget, disabled }: FilterProps) => {
   const [didHover, setHoverState] = useState(false);
   const displaySmall = didScroll && !didHover;
 
-  console.log(`did scroll: ${didScroll}`);
   return (
     <div className={css(styles.appBarContainer)}>
       <button

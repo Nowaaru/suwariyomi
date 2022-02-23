@@ -73,7 +73,6 @@ export default abstract class SourceBase {
   }
 
   protected download: () => Promise<boolean> = async () => {
-    console.log('un-built');
     return false;
   };
 

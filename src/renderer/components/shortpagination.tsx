@@ -215,7 +215,6 @@ const ShortPagination = ({
   if (value.length > 5) setValue(value.slice(0, 5));
 
   const onValueChange = (newValue: string, doUpdate = true) => {
-    console.log(newValue, doUpdate);
     if (newValue.length > 5) return setValue(newValue.slice(0, 5));
     const newerValue = newValue.match(/^\d*$/) ? newValue : value;
     const newestValue = String(

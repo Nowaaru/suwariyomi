@@ -849,7 +849,7 @@ const Reader = () => {
             chapters: sortChapters(filterChaptersToLanguage(x), false),
           })
         )
-        .catch(console.log);
+        .catch(window.electron.log.info);
     }
   });
 
@@ -1001,7 +1001,7 @@ const Reader = () => {
 
         return true;
       })
-      .catch(console.log);
+      .catch(window.electron.log.info);
   }, [readerData, chapterId, selectedSource, pageState]);
   const doToolbarShow =
     (toolbarState.isOpen || toolbarState.isHovering) && !chapterModalOpen
@@ -1220,7 +1220,6 @@ const Reader = () => {
     if (!isScrollBased) return;
     if (!readerData.currentchapter?.ChapterID) return;
 
-    console.log('bruhbreuh page change');
     const { page: pageAtCenter } =
       getPageFromPoint(undefined, window.innerHeight / 1.25) ?? {}; // Check slightly below the center of the screen.
     if (!pageAtCenter || Number(pageAtCenter) !== readerData.page) {
@@ -1844,7 +1843,6 @@ const Reader = () => {
                   }Chapter ${nextChapter}`}</span>
                 ); // Using roundedNextVolume because that resolves to NaN if there is no next volume.
 
-                console.log(Number.isNaN(nextVolume));
                 const currentChapterText = (
                   <span>{`${
                     !Number.isNaN(roundedCurrentVolume)
