@@ -153,7 +153,7 @@ if (!fs.existsSync(sourcesPath)) {
   fs.mkdirSync(sourcesPath);
 }
 
-fs.watch(sourcesPath, { recursive: true }, (eventType, fileChanged) => {
+fs.watch(sourcesPath, (eventType, fileChanged) => {
   if (!fileChanged.endsWith('.js')) {
     log.info(`${fileChanged} was changed, but it is not a .js file.`);
     return;
@@ -161,13 +161,15 @@ fs.watch(sourcesPath, { recursive: true }, (eventType, fileChanged) => {
 
   const allSources = fs.readdirSync(sourcesPath);
   allSources.forEach((source) => {
+    const mainFilePath = path.join(sourcesPath, source, 'main.js');
     // Check if main.js exists
-    if (!fs.existsSync(path.join(sourcesPath, source, 'main.js'))) {
+    if (!fs.existsSync(mainFilePath)) {
       log.error(`${source} does not have a main.js file.`);
       return;
     }
 
-    const Source = requireFunc(`${sourcesPath}\\${source}\\main.js`);
+    delete require.cache[require.resolve(mainFilePath)];
+    const Source = requireFunc(mainFilePath);
     if (!Source) return;
 
     const sourceObject = new Source();
