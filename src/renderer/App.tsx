@@ -25,8 +25,7 @@ const styles = StyleSheet.create({
   },
 });
 
-window.electron.log.info('app.jsx reached');
-
+window.electron.log.info('App.tsx: Rendering App');
 export default function App() {
   return (
     <div className={css(styles.main)}>
