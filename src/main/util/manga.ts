@@ -134,6 +134,7 @@ const defaultLibraryData: {
   Sources: LibrarySources;
 } = {
   Sources: {
+    // template:
     // MangaDex: {
     // Enabled: true,
     // LastUpdated: 0,
@@ -152,9 +153,20 @@ if (!fs.existsSync(sourcesPath)) {
   fs.mkdirSync(sourcesPath);
 }
 
-fs.watch(sourcesPath, { recursive: true }, () => {
+fs.watch(sourcesPath, { recursive: true }, (eventType, fileChanged) => {
+  if (!fileChanged.endsWith('.js')) {
+    log.info(`${fileChanged} was changed, but it is not a .js file.`);
+    return;
+  }
+
   const allSources = fs.readdirSync(sourcesPath);
   allSources.forEach((source) => {
+    // Check if main.js exists
+    if (!fs.existsSync(path.join(sourcesPath, source, 'main.js'))) {
+      log.error(`${source} does not have a main.js file.`);
+      return;
+    }
+
     const Source = requireFunc(`${sourcesPath}\\${source}\\main.js`);
     if (!Source) return;
 
@@ -163,19 +175,23 @@ fs.watch(sourcesPath, { recursive: true }, () => {
 
     const currentLibraryData = LibraryDatabase.get('Library');
     const currentMangaData = MangaDatabase.get('CachedManga');
-    if (defaultLibraryData.Sources[sourceName]) return;
+
     if (!currentLibraryData || !currentMangaData) return;
+    if (!currentLibraryData.Sources[sourceName]) {
+      currentLibraryData.Sources[sourceName] = {
+        Enabled: true,
+        LastUpdated: 0,
+        Manga: [],
+      };
+      LibraryDatabase.set('Library', currentLibraryData);
+      log.info(`Added ${sourceName} to the library.`);
+    }
 
-    currentLibraryData.Sources[sourceName] = {
-      Enabled: true,
-      LastUpdated: 0,
-      Manga: [],
-    };
-
-    currentMangaData.Sources[sourceName] = {};
-    log.info(`Source installed: ${sourceName}`);
-    LibraryDatabase.set('Library', currentLibraryData);
-    MangaDatabase.set('CachedManga', currentMangaData);
+    if (!currentMangaData.Sources[sourceName]) {
+      log.info('Adding new source to MangaDatabase.');
+      currentMangaData.Sources[sourceName] = {};
+      MangaDatabase.set('CachedManga', currentMangaData);
+    }
   });
 });
 const enforce = () => {
