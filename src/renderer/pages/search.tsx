@@ -285,7 +285,6 @@ const generateQueriedSearchData = (
   Object.fromEntries(mappedFileNames.map((source) => [source.getName(), []]));
 
 const beginSearch = (source: InstanceType<typeof SourceBase>) => {
-  console.log(source);
   return source
     .search()
     .then((x) => x.map((y) => source.serialize(y, false)))
@@ -390,10 +389,14 @@ const SearchPage = () => {
     window.electron.cache.set('searchdata', searchData);
   }, [queryOffset, specifiedSource, searchData, specificQueryLoadedPages]);
 
+  // TODO: Implement filter restoration when returning from view.tsx
+
   // Apply search query to all sources
   mappedFileNames.forEach((source) => {
+    const hasFilters = window.electron.cache.get('filters');
+
     source.setFilters({
-      ...source.getFilters(),
+      ...(hasFilters ?? source.getFilters()),
       offset: specifiedSource ? queryOffset : 0,
       query: searchData.searchQuery,
     });
@@ -460,7 +463,6 @@ const SearchPage = () => {
           queryOffset
         ] = n;
 
-        console.log(n);
         return true;
       })
       .then(async () => {
@@ -471,8 +473,7 @@ const SearchPage = () => {
         return setLoading(false); // ?????
       })
       .catch((err) => {
-        console.log('error bruh moment!');
-        console.log(err);
+        window.electron.log.error(err);
         setAlert({
           message:
             'An error occurred while searching. You might have been rate limited.\nTry again later.',
@@ -507,7 +508,6 @@ const SearchPage = () => {
       searchData.initiatedSearches[source.getName()] = true;
       beginSearch(source)
         .then((MangaData: Array<Manga>) => {
-          console.log(`mangadata frog: ${source.getName()}`);
           const newQueriedSearchesLog = { ...searchData.queriedSearches };
           newQueriedSearchesLog[searchData.searchQuery] =
             newQueriedSearchesLog[searchData.searchQuery] || {}; // Check if it exists beforehand because there might be other sources still loading after this one.
@@ -722,6 +722,7 @@ const SearchPage = () => {
                 sourceFilters={mappedFileNames[0].getFilters()}
                 filterSettings={mappedFileNames[0].getFieldTypes()}
                 onSubmit={(newFilters) => {
+                  window.electron.cache.set('filters', newFilters);
                   mappedFileNames[0].setFilters(newFilters);
                   setIsOpen(false);
                 }}
@@ -769,7 +770,6 @@ const SearchPage = () => {
               ] = generateQueriedSearchData(mappedFileNames);
             }
 
-            console.log(newSearchQueryData);
             // Having this function before is O.K. because if the query offset is already initially loaded (which it always is for the first page)
             // then the .search function will not be called.
             setQueryOffset(0);
