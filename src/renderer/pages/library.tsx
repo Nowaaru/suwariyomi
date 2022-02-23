@@ -266,7 +266,8 @@ const Library = () => {
       'searchdata',
       'source',
       'offset',
-      'specifiedQueryLoadedPages'
+      'specifiedQueryLoadedPages',
+      'filters'
     );
   }, []);
 
