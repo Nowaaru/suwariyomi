@@ -153,12 +153,7 @@ if (!fs.existsSync(sourcesPath)) {
   fs.mkdirSync(sourcesPath);
 }
 
-fs.watch(sourcesPath, (eventType, fileChanged) => {
-  if (!fileChanged.endsWith('.js')) {
-    log.info(`${fileChanged} was changed, but it is not a .js file.`);
-    return;
-  }
-
+const reloadSources = () => {
   const allSources = fs.readdirSync(sourcesPath);
   allSources.forEach((source) => {
     const mainFilePath = path.join(sourcesPath, source, 'main.js');
@@ -187,15 +182,21 @@ fs.watch(sourcesPath, (eventType, fileChanged) => {
       };
       LibraryDatabase.set('Library', currentLibraryData);
       log.info(`Added ${sourceName} to the library.`);
+      console.log('new library');
     }
 
     if (!currentMangaData.Sources[sourceName]) {
+      console.log('new sauce');
       log.info('Adding new source to MangaDatabase.');
       currentMangaData.Sources[sourceName] = {};
       MangaDatabase.set('CachedManga', currentMangaData);
     }
   });
-});
+};
+
+fs.watch(sourcesPath, reloadSources);
+reloadSources();
+
 const enforce = () => {
   MangaDatabase.ensure('CachedManga', defaultMangaData);
   LibraryDatabase.ensure('Library', defaultLibraryData);
