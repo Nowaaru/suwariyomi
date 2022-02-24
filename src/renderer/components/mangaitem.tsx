@@ -1,13 +1,14 @@
 import { StyleSheet, css } from 'aphrodite';
 import { Button } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
+import capitalize from 'lodash/capitalize';
 
 import LazyLoad from 'react-lazyload';
-import PropTypes from 'prop-types';
 import Tag from './tag';
 
 // image assets
 import nocover from '../../../assets/images/nocover_dark.png';
+import Handler from '../../main/sources/handler';
 
 type MangaItemListProps = {
   displayType: 'list';
@@ -268,13 +269,18 @@ const MangaItem = ({
   source,
   synopsis,
   displayType,
-  listDisplayType,
   backto,
 }: MangaItemProps) => {
   const Navigation = useNavigate();
-  const mangaTags = tags.map((tag) => (
-    <Tag key={tag} name={tag} type="normal" />
-  ));
+  const mangaTags = tags
+    .map(capitalize)
+    .map((tag) => (
+      <Tag
+        key={tag}
+        name={tag}
+        color={Handler.getSource(source)?.tagColours?.[tag]}
+      />
+    ));
 
   const viewParams = `/view?source=${source}&title=${title}&id=${mangaid}&backto=${backto}`;
   switch (displayType) {

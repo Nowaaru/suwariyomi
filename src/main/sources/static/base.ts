@@ -87,6 +87,10 @@ export default abstract class SourceBase {
     }[]
   >;
 
+  public abstract tagColours: { [tagName: string]: string };
+
+  public abstract tagColors?: typeof SourceBase.prototype.tagColours; // Just for the people who spell `colour` wrong :)
+
   protected abstract _locale: string;
 
   protected abstract _locales: Array<{

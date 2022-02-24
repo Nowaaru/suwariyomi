@@ -740,7 +740,11 @@ const View = () => {
             </div>
             <div className={css(styles.mangaTags)}>
               {currentManga.Tags.map((x) => (
-                <Tag key={`${x}-manga-tag`} name={x} />
+                <Tag
+                  key={`${x}-manga-tag`}
+                  color={selectedSource?.tagColours?.[x]}
+                  name={x}
+                />
               ))}
             </div>
             <div className={css(styles.mangaSynopsis)}>

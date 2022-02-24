@@ -1,33 +1,19 @@
 import { StyleSheet, css } from 'aphrodite';
 
-type TagColour =
-  | 'normal'
-  | 'pornographic'
-  | 'suggestive'
-  | 'erotica'
-  | 'doujinshi'
-  | 'anthology';
-
+type TagColour = string;
 type TagProps = {
   name: string;
-  type: TagColour;
+
+  // color is automatically filled in if not provided
+  // eslint-disable-next-line react/require-default-props
+  color?: TagColour;
 };
 
-const Tag = (props: TagProps) => {
+const Tag = ({ name, color = '#272727' }: TagProps) => {
   /*
     Later Functionality:
       When the Tag is clicked, the App will automatically start a search query for that source and tag.
   */
-
-  const { name, type } = props;
-  const tagColours = {
-    normal: '#272727',
-    pornographic: '#DF2935',
-    suggestive: '#FDCA40',
-    anthology: '#3772FF',
-    doujinshi: '8B4E9A',
-    erotica: '#EE7A3B',
-  };
 
   const styles = StyleSheet.create({
     tag: {
@@ -37,7 +23,7 @@ const Tag = (props: TagProps) => {
       marginRight: '10px',
       marginBottom: '5px',
       borderRadius: '5px',
-      backgroundColor: tagColours[type],
+      backgroundColor: color,
       color: '#fff',
       fontFamily: '"Poppins", "Roboto", "Helvetica", "Arial", sans-serif',
     },
