@@ -330,7 +330,6 @@ const Library = () => {
         } else console.log('cached!');
       });
     });
-
     // Request all manga that are not in the cache
     Object.keys(allKeys).forEach((source) => {
       const mangaIDs = allKeys[source];
@@ -407,7 +406,7 @@ const Library = () => {
           listDisplayType="verbose"
           title={Manga.Name}
           coverUrl={Manga.CoverURL || undefined}
-          tags={Manga.Tags?.slice(1, 10) ?? []}
+          tags={Manga.Tags?.slice(0, 10) ?? []}
           synopsis={Manga.Synopsis}
           key={Manga.Name}
           source={Manga.SourceID}
