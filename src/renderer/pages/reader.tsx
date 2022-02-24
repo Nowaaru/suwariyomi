@@ -19,6 +19,9 @@ import {
   useScrollTrigger,
 } from '@mui/material';
 
+import dayjs from 'dayjs';
+import dayjs_duration from 'dayjs/plugin/duration';
+
 import KeyboardArrowUpOutlinedIcon from '@mui/icons-material/KeyboardArrowUpOutlined';
 import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined';
 import ArrowForwardIosSharp from '@mui/icons-material/ArrowForwardIosSharp';
@@ -35,14 +38,7 @@ import PublicIcon from '@mui/icons-material/Public';
 import CropIcon from '@mui/icons-material/Crop';
 import HomeIcon from '@mui/icons-material/Home';
 
-import {
-  useEffect,
-  useState,
-  useRef,
-  useCallback,
-  useMemo,
-  useLayoutEffect,
-} from 'react';
+import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import { StyleSheet, css, CSSProperties, StyleDeclarationMap } from 'aphrodite';
 import { URLSearchParams } from 'url';
 import { useNavigate } from 'react-router-dom';
@@ -55,7 +51,6 @@ import Handler from '../../main/sources/handler';
 import Sidebar from '../components/sidebar';
 import useQuery from '../util/hook/usequery';
 import SourceBase from '../../main/sources/static/base';
-import useThrottle from '../util/hook/usethrottle';
 import LoadingModal from '../components/loading';
 import ChapterModal from '../components/chaptermodal';
 import useOnScreen from '../util/hook/useonscreen';
@@ -138,6 +133,8 @@ const viewStyleDefaults: { [key in ViewStyles]: TapStyles } = {
   vertical: 'top-to-bottom',
   'continuous-vertical': 'none',
 };
+
+dayjs.extend(dayjs_duration);
 
 // TODO: Implement zooming in at the cursor position.
 const stylesObject = {
@@ -824,6 +821,48 @@ const Reader = () => {
     page: Number.isNaN(Number(pageNumber)) ? 1 : Number(pageNumber),
   });
 
+  const timeStartedChapter = useMemo(() => {
+    return dayjs();
+    // This should be self explanatory; but if it isn't:
+    // React warns over "exhaustive-deps"; but the intention of this is to be recalculated every time the chapter changes.
+    // It warns because readerData.currentchapter is not used in this code block.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [readerData.currentchapter]);
+
+  useEffect(() => {
+    // Interval to track time elapsed.
+    const interval = setInterval(() => {
+      if (!readerData.currentchapter?.ChapterID) return;
+      const chapterID = readerData.currentchapter.ChapterID;
+      const currentChapter = window.electron.read.get(sourceId)[chapterID];
+      if (currentChapter) {
+        const timeElapsed = dayjs.duration(dayjs().diff(timeStartedChapter));
+        const timeElapsedMilliseconds = timeElapsed.asMilliseconds();
+
+        console.log(timeElapsedMilliseconds);
+        window.electron.read.set(
+          sourceId,
+          chapterId,
+          readerData.currentchapter.PageCount,
+          readerData.page ?? 0,
+          Date.now(),
+          timeElapsedMilliseconds,
+          currentChapter.isBookmarked,
+          mangaId
+        );
+      }
+    }, 5000 * (1 + Math.random()));
+
+    return () => clearInterval(interval);
+  }, [
+    chapterId,
+    mangaId,
+    readerData.currentchapter,
+    readerData.page,
+    sourceId,
+    timeStartedChapter,
+  ]);
+
   const currentPageState =
     pageState[readerData.currentchapter?.ChapterID ?? chapterId];
 
@@ -1059,16 +1098,17 @@ const Reader = () => {
     ) => {
       return window.electron.read.set(
         selectedSource.getName(),
-        currentChapterId, // CurrentChapter will alway
+        currentChapterId,
         chapterPageCount,
         chapterPageNumber,
         Date.now(),
-        0,
+        window.electron.read.get(sourceId)?.[currentChapterId]?.timeElapsed ??
+          0,
         isBookmarked,
         mangaId
       );
     },
-    [chapterId, chapterIsBookmarked, mangaId, selectedSource]
+    [chapterId, chapterIsBookmarked, mangaId, selectedSource, sourceId]
   );
 
   const changePage = useCallback(
