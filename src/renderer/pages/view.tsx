@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 import { useRef, useEffect, useState } from 'react';
 import { StyleSheet, css } from 'aphrodite';
 import { URLSearchParams } from 'url';
@@ -10,7 +12,9 @@ import {
   Typography,
 } from '@mui/material';
 
-import moment from 'moment';
+import dayjs from 'dayjs';
+import dayjs_duration from 'dayjs/plugin/duration';
+
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import HeartBrokenIcon from '@mui/icons-material/HeartBroken';
@@ -36,6 +40,8 @@ const abcdefg: StyleDeclaration<
   },
 };
 */
+
+dayjs.extend(dayjs_duration);
 
 const styles = StyleSheet.create({
   circularProgress: {
@@ -113,6 +119,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#222222',
     borderRadius: '16px',
     objectFit: 'contain',
+    cursor: 'pointer',
   },
 
   mangaBannerContainer: {
@@ -199,7 +206,7 @@ const styles = StyleSheet.create({
     boxShadow: '0px 0px 10px #000000',
     boxSizing: 'border-box',
     ':after': {
-      top: 0,
+      top: 1,
       left: 0,
       content: '""',
       position: 'absolute',
@@ -645,6 +652,11 @@ const View = () => {
             <div className={css(styles.mangaCover)}>
               <Tooltip title={selectedSource.getName()} placement="right">
                 <img
+                  onClick={() =>
+                    window.electron.util.openInBrowser(
+                      selectedSource.getUrl(currentManga.MangaID)
+                    )
+                  }
                   className={css(styles.sourceIcon)}
                   src={selectedSource.getIcon()}
                   alt="Source Icon"
@@ -845,16 +857,16 @@ const View = () => {
                             ] || { timeElapsed: 0 };
                             totalElapsedTime += foundChapter.timeElapsed;
                           });
-                          const momentTimeElapsedDuration = moment.duration(
+                          const timeElapsedDuration = dayjs.duration(
                             totalElapsedTime,
-                            'seconds'
+                            'milliseconds'
                           );
 
                           // Get the hours, minutes, and seconds
                           const [hours, minutes, seconds] = [
-                            momentTimeElapsedDuration.hours(),
-                            momentTimeElapsedDuration.minutes(),
-                            momentTimeElapsedDuration.seconds(),
+                            timeElapsedDuration.hours(),
+                            timeElapsedDuration.minutes(),
+                            timeElapsedDuration.seconds(),
                           ];
 
                           // Convert to elements

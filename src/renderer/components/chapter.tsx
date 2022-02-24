@@ -2,7 +2,8 @@ import { Paper, Button, Checkbox, IconButton, Tooltip } from '@mui/material';
 import { StyleSheet, css } from 'aphrodite';
 import { useNavigate } from 'react-router-dom';
 
-import moment from 'moment';
+import dayjs from 'dayjs';
+import dayjs_advancedFormat from 'dayjs/plugin/advancedFormat';
 import DownloadIcon from '@mui/icons-material/Download';
 import DownloadDoneIcon from '@mui/icons-material/DownloadDone';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
@@ -117,6 +118,8 @@ const styles = StyleSheet.create({
   },
 });
 
+dayjs.extend(dayjs_advancedFormat);
+
 const Chapter = ({
   onReadClick,
 
@@ -184,7 +187,7 @@ const Chapter = ({
         ) : null}
         {chapter.PublishedAt ? (
           <h4 className={css(styles.chapterDateData)}>
-            {moment(chapter.PublishedAt).format('MMMM Do YYYY')}
+            {dayjs(chapter.PublishedAt).format('MMMM Do YYYY')}
           </h4>
         ) : null}
       </div>
