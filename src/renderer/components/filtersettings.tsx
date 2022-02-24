@@ -9,6 +9,8 @@ import {
   Select,
   Typography,
   MenuItem,
+  TextField,
+  InputAdornment,
 } from '@mui/material';
 import React, { useState, Fragment, useCallback } from 'react';
 import { css, StyleSheet } from 'aphrodite';
@@ -16,6 +18,7 @@ import propTypes from 'prop-types';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import IndeterminateCheckBoxIcon from '@mui/icons-material/IndeterminateCheckBox';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import Search from '@mui/icons-material/Search';
 
 import type {
   SearchFilterFieldTypes,
@@ -47,7 +50,7 @@ type GenericSourceFilterType = {
   the value will be set to the selected value.
 */
 
-const styles = StyleSheet.create({
+const stylesObject = {
   bottomMargin: {
     marginBottom: '1rem',
   },
@@ -76,7 +79,66 @@ const styles = StyleSheet.create({
   Group: {
     marginBottom: '1rem',
   },
-});
+  textField: {
+    width: '100%',
+    backgroundColor: 'rgba(28, 27, 24, 0.2)',
+    color: '#FFFFFF',
+    marginBottom: '6px',
+    borderRadius: '1px',
+  },
+  searchAdornment: {},
+
+  muiRootFieldset: {
+    borderColor: '#DF2935',
+  },
+
+  muiRootFieldsetHover: {
+    borderColor: '#DF2935',
+  },
+
+  labelRootFocused: {
+    color: '#FFFFFF',
+  },
+
+  outlinedLabelShrunken: {
+    color: '#FFFFFF',
+  },
+
+  rootOutlinedInput: {
+    color: '#FFFFFF66',
+    transition: 'color 0.3s ease-in-out',
+  },
+
+  rootOutlinedInputFocused: {
+    color: '#FFFFFF',
+  },
+
+  /*
+          '& .MuiOutlinedInput-root.Mui-focused fieldset': {
+            borderColor: '#DF2935',
+          },
+          '& .MuiOutlinedInput-root:hover fieldset': {
+            borderColor: '#DF2935',
+          },
+          '& label.MuiInputLabel-root.Mui-focused': {
+            color: 'white',
+          },
+
+          '& .MuiInputLabel-outlined.MuiInputLabel-shrink': {
+            color: 'white',
+          },
+
+          '& .MuiOutlinedInput-root input.MuiOutlinedInput-input': {
+            transition: 'color 0.3s ease-in-out',
+            color: '#FFFFFF66',
+          },
+
+          '& .MuiOutlinedInput-root.Mui-focused input.MuiOutlinedInput-input': {
+            color: '#FFFFFF',
+          },
+          */
+};
+const styles = StyleSheet.create(stylesObject as any) as typeof stylesObject;
 
 const filterSettingsPropTypes = {
   filterSettings: propTypes.shape({
@@ -348,6 +410,37 @@ const FilterSettings = ({
 
   return (
     <>
+      <TextField
+        className={css(styles.textField)}
+        label="Search"
+        value={sourceFiltersState.query}
+        onChange={(event) => {
+          handleChange([['query', event.target.value]]);
+        }}
+        sx={{
+          '& .MuiOutlinedInput-root.Mui-focused fieldset':
+            stylesObject.muiRootFieldset,
+          '& .MuiOutlinedInput-root:hover fieldset':
+            stylesObject.muiRootFieldsetHover,
+          '& label.MuiInputLabel-root.Mui-focused':
+            stylesObject.labelRootFocused,
+
+          '& .MuiInputLabel-outlined.MuiInputLabel-shrink':
+            stylesObject.outlinedLabelShrunken,
+
+          '& .MuiOutlinedInput-root input.MuiOutlinedInput-input':
+            stylesObject.rootOutlinedInput,
+          '& .MuiOutlinedInput-root.Mui-focused input.MuiOutlinedInput-input':
+            stylesObject.rootOutlinedInputFocused,
+        }}
+        InputProps={{
+          endAdornment: (
+            <InputAdornment position="end">
+              <Search className={css(styles.Red, styles.searchAdornment)} />
+            </InputAdornment>
+          ),
+        }}
+      />
       {filterFields.map((x, i) => (
         <div className={css(styles.Group)} key={`${i + 1}-container-div`}>
           {x}
@@ -362,7 +455,11 @@ const FilterSettings = ({
           marginBottom: '2rem',
         }}
         onClick={() => {
-          if (onSubmit) onSubmit(sourceFiltersState);
+          if (onSubmit)
+            onSubmit({
+              ...sourceFiltersState,
+              query: sourceFiltersState.query?.toLowerCase(),
+            });
         }}
       >
         Apply

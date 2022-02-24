@@ -722,9 +722,36 @@ const SearchPage = () => {
                 sourceFilters={mappedFileNames[0].getFilters()}
                 filterSettings={mappedFileNames[0].getFieldTypes()}
                 onSubmit={(newFilters) => {
-                  window.electron.cache.set('filters', newFilters);
+                  setQueryOffset(0);
                   mappedFileNames[0].setFilters(newFilters);
+                  window.electron.cache.set('filters', newFilters);
                   setIsOpen(false);
+
+                  if (
+                    newFilters.query !== undefined &&
+                    newFilters.query !== searchData.searchQuery
+                  ) {
+                    const newSearchQueryData = {
+                      ...searchData,
+                      initiatedSearches: {}, // This becomes empty because we're starting a new search
+                      searchQuery: newFilters.query,
+                    };
+
+                    if (
+                      !searchData.queriedSearches[
+                        newSearchQueryData.searchQuery
+                      ]
+                    ) {
+                      newSearchQueryData.queriedSearches[
+                        newSearchQueryData.searchQuery
+                      ] = generateQueriedSearchData(mappedFileNames);
+                    }
+                    return setSearchData(() => {
+                      return newSearchQueryData;
+                    });
+                  }
+
+                  return true;
                 }}
               />
             </div>
