@@ -11,7 +11,7 @@ import { StyleSheet, css } from 'aphrodite/no-important';
 import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { userInfo } from 'os';
-import { capitalize } from 'lodash';
+import { capitalize, clamp } from 'lodash';
 
 import LazyLoad, { forceCheck } from 'react-lazyload';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -324,9 +324,10 @@ const Library = () => {
           (manga) => manga.MangaID === mangaID
         );
         if (!mangaIsInCache) {
+          console.log('uncached');
           allKeys[source] = allKeys[source] || [];
           allKeys[source].push(mangaID);
-        }
+        } else console.log('cached!');
       });
     });
 
@@ -348,6 +349,7 @@ const Library = () => {
                   await manga
                 );
 
+                console.log('force update...');
                 // Force the Library component to re-render
                 forceUpdate();
               });
@@ -537,6 +539,49 @@ const Library = () => {
       Math.floor(Math.random() * noResultsFlavorTexts.length)
     ];
 
+  // From every manga, generate a loose searchable description.
+  // This will be used as the placeholder text, in which the user can
+  // press Shift + Tab to fill in the search bar if it's empty.
+  // The library will choose a random item from the list of loose descriptions
+  // and display it as the placeholder text.
+
+  // Start off with the title of the manga.
+  let looseDescriptions = sourceListValues.flat().map((x) => x.Name);
+
+  sourceListValues.flat().forEach((x) => {
+    // Add a random amount of tags.
+    if (x.Tags) {
+      const tagsList = x.Tags.slice(
+        0,
+        Math.floor(Math.random() * x.Tags.length)
+      );
+
+      const Map = tagsList
+        .map((y) => (y.includes(' ') ? `"${y}"` : y))
+        .join(' ');
+
+      looseDescriptions.push(Map);
+    }
+    // Add random page numbers.
+    if (x.Chapters.length > 0)
+      looseDescriptions.push(
+        `Chapters${Math.random() > 0.5 ? '>' : '<'}${Math.floor(
+          clamp(
+            Math.random() * x.Chapters.length,
+            1,
+            Math.min(0.25 * x.Chapters.length, x.Chapters.length)
+          )
+        )}`
+      );
+  });
+
+  looseDescriptions = looseDescriptions.filter((x) => x.length > 0);
+  const selectedDescription = useRef(
+    looseDescriptions[Math.floor(Math.random() * looseDescriptions.length)]
+  );
+
+  console.log(looseDescriptions);
+  console.log(selectedDescription.current);
   return (
     <div className={css(libraryStyleSheet.container)}>
       {!hasNoSources ? (
@@ -544,12 +589,26 @@ const Library = () => {
           <div className={css(libraryStyleSheet.searchbarContainerInner)}>
             <TextField
               label="Search manga..."
-              placeholder={`pages>10 "Slice of Life" "Kemonomimi" "Romance" "Fantasy"`}
+              placeholder={selectedDescription.current}
               className={css(libraryStyleSheet.searchbar)}
               variant="filled"
               defaultValue={searchQuery}
               error={!parsedSearch}
               helperText={parsedSearch ? '' : 'Mismatched quotation marks.'}
+              onKeyDown={(e) => {
+                if (e.key === 'Tab') {
+                  if (e.shiftKey) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                    if ((e.target as any).value.length === 0) {
+                      (e.target as any).value = selectedDescription.current;
+                      forceCheck();
+                      setSearchQuery(selectedDescription.current);
+                    }
+                  }
+                }
+              }}
               onChange={(e) => {
                 forceCheck();
                 setSearchQuery(e.target.value.trim());
