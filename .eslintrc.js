@@ -12,6 +12,8 @@ module.exports = {
     'no-return-assign': 'off',
     'no-underscore-dangle': 'off',
     'class-methods-use-this': 'off',
+    'no-else-return': 'off',
+    'consistent-return': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/ban-ts-comment': 'warn',
   },
