@@ -11,7 +11,7 @@ import nocover from '../../../assets/images/nocover_dark.png';
 import Handler from '../../main/sources/handler';
 
 // util fdunc
-import { getReadUrl } from '../util/func';
+import { getReadUrl, sortChapters } from '../util/func';
 
 type MangaItemListProps = {
   displayType: 'list';
@@ -286,15 +286,17 @@ const MangaItem = ({
     ));
 
   const mangaData = window.electron.library.getCachedManga(source, mangaid);
-  const cachedChapters = mangaData?.Chapters.map((chapterObject) => {
-    const cachedChapter =
-      window.electron.read.get(source)?.[chapterObject.ChapterID];
+  const cachedChapters = mangaData?.Chapters
+    ? sortChapters(mangaData?.Chapters, false).map((chapterObject) => {
+        const cachedChapter =
+          window.electron.read.get(source)?.[chapterObject.ChapterID];
 
-    return {
-      ...cachedChapter,
-      ChapterID: chapterObject.ChapterID,
-    };
-  });
+        return {
+          ...cachedChapter,
+          ChapterID: chapterObject.ChapterID,
+        };
+      })
+    : [];
 
   const isCompleted =
     cachedChapters?.filter(
