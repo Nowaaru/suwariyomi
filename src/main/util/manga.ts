@@ -153,7 +153,12 @@ if (!fs.existsSync(sourcesPath)) {
   fs.mkdirSync(sourcesPath);
 }
 
-const reloadSources = () => {
+const enforce = async () => {
+  MangaDatabase.ensure('CachedManga', defaultMangaData);
+  LibraryDatabase.ensure('Library', defaultLibraryData);
+};
+
+const reloadSources = async () => {
   const allSources = fs.readdirSync(sourcesPath);
   allSources.forEach((source) => {
     const mainFilePath = path.join(sourcesPath, source, 'main.js');
@@ -163,17 +168,27 @@ const reloadSources = () => {
       return;
     }
 
-    delete require.cache[require.resolve(mainFilePath)];
+    try {
+      delete require.cache[require.resolve(mainFilePath)];
+    } catch (e) {
+      log.warn(`${source} main.js file is not in require cache; skipping.`);
+    }
     const Source = requireFunc(mainFilePath);
     if (!Source) return;
 
     const sourceObject = new Source();
     const sourceName = sourceObject.getName();
 
-    const currentLibraryData = LibraryDatabase.get('Library');
-    const currentMangaData = MangaDatabase.get('CachedManga');
+    enforce();
 
-    if (!currentLibraryData || !currentMangaData) return;
+    // These are already present due to the ensure() call above.
+    const [currentMangaData, currentLibraryData] = [
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      MangaDatabase.get('CachedManga')!,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      LibraryDatabase.get('Library')!,
+    ];
+
     if (!currentLibraryData.Sources[sourceName]) {
       currentLibraryData.Sources[sourceName] = {
         Enabled: true,
@@ -182,11 +197,9 @@ const reloadSources = () => {
       };
       LibraryDatabase.set('Library', currentLibraryData);
       log.info(`Added ${sourceName} to the library.`);
-      console.log('new library');
     }
 
     if (!currentMangaData.Sources[sourceName]) {
-      console.log('new sauce');
       log.info('Adding new source to MangaDatabase.');
       currentMangaData.Sources[sourceName] = {};
       MangaDatabase.set('CachedManga', currentMangaData);
@@ -194,13 +207,8 @@ const reloadSources = () => {
   });
 };
 
-fs.watch(sourcesPath, reloadSources);
 reloadSources();
-
-const enforce = () => {
-  MangaDatabase.ensure('CachedManga', defaultMangaData);
-  LibraryDatabase.ensure('Library', defaultLibraryData);
-};
+fs.watch(sourcesPath, reloadSources);
 
 /* Class Methods
   getSource(sourceName: string): Source | undefined
