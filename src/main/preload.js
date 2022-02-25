@@ -2,6 +2,7 @@ const { ipcRenderer } = require('electron');
 const { v4 } = require('uuid');
 const log = require('electron-log');
 
+log.catchErrors();
 log.info('preload.js: started');
 window.electron = {
   log: log.functions,

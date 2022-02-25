@@ -32,10 +32,11 @@ export default class AppUpdater {
   }
 }
 
-const ElectronStore = new Store();
-log.info('app starting');
+log.catchErrors();
 
+const ElectronStore = new Store();
 let mainWindow: BrowserWindow | null = null;
+
 log.info('ipc creating');
 ipcMain.on('ipc-example', async (event, arg) => {
   const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
