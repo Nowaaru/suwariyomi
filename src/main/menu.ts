@@ -39,9 +39,12 @@ export default class MenuBuilder {
   }
 
   setupDevelopmentEnvironment(): void {
+    // I'll keep this here for now, but I don't think it's necessary.
+    // In case we need to do something with it later.
+    /*
+
     this.mainWindow.webContents.on('context-menu', (_, props) => {
       const { x, y } = props;
-
       Menu.buildFromTemplate([
         {
           label: 'Inspect element',
@@ -50,7 +53,9 @@ export default class MenuBuilder {
           },
         },
       ]).popup({ window: this.mainWindow });
-    });
+     });
+
+     */
   }
 
   buildDarwinTemplate(): MenuItemConstructorOptions[] {
