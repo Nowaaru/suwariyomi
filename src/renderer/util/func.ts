@@ -14,6 +14,15 @@ export const sortChapters = (chapters: Chapter[], isDescending = true) =>
     return (isDescending ? -1 : 1) * (a.Chapter - b.Chapter);
   });
 
+export const getReadUrl = (
+  mangaId: string,
+  mangaName: string,
+  sourceId: string,
+  chapterId: string,
+  page: number
+) =>
+  `/read?id=${mangaId}&title=${mangaName}&source=${sourceId}&chapter=${chapterId}&page=${page}`;
+
 export const filterChaptersToLanguage = (
   chapters: Chapter[],
   targetLanguage = 'en'

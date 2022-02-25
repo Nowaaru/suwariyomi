@@ -1,5 +1,5 @@
 import { StyleSheet, css } from 'aphrodite';
-import { Button } from '@mui/material';
+import { Button, Tooltip } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import capitalize from 'lodash/capitalize';
 
@@ -9,6 +9,9 @@ import Tag from './tag';
 // image assets
 import nocover from '../../../assets/images/nocover_dark.png';
 import Handler from '../../main/sources/handler';
+
+// util fdunc
+import { getReadUrl } from '../util/func';
 
 type MangaItemListProps = {
   displayType: 'list';
@@ -282,6 +285,33 @@ const MangaItem = ({
       />
     ));
 
+  const mangaData = window.electron.library.getCachedManga(source, mangaid);
+  const cachedChapters = mangaData?.Chapters.map((chapterObject) => {
+    const cachedChapter =
+      window.electron.read.get(source)?.[chapterObject.ChapterID];
+
+    return {
+      ...cachedChapter,
+      ChapterID: chapterObject.ChapterID,
+    };
+  });
+
+  const isCompleted =
+    cachedChapters?.filter(
+      (chapter) => chapter.currentPage >= chapter.pageCount
+    ).length === cachedChapters?.length;
+
+  const firstUnreadChapter = mangaData?.Chapters.find(
+    (x) =>
+      !cachedChapters?.find((y) => y.ChapterID === x.ChapterID) ||
+      (cachedChapters?.find((y) => y.ChapterID === x.ChapterID)?.currentPage ??
+        Infinity) < x.PageCount
+  );
+
+  const firstUnreadCachedChapter = cachedChapters?.find(
+    (x) => firstUnreadChapter?.ChapterID === x.ChapterID
+  );
+
   const viewParams = `/view?source=${source}&title=${title}&id=${mangaid}&backto=${backto}`;
   switch (displayType) {
     case 'list':
@@ -334,18 +364,71 @@ const MangaItem = ({
                     >
                       View Chapters
                     </Button>
-                    <Button
-                      className={css(
-                        styles.mangaItemStartReadButton,
-                        styles.mangaItemButton
-                      )}
-                      variant="contained"
-                      onClick={() => {
-                        window.electron.log.info('read');
-                      }}
+                    <Tooltip
+                      title={(() => {
+                        if (firstUnreadCachedChapter) {
+                          return `Chapter ${
+                            // firstUnreadCachedChapter depends on firstUnreadChapter. If the latter does not exist, the former does not either.
+                            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                            firstUnreadChapter!.Chapter
+                          } - Page ${firstUnreadCachedChapter.currentPage} of ${
+                            firstUnreadCachedChapter.pageCount
+                          }`;
+                        }
+                        if (firstUnreadChapter) {
+                          return `Chapter ${firstUnreadChapter.Chapter} - Unread`;
+                        }
+
+                        return '';
+                      })()}
                     >
-                      Start Reading
-                    </Button>
+                      <Button
+                        className={css(
+                          styles.mangaItemStartReadButton,
+                          styles.mangaItemButton
+                        )}
+                        variant="contained"
+                        onClick={() => {
+                          if (!mangaData) return;
+                          if (isCompleted || !firstUnreadChapter) {
+                            return Navigation(
+                              getReadUrl(
+                                mangaid,
+                                mangaData.Name,
+                                source,
+                                mangaData.Chapters[0].ChapterID,
+                                1
+                              )
+                            );
+                          }
+
+                          Navigation(
+                            getReadUrl(
+                              mangaid,
+                              mangaData.Name,
+                              source,
+                              firstUnreadChapter.ChapterID,
+                              firstUnreadCachedChapter?.currentPage ?? 1
+                            )
+                          );
+                        }}
+                      >
+                        {(() => {
+                          if (isCompleted) {
+                            return 'Reread';
+                          } else if (firstUnreadChapter) {
+                            if (
+                              firstUnreadChapter.ChapterID ===
+                              mangaData?.Chapters[0].ChapterID
+                            ) {
+                              return 'Start Reading';
+                            }
+                            return 'Continue Reading';
+                          }
+                          return 'Start Reading';
+                        })()}
+                      </Button>
+                    </Tooltip>
                   </div>
                 </div>
               </div>

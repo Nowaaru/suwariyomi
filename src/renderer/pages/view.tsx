@@ -24,7 +24,11 @@ import useMountEffect from '../util/hook/usemounteffect';
 
 import { FullManga } from '../../main/util/manga';
 import { ReadDatabaseValue } from '../../main/util/read';
-import { filterChaptersToLanguage, sortChapters } from '../util/func';
+import {
+  filterChaptersToLanguage,
+  sortChapters,
+  getReadUrl,
+} from '../util/func';
 
 import Tag from '../components/tag';
 import Chapter from '../components/chapter';
@@ -770,13 +774,15 @@ const View = () => {
                     <Chapter
                       onReadClick={() => {
                         Navigate(
-                          `/read?id=${currentManga.MangaID}&title=${
-                            currentManga.Name
-                          }&source=${source}&chapter=${x.ChapterID}&page=${
+                          getReadUrl(
+                            currentManga.MangaID,
+                            currentManga.Name,
+                            source,
+                            x.ChapterID,
                             foundChapter.currentPage >= x.PageCount
                               ? 1
-                              : Math.max(1, foundChapter.currentPage) // In case the page is -1.
-                          }`
+                              : Math.max(1, foundChapter.currentPage)
+                          )
                         );
                       }}
                       key={`${x.ChapterID}-chapter`}
@@ -806,11 +812,7 @@ const View = () => {
                   variant="contained"
                   color="primary"
                   onClick={() => {
-                    const navigateData = `/read?id=${
-                      currentManga.MangaID
-                    }&source=${source}&chapter=${
-                      (chapterToDisplay ?? currentManga.Chapters[0]).ChapterID
-                    }&title=${currentManga.Name}&page=${(() => {
+                    const mangaPage = (() => {
                       const foundChapter =
                         chapterData.current[
                           (chapterToDisplay ?? currentManga.Chapters[0])
@@ -823,8 +825,19 @@ const View = () => {
                       }
 
                       return 1;
-                    })()}`;
-                    Navigate(navigateData);
+                    })();
+
+                    if (chapterToDisplay) {
+                      Navigate(
+                        getReadUrl(
+                          currentManga.MangaID,
+                          currentManga.Name,
+                          source,
+                          chapterToDisplay?.ChapterID,
+                          mangaPage
+                        )
+                      );
+                    }
                   }}
                 >
                   {ReadingButtonInnerText}
