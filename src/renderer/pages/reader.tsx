@@ -760,11 +760,14 @@ const Reader = () => {
       ? viewStyleDefaults[readerSettings.readingStyle]
       : readerSettings.tappingStyle;
 
-  const tappingLayout = {
-    ...TapStylesPageEffects[
-      associatedTappingStyle as Exclude<TapStyles, 'default'> // associatedTappingStyle should never be 'default', for some reason TS is complaining.
-    ],
-  };
+  const tappingLayout = useMemo(
+    () => ({
+      ...TapStylesPageEffects[
+        associatedTappingStyle as Exclude<TapStyles, 'default'> // associatedTappingStyle should never be 'default', for some reason TS is complaining.
+      ],
+    }),
+    [associatedTappingStyle]
+  );
 
   // If invertTapping is true, then iterate through tappingLayout and change -1 to 1 and vice versa.
   if (readerSettings.invertTapping) {
@@ -834,7 +837,7 @@ const Reader = () => {
     const interval = setInterval(() => {
       if (!readerData.currentchapter?.ChapterID) return;
       const chapterID = readerData.currentchapter.ChapterID;
-      const currentChapter = window.electron.read.get(sourceId)[chapterID];
+      const currentChapter = window.electron.read.get(sourceId)?.[chapterID];
       if (currentChapter) {
         const timeElapsed = dayjs.duration(dayjs().diff(timeStartedChapter));
         const timeElapsedMilliseconds = timeElapsed.asMilliseconds();
@@ -1195,11 +1198,12 @@ const Reader = () => {
         return setIsInIntermediary(-1);
       }
 
-      changePage(
-        isDoublePage
-          ? clamp(currentPage + readOrderGoTo * 2, 1, currentPageState.length)
-          : currentPage + readOrderGoTo
-      );
+      const pageToChangeTo = isDoublePage
+        ? clamp(currentPage + readOrderGoTo * 2, 1, currentPageState.length)
+        : currentPage + readOrderGoTo;
+
+      console.log(readOrderGoTo);
+      changePage(pageToChangeTo);
     },
     [
       readerData.currentchapter,
@@ -1254,6 +1258,34 @@ const Reader = () => {
     },
     []
   );
+
+  useEffect(() => {
+    // Keyboard controls.
+    const keyControls: { [key: string]: keyof typeof tappingLayout } = {
+      ArrowLeft: 'left',
+      ArrowRight: 'right',
+      ArrowUp: 'top',
+      ArrowDown: 'bottom',
+      PageUp: 'top',
+      PageDown: 'bottom',
+      Home: 'top',
+      End: 'bottom',
+    };
+
+    const nextKeys = [' ', 'Enter']; // These are keys that will send you to the next page regardless of your tapping layout.
+    const keyHandler = (e: KeyboardEvent) => {
+      console.log(e.key);
+      if (e.key in keyControls || nextKeys.includes(e.key)) {
+        if (tappingLayout[keyControls[e.key]] !== null) {
+          const tapDirection = tappingLayout[keyControls[e.key]] ?? 1;
+          handleClick(tapDirection);
+        }
+      }
+    };
+
+    window.addEventListener('keydown', keyHandler);
+    return () => window.removeEventListener('keydown', keyHandler);
+  }, [handleClick, tappingLayout]);
 
   useEffect(() => {
     if (isLoading) return;
