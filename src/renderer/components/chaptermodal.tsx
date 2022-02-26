@@ -11,7 +11,6 @@ import Loading from './loading';
 import Chapter from './chapter';
 import Handler from '../../main/sources/handler';
 
-import { ReadDatabaseValue } from '../../main/util/read';
 import { sortChapters } from '../util/func';
 
 const stylesObject = {
