@@ -33,6 +33,7 @@ export default class AppUpdater {
 }
 
 log.catchErrors();
+log.info(`Current Version: ${app.getVersion()}`);
 
 const ElectronStore = new Store();
 let mainWindow: BrowserWindow | null = null;
@@ -289,6 +290,10 @@ if (process.env.NODE_ENV === 'production') {
 
 const isDevelopment =
   process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
+
+if (isDevelopment) {
+  app.getVersion = () => require('release/app/package.json').version;
+}
 
 // if (isDevelopment) {
 require('electron-debug')();
