@@ -1274,7 +1274,7 @@ const Reader = () => {
 
     const nextKeys = [' ', 'Enter']; // These are keys that will send you to the next page regardless of your tapping layout.
     const keyHandler = (e: KeyboardEvent) => {
-      console.log(e.key);
+      if (e.repeat) return; // Ignore repeated key presses.
       if (e.key in keyControls || nextKeys.includes(e.key)) {
         if (tappingLayout[keyControls[e.key]] !== null) {
           const tapDirection = tappingLayout[keyControls[e.key]] ?? 1;
