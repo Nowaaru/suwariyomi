@@ -21,6 +21,9 @@ export const defaultSettings = {
     theme: 'dark',
   },
   reader: {
+    lightbarVertical: false,
+    lightbarRight: false,
+    lightbarEnabled: true,
     skipChaptersOfDifferentGroup: false,
     skipChaptersMarkedRead: false,
     readingMode: 'right-to-left',
@@ -116,6 +119,18 @@ export const settingsSchema: Schema<typeof defaultSettings> = {
   reader: {
     type: 'object',
     properties: {
+      lightbarVertical: {
+        type: 'boolean',
+        default: false,
+      },
+      lightbarRight: {
+        type: 'boolean',
+        default: false,
+      },
+      lightbarEnabled: {
+        type: 'boolean',
+        default: true,
+      },
       skipChaptersOfDifferentGroup: {
         type: 'boolean',
         default: false,
@@ -272,6 +287,18 @@ const Settings = new SettingsDatabase({
   schema: settingsSchema,
   clearInvalidConfig: true,
   encryptionKey: String(Date.now()),
+  migrations: {
+    '>=0.11.0': (settings) => {
+      const newSettings = { ...settings.store };
+      if (newSettings.reader.lightbarEnabled === undefined) {
+        newSettings.reader.lightbarVertical = false;
+        newSettings.reader.lightbarRight = false;
+        newSettings.reader.lightbarEnabled = true;
+      }
+
+      return (settings.store = newSettings);
+    },
+  },
 });
 
 export default class {
