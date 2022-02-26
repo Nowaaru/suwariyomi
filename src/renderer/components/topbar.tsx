@@ -26,6 +26,7 @@ export const Styling = StyleSheet.create({
   icon: {
     position: 'absolute',
     zIndex: 261,
+    userSelect: 'none',
   },
   close: {
     backgroundColor: '#A51A1A',
