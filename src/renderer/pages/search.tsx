@@ -808,7 +808,6 @@ const SearchPage = () => {
           <SearchBar
             label="Search globally..."
             defaultValue={searchData.searchQuery}
-            placeholder="Hana ni Arashi"
           />
         </Box>
         {!specifiedSource ? ( // wtf is going on here
