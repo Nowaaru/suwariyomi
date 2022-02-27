@@ -21,4 +21,8 @@ export default class {
   ) {
     readerEnmap.set(mangaID, overrides);
   }
+
+  static flush() {
+    readerEnmap.deleteAll();
+  }
 }

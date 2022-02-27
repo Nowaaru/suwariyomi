@@ -223,6 +223,11 @@ ipcMain.on('set-manga-settings', (event, id, settings) => {
   event.returnValue = true;
 });
 
+ipcMain.on('flush-manga-settings', (event) => {
+  ReaderDB.flush();
+  event.returnValue = true;
+});
+
 ipcMain.on('electron-store-get', async (event, val) => {
   event.returnValue = ElectronStore.get(val);
 });

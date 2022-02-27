@@ -24,6 +24,9 @@ window.electron = {
     setMangaSettings: (settings) => {
       return ipcRenderer.sendSync('set-manga-settings', settings);
     },
+    flush: () => {
+      return ipcRenderer.sendSync('flush-manga-settings');
+    },
   },
   library: {
     flush: () => {

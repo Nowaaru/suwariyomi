@@ -33,6 +33,7 @@ declare global {
           mangaID: string,
           settings: Partial<DefaultSettings['reader']>
         ) => void;
+        flush: () => void;
       };
       library: {
         getSources: () => LibrarySources;
