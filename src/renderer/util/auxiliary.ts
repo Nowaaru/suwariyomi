@@ -134,12 +134,10 @@ export const settingsSchemata: {
       label: 'Navigation Layout',
       description:
         'Where you need to tap to navigate to the next/previous page.',
-      default: 'top-to-bottom',
+      default: 'top-and-bottom',
       options: [
-        { label: 'Left To Right', value: 'left-to-right' },
-        { label: 'Right To Left', value: 'right-to-left' },
-        { label: 'Top To Bottom', value: 'top-to-bottom' },
-        { label: 'Bottom To Top', value: 'bottom-to-top' },
+        { label: 'Left And Right', value: 'left-and-right' },
+        { label: 'Top And Bottom', value: 'top-and-bottom' },
         { label: 'Kindle', value: 'kindle' },
         { label: 'L-Shaped', value: 'l-shaped' },
         { label: 'Edge', value: 'edge' },
@@ -193,12 +191,10 @@ export const settingsSchemata: {
       label: 'Page Layout (Webtoon)',
       description:
         'Where you need to tap to navigate to the next/previous page.',
-      default: 'right-to-left',
+      default: 'left-and-right',
       options: [
-        { label: 'Left To Right', value: 'left-to-right' },
-        { label: 'Right To Left', value: 'right-to-left' },
-        { label: 'Top To Bottom', value: 'top-to-bottom' },
-        { label: 'Bottom To Top', value: 'bottom-to-top' },
+        { label: 'Left and Right', value: 'left-and-right' },
+        { label: 'Top and Bottom', value: 'top-and-bottom' },
         { label: 'Kindle', value: 'kindle' },
         { label: 'L-Shaped', value: 'l-shaped' },
         { label: 'Edge', value: 'edge' },

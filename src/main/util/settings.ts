@@ -27,13 +27,13 @@ export const defaultSettings = {
     skipChaptersOfDifferentGroup: false,
     skipChaptersMarkedRead: false,
     readingMode: 'right-to-left',
-    navLayoutPaged: 'right-to-left',
+    navLayoutPaged: 'left-and-right',
     invertTappingPaged: false,
     scaleTypePaged: 'fit-screen',
     cropBordersPaged: false,
     pageLayoutPaged: 'single-page',
     zoomStartPosition: 'automatic',
-    navLayoutWebtoon: 'top-to-bottom',
+    navLayoutWebtoon: 'top-and-bottom',
     invertTappingWebtoon: false,
     sidePaddingWebtoon: 'none',
     pageLayoutWebtoon: 'single-page',
@@ -142,8 +142,8 @@ export const settingsSchema: Schema<typeof defaultSettings> = {
       readingMode: {
         type: 'string',
         enum: [
-          'left-to-right',
           'right-to-left',
+          'left-to-right',
           'vertical',
           'webtoon',
           'continuous-vertical',
@@ -152,10 +152,8 @@ export const settingsSchema: Schema<typeof defaultSettings> = {
       navLayoutPaged: {
         type: 'string',
         enum: [
-          'top-to-bottom',
-          'bottom-to-top',
-          'left-to-right',
-          'right-to-left',
+          'top-and-bottom',
+          'left-and-right',
           'kindle',
           'l-shaped',
           'edge',
@@ -185,10 +183,8 @@ export const settingsSchema: Schema<typeof defaultSettings> = {
       navLayoutWebtoon: {
         type: 'string',
         enum: [
-          'top-to-bottom',
-          'bottom-to-top',
-          'left-to-right',
-          'right-to-left',
+          'top-and-bottom',
+          'left-and-right',
           'kindle',
           'l-shaped',
           'edge',

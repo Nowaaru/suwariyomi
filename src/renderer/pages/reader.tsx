@@ -64,10 +64,8 @@ type ViewStyles = 'horizontal' | 'vertical' | 'continuous-vertical' | 'webtoon';
 
 type TapStyles =
   | 'default'
-  | 'left-to-right'
-  | 'right-to-left'
-  | 'top-to-bottom'
-  | 'bottom-to-top'
+  | 'left-and-right'
+  | 'top-and-bottom'
   | 'kindle'
   | 'l-shape'
   | 'edge'
@@ -75,34 +73,22 @@ type TapStyles =
 
 type OneOrNegativeOneOrNull = 1 | -1 | null;
 type TapStylesPageEffectsValueKeys = 'top' | 'bottom' | 'left' | 'right';
-
+type PageEffect = {
+  [key in TapStylesPageEffectsValueKeys]: OneOrNegativeOneOrNull;
+};
 const TapStylesPageEffects: {
-  [style in Exclude<TapStyles, 'default'>]: {
-    [key in TapStylesPageEffectsValueKeys]: OneOrNegativeOneOrNull;
-  };
+  [style in Exclude<TapStyles, 'default'>]: PageEffect;
 } = {
-  'left-to-right': {
+  'left-and-right': {
     top: null,
     left: -1,
     bottom: null,
     right: 1,
   },
-  'right-to-left': {
-    top: null,
-    left: 1,
-    bottom: null,
-    right: -1,
-  },
-  'top-to-bottom': {
+  'top-and-bottom': {
     top: -1,
     left: null,
     bottom: 1,
-    right: null,
-  },
-  'bottom-to-top': {
-    top: 1,
-    left: null,
-    bottom: -1,
     right: null,
   },
   kindle: {
@@ -132,9 +118,9 @@ const TapStylesPageEffects: {
 };
 
 const viewStyleDefaults: { [key in ViewStyles]: TapStyles } = {
-  horizontal: 'left-to-right',
-  vertical: 'top-to-bottom',
-  webtoon: 'left-to-right',
+  horizontal: 'left-and-right',
+  vertical: 'top-and-bottom',
+  webtoon: 'left-and-right',
   'continuous-vertical': 'none',
 };
 
@@ -785,7 +771,7 @@ const Reader = () => {
         ]
       : readerSettings[readerNavLayout as keyof typeof readerSettings];
 
-  const tappingLayout = useMemo(
+  const tappingLayoutMemo = useMemo<PageEffect>(
     () => ({
       ...TapStylesPageEffects[
         associatedTappingStyle as Exclude<TapStyles, 'default'> // associatedTappingStyle should never be 'default', for some reason TS is complaining.
@@ -793,6 +779,8 @@ const Reader = () => {
     }),
     [associatedTappingStyle]
   );
+
+  const tappingLayout = { ...tappingLayoutMemo };
 
   // If invertTapping is true, then iterate through tappingLayout and change -1 to 1 and vice versa.
   if (readerSettings[`invertTapping${webtoonKey}`]) {
@@ -804,8 +792,7 @@ const Reader = () => {
   }
 
   const modalIsOpen = settingsModalOpen || chapterModalOpen;
-  const isRightToLeft =
-    readerSettings[`navLayout${webtoonKey}`] === 'right-to-left';
+  const isRightToLeft = readerSettings.readingMode === 'right-to-left';
   const isPageCropped = readerSettings.cropBordersPaged;
   const [isDoublePage, setDoublePage] = useState(false);
 
@@ -862,7 +849,6 @@ const Reader = () => {
         const timeElapsed = dayjs.duration(dayjs().diff(timeStartedChapter));
         const timeElapsedMilliseconds = timeElapsed.asMilliseconds();
 
-        console.log(timeElapsedMilliseconds);
         window.electron.read.set(
           sourceId,
           chapterId,
@@ -1210,7 +1196,6 @@ const Reader = () => {
         ? clamp(currentPage + readOrderGoTo * 2, 1, currentPageState.length)
         : currentPage + readOrderGoTo;
 
-      console.log(readOrderGoTo);
       changePage(pageToChangeTo);
     },
     [
@@ -1293,7 +1278,9 @@ const Reader = () => {
 
     window.addEventListener('keydown', keyHandler);
     return () => window.removeEventListener('keydown', keyHandler);
-  }, [handleClick, tappingLayout]);
+    // tappingLayout depends on tappingLayoutMemo - so if tappingLayoutMemo changes, tappingLayout will change as well.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [handleClick, tappingLayoutMemo]);
 
   useEffect(() => {
     if (isLoading) return;
@@ -1439,7 +1426,6 @@ const Reader = () => {
   // So, when loading is true, we can put loading indicators on the top and bottom.
   // Otherwise, show nothing but the loading indicator.
 
-  console.log(readerSettings);
   return isLoading ? (
     <LoadingModal className={css(styles.loadingModal)} />
   ) : (
