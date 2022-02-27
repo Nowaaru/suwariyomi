@@ -89,6 +89,8 @@ const stylesObject = {
     boxSizing: 'border-box',
     width: '165px',
     height: '36px',
+    borderRight: 1,
+    borderColor: '#DF2935',
   },
 
   tabSelected: {
@@ -222,8 +224,6 @@ const Settings = () => {
               sx={{
                 // On selected
                 '&.Mui-selected': stylesObject.tabSelected,
-                borderRight: 1,
-                borderColor: '#DF2935',
               }}
               icon={categoryIcons[key as keyof DefaultSettings] ?? undefined}
               iconPosition="start"

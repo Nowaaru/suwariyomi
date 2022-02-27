@@ -1,11 +1,13 @@
 // Reader options for individual manga.
 import Enmap from 'enmap';
+import { app } from 'electron';
 
 const readerEnmap = new Enmap<
   string,
   { [mangaID: string]: { [overriddenSetting: string]: any } }
 >({
   name: 'reader',
+  dataDir: app.getPath('userData'),
 });
 
 export default class {
@@ -13,7 +15,10 @@ export default class {
     return readerEnmap.get(mangaID);
   }
 
-  static set(mangaID: string, overrides: { [setting: string]: any }) {
+  static setMangaSettings(
+    mangaID: string,
+    overrides: { [setting: string]: any }
+  ) {
     readerEnmap.set(mangaID, overrides);
   }
 }

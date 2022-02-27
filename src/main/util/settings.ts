@@ -141,7 +141,13 @@ export const settingsSchema: Schema<typeof defaultSettings> = {
       },
       readingMode: {
         type: 'string',
-        enum: ['left-to-right', 'right-to-left'],
+        enum: [
+          'left-to-right',
+          'right-to-left',
+          'vertical',
+          'webtoon',
+          'continuous-vertical',
+        ],
       },
       navLayoutPaged: {
         type: 'string',

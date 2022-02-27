@@ -17,6 +17,14 @@ window.electron = {
       ipcRenderer.send('open-in-browser', url);
     },
   },
+  reader: {
+    getMangaSettings: (mangaID) => {
+      return ipcRenderer.sendSync('get-manga-settings', mangaID);
+    },
+    setMangaSettings: (settings) => {
+      return ipcRenderer.sendSync('set-manga-settings', settings);
+    },
+  },
   library: {
     flush: () => {
       ipcRenderer.send('flush-db');

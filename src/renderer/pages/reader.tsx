@@ -49,6 +49,7 @@ import { Chapter } from '../../main/util/manga';
 
 import Handler from '../../main/sources/handler';
 import Sidebar from '../components/sidebar';
+import SettingsModal from '../components/settingsmodal';
 import useQuery from '../util/hook/usequery';
 import SourceBase from '../../main/sources/static/base';
 import LoadingModal from '../components/loading';
@@ -56,8 +57,10 @@ import ChapterModal from '../components/chaptermodal';
 import useOnScreen from '../util/hook/useonscreen';
 import ReaderButton from '../components/readerbutton';
 import useMountEffect from '../util/hook/usemounteffect';
+import useForceUpdate from '../util/hook/useforceupdate';
+import { DefaultSettings } from '../../main/util/settings';
 
-type ViewStyles = 'horizontal' | 'vertical' | 'continuous-vertical';
+type ViewStyles = 'horizontal' | 'vertical' | 'continuous-vertical' | 'webtoon';
 
 type TapStyles =
   | 'default'
@@ -131,6 +134,7 @@ const TapStylesPageEffects: {
 const viewStyleDefaults: { [key in ViewStyles]: TapStyles } = {
   horizontal: 'left-to-right',
   vertical: 'top-to-bottom',
+  webtoon: 'left-to-right',
   'continuous-vertical': 'none',
 };
 
@@ -684,12 +688,14 @@ type PageItem = {
 };
 
 const Reader = () => {
+  const forceUpdate = useForceUpdate();
   const [isLoading, setIsLoading] = useState(true);
   const [toolbarState, setToolbarState] = useState({
     isButtonHover: false,
     isHovering: false,
     isOpen: false,
   });
+
   const [scrollY, setScrollYABSOLUTE] = useState(0);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const setScrollY = useCallback(
@@ -714,6 +720,7 @@ const Reader = () => {
   ];
 
   const [chapterModalOpen, setChapterModalOpen] = useState(false);
+  const [settingsModalOpen, setSettingsModalOpen] = useState(false);
   const [isInIntermediary, setIsInIntermediary] = useState<0 | 1 | -1>(-1); // -1: not in intermediary state, 0: going to previous chapter, 1: going to next chapter
   // Intermediary state is for when the user is between
   // two chapters.
@@ -725,40 +732,58 @@ const Reader = () => {
   const queryParameters = useQuery();
   const Navigate = useNavigate();
 
-  const [readerSettings, setReaderSettings] = useState<{
-    isDoublePage: boolean;
-    /*
-      Reading style explanation:
-        Vertical is for long-strips, but it's still "page-based.",
-        Continuous vertical is the same as above, but instead of it being "page-based," you now have to scroll to see the next page.
-        Webtoon is for webtoons, however, the image is flipped.
-        Right-to-left and left-to-right is self-explanatory.
-  */
-    cropStyle: 1 | 2; // 1 is free-form, 2 is crop to first and last vertical and horizontal pixel. (not implemented yet)
-    readingStyle: ViewStyles;
-    tappingStyle: TapStyles;
-    invertTapping: boolean;
-    sidebarStyle: 'bottom' | 'left' | 'right';
-  }>({
-    cropStyle: 1,
-    isDoublePage: false,
-    invertTapping: false,
-    readingStyle: 'horizontal',
-    tappingStyle: 'default',
-    sidebarStyle: 'bottom',
+  const {
+    source: sourceId = 'MangaDex',
+    id: mangaId = '',
+    title: mangaTitle = mangaId,
+    chapter: chapterId = '',
+    page: pageNumber = '1',
+  } = Object.fromEntries(queryParameters as unknown as URLSearchParams);
+
+  const [readerSettings, setReaderSettings] = useState<
+    DefaultSettings['reader']
+  >({
+    ...window.electron.settings.get('reader'),
+    ...window.electron.reader.getMangaSettings(mangaId),
   });
 
-  // useEffect(() => {
-  //   const currentRef = imageContainerRef.current;
-  //   if (currentRef) {
-  //   }
-  // }, [imageContainerRef]);
+  const webtoonKey = ['continuous-vertical', 'webtoon'].includes(
+    readerSettings.readingMode
+  )
+    ? 'Webtoon'
+    : 'Paged';
 
-  readerSettings.readingStyle = 'horizontal';
+  let isVertical = false;
+  let isScrollBased = false;
+  {
+    const verticalKeys: Array<ViewStyles> = [
+      'vertical',
+      'continuous-vertical',
+      'webtoon',
+    ];
+
+    const scrollBasedKeys: Array<ViewStyles> = [
+      'continuous-vertical',
+      'webtoon',
+    ];
+
+    [isScrollBased, isVertical] = [
+      scrollBasedKeys.includes(
+        readerSettings.readingMode as unknown as ViewStyles
+      ),
+      verticalKeys.includes(
+        readerSettings.readingMode as unknown as ViewStyles
+      ),
+    ];
+  }
+
+  const readerNavLayout = `navLayout${webtoonKey}`;
   const associatedTappingStyle =
-    readerSettings.tappingStyle === 'default'
-      ? viewStyleDefaults[readerSettings.readingStyle]
-      : readerSettings.tappingStyle;
+    readerNavLayout === 'default'
+      ? viewStyleDefaults[
+          readerSettings.readingMode as keyof typeof viewStyleDefaults
+        ]
+      : readerSettings[readerNavLayout as keyof typeof readerSettings];
 
   const tappingLayout = useMemo(
     () => ({
@@ -770,7 +795,7 @@ const Reader = () => {
   );
 
   // If invertTapping is true, then iterate through tappingLayout and change -1 to 1 and vice versa.
-  if (readerSettings.invertTapping) {
+  if (readerSettings[`invertTapping${webtoonKey}`]) {
     Object.keys(tappingLayout).forEach((key) => {
       if (tappingLayout[key as TapStylesPageEffectsValueKeys]) {
         tappingLayout[key as TapStylesPageEffectsValueKeys]! *= -1;
@@ -778,28 +803,23 @@ const Reader = () => {
     });
   }
 
-  const isRightToLeft = readerSettings.tappingStyle === 'right-to-left';
-  const isPageCropped = readerSettings.cropStyle === 1;
-  const isDoublePage =
-    readerSettings.isDoublePage &&
-    !['webtoon', 'vertical', 'continuous-vertical'].includes(
-      readerSettings.readingStyle
-    ); // Double page is only for horizontal-based reading styles, such as right-to-left and left-to-right.
+  const modalIsOpen = settingsModalOpen || chapterModalOpen;
+  const isRightToLeft =
+    readerSettings[`navLayout${webtoonKey}`] === 'right-to-left';
+  const isPageCropped = readerSettings.cropBordersPaged;
+  const [isDoublePage, setDoublePage] = useState(false);
 
   const setReaderSetting = (key: keyof typeof readerSettings, value: any) => {
+    window.electron.reader.setMangaSettings(mangaId, {
+      ...readerSettings,
+      [key]: value,
+    });
+
     return setReaderSettings({
       ...readerSettings,
       [key]: value,
     });
   };
-
-  const {
-    source: sourceId = 'MangaDex',
-    id: mangaId = '',
-    title: mangaTitle = mangaId,
-    chapter: chapterId = '',
-    page: pageNumber = '1',
-  } = Object.fromEntries(queryParameters as unknown as URLSearchParams);
 
   const [readerData, setReaderData] = useState<{
     chapters: Chapter[] | undefined;
@@ -1059,21 +1079,9 @@ const Reader = () => {
     toolbarState.isHovering ||
     toolbarState.isButtonHover ||
     toolbarState.isOpen ||
-    chapterModalOpen
+    modalIsOpen
       ? false
       : styles.noCursor;
-  let isVertical = false;
-  let isScrollBased = false;
-  {
-    const verticalKeys: Array<ViewStyles> = ['vertical', 'continuous-vertical'];
-
-    const scrollBasedKeys: Array<ViewStyles> = ['continuous-vertical'];
-
-    [isScrollBased, isVertical] = [
-      scrollBasedKeys.includes(readerSettings.readingStyle),
-      verticalKeys.includes(readerSettings.readingStyle),
-    ];
-  }
 
   const currentPage = readerData.page ?? 1;
   const iconKey = isVertical ? styles.iconVertical : styles.iconHorizontal;
@@ -1431,6 +1439,7 @@ const Reader = () => {
   // So, when loading is true, we can put loading indicators on the top and bottom.
   // Otherwise, show nothing but the loading indicator.
 
+  console.log(readerSettings);
   return isLoading ? (
     <LoadingModal className={css(styles.loadingModal)} />
   ) : (
@@ -1441,6 +1450,18 @@ const Reader = () => {
       }}
       className={css(styles.container, doCursorShow)}
     >
+      <SettingsModal
+        open={settingsModalOpen}
+        onChange={(newSettings) => {
+          setReaderSettings((oldSettings) => ({
+            ...oldSettings,
+            ...newSettings,
+          }));
+        }}
+        settings={readerSettings}
+        isWebtoon={isScrollBased}
+        onClose={() => setSettingsModalOpen(false)}
+      />
       <ChapterModal
         chapters={readerData.chapters!}
         current={readerData.currentchapter!.ChapterID}
@@ -1534,10 +1555,7 @@ const Reader = () => {
             {!isScrollBased ? (
               <IconButton
                 onClick={() => {
-                  setReaderSetting(
-                    'isDoublePage',
-                    !readerSettings.isDoublePage
-                  );
+                  setDoublePage(!isDoublePage);
                   // If the user is on an even page, then decrease the page number by 1.
                   // Otherwise, since the user has technically seen *both* pages, increase the page number by 1.
                   // This is to make sure that:
@@ -1560,7 +1578,7 @@ const Reader = () => {
                   title={isDoublePage ? 'Double Page' : 'Single Page'}
                   placement="top"
                 >
-                  {readerSettings.isDoublePage ? (
+                  {isDoublePage ? (
                     <LooksTwoIcon
                       className={css(
                         styles.doublePageToggleIcon,
@@ -1582,7 +1600,7 @@ const Reader = () => {
             ) : (
               <IconButton
                 onClick={() =>
-                  setReaderSetting('cropStyle', isPageCropped ? 2 : 1)
+                  setReaderSetting('cropBordersPaged', !isPageCropped)
                 }
                 className={css(
                   styles.cropIconContainer,
@@ -1621,6 +1639,7 @@ const Reader = () => {
                 styles.toolbarButton,
                 iconKey
               )}
+              onClick={() => setSettingsModalOpen(true)}
             >
               <Tooltip title="Settings" placement="top">
                 <SettingsIcon
@@ -2001,12 +2020,13 @@ const Reader = () => {
         </div>
       )}
       <Sidebar
+        disabled={!readerSettings.lightbarEnabled}
         outOf={currentPageState.length}
         Page={currentPage}
         isRightToLeft={isRightToLeft}
         doublePageDisplay={isDoublePage}
-        isVertical={readerSettings.sidebarStyle !== 'bottom'}
-        isRight={readerSettings.sidebarStyle === 'right'}
+        isVertical={readerSettings.lightbarVertical}
+        isRight={readerSettings.lightbarRight}
         onItemClick={(newPage: number) => {
           if (isInIntermediary !== -1) setIsInIntermediary(-1);
           changePage(newPage, true);

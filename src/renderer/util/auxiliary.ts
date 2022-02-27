@@ -124,6 +124,9 @@ export const settingsSchemata: {
       options: [
         { label: 'Right to Left', value: 'right-to-left' },
         { label: 'Left to Right', value: 'left-to-right' },
+        { label: 'Vertical', value: 'vertical' },
+        { label: 'Webtoon', value: 'webtoon' },
+        { label: 'Continuous Vertical', value: 'continuous-vertical' },
       ],
     },
     navLayoutPaged: {

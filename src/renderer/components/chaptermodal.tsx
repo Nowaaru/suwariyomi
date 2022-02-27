@@ -67,12 +67,14 @@ const ChapterModal = ({
   open: boolean;
 }) => {
   const Chapters = useRef(window.electron.read.get(source));
-  const [mangaObject, setManga] = useState<DatabaseManga>();
+  const [mangaObject, setManga] = useState<
+    DatabaseManga | Record<string, never>
+  >();
   const [errorOccured, setErrorOccured] = useState(false);
 
   // If manga is not in cache, pull from source
   useEffect(() => {
-    if (!mangaObject) {
+    if (!mangaObject || errorOccured) {
       const cacheManga = window.electron.library.getCachedManga(source, manga);
       if (cacheManga) return setManga(cacheManga);
 
@@ -81,9 +83,10 @@ const ChapterModal = ({
         .map(Handler.getSource)
         .filter((x) => x.getName().toLowerCase() === source.toLowerCase());
 
-      if (foundSource.length === 0)
-        throw new Error(`Source ${source} not found`);
-
+      if (foundSource.length === 0) {
+        window.electron.log.error(`Source ${source} not found`);
+        return setErrorOccured(true);
+      }
       const sourceObject = foundSource[0];
       sourceObject
         .getManga(manga, false)
@@ -91,12 +94,13 @@ const ChapterModal = ({
           return setManga(fullManga);
         })
         .catch((e) => {
-          throw new Error(e);
+          window.electron.log.error(e);
+          setErrorOccured(true);
         });
     }
 
     return undefined;
-  }, [mangaObject, source, manga]);
+  }, [mangaObject, source, manga, errorOccured]);
 
   return (
     <Dialog
@@ -114,6 +118,10 @@ const ChapterModal = ({
               An error occured while loading chapters.
               <Button
                 className={css(styles.chapterModalDialogErrorRetryButton)}
+                onClick={() => {
+                  setManga({});
+                  setErrorOccured(false);
+                }}
               >
                 Retry
               </Button>
@@ -135,7 +143,7 @@ const ChapterModal = ({
                         chapter.ChapterID === current && styles.selected,
                         styles.chapterModalDialogChapterItem
                       )}
-                      manga={mangaObject}
+                      manga={mangaObject as DatabaseManga}
                       key={chapter.ChapterID}
                     />
                   );

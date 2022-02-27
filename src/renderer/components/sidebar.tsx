@@ -174,6 +174,7 @@ const SidebarItem = ({
 };
 
 const SideBar = ({
+  disabled = false,
   isVertical = false,
   isRight = false,
   Page = 1,
@@ -243,7 +244,7 @@ const SideBar = ({
       : containerSpecificStylesheet.verticalL
     : containerSpecificStylesheet.horizontal;
 
-  return (
+  return disabled ? null : (
     <div className={css(containerSpecificStylesheet.container)}>
       <div
         className={css(

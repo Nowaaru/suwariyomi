@@ -22,6 +22,7 @@ import { resolveHtmlPath } from './util';
 import CacheDB from './util/cache';
 import MangaDB from './util/manga';
 import ReadDB from './util/read';
+import ReaderDB from './util/reader';
 import Settings from './util/settings';
 
 export default class AppUpdater {
@@ -212,6 +213,15 @@ ipcMain.on(
     newWindow.on('close', onClose);
   }
 );
+
+ipcMain.on('get-manga-settings', (event, id) => {
+  event.returnValue = ReaderDB.getMangaSettings(id);
+});
+
+ipcMain.on('set-manga-settings', (event, id, settings) => {
+  ReaderDB.setMangaSettings(id, settings);
+  event.returnValue = true;
+});
 
 ipcMain.on('electron-store-get', async (event, val) => {
   event.returnValue = ElectronStore.get(val);

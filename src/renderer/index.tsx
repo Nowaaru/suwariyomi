@@ -3,6 +3,7 @@ import { render } from 'react-dom';
 import { IpcRendererEvent } from 'electron';
 import { LibrarySources, FullManga } from '../main/util/manga';
 import { ReadDatabaseValue } from '../main/util/read';
+import type { DefaultSettings } from '../main/util/settings';
 import App from './App';
 
 /*
@@ -23,6 +24,15 @@ declare global {
         getSourceFiles: () => string[];
         getSourceDirectory: () => string;
         openInBrowser: (url: string) => void;
+      };
+      reader: {
+        getMangaSettings: (
+          mangaID: string
+        ) => Partial<DefaultSettings['reader']>;
+        setMangaSettings: (
+          mangaID: string,
+          settings: Partial<DefaultSettings['reader']>
+        ) => void;
       };
       library: {
         getSources: () => LibrarySources;
