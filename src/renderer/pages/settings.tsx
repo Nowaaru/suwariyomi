@@ -23,13 +23,11 @@ import CollectionsBookmarkSharpIcon from '@mui/icons-material/CollectionsBookmar
 import SettingsBackupRestoreTwoToneIcon from '@mui/icons-material/SettingsBackupRestoreTwoTone';
 
 import { useNavigate } from 'react-router-dom';
-import { mapValues } from 'lodash';
+import { omit, mapValues } from 'lodash';
 
 import type { DefaultSettings } from '../../main/util/settings';
-import { settingsSchemata } from '../util/auxiliary';
-
-import Select from '../components/select';
-import Switch from '../components/switch';
+import { Schema, settingsSchemata } from '../util/auxiliary';
+import { generateSettings } from '../util/func';
 
 const stylesObject = {
   container: {
@@ -215,7 +213,7 @@ const Settings = () => {
           },
         }}
       >
-        {(Object.keys(settings) as Array<keyof DefaultSettings>).map((key) => {
+        {Object.keys(omit(settings, '__internal__')).map((key) => {
           return (
             <Tab
               key={key}
@@ -227,7 +225,7 @@ const Settings = () => {
                 borderRight: 1,
                 borderColor: '#DF2935',
               }}
-              icon={categoryIcons[key] ?? undefined}
+              icon={categoryIcons[key as keyof DefaultSettings] ?? undefined}
               iconPosition="start"
               className={css(styles.tab)}
             />
@@ -237,93 +235,22 @@ const Settings = () => {
       <div className={css(styles.settingContainer)}>
         {[
           ...Object.values(
-            mapValues(settingsSchemata[settingsLocation], (value, key) => {
-              const {
-                type,
-                label,
-                description,
-                options,
-                default: defaultValue,
-              } = value;
+            mapValues(
+              settingsSchemata[settingsLocation] as Record<string, Schema>,
+              (value: Schema, key: string | number) =>
+                generateSettings(
+                  value,
+                  settings[settingsLocation][key],
+                  (settingsValue: any) => {
+                    const newSettings = { ...settings };
+                    newSettings[settingsLocation][key] = settingsValue;
 
-              const serializedOptions: {
-                [optionValue: string]: string;
-              } = {};
-
-              if (options) {
-                (options as { label: string; value: string }[]).forEach(
-                  (option) => {
-                    serializedOptions[option.value] = option.label;
+                    setSettings(newSettings);
                   }
-                );
-              }
-
-              // @ts-ignore Typescript is a godawful language.
-              const currentValue = settings[settingsLocation][key];
-              let elementToDisplay: JSX.Element | null = null;
-              switch (type) {
-                case 'select':
-                  elementToDisplay = (
-                    <Select
-                      value={String(currentValue ?? defaultValue)}
-                      values={serializedOptions}
-                      onChange={(event) => {
-                        setSettings((prevSettings) => {
-                          const newSettings = {
-                            ...prevSettings,
-                            [settingsLocation]: {
-                              ...prevSettings[settingsLocation],
-                              [key]: event.target?.value ?? defaultValue,
-                            },
-                          };
-
-                          return newSettings;
-                        });
-                      }}
-                    />
-                  );
-                  break;
-                case 'switch':
-                  elementToDisplay = (
-                    <Switch
-                      checked={currentValue ?? defaultValue}
-                      onChange={(
-                        event: React.ChangeEvent<HTMLInputElement>,
-                        isChecked: boolean
-                      ) => {
-                        setSettings((prevSettings) => {
-                          const newSettings = {
-                            ...prevSettings,
-                            [settingsLocation]: {
-                              ...prevSettings[settingsLocation],
-                              [key]: isChecked,
-                            },
-                          };
-
-                          return newSettings;
-                        });
-                      }}
-                    />
-                  );
-                  break;
-                default:
-                  elementToDisplay = null;
-                  break;
-              }
-
-              return (
-                <Box key={key} className={css(styles.optionContainer)}>
-                  <Typography className={css(styles.optionLabel)}>
-                    {label}
-                    <Typography className={css(styles.optionLabelDescription)}>
-                      {description}
-                    </Typography>
-                  </Typography>
-                  {elementToDisplay}
-                </Box>
-              );
-            })
+                )
+            )
           ),
+
           settingsLocation === 'advanced' && (
             <Box className={css(styles.optionContainer)}>
               <Typography className={css(styles.optionLabel)}>

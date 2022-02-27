@@ -1,19 +1,21 @@
 /* eslint-disable import/prefer-default-export */
 import type { DefaultSettings } from '../../main/util/settings';
 
+export type Schema = {
+  type: 'select' | 'switch' | 'switch' | 'managed'; // where Managed means that the component is provided by the developer and not the app
+  label?: string;
+  description?: string;
+  default?: any;
+  options?: {
+    label: string;
+    value: any;
+  }[];
+  optionsFunc?: () => any[];
+};
+
 export const settingsSchemata: {
   [settingsContainer in keyof DefaultSettings]: {
-    [containerKey in keyof DefaultSettings[settingsContainer]]: {
-      type: 'select' | 'switch' | 'switch' | 'managed'; // where Managed means that the component is provided by the developer and not the app
-      label?: string;
-      description?: string;
-      default?: any;
-      options?: {
-        label: string;
-        value: any;
-      }[];
-      optionsFunc?: () => any[];
-    };
+    [containerKey in keyof DefaultSettings[settingsContainer]]: Schema;
   };
 } = {
   general: {
