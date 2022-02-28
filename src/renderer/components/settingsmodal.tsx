@@ -103,7 +103,9 @@ const SettingsModal = ({
       className={css(styles.settingsModalDialog)}
       sx={{
         // Make the dialog fill a large portion of the screen
-        '& .MuiPaper-root': { width: '65%' },
+        '& .MuiPaper-root': {
+          width: '65%',
+        },
       }}
     >
       <DialogTitle className={css(styles.settingsModalDialogTitle)}>

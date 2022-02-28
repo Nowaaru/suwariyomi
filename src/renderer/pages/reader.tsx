@@ -618,6 +618,10 @@ const stylesObject = {
       color: '#CF1925',
     },
   },
+
+  flippedImage: {
+    transform: 'scaleX(-1)',
+  },
 };
 
 type StylesObject = Record<
@@ -730,7 +734,7 @@ const Reader = () => {
     DefaultSettings['reader']
   >({
     ...window.electron.settings.get('reader'),
-    ...window.electron.reader.getMangaSettings(mangaId),
+    ...window.electron.reader.getMangaSettings(sourceId, mangaId),
   });
 
   const webtoonKey = ['continuous-vertical', 'webtoon'].includes(
@@ -797,7 +801,7 @@ const Reader = () => {
   const [isDoublePage, setDoublePage] = useState(false);
 
   const setReaderSetting = (key: keyof typeof readerSettings, value: any) => {
-    window.electron.reader.setMangaSettings(mangaId, {
+    window.electron.reader.setMangaSettings(sourceId, mangaId, {
       ...readerSettings,
       [key]: value,
     });
@@ -1422,6 +1426,9 @@ const Reader = () => {
       />
     ));
 
+  const flipImage =
+    readerSettings.readingMode === 'webtoon' && styles.flippedImage;
+
   // If it's scroll based and there are pages to display, then we can show the pages.
   // So, when loading is true, we can put loading indicators on the top and bottom.
   // Otherwise, show nothing but the loading indicator.
@@ -1439,6 +1446,10 @@ const Reader = () => {
       <SettingsModal
         open={settingsModalOpen}
         onChange={(newSettings) => {
+          window.electron.reader.setMangaSettings(sourceId, mangaId, {
+            ...readerSettings,
+            ...newSettings,
+          });
           setReaderSettings((oldSettings) => ({
             ...oldSettings,
             ...newSettings,
@@ -1667,7 +1678,7 @@ const Reader = () => {
                 ) {
                   const firstPage = (
                     <img
-                      className={css(styles.mangaImage)}
+                      className={css(styles.mangaImage, flipImage)}
                       src={currentPageObject.src}
                       alt={`Page ${currentPage}`}
                     />
@@ -1676,7 +1687,7 @@ const Reader = () => {
                   const secondPage =
                     nextPageObject && isDoublePage ? (
                       <img
-                        className={css(styles.mangaImage)}
+                        className={css(styles.mangaImage, flipImage)}
                         src={nextPageObject.src}
                         alt={`Page ${currentPage + 1}`}
                       />

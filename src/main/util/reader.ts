@@ -11,15 +11,18 @@ const readerEnmap = new Enmap<
 });
 
 export default class {
-  static getMangaSettings(mangaID: string) {
-    return readerEnmap.get(mangaID);
+  static getMangaSettings(sourceID: string, mangaID: string) {
+    return readerEnmap.get(sourceID)?.[mangaID];
   }
 
   static setMangaSettings(
+    sourceID: string,
     mangaID: string,
     overrides: { [setting: string]: any }
   ) {
-    readerEnmap.set(mangaID, overrides);
+    const mangaSettings = readerEnmap.get(sourceID) || {};
+    mangaSettings[mangaID] = overrides;
+    readerEnmap.set(sourceID, mangaSettings);
   }
 
   static flush() {

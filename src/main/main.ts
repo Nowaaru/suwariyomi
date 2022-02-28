@@ -214,12 +214,12 @@ ipcMain.on(
   }
 );
 
-ipcMain.on('get-manga-settings', (event, id) => {
-  event.returnValue = ReaderDB.getMangaSettings(id);
+ipcMain.on('get-manga-settings', (event, sourceName, id) => {
+  event.returnValue = ReaderDB.getMangaSettings(sourceName, id);
 });
 
-ipcMain.on('set-manga-settings', (event, id, settings) => {
-  ReaderDB.setMangaSettings(id, settings);
+ipcMain.on('set-manga-settings', (event, sourceName, id, settings) => {
+  ReaderDB.setMangaSettings(sourceName, id, settings);
   event.returnValue = true;
 });
 

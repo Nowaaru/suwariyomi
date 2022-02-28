@@ -27,9 +27,11 @@ declare global {
       };
       reader: {
         getMangaSettings: (
+          sourceName: string,
           mangaID: string
         ) => Partial<DefaultSettings['reader']>;
         setMangaSettings: (
+          sourceName: string,
           mangaID: string,
           settings: Partial<DefaultSettings['reader']>
         ) => void;

@@ -18,11 +18,16 @@ window.electron = {
     },
   },
   reader: {
-    getMangaSettings: (mangaID) => {
-      return ipcRenderer.sendSync('get-manga-settings', mangaID);
+    getMangaSettings: (sourceID, mangaID) => {
+      return ipcRenderer.sendSync('get-manga-settings', sourceID, mangaID);
     },
-    setMangaSettings: (settings) => {
-      return ipcRenderer.sendSync('set-manga-settings', settings);
+    setMangaSettings: (sourceID, mangaID, settings) => {
+      return ipcRenderer.sendSync(
+        'set-manga-settings',
+        sourceID,
+        mangaID,
+        settings
+      );
     },
     flush: () => {
       return ipcRenderer.sendSync('flush-manga-settings');
