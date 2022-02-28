@@ -15,7 +15,7 @@ import fs from 'fs';
 import log from 'electron-log';
 import Store from 'electron-store';
 import pkceChallenge from 'pkce-challenge';
-import { app, BrowserWindow, shell, ipcMain } from 'electron';
+import { app, BrowserWindow, shell, ipcMain, ipcRenderer } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
@@ -359,6 +359,14 @@ const createWindow = async () => {
       nodeIntegrationInSubFrames: true, // Authentication window is a subframe; enabling this would be a vulnerability
     },
     titleBarStyle: process.platform === 'win32' ? 'hidden' : 'default',
+  });
+
+  mainWindow.on('enter-full-screen', () => {
+    mainWindow?.webContents.send('fullscreen-toggle', true);
+  });
+
+  mainWindow.on('leave-full-screen', () => {
+    mainWindow?.webContents.send('fullscreen-toggle', false);
   });
 
   log.info('loading index.html');

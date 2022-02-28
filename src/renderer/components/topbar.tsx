@@ -1,4 +1,6 @@
 import { StyleSheet, css } from 'aphrodite';
+import { useState, useEffect } from 'react';
+import type { IpcRendererEvent } from 'electron/renderer';
 import icon from '../../../assets/icons/main/32x32.png';
 
 export const Styling = StyleSheet.create({
@@ -65,7 +67,20 @@ const Topbar = () => {
   const doExit = () => ipcRenderer.exit();
   const doMinimize = () => ipcRenderer.minimize();
   const doMaximize = () => ipcRenderer.maximize();
-  return (
+  const [doHide, setHide] = useState(true);
+
+  useEffect(() => {
+    const handleFullscreen = (_: IpcRendererEvent, isVisible: boolean) => {
+      setHide(isVisible);
+    };
+    ipcRenderer.on('fullscreen-toggle', handleFullscreen);
+
+    return () => {
+      ipcRenderer.off('fullscreen-toggle', handleFullscreen);
+    };
+  }, [setHide, ipcRenderer]);
+
+  return doHide ? null : (
     <div className={css(Styling.topbar)}>
       <div className={css(Styling.icon)}>
         <img src={icon} alt="Icon" title="Suwariyomi" />
