@@ -1,5 +1,3 @@
-import { IconButton } from '@mui/material';
-
 const ReaderButton = ({
   className,
   divClassName,

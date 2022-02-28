@@ -16,17 +16,13 @@ import {
   IconButton,
   CircularProgress,
   Tooltip,
-  useScrollTrigger,
 } from '@mui/material';
 
 import dayjs from 'dayjs';
 import dayjs_duration from 'dayjs/plugin/duration';
 
-import KeyboardArrowUpOutlinedIcon from '@mui/icons-material/KeyboardArrowUpOutlined';
-import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined';
 import ArrowForwardIosSharp from '@mui/icons-material/ArrowForwardIosSharp';
 import ArrowBackIosNewSharp from '@mui/icons-material/ArrowBackIosNewSharp';
-import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import LooksOneIcon from '@mui/icons-material/LooksOne'; // Used for the double-
 import LooksTwoIcon from '@mui/icons-material/LooksTwo';
@@ -54,10 +50,8 @@ import useQuery from '../util/hook/usequery';
 import SourceBase from '../../main/sources/static/base';
 import LoadingModal from '../components/loading';
 import ChapterModal from '../components/chaptermodal';
-import useOnScreen from '../util/hook/useonscreen';
 import ReaderButton from '../components/readerbutton';
 import useMountEffect from '../util/hook/usemounteffect';
-import useForceUpdate from '../util/hook/useforceupdate';
 import { DefaultSettings } from '../../main/util/settings';
 
 type ViewStyles =
@@ -685,7 +679,6 @@ type PageItem = {
 };
 
 const Reader = () => {
-  const forceUpdate = useForceUpdate();
   const [isLoading, setIsLoading] = useState(true);
   const [toolbarState, setToolbarState] = useState({
     isButtonHover: false,
@@ -707,15 +700,6 @@ const Reader = () => {
   );
 
   const imageContainerRef = useRef<HTMLDivElement>(null);
-  const [bottomIntermediaryObject, setBottomIntermediaryObject] =
-    useState<HTMLDivElement | null>(null);
-  const [topIntermediaryObject, setTopIntermediaryObject] =
-    useState<HTMLDivElement | null>(null);
-  const [topRefOnScreen, bottomRefOnScreen] = [
-    useOnScreen(imageContainerRef, topIntermediaryObject),
-    useOnScreen(imageContainerRef, bottomIntermediaryObject),
-  ];
-
   const [chapterModalOpen, setChapterModalOpen] = useState(false);
   const [settingsModalOpen, setSettingsModalOpen] = useState(false);
   const [isInIntermediary, setIsInIntermediary] = useState<0 | 1 | -1>(-1); // -1: not in intermediary state, 0: going to previous chapter, 1: going to next chapter
@@ -1784,7 +1768,6 @@ const Reader = () => {
                     styles.continuousScrollIntermediary,
                     styles.continuousScrollPreviousChapterIntermediary
                   )}
-                  ref={(Node) => setTopIntermediaryObject(Node)}
                   key={`previous-${page.chapter}`}
                 >
                   <span className={css(styles.chapterHeader)}>Previous:</span>
@@ -1812,7 +1795,6 @@ const Reader = () => {
                     styles.continuousScrollNextChapterIntermediary
                   )}
                   key={`next-${page.chapter}`}
-                  ref={(Node) => setBottomIntermediaryObject(Node)}
                 >
                   <span className={css(styles.chapterHeader)}>Finished:</span>
                   {generateChapterText(currentVolume, currentChapter)}

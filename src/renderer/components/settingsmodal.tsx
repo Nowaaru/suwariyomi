@@ -7,7 +7,7 @@ import {
   Typography,
 } from '@mui/material';
 import { StyleSheet, css } from 'aphrodite';
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState } from 'react';
 
 import { generateSettings } from '../util/func';
 import { settingsSchemata } from '../util/auxiliary';
