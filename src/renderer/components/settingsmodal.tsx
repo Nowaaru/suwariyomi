@@ -84,12 +84,12 @@ const SettingsModal = ({
     },
     Webtoon: {
       '': [
-        'navLayoutWebtoon',
         'invertTappingWebtoon',
-        'zoomStartPosition',
-        'pageLayoutWebtoon',
         'invertDoublePagesWebtoon',
         'allowZoomOutWebtoon',
+        'navLayoutWebtoon',
+        'zoomStartPosition',
+        'pageLayoutWebtoon',
       ],
     },
     Filter: {},
