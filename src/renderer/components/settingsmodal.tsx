@@ -16,7 +16,6 @@ import type { DefaultSettings } from '../../main/util/settings';
 const stylesObject = {
   settingsModalDialog: {},
   settingsModalDialogContent: {
-    minWidth: '45%',
     height: 'fit-content',
 
     backgroundColor: '#111111',
@@ -104,7 +103,8 @@ const SettingsModal = ({
       sx={{
         // Make the dialog fill a large portion of the screen
         '& .MuiPaper-root': {
-          width: '65%',
+          width: '50%',
+          maxWidth: 'unset',
         },
       }}
     >
