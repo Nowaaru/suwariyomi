@@ -700,6 +700,7 @@ const Reader = () => {
   );
 
   const imageContainerRef = useRef<HTMLDivElement>(null);
+
   const [chapterModalOpen, setChapterModalOpen] = useState(false);
   const [settingsModalOpen, setSettingsModalOpen] = useState(false);
   const [isInIntermediary, setIsInIntermediary] = useState<0 | 1 | -1>(-1); // -1: not in intermediary state, 0: going to previous chapter, 1: going to next chapter
@@ -825,6 +826,14 @@ const Reader = () => {
     currentchapter: undefined,
     page: Number.isNaN(Number(pageNumber)) ? 1 : Number(pageNumber),
   });
+
+  const currentDatabaseChapter = useMemo(() => {
+    if (readerData.currentchapter)
+      return window.electron.read.get(sourceId)?.[
+        readerData.currentchapter.ChapterID
+      ];
+    return undefined;
+  }, [readerData.currentchapter, sourceId]);
 
   const timeStartedChapter = useMemo(() => {
     return dayjs();
@@ -1088,19 +1097,30 @@ const Reader = () => {
       chapterPageNumber: number,
       isBookmarked = chapterIsBookmarked
     ) => {
+      const currentChapterData =
+        window.electron.read.get(sourceId)?.[currentChapterId];
+
       return window.electron.read.set(
         selectedSource.getName(),
         currentChapterId,
         chapterPageCount,
-        chapterPageNumber,
+        (currentDatabaseChapter?.currentPage ?? -1) >= chapterPageCount
+          ? chapterPageCount
+          : chapterPageNumber,
         Date.now(),
-        window.electron.read.get(sourceId)?.[currentChapterId]?.timeElapsed ??
-          0,
+        currentChapterData?.timeElapsed ?? 0,
         isBookmarked,
         mangaId
       );
     },
-    [chapterId, chapterIsBookmarked, mangaId, selectedSource, sourceId]
+    [
+      chapterId,
+      chapterIsBookmarked,
+      currentDatabaseChapter,
+      mangaId,
+      selectedSource,
+      sourceId,
+    ]
   );
 
   const changePage = useCallback(
