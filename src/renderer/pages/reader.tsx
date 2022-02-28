@@ -434,6 +434,7 @@ const stylesObject = {
   },
 
   button: {
+    zIndex: 1025,
     display: 'flex',
     color: 'white',
     position: 'absolute',
@@ -1127,7 +1128,7 @@ const Reader = () => {
       if (!readerData.currentchapter) return;
       if (doScrollBasedChange || newPageNumber !== currentPage) {
         setRead(
-          readerData.currentchapter.ChapterID, // CurrentChapter will alway
+          readerData.currentchapter.ChapterID,
           readerData.currentchapter.PageCount,
           newPageNumber,
           chapterIsBookmarked
@@ -1138,6 +1139,7 @@ const Reader = () => {
           const pageObject = document.getElementById(
             `chapter-:${readerData.currentchapter.ChapterID}:-page-:${newPageNumber}:`
           );
+
           if (pageObject) {
             // Scroll to the page object.
             pageObject.scrollIntoView({
@@ -1163,6 +1165,7 @@ const Reader = () => {
     (goTo: -1 | 1) => {
       if (!currentPageState) return;
       if (!readerData.currentchapter) return;
+      if (!imageContainerRef.current) return;
 
       const isAtStart = currentPage === 1;
       const isAtEnd =
@@ -1178,6 +1181,11 @@ const Reader = () => {
           (isAtStart && normalizedGoTo === 0) ||
           (isAtEnd && normalizedGoTo === 1)
         ) {
+          if (isScrollBased)
+            imageContainerRef.current.scrollTo({
+              top: isAtStart ? 0 : imageContainerRef.current?.scrollHeight,
+              behavior: 'smooth',
+            });
           return setIsInIntermediary(normalizedGoTo);
         }
       }
@@ -1199,6 +1207,16 @@ const Reader = () => {
           return changeChapter(normalizedGoTo);
         }
 
+        if (isScrollBased)
+          document
+            .getElementById(
+              `chapter-:${readerData.currentchapter.ChapterID}:-page-:${readerData.page}:`
+            )
+            ?.scrollIntoView({
+              behavior: 'smooth',
+              block: 'center',
+              inline: 'center',
+            });
         return setIsInIntermediary(-1);
       }
 
@@ -1206,18 +1224,20 @@ const Reader = () => {
         ? clamp(currentPage + readOrderGoTo * 2, 1, currentPageState.length)
         : currentPage + readOrderGoTo;
 
-      changePage(pageToChangeTo);
+      changePage(pageToChangeTo, true, 'smooth');
     },
     [
-      readerData.currentchapter,
-      isDoublePage,
       currentPageState,
-      isRightToLeft,
+      readerData.currentchapter,
+      readerData.page,
       currentPage,
+      isDoublePage,
+      isRightToLeft,
       isInIntermediary,
-      changeChapter,
       changePage,
+      isScrollBased,
       setRead,
+      changeChapter,
     ]
   );
 

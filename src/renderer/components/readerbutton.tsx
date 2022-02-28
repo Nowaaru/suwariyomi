@@ -8,6 +8,7 @@ const ReaderButton = ({
   onClick,
   onMouseMove,
   onMouseLeave,
+  onWheelCapture,
   clickIcon,
 }: {
   className?: string;
@@ -17,6 +18,7 @@ const ReaderButton = ({
   onClick?: VoidFunction;
   onMouseMove?: VoidFunction;
   onMouseLeave?: VoidFunction;
+  onWheelCapture?: (event: React.WheelEvent<HTMLDivElement>) => void;
   clickIcon?: JSX.Element;
 }) => {
   return !disabled ? (
@@ -27,6 +29,7 @@ const ReaderButton = ({
       onMouseMoveCapture={onMouseMove}
       onMouseLeave={onMouseLeave}
       role="button"
+      onWheelCapture={onWheelCapture}
       tabIndex={-1}
     >
       <div className={divClassName}>{clickIcon}</div>
@@ -41,6 +44,7 @@ ReaderButton.defaultProps = {
   onClick: () => {},
   onMouseMove: () => {},
   onMouseLeave: () => {},
+  onWheelCapture: () => {},
   clickIcon: <div />,
 };
 
