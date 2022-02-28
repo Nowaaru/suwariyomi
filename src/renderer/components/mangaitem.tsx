@@ -314,6 +314,10 @@ const MangaItem = ({
     (x) => firstUnreadChapter?.ChapterID === x.ChapterID
   );
 
+  const unreadChapterCurrentPage = Math.max(
+    1,
+    firstUnreadCachedChapter?.currentPage ?? 1
+  );
   const viewParams = `/view?source=${source}&title=${title}&id=${mangaid}&backto=${backto}`;
   switch (displayType) {
     case 'list':
@@ -373,7 +377,7 @@ const MangaItem = ({
                             // firstUnreadCachedChapter depends on firstUnreadChapter. If the latter does not exist, the former does not either.
                             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                             firstUnreadChapter!.Chapter
-                          } - Page ${firstUnreadCachedChapter.currentPage} of ${
+                          } - Page ${unreadChapterCurrentPage} of ${
                             firstUnreadCachedChapter.pageCount
                           }`;
                         }
@@ -410,7 +414,7 @@ const MangaItem = ({
                               mangaData.Name,
                               source,
                               firstUnreadChapter.ChapterID,
-                              firstUnreadCachedChapter?.currentPage ?? 1
+                              unreadChapterCurrentPage // Check for <1 in case of setting to unread via `view.tsx`.
                             )
                           );
                         }}
