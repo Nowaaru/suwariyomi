@@ -1,11 +1,13 @@
 import { Paper, Button, Checkbox, IconButton, Tooltip } from '@mui/material';
+import { useState } from 'react';
 import { StyleSheet, css } from 'aphrodite';
-import { useNavigate } from 'react-router-dom';
 
 import dayjs from 'dayjs';
 import dayjs_advancedFormat from 'dayjs/plugin/advancedFormat';
 import DownloadIcon from '@mui/icons-material/Download';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import DownloadDoneIcon from '@mui/icons-material/DownloadDone';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 
@@ -116,6 +118,30 @@ const styles = StyleSheet.create({
   bookmarksButtonFilled: {
     color: '#DF2935',
   },
+
+  markAsReadButton: {
+    float: 'right',
+  },
+
+  markUnreadIcon: {
+    color: '#DF2935',
+    width: '24px',
+    height: '24px',
+    transition: 'color 0.2s ease-in-out',
+    ':hover': {
+      color: 'white',
+    },
+  },
+
+  markReadIcon: {
+    color: '#DF2935',
+    transition: 'color 0.2s ease-in-out',
+    width: '24px',
+    height: '24px',
+    ':hover': {
+      color: 'white',
+    },
+  },
 });
 
 dayjs.extend(dayjs_advancedFormat);
@@ -123,6 +149,7 @@ dayjs.extend(dayjs_advancedFormat);
 const Chapter = ({
   onReadClick,
 
+  modifierShift,
   downloadable,
   dbchapter,
   className,
@@ -133,25 +160,21 @@ const Chapter = ({
   onReadClick: (chapterId: string) => void;
 
   downloadable: boolean;
+  modifierShift?: boolean;
   dbchapter?: ReadDatabaseValue[string];
   className?: string;
   chapter: DatabaseChapter;
   source: string;
   manga: DatabaseManga;
 }) => {
-  const Navigate = useNavigate();
-
-  const {
-    pageCount = -1,
-    currentPage = -1,
-    lastRead = -1,
-    timeElapsed = 0,
-  } = dbchapter ?? {};
+  const { pageCount = -1, lastRead = -1, timeElapsed = 0 } = dbchapter ?? {};
+  const [currentPage, setCurrentPage] = useState(dbchapter?.currentPage ?? -1);
   const isRead =
     dbchapter &&
     currentPage !== -1 &&
     pageCount !== -1 &&
     currentPage === pageCount;
+
   const isBookmarked = dbchapter && dbchapter.isBookmarked;
 
   return (
@@ -230,33 +253,49 @@ const Chapter = ({
         icon={<BookmarkBorderIcon className={css(styles.bookmarksButton)} />}
         onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
           const { checked } = event.target;
-          if (checked)
-            // TODO: try using array + deconstruction here?
-            window.electron.read.set(
-              source,
-              chapter.ChapterID,
-              pageCount,
-              currentPage,
-              lastRead,
-              timeElapsed,
-              true,
-              manga.MangaID
-            );
-          else
-            window.electron.read.set(
-              source,
-              chapter.ChapterID,
-              pageCount,
-              currentPage,
-              lastRead,
-              timeElapsed,
-              false,
-              manga.MangaID
-            );
+          window.electron.read.set(
+            source,
+            chapter.ChapterID,
+            pageCount,
+            currentPage,
+            lastRead,
+            timeElapsed,
+            checked,
+            manga.MangaID
+          );
         }}
         defaultChecked={isBookmarked}
       />
-      {downloadable ? (
+      {modifierShift ? (
+        <Checkbox
+          defaultChecked={isRead}
+          checkedIcon={
+            <VisibilityOffIcon className={css(styles.markUnreadIcon)} />
+          }
+          sx={{
+            '&:hover': {
+              backgroundColor: 'transparent !important',
+            },
+          }}
+          icon={<VisibilityIcon className={css(styles.markReadIcon)} />}
+          onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+            const { checked } = event.target;
+            const newCurrentPage = checked ? pageCount : -1;
+            window.electron.read.set(
+              source,
+              chapter.ChapterID,
+              pageCount,
+              newCurrentPage,
+              lastRead,
+              timeElapsed,
+              !!isBookmarked,
+              manga.MangaID
+            );
+
+            setCurrentPage(newCurrentPage);
+          }}
+        />
+      ) : downloadable ? (
         <IconButton className={css(styles.downloadButton)}>
           <DownloadIcon
             className={css(
@@ -271,6 +310,7 @@ const Chapter = ({
 };
 
 Chapter.defaultProps = {
+  modifierShift: false,
   dbchapter: {},
   className: '',
 };

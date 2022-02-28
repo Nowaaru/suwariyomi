@@ -21,6 +21,7 @@ import HeartBrokenIcon from '@mui/icons-material/HeartBroken';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 
 import useMountEffect from '../util/hook/usemounteffect';
+import useKeyboard from '../util/hook/usekeyboard';
 
 import { FullManga } from '../../main/util/manga';
 import { ReadDatabaseValue } from '../../main/util/read';
@@ -466,8 +467,25 @@ const View = () => {
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
   const [isHovering, setIsHovering] = useState<boolean>(false);
   const [scrollTarget, setScrollTarget] = useState<Node | undefined>();
+  const [shiftPressed, setShiftPressed] = useState<boolean>(false);
   const { id, source, backto } = Object.fromEntries(
     Query as unknown as URLSearchParams
+  );
+
+  useKeyboard(
+    'down',
+    (e) => {
+      if (e.key === 'Shift') setShiftPressed(true);
+    },
+    [setShiftPressed]
+  );
+
+  useKeyboard(
+    'up',
+    (e) => {
+      if (e.key === 'Shift') setShiftPressed(false);
+    },
+    [setShiftPressed]
   );
 
   const [isInLibrary, setInLibrary] = useState<boolean>(
@@ -785,6 +803,7 @@ const View = () => {
                           )
                         );
                       }}
+                      modifierShift={shiftPressed}
                       key={`${x.ChapterID}-chapter`}
                       downloadable={selectedSource.canDownload}
                       dbchapter={foundChapter}
