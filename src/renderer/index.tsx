@@ -95,6 +95,10 @@ declare global {
           channel: string,
           func: (event: IpcRendererEvent, ...args: any[]) => void
         ) => void;
+        off: (
+          channel: string,
+          func: (event: IpcRendererEvent, ...args: any[]) => void
+        ) => void;
         once: (
           channel: string,
           func: (event: IpcRendererEvent, ...args: any[]) => void

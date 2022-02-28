@@ -4,6 +4,9 @@ const log = require('electron-log');
 
 log.catchErrors();
 log.info('preload.js: started');
+
+const ipcValidChannels = ['fullscreen-toggle'];
+
 window.electron = {
   log: log.functions,
   util: {
@@ -177,17 +180,18 @@ window.electron = {
       ipcRenderer.send('close-application');
     },
     on(channel, func) {
-      const validChannels = ['ipc-example'];
-      if (validChannels.includes(channel)) {
-        // Deliberately strip event as it includes `sender`
-        ipcRenderer.on(channel, (event, ...args) => func(...args));
+      if (ipcValidChannels.includes(channel)) {
+        ipcRenderer.on(channel, func);
+      }
+    },
+    off(channel, func) {
+      if (ipcValidChannels.includes(channel)) {
+        ipcRenderer.off(channel, func);
       }
     },
     once(channel, func) {
-      const validChannels = ['ipc-example'];
-      if (validChannels.includes(channel)) {
-        // Deliberately strip event as it includes `sender`
-        ipcRenderer.once(channel, (event, ...args) => func(...args));
+      if (ipcValidChannels.includes(channel)) {
+        ipcRenderer.once(channel, func);
       }
     },
   },
