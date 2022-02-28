@@ -188,7 +188,7 @@ export const settingsSchemata: {
     },
     navLayoutWebtoon: {
       type: 'select',
-      label: 'Page Layout (Webtoon)',
+      label: 'Navigation Layout (Webtoon)',
       description:
         'Where you need to tap to navigate to the next/previous page.',
       default: 'left-and-right',
