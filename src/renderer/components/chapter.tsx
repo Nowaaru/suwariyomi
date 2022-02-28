@@ -170,10 +170,7 @@ const Chapter = ({
   const { pageCount = -1, lastRead = -1, timeElapsed = 0 } = dbchapter ?? {};
   const [currentPage, setCurrentPage] = useState(dbchapter?.currentPage ?? -1);
   const isRead =
-    dbchapter &&
-    currentPage !== -1 &&
-    pageCount !== -1 &&
-    currentPage === pageCount;
+    dbchapter && currentPage !== -1 && currentPage >= chapter.PageCount;
 
   const isBookmarked = dbchapter && dbchapter.isBookmarked;
 
@@ -256,7 +253,7 @@ const Chapter = ({
           window.electron.read.set(
             source,
             chapter.ChapterID,
-            pageCount,
+            chapter.PageCount,
             currentPage,
             lastRead,
             timeElapsed,
@@ -280,11 +277,11 @@ const Chapter = ({
           icon={<VisibilityIcon className={css(styles.markReadIcon)} />}
           onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
             const { checked } = event.target;
-            const newCurrentPage = checked ? pageCount : -1;
+            const newCurrentPage = checked ? chapter.PageCount : -1;
             window.electron.read.set(
               source,
               chapter.ChapterID,
-              pageCount,
+              chapter.PageCount,
               newCurrentPage,
               lastRead,
               timeElapsed,
