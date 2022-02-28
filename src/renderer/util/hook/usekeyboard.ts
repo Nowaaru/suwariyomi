@@ -1,12 +1,18 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
-const useKeyboard = (callback: (event: KeyboardEvent) => void, deps: any[]) => {
+const useKeyboard = (
+  variant: 'up' | 'down' = 'up',
+  callback: (event: KeyboardEvent) => void,
+  deps: any[]
+) => {
   useEffect(() => {
-    window.addEventListener('keydown', callback);
+    window.addEventListener(`key${variant}`, callback);
     return () => {
-      window.removeEventListener('keydown', callback);
+      window.removeEventListener(`key${variant}`, callback);
     };
     // Disable rule because of spreading deps
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [callback, ...deps]);
 };
+
+export default useKeyboard;
