@@ -372,7 +372,10 @@ const MangaItem = ({
                     </Button>
                     <Tooltip
                       title={(() => {
-                        if (firstUnreadCachedChapter) {
+                        if (
+                          firstUnreadCachedChapter &&
+                          firstUnreadCachedChapter.pageCount !== -1
+                        ) {
                           return `Chapter ${
                             // firstUnreadCachedChapter depends on firstUnreadChapter. If the latter does not exist, the former does not either.
                             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
