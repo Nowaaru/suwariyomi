@@ -1056,12 +1056,12 @@ const Reader = () => {
       .catch(window.electron.log.info);
   }, [readerData, chapterId, selectedSource, pageState]);
   const doToolbarShow =
-    (toolbarState.isOpen || toolbarState.isHovering) && !chapterModalOpen
+    (toolbarState.isOpen || toolbarState.isHovering) && !modalIsOpen
       ? styles.visible
       : styles.invisibleToolbar;
 
   const doButtonShow =
-    (toolbarState.isButtonHover || toolbarState.isHovering) && !chapterModalOpen
+    (toolbarState.isButtonHover || toolbarState.isHovering) && !modalIsOpen
       ? styles.visible
       : styles.invisibleButton;
 
