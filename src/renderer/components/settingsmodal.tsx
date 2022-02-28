@@ -50,8 +50,8 @@ const stylesObject = {
     marginLeft: '8px',
   },
 };
-const styles = StyleSheet.create(stylesObject);
 
+const styles = StyleSheet.create(stylesObject);
 const SettingsModal = ({
   onChange,
   onClose,
