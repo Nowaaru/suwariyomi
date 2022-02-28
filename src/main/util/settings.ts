@@ -1,3 +1,4 @@
+/* eslint-disable prefer-object-spread */
 // Settings for the application itself.
 // Others typically use Enmap, but this time we'll
 // be using Electron-Store; since it's very light-weight
@@ -291,12 +292,19 @@ const Settings = new SettingsDatabase({
   encryptionKey: String(Date.now()),
   migrations: {
     '>=0.11.0': (settings) => {
-      const newSettings = { ...settings.store };
-      if (newSettings.reader.lightbarEnabled === undefined) {
-        newSettings.reader.lightbarVertical = false;
-        newSettings.reader.lightbarRight = false;
-        newSettings.reader.lightbarEnabled = true;
-      }
+      const newSettings = {
+        ...settings.store,
+        reader: Object.assign(
+          {
+            lightbarVertical: false,
+            lightbarRight: false,
+            lightbarEnabled: true,
+            navLayoutPaged: 'left-and-right',
+            navLayoutWebtoon: 'top-and-bottom',
+          },
+          settings.store.reader
+        ),
+      };
 
       return (settings.store = newSettings);
     },

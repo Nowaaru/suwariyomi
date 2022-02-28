@@ -60,7 +60,12 @@ import useMountEffect from '../util/hook/usemounteffect';
 import useForceUpdate from '../util/hook/useforceupdate';
 import { DefaultSettings } from '../../main/util/settings';
 
-type ViewStyles = 'horizontal' | 'vertical' | 'continuous-vertical' | 'webtoon';
+type ViewStyles =
+  | 'left-to-right'
+  | 'right-to-left'
+  | 'vertical'
+  | 'continuous-vertical'
+  | 'webtoon';
 
 type TapStyles =
   | 'default'
@@ -118,9 +123,10 @@ const TapStylesPageEffects: {
 };
 
 const viewStyleDefaults: { [key in ViewStyles]: TapStyles } = {
-  horizontal: 'left-and-right',
   vertical: 'top-and-bottom',
   webtoon: 'left-and-right',
+  'right-to-left': 'left-and-right',
+  'left-to-right': 'left-and-right',
   'continuous-vertical': 'none',
 };
 
