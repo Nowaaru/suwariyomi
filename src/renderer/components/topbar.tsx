@@ -1,5 +1,5 @@
 import { StyleSheet, css } from 'aphrodite';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import type { IpcRendererEvent } from 'electron/renderer';
 import icon from '../../../assets/icons/main/32x32.png';
 
@@ -69,16 +69,18 @@ const Topbar = () => {
   const doMaximize = () => ipcRenderer.maximize();
   const [doHide, setHide] = useState(true);
 
+  const handleFullscreen = useCallback(
+    (_: IpcRendererEvent, isVisible: boolean) => setHide(isVisible),
+    [setHide]
+  );
+
   useEffect(() => {
-    const handleFullscreen = (_: IpcRendererEvent, isVisible: boolean) => {
-      setHide(isVisible);
-    };
     ipcRenderer.on('fullscreen-toggle', handleFullscreen);
 
     return () => {
       ipcRenderer.off('fullscreen-toggle', handleFullscreen);
     };
-  }, [setHide, ipcRenderer]);
+  }, [setHide, ipcRenderer, handleFullscreen]);
 
   return doHide ? null : (
     <div className={css(Styling.topbar)}>

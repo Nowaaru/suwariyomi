@@ -361,12 +361,25 @@ const createWindow = async () => {
     titleBarStyle: process.platform === 'win32' ? 'hidden' : 'default',
   });
 
+  const toggleFullscreen = (fullStatus: boolean) => {
+    log.info(`Fullscreen is now toggled ${fullStatus ? 'on' : 'off'}.`);
+    mainWindow?.webContents.send('fullscreen-toggle', fullStatus);
+  };
+
   mainWindow.on('enter-full-screen', () => {
-    mainWindow?.webContents.send('fullscreen-toggle', true);
+    toggleFullscreen(true);
   });
 
   mainWindow.on('leave-full-screen', () => {
-    mainWindow?.webContents.send('fullscreen-toggle', false);
+    toggleFullscreen(false);
+  });
+
+  mainWindow.on('enter-html-full-screen', () => {
+    toggleFullscreen(true);
+  });
+
+  mainWindow.on('leave-html-full-screen', () => {
+    toggleFullscreen(false);
   });
 
   log.info('loading index.html');
