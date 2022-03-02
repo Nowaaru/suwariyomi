@@ -52,6 +52,10 @@ const styles = StyleSheet.create({
     },
   },
 
+  noOverflow: {
+    overflow: 'hidden',
+  },
+
   specific: {},
 
   loadingObject: {
@@ -60,7 +64,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
-    height: 'fit-content',
+    height: '100%',
   },
 
   noResultsSpan: {
@@ -774,7 +778,8 @@ const SearchPage = () => {
         }}
         className={css(
           styles.container,
-          specifiedSource ? styles.specific : false
+          specifiedSource ? styles.specific : false,
+          isLoadingMoreResults ? styles.noOverflow : false
         )}
       >
         {returnButton}
