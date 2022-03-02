@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState, useCallback } from 'react';
 import { StyleSheet, css } from 'aphrodite';
 import { URLSearchParams } from 'url';
 import { useNavigate } from 'react-router-dom';
@@ -351,6 +351,7 @@ const styles = StyleSheet.create({
   },
 
   mangaProgressBarFiller: {
+    transition: 'width 0.3s ease-in-out',
     height: '100%',
     backgroundColor: '#FFFFFF',
     borderRadius: '4px',
@@ -468,6 +469,8 @@ const View = () => {
   const [isHovering, setIsHovering] = useState<boolean>(false);
   const [scrollTarget, setScrollTarget] = useState<Node | undefined>();
   const [shiftPressed, setShiftPressed] = useState<boolean>(false);
+  const [chaptersRead, setChaptersRead] = useState<number>(0);
+  const [chaptersNoDuplicates, setChaptersNoDuplicates] = useState<number>(0);
   const { id, source, backto } = Object.fromEntries(
     Query as unknown as URLSearchParams
   );
@@ -507,14 +510,8 @@ const View = () => {
   }, [id, source, Navigate, mappedFileNamesRef]);
 
   const selectedSource = mappedFileNamesRef.current[0];
-  useMountEffect(() => {
-    const sourceChapters = window.electron.read.get(selectedSource.getName());
-    if (!sourceChapters) return;
-
-    chapterData.current = sourceChapters;
-  });
-
   const mangaData = useRef<FullManga | null>(null);
+
   useMountEffect(() => {
     const cachedManga = window.electron.library.getCachedManga(source, id);
     if (cachedManga) {
@@ -522,9 +519,9 @@ const View = () => {
         cachedManga.Chapters,
         'en' //
       );
+
       mangaData.current = cachedManga;
       setIsLoaded(true);
-
       return;
     }
 
@@ -547,6 +544,51 @@ const View = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   });
 
+  const calculateReadChaptersNoDuplicates = useCallback(
+    () =>
+      mangaData?.current?.Chapters?.filter(
+        (value, index, self) =>
+          self.findIndex(
+            (secondValue) => secondValue.Chapter === value.Chapter
+          ) === index
+      ),
+    [mangaData]
+  );
+
+  const calculateReadChapters = useCallback(
+    () =>
+      calculateReadChaptersNoDuplicates()?.filter((x) => {
+        const foundChapter = chapterData.current[x.ChapterID];
+        if (!foundChapter) return false;
+
+        return (
+          foundChapter.currentPage > -1 &&
+          foundChapter.pageCount > -1 &&
+          foundChapter.currentPage >= foundChapter.pageCount
+        );
+      }),
+    [calculateReadChaptersNoDuplicates, chapterData]
+  );
+
+  useEffect(() => {
+    const sourceChapters = window.electron.read.get(selectedSource.getName());
+    if (!sourceChapters) return console.log('bruh 1');
+    if (!mangaData.current) return console.log('bruh 2');
+
+    chapterData.current = sourceChapters;
+    const ChaptersNoDuplicates = calculateReadChaptersNoDuplicates();
+    const readChapters = calculateReadChapters();
+
+    console.log(ChaptersNoDuplicates?.length, readChapters?.length);
+    setChaptersRead(readChapters?.length ?? 0);
+    setChaptersNoDuplicates(ChaptersNoDuplicates?.length ?? 0);
+  }, [
+    mangaData,
+    selectedSource,
+    calculateReadChapters,
+    calculateReadChaptersNoDuplicates,
+  ]);
+
   const currentManga: FullManga | null = mangaData.current;
   if (currentManga) {
     sortChapters(currentManga.Chapters);
@@ -564,7 +606,7 @@ const View = () => {
 
       return (
         (foundChapter.pageCount > -1 &&
-          foundChapter.currentPage < foundChapter.pageCount) ||
+          foundChapter.currentPage < x.PageCount) ||
         foundChapter.currentPage <= -1
       );
     }); // We don't need a second find function here because .find() is a linear search; so it will find an in-progess chapter before it finds an unread chapter.
@@ -595,47 +637,20 @@ const View = () => {
           } Reading ${readChapterData}`
         : `Start Reading ${readChapterData}`;
 
-      let { Chapter: mangaProgressCurrent, Volume: mangaProgressScalar = 1 } =
-        chapterToDisplay;
-      let { Chapter: mangaProgressEnd, Volume: mangaProgressEndScalar = 1 } =
-        currentManga.Chapters[0]; // This is [0] because the chapters are sorted in descending order.
+      let { Chapter: mangaProgressCurrent } = chapterToDisplay;
+      let { Chapter: mangaProgressEnd } = currentManga.Chapters[0]; // This is [0] because the chapters are sorted in descending order.
 
-      [
+      [mangaProgressCurrent, mangaProgressEnd] = [
         mangaProgressCurrent,
         mangaProgressEnd,
-        mangaProgressScalar,
-        mangaProgressEndScalar,
-      ] = [
-        mangaProgressCurrent,
-        mangaProgressEnd,
-        mangaProgressScalar,
-        mangaProgressEndScalar,
       ].map((x) => (!Number.isNaN(Number(x)) ? Number(x) : 0));
       // If a source author provided a bad value, then just set it to 0.
 
       mangaProgressBar =
-        ((Math.max(0, mangaProgressCurrent - 1) * mangaProgressScalar) /
-          (Math.max(0, mangaProgressEnd - 1) * mangaProgressEndScalar)) *
+        (Math.max(0, mangaProgressCurrent - 1) /
+          Math.max(0, mangaProgressEnd - 1)) *
         100; // Subtract one because the chapters are 1-indexed.
     }
-
-    const ChaptersNoDuplicates = currentManga.Chapters.filter(
-      (value, index, self) =>
-        self.findIndex(
-          (secondValue) => secondValue.Chapter === value.Chapter
-        ) === index
-    );
-
-    const readChapters = ChaptersNoDuplicates.filter((x) => {
-      const foundChapter = chapterData.current[x.ChapterID];
-      if (!foundChapter) return false;
-
-      return (
-        foundChapter.currentPage > -1 &&
-        foundChapter.pageCount > -1 &&
-        foundChapter.currentPage >= foundChapter.pageCount
-      );
-    }); // We use filter instead of some because of a chapter's (soon-to-be-implemented) elapsedTime field.
 
     // TODO: Implement Select Group button to filter chapters by group. For now, just show all chapters.
     // TODO: Implement Sort Order button.
@@ -790,6 +805,12 @@ const View = () => {
                   // TODO: Add a way to mark a chapter as read (probably by using react-contextify)
                   return (
                     <Chapter
+                      onMarkRead={(isChecked) => {
+                        setChaptersRead(chaptersRead + (isChecked ? 1 : -1));
+                        chapterData.current =
+                          window.electron.read.get(selectedSource.getName()) ??
+                          chapterData.current;
+                      }}
                       onReadClick={() => {
                         Navigate(
                           getReadUrl(
@@ -869,7 +890,7 @@ const View = () => {
                   <div className={css(styles.mangaProgressContainer)}>
                     <div className={css(styles.mangaProgress)}>
                       <div className={css(styles.mangaProgressText)}>
-                        {readChapters.length} / {ChaptersNoDuplicates.length}
+                        {chaptersRead} / {chaptersNoDuplicates}
                       </div>
                       <div className={css(styles.mangaProgressBar)}>
                         <div

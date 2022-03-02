@@ -10,6 +10,7 @@ import DownloadDoneIcon from '@mui/icons-material/DownloadDone';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
+import useKeyboard from '../util/hook/usekeyboard';
 
 import { ReadDatabaseValue } from '../../main/util/read';
 import {
@@ -148,6 +149,7 @@ dayjs.extend(dayjs_advancedFormat);
 
 const Chapter = ({
   onReadClick,
+  onMarkRead,
 
   modifierShift,
   downloadable,
@@ -158,6 +160,7 @@ const Chapter = ({
   manga,
 }: {
   onReadClick: (chapterId: string) => void;
+  onMarkRead?: (wasMarked: boolean) => void;
 
   downloadable: boolean;
   modifierShift?: boolean;
@@ -171,7 +174,6 @@ const Chapter = ({
   const [currentPage, setCurrentPage] = useState(dbchapter?.currentPage ?? -1);
   const isRead =
     dbchapter && currentPage !== -1 && currentPage >= chapter.PageCount;
-
   const isBookmarked = dbchapter && dbchapter.isBookmarked;
 
   return (
@@ -289,6 +291,9 @@ const Chapter = ({
               manga.MangaID
             );
 
+            if (onMarkRead) {
+              onMarkRead(checked);
+            }
             setCurrentPage(newCurrentPage);
           }}
         />
@@ -308,6 +313,7 @@ const Chapter = ({
 
 Chapter.defaultProps = {
   modifierShift: false,
+  onMarkRead: () => {},
   dbchapter: {},
   className: '',
 };
