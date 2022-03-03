@@ -1304,7 +1304,8 @@ const Reader = () => {
       if (e.repeat) return; // Ignore repeated key presses.
       if (e.key in keyControls || nextKeys.includes(e.key)) {
         if (tappingLayout[keyControls[e.key]] !== null) {
-          const tapDirection = tappingLayout[keyControls[e.key]] ?? 1;
+          const tapDirection =
+            tappingLayout[keyControls[e.key]] ?? (isRightToLeft ? -1 : 1);
           handleClick(tapDirection);
         }
       }
