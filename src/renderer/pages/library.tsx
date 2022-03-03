@@ -394,10 +394,12 @@ const Library = () => {
     .filter((x) => x !== undefined)
     .flatMap((x) => Object.values(x));
 
-  const allManga = allChapters.filter(
-    (x) =>
-      sourceListValues.flat().findIndex((y) => x.mangaid === y.MangaID) === -1 // Remove mangas that are present in the library already.
-  );
+  const allManga = allChapters
+    .filter(
+      (x) =>
+        sourceListValues.flat().findIndex((y) => x.mangaid === y.MangaID) === -1 // Remove mangas that are present in the library already.
+    )
+    .filter((x, y, z) => z.findIndex((a) => a.mangaid === x.mangaid) === y); // Remove duplicates
 
   // This hassle is to ensure that manga that might not be in the library
   // but was still read at some point are still displayed in the statistics.
