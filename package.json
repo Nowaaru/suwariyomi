@@ -97,7 +97,7 @@
     ],
     "publish": {
       "provider": "github",
-      "owner": "nowaaru",
+      "owner": "Nowaaru",
       "repo": "suwariyomi"
     }
   },
