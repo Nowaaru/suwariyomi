@@ -10,7 +10,6 @@ import DownloadDoneIcon from '@mui/icons-material/DownloadDone';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
-import useKeyboard from '../util/hook/usekeyboard';
 
 import { ReadDatabaseValue } from '../../main/util/read';
 import {
@@ -170,7 +169,7 @@ const Chapter = ({
   source: string;
   manga: DatabaseManga;
 }) => {
-  const { pageCount = -1, lastRead = -1, timeElapsed = 0 } = dbchapter ?? {};
+  const { lastRead = -1, timeElapsed = 0 } = dbchapter ?? {};
   const [currentPage, setCurrentPage] = useState(dbchapter?.currentPage ?? -1);
   const isRead =
     dbchapter && currentPage !== -1 && currentPage >= chapter.PageCount;
