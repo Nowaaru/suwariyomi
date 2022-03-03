@@ -170,6 +170,9 @@ const settingsResetText = [
   'Okay...',
   'No going back now!',
 ];
+
+// @ts-ignore Aphrodite sucks.
+const styles = StyleSheet.create(stylesObject);
 const Settings = () => {
   const [settings, setSettings] = useState(window.electron.settings.getAll());
   const [settingsLocation, setSettingsLocation] =
@@ -189,8 +192,6 @@ const Settings = () => {
   // to ensure that the settings are valid and that there are
   // no settings that are not in the schema.
 
-  // @ts-ignore Aphrodite sucks.
-  const styles = StyleSheet.create(stylesObject);
   return (
     <div className={css(styles.container)}>
       <Tooltip title="Back">
@@ -211,7 +212,7 @@ const Settings = () => {
         className={css(styles.tabs)}
         sx={{
           '.MuiTabs-indicator': {
-            backgroundColor: '#FFFFFF',
+            backgroundColor: '#DF2935',
           },
         }}
       >

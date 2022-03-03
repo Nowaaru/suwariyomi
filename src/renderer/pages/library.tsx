@@ -5,16 +5,19 @@ import {
   AccordionDetails,
   Typography,
   Paper,
+  IconButton,
+  Tooltip,
 } from '@mui/material';
 
 import { StyleSheet, css } from 'aphrodite/no-important';
 import { useState, useRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { userInfo } from 'os';
 import { capitalize, clamp } from 'lodash';
 
 import LazyLoad, { forceCheck } from 'react-lazyload';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import SettingsIcon from '@mui/icons-material/Settings';
 import parseQuery from '../util/search';
 
 import { FullManga, Manga as MangaType } from '../../main/util/manga';
@@ -45,6 +48,7 @@ const libraryStyleSheet = StyleSheet.create({
     border: '1px solid #11111100',
     zIndex: 260,
   },
+
   searchbarContainerInner: {
     backgroundColor: '#FFFFFF',
     borderRadius: '80%',
@@ -247,6 +251,24 @@ const libraryStyleSheet = StyleSheet.create({
     fontSize: '1.2rem',
     fontFamily: '"PT Sans Narrow", "Roboto", "Helvetica", "Arial", sans-serif',
   },
+
+  settingsButton: {
+    position: 'absolute',
+    right: '8px',
+    top: '8px',
+    width: '32px',
+    height: '32px',
+  },
+
+  settingsIcon: {
+    transition: 'transform 0.4s ease-in-out',
+    width: '24px',
+    height: '24px',
+    color: '#DF2935',
+    ':hover': {
+      transform: 'scale(1.2) rotate(90deg)',
+    },
+  },
 });
 
 const noResultsFlavorTexts = [
@@ -272,6 +294,7 @@ const Library = () => {
   }, []);
 
   const userName = useRef(userInfo().username);
+  const Navigate = useNavigate();
 
   const { library: LibraryUtilities } = window.electron;
   const mangaItemDisplayFormat: 'list' | 'grid' = 'list';
@@ -707,6 +730,14 @@ const Library = () => {
                 </span>
               </div>
             </div>
+            <Tooltip title="Settings">
+              <IconButton
+                className={css(libraryStyleSheet.settingsButton)}
+                onClick={() => Navigate('/settings')}
+              >
+                <SettingsIcon className={css(libraryStyleSheet.settingsIcon)} />
+              </IconButton>
+            </Tooltip>
           </Paper>
         </div>
         {accordionArray.length > 0 ? (
