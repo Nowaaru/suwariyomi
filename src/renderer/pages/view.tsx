@@ -555,20 +555,25 @@ const View = () => {
     [mangaData]
   );
 
-  const calculateReadChapters = useCallback(
-    () =>
-      calculateReadChaptersNoDuplicates()?.filter((x) => {
-        const foundChapter = chapterData.current[x.ChapterID];
-        if (!foundChapter) return false;
-
-        return (
+  const calculateReadChapters = useCallback(() => {
+    const alreadyIndexedChapters = new Set<number>();
+    mangaData.current?.Chapters?.forEach((x) => {
+      const foundChapter =
+        chapterData.current[
+          Object.keys(chapterData.current).find((y) => y === x.ChapterID) ?? '0'
+        ];
+      if (!alreadyIndexedChapters.has(x.Chapter) && foundChapter) {
+        if (
           foundChapter.currentPage > -1 &&
-          foundChapter.pageCount > -1 &&
-          foundChapter.currentPage >= foundChapter.pageCount
-        );
-      }),
-    [calculateReadChaptersNoDuplicates, chapterData]
-  );
+          x.PageCount > -1 &&
+          foundChapter.currentPage >= x.PageCount
+        )
+          alreadyIndexedChapters.add(x.Chapter);
+      }
+    });
+
+    return alreadyIndexedChapters.size;
+  }, [chapterData]);
 
   useEffect(() => {
     const sourceChapters = window.electron.read.get(selectedSource.getName());
@@ -579,8 +584,8 @@ const View = () => {
     const ChaptersNoDuplicates = calculateReadChaptersNoDuplicates();
     const readChapters = calculateReadChapters();
 
-    console.log(ChaptersNoDuplicates?.length, readChapters?.length);
-    setChaptersRead(readChapters?.length ?? 0);
+    console.log(ChaptersNoDuplicates?.length, readChapters);
+    setChaptersRead(readChapters ?? 0);
     setChaptersNoDuplicates(ChaptersNoDuplicates?.length ?? 0);
   }, [
     mangaData,
@@ -802,14 +807,13 @@ const View = () => {
                 {currentManga.Chapters.map((x) => {
                   const foundChapter = chapterData.current[x.ChapterID] || {};
 
-                  // TODO: Add a way to mark a chapter as read (probably by using react-contextify)
                   return (
                     <Chapter
-                      onMarkRead={(isChecked) => {
-                        setChaptersRead(chaptersRead + (isChecked ? 1 : -1));
+                      onMarkRead={() => {
                         chapterData.current =
                           window.electron.read.get(selectedSource.getName()) ??
                           chapterData.current;
+                        setChaptersRead(calculateReadChapters());
                       }}
                       onReadClick={() => {
                         Navigate(
