@@ -894,7 +894,9 @@ const View = () => {
                   <div className={css(styles.mangaProgressContainer)}>
                     <div className={css(styles.mangaProgress)}>
                       <div className={css(styles.mangaProgressText)}>
-                        {chaptersRead} / {chaptersNoDuplicates}
+                        {`${calculateReadChapters()} / ${
+                          calculateReadChaptersNoDuplicates()?.length
+                        }`}
                       </div>
                       <div className={css(styles.mangaProgressBar)}>
                         <div
