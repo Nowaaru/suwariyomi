@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 
 import { StyleSheet, css } from 'aphrodite/no-important';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { userInfo } from 'os';
 import { capitalize, clamp } from 'lodash';
@@ -18,6 +18,8 @@ import { capitalize, clamp } from 'lodash';
 import LazyLoad, { forceCheck } from 'react-lazyload';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SettingsIcon from '@mui/icons-material/Settings';
+import SearchIcon from '@mui/icons-material/Search';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import parseQuery from '../util/search';
 
 import { FullManga, Manga as MangaType } from '../../main/util/manga';
@@ -269,6 +271,54 @@ const libraryStyleSheet = StyleSheet.create({
       transform: 'scale(1.2) rotate(90deg)',
     },
   },
+
+  accordionSearchButton: {
+    float: 'right',
+    position: 'relative',
+    margin: '0px 24px 0px 0px',
+  },
+
+  accordionSearchIcon: {
+    color: '#DF2935',
+    transition: 'transform 0.4s ease-in-out, color 0.4s ease-in-out',
+    ':hover': {
+      color: '#FFFFFF',
+      transform: 'scale(1.2) rotate(65deg)',
+    },
+  },
+
+  accordionRefreshButton: {
+    float: 'right',
+    position: 'relative',
+    margin: '0px 24px 0px 0px',
+  },
+
+  accordionRefreshIconSpin: {
+    filter: 'grayscale(100%)',
+    pointerEvents: 'none',
+    animationName: [
+      {
+        '0%': {
+          transform: 'rotate(0deg)',
+        },
+        '100%': {
+          transform: 'rotate(360deg)',
+        },
+      },
+    ],
+    animationDuration: '1.5s',
+    animationIterationCount: 'infinite',
+    animationTimingFunction: 'linear',
+  },
+
+  accordionRefreshIcon: {
+    color: '#DF2935',
+    transition: 'transform 0.4s ease-in-out, color 0.4s ease-in-out',
+    ':hover': {
+      color: '#FFFFFF',
+      transform: 'scale(1.2) rotate(180deg)',
+    },
+  },
 });
 
 const noResultsFlavorTexts = [
@@ -302,6 +352,7 @@ const Library = () => {
   const [searchQuery, setSearchQuery] = useState(
     pageQueryParams.get('search') || ''
   );
+  const [sourcesFetching, setSourcesFetching] = useState<string[]>([]);
   const parsedSearch = parseQuery(searchQuery);
   const currentSearchParams = new URLSearchParams();
   currentSearchParams.set('search', searchQuery);
@@ -318,27 +369,32 @@ const Library = () => {
   const forceUpdate = useForceUpdate();
   const hasNoSources = mappedFileNamesRef.current.length <= 0;
   // Filter out sources that are not enabled AND has no manga
-  const sourceList: Record<string, FullManga[]> = {};
-  librarySourcesKeys
-    .filter(
-      (source) =>
-        librarySources[source].Enabled &&
-        librarySources[source].Manga.length > 0 &&
-        (searchQuery === '' ||
-          (LibraryUtilities.getCachedMangas(source) || []).some((manga) =>
-            manga.Name.toLowerCase().includes(searchQuery.toLowerCase())
-          ))
-    )
-    .forEach((source) => {
-      sourceList[source] = LibraryUtilities.getLibraryMangas(source)
-        .map((x) =>
-          LibraryUtilities.getCachedMangas(source).find((y) => y.MangaID === x)
-        )
-        .filter((x) => x) as FullManga[]; // Remove all undefined values
-    });
+  const sourceList: Record<string, FullManga[]> = useMemo(() => {
+    const sourceListTemp: Record<string, FullManga[]> = {};
+    librarySourcesKeys
+      .filter(
+        (source) =>
+          librarySources[source].Enabled &&
+          librarySources[source].Manga.length > 0 &&
+          (searchQuery === '' ||
+            (LibraryUtilities.getCachedMangas(source) || []).some((manga) =>
+              manga.Name.toLowerCase().includes(searchQuery.toLowerCase())
+            ))
+      )
+      .forEach((source) => {
+        sourceListTemp[source] = LibraryUtilities.getLibraryMangas(source)
+          .map((x) =>
+            LibraryUtilities.getCachedMangas(source).find(
+              (y) => y.MangaID === x
+            )
+          )
+          .filter((x) => x) as FullManga[]; // Remove all undefined values
+      });
 
-  useMountEffect(() => {
-    // Filter out all mangas that are already present in the cache.
+    return sourceListTemp;
+  }, [LibraryUtilities, librarySources, librarySourcesKeys, searchQuery]);
+  useEffect(() => {
+    if (sourcesFetching.length > 0) return;
     const allKeys: Record<string, string[]> = {};
     Object.keys(sourceList).forEach((source) => {
       window.electron.library.getLibraryMangas(source).forEach((mangaID) => {
@@ -347,14 +403,18 @@ const Library = () => {
           (manga) => manga.MangaID === mangaID
         );
         if (!mangaIsInCache) {
-          console.log('uncached');
           allKeys[source] = allKeys[source] || [];
           allKeys[source].push(mangaID);
-        } else console.log('cached!');
+
+          if (sourcesFetching.includes(source)) return;
+          setSourcesFetching([...sourcesFetching, source]);
+        }
       });
     });
+
     // Request all manga that are not in the cache
-    Object.keys(allKeys).forEach((source) => {
+    const allKeysKeys = Object.keys(allKeys); // AI programming done by a human
+    allKeysKeys.forEach((source) => {
       const mangaIDs = allKeys[source];
       if (mangaIDs.length > 0) {
         const foundSource = mappedFileNamesRef.current.find(
@@ -371,10 +431,14 @@ const Library = () => {
                   await manga
                 );
 
-                console.log('force update...');
                 // Force the Library component to re-render
                 forceUpdate();
               });
+            })
+            .then(() => {
+              return setSourcesFetching(
+                sourcesFetching.filter((x) => x !== source)
+              );
             })
             .catch((error) => {
               window.electron.log.error(
@@ -385,7 +449,7 @@ const Library = () => {
         }
       }
     });
-  });
+  }, [sourcesFetching, setSourcesFetching, forceUpdate, sourceList]);
 
   const sourceListValues = Object.values(sourceList);
 
@@ -487,10 +551,60 @@ const Library = () => {
             <Typography
               sx={{
                 color: '#FFFFFF',
+                flexShrink: 2,
+                width: '33%',
               }}
             >
-              {mangaListArray.length} Mangas
+              {mangaListArray.length} Manga
+              {(mangaListArray.length > 1 && 's') || ''}
             </Typography>
+            <Tooltip title="Search Using This Source">
+              <IconButton
+                className={css(libraryStyleSheet.accordionSearchButton)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  Navigate(`/search?source=${sourceKey}`);
+                }}
+              >
+                <SearchIcon
+                  className={css(libraryStyleSheet.accordionSearchIcon)}
+                />
+              </IconButton>
+            </Tooltip>
+            <Tooltip
+              title={`${
+                sourcesFetching.includes(sourceKey)
+                  ? 'Currently fetching!'
+                  : 'Refresh'
+              }`}
+            >
+              <IconButton
+                className={css(libraryStyleSheet.accordionRefreshButton)}
+                onClick={(e) => {
+                  if (sourcesFetching.includes(sourceKey)) return;
+
+                  e.stopPropagation();
+                  window.electron.library
+                    .getCachedMangas(sourceKey)
+                    .forEach((y) =>
+                      window.electron.library.removeMangaFromCache(
+                        y.SourceID,
+                        y.MangaID
+                      )
+                    );
+
+                  forceUpdate();
+                }}
+              >
+                <RefreshIcon
+                  className={css(
+                    libraryStyleSheet.accordionRefreshIcon,
+                    sourcesFetching.includes(sourceKey) &&
+                      libraryStyleSheet.accordionRefreshIconSpin
+                  )}
+                />
+              </IconButton>
+            </Tooltip>
           </AccordionSummary>
           <AccordionDetails>
             <div
