@@ -67,7 +67,7 @@ const Topbar = () => {
   const doExit = () => ipcRenderer.exit();
   const doMinimize = () => ipcRenderer.minimize();
   const doMaximize = () => ipcRenderer.maximize();
-  const [doHide, setHide] = useState(true);
+  const [doHide, setHide] = useState(false);
 
   const handleFullscreen = useCallback(
     (_: IpcRendererEvent, isVisible: boolean) => setHide(isVisible),
