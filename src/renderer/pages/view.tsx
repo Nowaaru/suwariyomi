@@ -245,6 +245,7 @@ const styles = StyleSheet.create({
 
   libraryButton: {
     display: 'flex',
+    maxWidth: '181px',
   },
 
   disabledButton: {
@@ -254,6 +255,7 @@ const styles = StyleSheet.create({
   notInLibrary: {
     transition:
       'letter-spacing 0s ease-in-out, background-color 0.3s ease-in-out, width 0.3s ease-in-out',
+    letterSpacing: '-1px',
   },
 
   inLibrary: {
