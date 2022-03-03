@@ -642,17 +642,15 @@ const View = () => {
           } Reading ${readChapterData}`
         : `Start Reading ${readChapterData}`;
 
-      let { Chapter: mangaProgressCurrent } = chapterToDisplay;
       let { Chapter: mangaProgressEnd } = currentManga.Chapters[0]; // This is [0] because the chapters are sorted in descending order.
 
-      [mangaProgressCurrent, mangaProgressEnd] = [
-        mangaProgressCurrent,
-        mangaProgressEnd,
-      ].map((x) => (!Number.isNaN(Number(x)) ? Number(x) : 0));
-      // If a source author provided a bad value, then just set it to 0.
+      [mangaProgressEnd] = [mangaProgressEnd].map((x) =>
+        !Number.isNaN(Number(x)) ? Number(x) : 0
+      );
 
+      // If a source author provided a bad value, then just set it to 0.
       mangaProgressBar =
-        (Math.max(0, mangaProgressCurrent - 1) /
+        (Math.max(0, calculateReadChapters() - 1) /
           Math.max(0, mangaProgressEnd - 1)) *
         100; // Subtract one because the chapters are 1-indexed.
     }
