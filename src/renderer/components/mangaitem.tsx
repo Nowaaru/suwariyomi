@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
   mangaItemListContainer: {
     marginBottom: '10px',
     width: 'calc(100% - 20px)',
-    // maxHeight: '300px',
+    minHeight: '300px',
     backgroundColor: '#0c0a0c',
     verticalAlign: 'top',
     overflow: 'hidden',
@@ -303,7 +303,7 @@ const MangaItem = ({
       (chapter) => chapter.currentPage >= chapter.pageCount
     ).length === cachedChapters?.length;
 
-  const firstUnreadChapter = mangaData?.Chapters.find(
+  const firstUnreadChapter = mangaData?.Chapters?.find(
     (x) =>
       !cachedChapters?.find((y) => y.ChapterID === x.ChapterID) ||
       (cachedChapters?.find((y) => y.ChapterID === x.ChapterID)?.currentPage ??
@@ -318,157 +318,155 @@ const MangaItem = ({
     1,
     firstUnreadCachedChapter?.currentPage ?? 1
   );
+
   const viewParams = `/view?source=${source}&title=${title}&id=${mangaid}&backto=${backto}`;
+  const elementKey = `${source}-${mangaid}`;
   switch (displayType) {
     case 'list':
       return (
-        <LazyLoad key={title} scrollContainer="#lazyload">
-          <div className={css(styles.mangaItemListContainer)}>
-            <div className={css(styles.mangaItemCover, styles.listCover)}>
-              <button
-                type="button"
-                className={css(styles.mangaItemCoverButton)}
-                onClick={() => Navigation(viewParams)}
-              >
-                <img
-                  src={coverUrl ?? nocover}
-                  className={css(
-                    styles.mangaItemListCoverImage,
-                    styles.coverImage
-                  )}
-                  alt={title}
-                />
-              </button>
-            </div>
-            <div className={css(styles.mangaMetadata)}>
-              <div className={css(styles.mangaItemInformationMain)}>
-                <h3 className={css(styles.mangaItemTitle)}>{title}</h3>
-                <div className={css(styles.mangaItemTags)}>{mangaTags}</div>
-                <div className={css(styles.mangaItemSynopsisContainer)}>
-                  <p className={css(styles.mangaItemSynopsis)}>
-                    {(() => {
-                      return (
-                        new DOMParser().parseFromString(
-                          synopsis || 'No synopsis available.', // Use OR instead of null check to implicitly cast empty strings to boolean.
-                          'text/html'
-                        ).body.textContent || 'No synopsis available.'
-                      );
+        <div key={elementKey} className={css(styles.mangaItemListContainer)}>
+          <div className={css(styles.mangaItemCover, styles.listCover)}>
+            <button
+              type="button"
+              className={css(styles.mangaItemCoverButton)}
+              onClick={() => Navigation(viewParams)}
+            >
+              <img
+                src={coverUrl ?? nocover}
+                className={css(
+                  styles.mangaItemListCoverImage,
+                  styles.coverImage
+                )}
+                alt={title}
+              />
+            </button>
+          </div>
+          <div className={css(styles.mangaMetadata)}>
+            <div className={css(styles.mangaItemInformationMain)}>
+              <h3 className={css(styles.mangaItemTitle)}>{title}</h3>
+              <div className={css(styles.mangaItemTags)}>{mangaTags}</div>
+              <div className={css(styles.mangaItemSynopsisContainer)}>
+                <p className={css(styles.mangaItemSynopsis)}>
+                  {(() => {
+                    return (
+                      new DOMParser().parseFromString(
+                        synopsis || 'No synopsis available.', // Use OR instead of null check to implicitly cast empty strings to boolean.
+                        'text/html'
+                      ).body.textContent || 'No synopsis available.'
+                    );
+                  })()}
+                </p>
+              </div>
+              <div className={css(styles.mangaItemButtonContainer)}>
+                <div className={css(styles.mangaItemButtonWrapper)}>
+                  <Button
+                    className={css(
+                      styles.mangaItemViewButton,
+                      styles.mangaItemButton
+                    )}
+                    variant="contained"
+                    onClick={() => {
+                      Navigation(viewParams);
+                    }}
+                  >
+                    View Chapters
+                  </Button>
+                  <Tooltip
+                    title={(() => {
+                      if (
+                        firstUnreadCachedChapter &&
+                        firstUnreadCachedChapter.pageCount !== -1
+                      ) {
+                        return `Chapter ${
+                          // firstUnreadCachedChapter depends on firstUnreadChapter. If the latter does not exist, the former does not either.
+                          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                          firstUnreadChapter!.Chapter
+                        } - Page ${unreadChapterCurrentPage} of ${
+                          firstUnreadCachedChapter.pageCount
+                        }`;
+                      }
+                      if (firstUnreadChapter) {
+                        return `Chapter ${firstUnreadChapter.Chapter} - Unread`;
+                      }
+
+                      return '';
                     })()}
-                  </p>
-                </div>
-                <div className={css(styles.mangaItemButtonContainer)}>
-                  <div className={css(styles.mangaItemButtonWrapper)}>
+                  >
                     <Button
                       className={css(
-                        styles.mangaItemViewButton,
+                        styles.mangaItemStartReadButton,
                         styles.mangaItemButton
                       )}
                       variant="contained"
                       onClick={() => {
-                        Navigation(viewParams);
-                      }}
-                    >
-                      View Chapters
-                    </Button>
-                    <Tooltip
-                      title={(() => {
-                        if (
-                          firstUnreadCachedChapter &&
-                          firstUnreadCachedChapter.pageCount !== -1
-                        ) {
-                          return `Chapter ${
-                            // firstUnreadCachedChapter depends on firstUnreadChapter. If the latter does not exist, the former does not either.
-                            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                            firstUnreadChapter!.Chapter
-                          } - Page ${unreadChapterCurrentPage} of ${
-                            firstUnreadCachedChapter.pageCount
-                          }`;
-                        }
-                        if (firstUnreadChapter) {
-                          return `Chapter ${firstUnreadChapter.Chapter} - Unread`;
-                        }
-
-                        return '';
-                      })()}
-                    >
-                      <Button
-                        className={css(
-                          styles.mangaItemStartReadButton,
-                          styles.mangaItemButton
-                        )}
-                        variant="contained"
-                        onClick={() => {
-                          if (!mangaData) return;
-                          if (isCompleted || !firstUnreadChapter) {
-                            return Navigation(
-                              getReadUrl(
-                                mangaid,
-                                mangaData.Name,
-                                source,
-                                mangaData.Chapters[0].ChapterID,
-                                1
-                              )
-                            );
-                          }
-
-                          Navigation(
+                        if (!mangaData) return;
+                        if (isCompleted || !firstUnreadChapter) {
+                          return Navigation(
                             getReadUrl(
                               mangaid,
                               mangaData.Name,
                               source,
-                              firstUnreadChapter.ChapterID,
-                              unreadChapterCurrentPage // Check for <1 in case of setting to unread via `view.tsx`.
+                              mangaData.Chapters[0].ChapterID,
+                              1
                             )
                           );
-                        }}
-                      >
-                        {(() => {
-                          if (isCompleted) {
-                            return 'Reread';
-                          } else if (firstUnreadChapter) {
-                            if (
-                              firstUnreadChapter.ChapterID ===
-                              mangaData?.Chapters[0].ChapterID
-                            ) {
-                              return 'Start Reading';
-                            }
-                            return 'Continue Reading';
+                        }
+
+                        Navigation(
+                          getReadUrl(
+                            mangaid,
+                            mangaData.Name,
+                            source,
+                            firstUnreadChapter.ChapterID,
+                            unreadChapterCurrentPage // Check for <1 in case of setting to unread via `view.tsx`.
+                          )
+                        );
+                      }}
+                    >
+                      {(() => {
+                        if (isCompleted) {
+                          return 'Reread';
+                        } else if (firstUnreadChapter) {
+                          if (
+                            firstUnreadChapter.ChapterID ===
+                            mangaData?.Chapters[0].ChapterID
+                          ) {
+                            return 'Start Reading';
                           }
-                          return 'Start Reading';
-                        })()}
-                      </Button>
-                    </Tooltip>
-                  </div>
+                          return 'Continue Reading';
+                        }
+                        return 'Start Reading';
+                      })()}
+                    </Button>
+                  </Tooltip>
                 </div>
               </div>
             </div>
           </div>
-        </LazyLoad>
+        </div>
       );
     case 'grid':
       return (
-        <LazyLoad key={title} scrollContainer="#lazyload">
-          <div>
-            <Link
-              className={css(styles.linkCover, styles.mangaItemGridContainer)}
-              to={viewParams}
-            >
-              <div className={css(styles.mangaItemCover, styles.gridCover)}>
-                <img
-                  src={coverUrl ?? nocover}
-                  className={css(
-                    styles.mangaItemGridCoverImage,
-                    styles.coverImage
-                  )}
-                  alt={title}
-                />
-              </div>
-              <span className={css(styles.mangaItemGridTitle)}>
-                {title.length < 27 ? title : `${title.slice(0, 27)}...`}
-              </span>
-            </Link>
-          </div>
-        </LazyLoad>
+        <div key={elementKey}>
+          <Link
+            className={css(styles.linkCover, styles.mangaItemGridContainer)}
+            to={viewParams}
+          >
+            <div className={css(styles.mangaItemCover, styles.gridCover)}>
+              <img
+                src={coverUrl ?? nocover}
+                className={css(
+                  styles.mangaItemGridCoverImage,
+                  styles.coverImage
+                )}
+                alt={title}
+              />
+            </div>
+            <span className={css(styles.mangaItemGridTitle)}>
+              {title.length < 27 ? title : `${title.slice(0, 27)}...`}
+            </span>
+          </Link>
+        </div>
       );
       break;
     default:

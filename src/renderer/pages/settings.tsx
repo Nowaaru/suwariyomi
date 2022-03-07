@@ -1,5 +1,10 @@
-import { useState, useEffect } from 'react';
+/* eslint-disable promise/no-nesting */
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { StyleSheet, css } from 'aphrodite';
+import { load, Message } from 'protobufjs';
+import { readFileSync } from 'fs';
+import { ungzip } from 'node-gzip';
+import { normalize } from 'path';
 import {
   Tab,
   Tabs,
@@ -8,6 +13,15 @@ import {
   Tooltip,
   Typography,
   Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemSecondaryAction,
+  Checkbox,
 } from '@mui/material';
 
 import CodeIcon from '@mui/icons-material/Code';
@@ -25,9 +39,58 @@ import SettingsBackupRestoreTwoToneIcon from '@mui/icons-material/SettingsBackup
 import { useNavigate } from 'react-router-dom';
 import { omit, mapValues } from 'lodash';
 
+import Handler from '../../main/sources/handler';
+import SourceBase from '../../main/sources/static/base';
+
 import type { DefaultSettings } from '../../main/util/settings';
 import { Schema, settingsSchemata } from '../util/auxiliary';
 import { generateSettings } from '../util/func';
+
+export type BackupChapter = {
+  chapterNumber: number;
+  dateFetch: string;
+  dateUpload: string;
+  name: string;
+  scanlator: string;
+  url: string;
+  lastPageRead?: string;
+  bookmark?: boolean;
+  read?: boolean;
+};
+
+export type BackupHistory = {
+  lastRead: string;
+  url: string;
+};
+
+export type BackupManga = {
+  artist: string;
+  author: string;
+  categories: string[];
+  chapters: BackupChapter[];
+  description: string;
+  genre: string[];
+  history: BackupHistory[];
+  source: string;
+  status: number;
+  thumbnailUrl: string;
+  title: string;
+  tracking: [];
+  url: string;
+  viewer: number;
+  viewerFlags: number;
+};
+
+export type BackupSource = {
+  name: string;
+  sourceId: string;
+};
+
+export type Backup = {
+  backupManga: BackupManga[];
+  backupSources: BackupSource[];
+  backupCategories: unknown[];
+};
 
 const stylesObject = {
   container: {
@@ -131,7 +194,7 @@ const stylesObject = {
     // backgroundColor: '#FFFFFF',
   },
 
-  resetButton: {
+  settingsButton: {
     border: '1px solid #DF2935',
     color: '#DF2935',
     minWidth: '150px',
@@ -160,6 +223,98 @@ const categoryIcons: {
   advanced: <CodeIcon />,
 };
 
+// Modal for importing settings from a tachiyomi .proto.gz file or a .proto file (if they un-gzipped it)
+type ImportSettings = Record<'manga' | 'chapters' | 'sources', boolean>;
+const ImportSettingsModal = ({
+  onImport = () => {},
+  onClose,
+  isOpen,
+}: {
+  onImport?: (settings: ImportSettings) => void;
+  onClose?: () => void;
+  isOpen: boolean;
+}) => {
+  const [importSettings, setImportSettings] = useState<ImportSettings>({
+    manga: true,
+    chapters: false,
+    sources: false,
+  });
+
+  const itemDisplays: Record<keyof ImportSettings, string> = {
+    manga: 'Manga',
+    chapters: 'Chapters',
+    sources: 'Sources',
+  };
+
+  const onCloseNative = useCallback(() => {
+    setImportSettings({
+      ...importSettings,
+      manga: true,
+    });
+  }, [importSettings]);
+
+  return (
+    <Dialog
+      open={isOpen}
+      sx={{
+        '& .MuiPaper-root': {
+          width: '50%',
+          maxWidth: 'unset',
+        },
+      }}
+      onClose={() => {
+        if (onClose) onClose();
+        onCloseNative();
+      }}
+    >
+      <DialogTitle>Import Settings</DialogTitle>
+      <DialogContent>
+        <List>
+          {Object.entries(importSettings).map(([key, value]) => (
+            <ListItem key={key}>
+              <ListItemText
+                primary={itemDisplays[key as keyof ImportSettings]}
+              />
+              <ListItemSecondaryAction>
+                <Tooltip title={key === 'sources' ? 'Coming eventually!' : ''}>
+                  <span>
+                    <Checkbox
+                      checked={value}
+                      disabled={key === 'sources'} // Source importing won't be supported until we get a hefty amount of sources
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        setImportSettings((prev) => ({
+                          ...prev,
+                          [key]: e.target.checked,
+                        }))
+                      }
+                    />
+                  </span>
+                </Tooltip>
+              </ListItemSecondaryAction>
+            </ListItem>
+          ))}
+        </List>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={() => onImport(importSettings)}>Import</Button>
+        <Button
+          onClick={() => {
+            if (onClose) onClose();
+            onCloseNative();
+          }}
+        >
+          Cancel
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
+
+ImportSettingsModal.defaultProps = {
+  onImport: () => {},
+  onClose: () => {},
+};
+
 // i.e., SettingsGeneral.tsx should only update when the General settings change, and SettingsReader.tsx should
 // only update when the Reader settings change
 const settingsResetText = [
@@ -178,7 +333,10 @@ const Settings = () => {
   const [settingsLocation, setSettingsLocation] =
     useState<keyof DefaultSettings>('general');
   const [timesClicked, setTimesClicked] = useState(0);
+  const [fileSelectedData, setFileSelectedData] = useState<File>();
   const Navigate = useNavigate();
+
+  const backupRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     window.electron.settings.overwrite(settings);
@@ -193,98 +351,292 @@ const Settings = () => {
   // no settings that are not in the schema.
 
   return (
-    <div className={css(styles.container)}>
-      <Tooltip title="Back">
-        <IconButton
-          className={css(styles.backButton)}
-          onClick={() => Navigate('/')}
-          size="large"
-        >
-          <ArrowBackIcon />
-        </IconButton>
-      </Tooltip>
-      <Tabs
-        orientation="vertical"
-        scrollButtons
-        value={settingsLocation}
-        variant="scrollable"
-        onChange={(_, value) => setSettingsLocation(value)}
-        className={css(styles.tabs)}
-        sx={{
-          '.MuiTabs-indicator': {
-            backgroundColor: '#DF2935',
-          },
+    <>
+      <ImportSettingsModal
+        isOpen={!!fileSelectedData}
+        onClose={() => {
+          if (backupRef.current) backupRef.current.value = '';
+          setFileSelectedData(undefined);
+          console.log('closed!');
         }}
-      >
-        {Object.keys(omit(settings, '__internal__')).map((key) => {
-          return (
-            <Tab
-              key={key}
-              value={key}
-              label={key}
-              sx={{
-                // On selected
-                '&.Mui-selected': stylesObject.tabSelected,
-              }}
-              icon={categoryIcons[key as keyof DefaultSettings] ?? undefined}
-              iconPosition="start"
-              className={css(styles.tab)}
-            />
-          );
-        })}
-      </Tabs>
-      <div className={css(styles.settingContainer)}>
-        {[
-          ...Object.values(
-            mapValues(
-              settingsSchemata[settingsLocation] as Record<string, Schema>,
-              (value: Schema, key: string | number) =>
-                generateSettings(
-                  value,
-                  settings[settingsLocation][key],
-                  (settingsValue: any) => {
-                    const newSettings = { ...settings };
-                    newSettings[settingsLocation][key] = settingsValue;
+        onImport={async (importSettings) => {
+          if (!fileSelectedData) return;
+          let fileBuffer: Buffer;
+          // If the file is gzipped, we need to unzip it first
+          if (fileSelectedData.name.endsWith('.proto.gz')) {
+            const fileBufferZipped = readFileSync(fileSelectedData.path);
+            try {
+              fileBuffer = await ungzip(fileBufferZipped);
+            } catch (e) {
+              window.electron.log.error(e);
+            }
+          } else {
+            fileBuffer = readFileSync(fileSelectedData.path);
+          }
 
-                    setSettings(newSettings);
-                  }
+          // @ts-ignore - fileBuffer can be undefined; this if statement checks for that. No clue why TS is complaining.
+          if (!fileBuffer) return;
+          load(normalize('assets/data/tachiyomi-model.proto'))
+            .then((root) => {
+              console.log('huh?');
+              return root.lookupType('Backup');
+            })
+            .then((backupType) => backupType.decode(fileBuffer))
+            .then((backupDecoded) => backupDecoded.toJSON() as Backup)
+            .then((backup: Backup) => {
+              // Read through all current sources and then only get manga that has the same source id
+              const availableSourceIDs: {
+                handler: SourceBase;
+                id: string;
+              }[] = backup.backupSources
+                ?.map((x) => {
+                  const Source = Handler.getSource(x.name);
+                  return {
+                    handler: Source,
+                    id: x.sourceId,
+                  };
+                })
+                .filter((y) => y.handler);
+
+              // Only retrieve manga that the user has a source for
+              const availableMangaIDs = backup.backupManga.filter((x) => {
+                return availableSourceIDs.some((y) => {
+                  // for some reason /dist/ functionality is different from /src/ functionality so we'll just make accomodations
+                  return (
+                    y.id === x.source || y.id.toString() === x.source.toString()
+                  );
+                });
+              });
+
+              return availableSourceIDs.forEach(async (x) => {
+                // Filter out all manga ids that dont have the same source id as the current source iteration
+                // Also filter out mangas that do not have a chapter array
+                // Then, plug in manga id into all indices of the chapter array
+                const filteredAvailableManga = await Promise.all(
+                  availableMangaIDs
+                    .filter((y: any) => {
+                      return (
+                        y.source === x.id ||
+                        y.source.toString() === x.id.toString()
+                      );
+                    })
+                    .filter((y) => y.chapters)
+                    .flatMap(async (z) => ({
+                      ...z,
+                      chapters: await Promise.all(
+                        z.chapters.map(async (w: BackupChapter) => {
+                          return {
+                            ...w,
+                            manga: await x.handler.IDFromURL(z.url, 'manga'),
+                          };
+                        })
+                      ),
+                    }))
+                );
+
+                const sourceMangas = await Promise.allSettled<string>(
+                  filteredAvailableManga.map((z: any) =>
+                    x.handler.IDFromURL(z.url, 'manga')
+                  )
+                );
+
+                // Remove all manga from sourceMangas that are present in libraryMangas
+                const libraryMangas = window.electron.library.getLibraryMangas(
+                  x.handler.getName()
+                );
+
+                const filteredMangas = (
+                  sourceMangas.filter(
+                    (y) => y.status === 'fulfilled'
+                  ) as PromiseFulfilledResult<string>[]
                 )
-            )
-          ),
+                  .map((y) => y.value)
+                  .filter((z) => !libraryMangas.includes(z));
 
-          settingsLocation === 'advanced' && (
-            <Box className={css(styles.optionContainer)}>
-              <Typography className={css(styles.optionLabel)}>
-                Reset to Default Settings
-                <Typography className={css(styles.optionLabelDescription)}>
-                  {`This can't be undone! If you want to proceed, click the button ${
-                    settingsResetText.length - timesClicked
-                  } time${
-                    settingsResetText.length - timesClicked === 1 ? '' : 's'
-                  }.`}
-                </Typography>
-              </Typography>
-              <Button
-                variant="outlined"
-                className={css(styles.resetButton)}
-                color="secondary"
-                onClick={() => {
-                  if (timesClicked >= settingsResetText.length - 1) {
-                    window.electron.settings.flush();
-                    setSettings(window.electron.settings.getAll());
-                    setTimesClicked(0);
-                  } else {
-                    setTimesClicked(timesClicked + 1);
-                  }
+                if (importSettings.manga)
+                  // Add everything from filteredMangas into the library
+                  filteredMangas.forEach((mangaID: string) => {
+                    window.electron.library.addMangaToLibrary(
+                      x.handler.getName(),
+                      mangaID
+                    );
+                  });
+
+                if (importSettings.chapters) {
+                  const allChapters = filteredAvailableManga
+                    .filter((y) =>
+                      y.chapters?.some((b) => !!b.lastPageRead || !!b.read)
+                    ) // Filter out all manga that have no read chapters
+                    .map(
+                      (z) =>
+                        z.chapters?.filter((b) => !!b.lastPageRead || !!b.read) // Then, filter out all chapters that have no read pages
+                    )
+                    .flat();
+
+                  allChapters.forEach((chapterItem) => {
+                    x.handler
+                      .IDFromURL(chapterItem?.url, 'chapter')
+                      .then(async (chapterID) => {
+                        window.electron.read.set(
+                          x.handler.getName(),
+                          chapterID,
+                          -1,
+                          Number.isSafeInteger(chapterItem.lastPageRead) // If the last page read is a number / isn't NaN, then...
+                            ? Number(chapterItem.lastPageRead + 1) // ...set the last page read to that number (add 1 because its zero-indexed)
+                            : chapterItem.read // otherwise, check if the chapter is marked read
+                            ? Infinity // if so, mark as infinity. the reader will correct it anyway.
+                            : -1, // otherwise, default to negative one.
+                          chapterItem.dateFetch
+                            ? Number(chapterItem.dateFetch.toString())
+                            : -1,
+                          -1,
+                          !!chapterItem.bookmark,
+                          chapterItem.manga
+                        );
+
+                        return true;
+                      })
+                      .catch(window.electron.log.error);
+                  });
+                }
+                return true;
+              });
+            })
+            .catch(console.error);
+        }}
+      />
+      <div className={css(styles.container)}>
+        <Tooltip title="Back">
+          <IconButton
+            className={css(styles.backButton)}
+            onClick={() => Navigate('/')}
+            size="large"
+          >
+            <ArrowBackIcon />
+          </IconButton>
+        </Tooltip>
+        <Tabs
+          orientation="vertical"
+          scrollButtons
+          value={settingsLocation}
+          variant="scrollable"
+          onChange={(_, value) => setSettingsLocation(value)}
+          className={css(styles.tabs)}
+          sx={{
+            '.MuiTabs-indicator': {
+              backgroundColor: '#DF2935',
+            },
+          }}
+        >
+          {Object.keys(omit(settings, '__internal__')).map((key) => {
+            return (
+              <Tab
+                key={key}
+                value={key}
+                label={key}
+                sx={{
+                  // On selected
+                  '&.Mui-selected': stylesObject.tabSelected,
                 }}
-              >
-                {settingsResetText[timesClicked]}
-              </Button>
-            </Box>
-          ),
-        ]}
+                icon={categoryIcons[key as keyof DefaultSettings] ?? undefined}
+                iconPosition="start"
+                className={css(styles.tab)}
+              />
+            );
+          })}
+        </Tabs>
+        <div className={css(styles.settingContainer)}>
+          {[
+            ...Object.values(
+              mapValues(
+                settingsSchemata[settingsLocation] as Record<string, Schema>,
+                (value: Schema, key: string | number) =>
+                  generateSettings(
+                    value,
+                    settings[settingsLocation][key],
+                    (settingsValue: any) => {
+                      const newSettings = { ...settings };
+                      newSettings[settingsLocation][key] = settingsValue;
+
+                      setSettings(newSettings);
+                    }
+                  )
+              )
+            ),
+            (
+              {
+                advanced: (
+                  <Box className={css(styles.optionContainer)}>
+                    <Typography className={css(styles.optionLabel)}>
+                      Reset to Default Settings
+                      <Typography
+                        className={css(styles.optionLabelDescription)}
+                      >
+                        {`This can't be undone! If you want to proceed, click the button ${
+                          settingsResetText.length - timesClicked
+                        } time${
+                          settingsResetText.length - timesClicked === 1
+                            ? ''
+                            : 's'
+                        }.`}
+                      </Typography>
+                    </Typography>
+                    <Button
+                      variant="outlined"
+                      className={css(styles.settingsButton)}
+                      color="secondary"
+                      onClick={() => {
+                        if (timesClicked >= settingsResetText.length - 1) {
+                          window.electron.settings.flush();
+                          setSettings(window.electron.settings.getAll());
+                          setTimesClicked(0);
+                        } else {
+                          setTimesClicked(timesClicked + 1);
+                        }
+                      }}
+                    >
+                      {settingsResetText[timesClicked]}
+                    </Button>
+                  </Box>
+                ),
+                backup: (
+                  <Box className={css(styles.optionContainer)}>
+                    <Typography className={css(styles.optionLabel)}>
+                      Restore from Tachiyomi Backup
+                      <Typography
+                        className={css(styles.optionLabelDescription)}
+                      >
+                        This may overwrite some of your manga.
+                      </Typography>
+                    </Typography>
+                    <Button
+                      className={css(styles.settingsButton)}
+                      component="label"
+                    >
+                      Upload File
+                      <input
+                        type="file"
+                        accept=".proto.gz,.proto"
+                        ref={backupRef}
+                        hidden
+                        onChange={(event) => {
+                          if (!event.target.files) {
+                            setFileSelectedData(undefined);
+                            return;
+                          }
+
+                          setFileSelectedData(event.target.files[0]);
+                        }}
+                      />
+                    </Button>
+                  </Box>
+                ),
+              } as { [key: string]: JSX.Element }
+            )[settingsLocation],
+          ]}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

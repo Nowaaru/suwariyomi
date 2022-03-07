@@ -80,6 +80,11 @@ export default abstract class SourceBase {
     return 0;
   }
 
+  public abstract IDFromURL(
+    url: string,
+    search?: 'chapter' | 'manga'
+  ): Promise<string>;
+
   protected abstract Tags: Promise<
     {
       tagName: string;

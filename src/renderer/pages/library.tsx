@@ -7,10 +7,12 @@ import {
   Paper,
   IconButton,
   Tooltip,
+  FormControl,
+  Box,
 } from '@mui/material';
 
 import { StyleSheet, css } from 'aphrodite/no-important';
-import { useState, useRef, useEffect, useMemo } from 'react';
+import { useState, useRef, useEffect, useMemo, SyntheticEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { userInfo } from 'os';
 import { capitalize, clamp } from 'lodash';
@@ -28,6 +30,7 @@ import useQuery from '../util/hook/usequery';
 import Handler from '../../main/sources/handler';
 import useMountEffect from '../util/hook/usemounteffect';
 import useForceUpdate from '../util/hook/useforceupdate';
+import Defer from '../components/defer';
 
 const libraryStyleSheet = StyleSheet.create({
   container: {
@@ -294,8 +297,12 @@ const libraryStyleSheet = StyleSheet.create({
   },
 
   accordionRefreshIconSpin: {
+    transition: 'unset',
+    cursor: 'default',
     filter: 'grayscale(100%)',
-    pointerEvents: 'none',
+    animationDuration: '1.5s',
+    animationIterationCount: 'infinite',
+    animationTimingFunction: 'linear',
     animationName: [
       {
         '0%': {
@@ -306,9 +313,10 @@ const libraryStyleSheet = StyleSheet.create({
         },
       },
     ],
-    animationDuration: '1.5s',
-    animationIterationCount: 'infinite',
-    animationTimingFunction: 'linear',
+    ':hover': {
+      color: '#DF2935',
+      transform: '',
+    },
   },
 
   accordionRefreshIcon: {
@@ -343,6 +351,7 @@ const Library = () => {
     );
   }, []);
 
+  console.log('render test');
   const userName = useRef(userInfo().username);
   const Navigate = useNavigate();
 
@@ -357,7 +366,6 @@ const Library = () => {
   const currentSearchParams = new URLSearchParams();
   currentSearchParams.set('search', searchQuery);
 
-  const mangaListArray: Array<JSX.Element> = [];
   const accordionArray: Array<JSX.Element> = [];
   const librarySources = LibraryUtilities.getSources();
   const librarySourcesKeys = Object.keys(librarySources);
@@ -430,12 +438,10 @@ const Library = () => {
                   foundSource.getName(),
                   await manga
                 );
-
-                // Force the Library component to re-render
-                forceUpdate();
               });
             })
             .then(() => {
+              forceUpdate();
               return setSourcesFetching(
                 sourcesFetching.filter((x) => x !== source)
               );
@@ -475,35 +481,51 @@ const Library = () => {
   ).length;
 
   const allPageCount = allChapters.reduce(
-    (acc, x) => Math.max(0, acc + x.currentPage), // pageCount is -1 if the chapter is unread.
+    (acc, x) =>
+      Math.max(
+        0,
+        acc + (Number.isSafeInteger(x.currentPage) ? x.currentPage : 0)
+      ), // pageCount is -1 if the chapter is unread.
     0
   );
 
-  sourceListValues.forEach((MangaList) => {
-    MangaList.forEach((Manga) => {
-      if (searchQuery !== '')
-        if (!Manga.Name.toLowerCase().includes(searchQuery.toLowerCase()))
-          return;
-
-      mangaListArray.push(
-        <MangaItem
-          backto="library"
-          displayType="list"
-          // Disabled because this only exists for testing purposes
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          listDisplayType="verbose"
-          title={Manga.Name}
-          coverUrl={Manga.CoverURL || undefined}
-          tags={Manga.Tags?.slice(0, 10) ?? []}
-          synopsis={Manga.Synopsis}
-          key={Manga.Name}
-          source={Manga.SourceID}
-          mangaid={Manga.MangaID}
-        />
-      );
+  const mangaListArray = useMemo(() => {
+    const mangaListArrayTemp: Array<JSX.Element> = [];
+    sourceListValues.forEach((MangaList) => {
+      MangaList.forEach((Manga) => {
+        mangaListArrayTemp.push(
+          <LazyLoad
+            height={310}
+            throttle={300}
+            scrollContainer="#lazyload"
+            unmountIfInvisible
+            once
+          >
+            <MangaItem
+              backto="library"
+              displayType="list"
+              // Disabled because this only exists for testing purposes
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
+              listDisplayType="verbose"
+              title={Manga.Name}
+              coverUrl={Manga.CoverURL || undefined}
+              tags={Manga.Tags?.slice(0, 10) ?? []}
+              synopsis={Manga.Synopsis}
+              key={Manga.Name}
+              source={Manga.SourceID}
+              mangaid={Manga.MangaID}
+            />
+          </LazyLoad>
+        );
+      });
     });
-  });
+    return mangaListArrayTemp;
+  }, [sourceListValues]).filter(
+    (x) =>
+      searchQuery === '' ||
+      x.props.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   librarySourcesKeys.forEach((sourceKey) => {
     accordionArray.push(
@@ -511,9 +533,9 @@ const Library = () => {
         <Accordion
           TransitionProps={{
             unmountOnExit: true,
-            onExited: forceCheck,
             onEntered: forceCheck,
           }}
+          TransitionComponent={undefined}
           defaultExpanded={
             searchQuery !== '' && librarySources[sourceKey].Manga.length <= 45
           }
@@ -718,13 +740,20 @@ const Library = () => {
     looseDescriptions[Math.floor(Math.random() * looseDescriptions.length)]
   );
 
-  console.log(looseDescriptions);
-  console.log(selectedDescription.current);
   return (
     <div className={css(libraryStyleSheet.container)}>
       {!hasNoSources ? (
         <div className={css(libraryStyleSheet.searchbarContainer)}>
-          <div className={css(libraryStyleSheet.searchbarContainerInner)}>
+          <Box
+            component="form"
+            className={css(libraryStyleSheet.searchbarContainerInner)}
+            onSubmit={(e: SyntheticEvent<HTMLFormElement>) => {
+              e.preventDefault();
+              setSearchQuery(
+                (e.target as unknown as HTMLInputElement[])[0].value
+              );
+            }}
+          >
             <TextField
               label="Search manga..."
               placeholder={selectedDescription.current}
@@ -747,12 +776,8 @@ const Library = () => {
                   }
                 }
               }}
-              onChange={(e) => {
-                forceCheck();
-                setSearchQuery(e.target.value.trim());
-              }}
             />
-          </div>
+          </Box>
         </div>
       ) : null}
       <div id="lazyload" className={css(libraryStyleSheet.libraryContainer)}>

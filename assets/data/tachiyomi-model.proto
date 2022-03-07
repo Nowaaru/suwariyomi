@@ -1,0 +1,120 @@
+syntax = "proto2";
+
+message Backup {
+  // @ProtoNumber(1) val backupManga: List<BackupManga>
+  repeated BackupManga backupManga = 1;
+  // @ProtoNumber(2) var backupCategories: List<BackupCategory> =
+  repeated BackupCategory backupCategories = 2;
+  // @ProtoNumber(101) var backupSources: List<BackupSource> =
+  repeated BackupSource backupSources = 101;
+}
+
+message BackupCategory {
+  // @ProtoNumber(1) var name: String
+  required string name = 1;
+  // @ProtoNumber(2) var order: Int =
+  optional int32 order = 2;
+  // @ProtoNumber(100) var flags: Int =
+  optional int32 flags = 100;
+}
+
+message BackupChapter {
+  // @ProtoNumber(1) var url: String
+  required string url = 1;
+  // @ProtoNumber(2) var name: String
+  required string name = 2;
+  // @ProtoNumber(3) var scanlator: String?
+  optional string scanlator = 3;
+  // @ProtoNumber(4) var read: Boolean =
+  optional bool read = 4;
+  // @ProtoNumber(5) var bookmark: Boolean =
+  optional bool bookmark = 5;
+  // @ProtoNumber(6) var lastPageRead: Int =
+  optional int32 lastPageRead = 6;
+  // @ProtoNumber(7) var dateFetch: Long =
+  optional int64 dateFetch = 7;
+  // @ProtoNumber(8) var dateUpload: Long =
+  optional int64 dateUpload = 8;
+  // @ProtoNumber(9) var chapterNumber: Float =
+  optional float chapterNumber = 9;
+  // @ProtoNumber(10) var sourceOrder: Int =
+  optional int32 sourceOrder = 10;
+}
+
+message BackupHistory {
+  // @ProtoNumber(1) var url: String
+  required string url = 1;
+  // @ProtoNumber(2) var lastRead: Long
+  required int64 lastRead = 2;
+}
+
+message BackupManga {
+  // @ProtoNumber(1) var source: Long
+  required int64 source = 1;
+  // @ProtoNumber(2) var url: String
+  required string url = 2;
+  // @ProtoNumber(3) var title: String =
+  optional string title = 3;
+  // @ProtoNumber(4) var artist: String?
+  optional string artist = 4;
+  // @ProtoNumber(5) var author: String?
+  optional string author = 5;
+  // @ProtoNumber(6) var description: String?
+  optional string description = 6;
+  // @ProtoNumber(7) var genre: List<String> =
+  repeated string genre = 7;
+  // @ProtoNumber(8) var status: Int =
+  optional int32 status = 8;
+  // @ProtoNumber(9) var thumbnailUrl: String?
+  optional string thumbnailUrl = 9;
+  // @ProtoNumber(13) var dateAdded: Long =
+  optional int64 dateAdded = 13;
+  // @ProtoNumber(14) var viewer: Int =
+  optional int32 viewer = 14;
+  // @ProtoNumber(16) var chapters: List<BackupChapter> =
+  repeated BackupChapter chapters = 16;
+  // @ProtoNumber(17) var categories: List<Int> =
+  repeated int32 categories = 17;
+  // @ProtoNumber(18) var tracking: List<BackupTracking> =
+  repeated BackupTracking tracking = 18;
+  // @ProtoNumber(100) var favorite: Boolean =
+  optional bool favorite = 100;
+  // @ProtoNumber(101) var chapterFlags: Int =
+  optional int32 chapterFlags = 101;
+  // @ProtoNumber(103) var viewer_flags: Int?
+  optional int32 viewer_flags = 103;
+  // @ProtoNumber(104) var history: List<BackupHistory> =
+  repeated BackupHistory history = 104;
+}
+
+message BackupSource {
+  // @ProtoNumber(1) var name: String =
+  optional string name = 1;
+  // @ProtoNumber(2) var sourceId: Long
+  required int64 sourceId = 2;
+}
+
+message BackupTracking {
+  // @ProtoNumber(1) var syncId: Int
+  required int32 syncId = 1;
+  // @ProtoNumber(2) var libraryId: Long
+  required int64 libraryId = 2;
+  // @ProtoNumber(3) var mediaId: Int =
+  optional int32 mediaId = 3;
+  // @ProtoNumber(4) var trackingUrl: String =
+  optional string trackingUrl = 4;
+  // @ProtoNumber(5) var title: String =
+  optional string title = 5;
+  // @ProtoNumber(6) var lastChapterRead: Float =
+  optional float lastChapterRead = 6;
+  // @ProtoNumber(7) var totalChapters: Int =
+  optional int32 totalChapters = 7;
+  // @ProtoNumber(8) var score: Float =
+  optional float score = 8;
+  // @ProtoNumber(9) var status: Int =
+  optional int32 status = 9;
+  // @ProtoNumber(10) var startedReadingDate: Long =
+  optional int64 startedReadingDate = 10;
+  // @ProtoNumber(11) var finishedReadingDate: Long =
+  optional int64 finishedReadingDate = 11;
+}
