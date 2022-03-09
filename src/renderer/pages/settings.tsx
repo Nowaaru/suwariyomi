@@ -1,7 +1,7 @@
 /* eslint-disable promise/no-nesting */
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { StyleSheet, css } from 'aphrodite';
-import { load, Message } from 'protobufjs';
+import { load } from 'protobufjs';
 import { readFileSync } from 'fs';
 import { ungzip } from 'node-gzip';
 import { normalize } from 'path';
@@ -22,6 +22,8 @@ import {
   ListItemText,
   ListItemSecondaryAction,
   Checkbox,
+  Backdrop,
+  CircularProgress,
 } from '@mui/material';
 
 import CodeIcon from '@mui/icons-material/Code';
@@ -44,7 +46,11 @@ import SourceBase from '../../main/sources/static/base';
 
 import type { DefaultSettings } from '../../main/util/settings';
 import { Schema, settingsSchemata } from '../util/auxiliary';
-import { generateSettings } from '../util/func';
+import {
+  generateSettings,
+  processLargeArrayAsync,
+  settingsStylesObject,
+} from '../util/func';
 
 export type BackupChapter = {
   chapterNumber: number;
@@ -93,50 +99,13 @@ export type Backup = {
 };
 
 const stylesObject = {
+  ...settingsStylesObject,
+
   container: {
     width: '96%',
     height: '100%',
     position: 'relative',
     padding: '0px 12px 12px 12px',
-  },
-
-  optionContainer: {
-    '::after': {
-      content: '""',
-      display: 'block',
-      height: '1px',
-      // left to right white gradient
-      background:
-        'linear-gradient(to left, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1))',
-      width: '80%',
-      marginTop: '8px',
-      marginBottom: '16px',
-    },
-    position: 'relative',
-    width: '100%',
-    height: 'fit-content',
-    overflowY: 'auto',
-  },
-
-  optionLabel: {
-    fontFamily: '"Roboto", "Poppins", "Helvetica", "Arial", sans-serif',
-    fontSize: '1.25rem',
-    fontWeight: 'normal',
-    lineHeight: '1.5',
-    color: '#FFFFFF',
-    verticalAlign: 'middle',
-    minWidth: '70%',
-    maxWidth: '70%',
-    display: 'inline-flex',
-    flexDirection: 'column',
-  },
-
-  optionLabelDescription: {
-    display: 'inline-block',
-    fontFamily: '"Roboto", "Poppins", "Helvetica", "Arial", sans-serif',
-    fontSize: '0.7rem',
-    fontWeight: '200',
-    marginTop: '4px',
   },
 
   tabs: {
@@ -205,6 +174,22 @@ const stylesObject = {
       color: '#FFFFFF',
       fontWeight: 'bold',
     },
+  },
+
+  progressBackup: {
+    pointerEvents: 'none',
+    zIndex: 2400,
+  },
+
+  circularProgressContainer: {
+    width: '85vw',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  circularProgress: {
+    borderRadius: '16px',
   },
 };
 
@@ -296,7 +281,16 @@ const ImportSettingsModal = ({
         </List>
       </DialogContent>
       <DialogActions>
-        <Button onClick={() => onImport(importSettings)}>Import</Button>
+        <Button
+          onClick={() => {
+            if (onClose) onClose();
+            onCloseNative();
+
+            onImport(importSettings);
+          }}
+        >
+          Import
+        </Button>
         <Button
           onClick={() => {
             if (onClose) onClose();
@@ -337,6 +331,7 @@ const Settings = () => {
   const Navigate = useNavigate();
 
   const backupRef = useRef<HTMLInputElement>(null);
+  const [isInLoadingContext, setLoadingContext] = useState(false);
 
   useEffect(() => {
     window.electron.settings.overwrite(settings);
@@ -350,15 +345,16 @@ const Settings = () => {
   // to ensure that the settings are valid and that there are
   // no settings that are not in the schema.
 
+  const importSettingsModalOnCloseFunction = useCallback(() => {
+    if (backupRef.current) backupRef.current.value = '';
+    setFileSelectedData(undefined);
+  }, [setFileSelectedData]);
+
   return (
     <>
       <ImportSettingsModal
         isOpen={!!fileSelectedData}
-        onClose={() => {
-          if (backupRef.current) backupRef.current.value = '';
-          setFileSelectedData(undefined);
-          console.log('closed!');
-        }}
+        onClose={importSettingsModalOnCloseFunction}
         onImport={async (importSettings) => {
           if (!fileSelectedData) return;
           let fileBuffer: Buffer;
@@ -453,14 +449,18 @@ const Settings = () => {
                   .map((y) => y.value)
                   .filter((z) => !libraryMangas.includes(z));
 
-                if (importSettings.manga)
+                if (importSettings.manga) {
                   // Add everything from filteredMangas into the library
+                  setLoadingContext(true);
                   filteredMangas.forEach((mangaID: string) => {
                     window.electron.library.addMangaToLibrary(
                       x.handler.getName(),
                       mangaID
                     );
                   });
+
+                  setLoadingContext(false);
+                }
 
                 if (importSettings.chapters) {
                   const allChapters = filteredAvailableManga
@@ -473,31 +473,41 @@ const Settings = () => {
                     )
                     .flat();
 
-                  allChapters.forEach((chapterItem) => {
-                    x.handler
-                      .IDFromURL(chapterItem?.url, 'chapter')
-                      .then(async (chapterID) => {
-                        window.electron.read.set(
-                          x.handler.getName(),
-                          chapterID,
-                          -1,
-                          Number.isSafeInteger(chapterItem.lastPageRead) // If the last page read is a number / isn't NaN, then...
-                            ? Number(chapterItem.lastPageRead + 1) // ...set the last page read to that number (add 1 because its zero-indexed)
-                            : chapterItem.read // otherwise, check if the chapter is marked read
-                            ? Infinity // if so, mark as infinity. the reader will correct it anyway.
-                            : -1, // otherwise, default to negative one.
-                          chapterItem.dateFetch
-                            ? Number(chapterItem.dateFetch.toString())
-                            : -1,
-                          -1,
-                          !!chapterItem.bookmark,
-                          chapterItem.manga
-                        );
+                  setLoadingContext(true);
+                  processLargeArrayAsync(
+                    allChapters,
+                    async (chapterItem, idx) => {
+                      // after every n amount of iterations (probably 15) yield
+                      await x.handler
+                        .IDFromURL(chapterItem?.url, 'chapter')
+                        .then(async (chapterID) => {
+                          window.electron.read.set(
+                            x.handler.getName(),
+                            chapterID,
+                            -1,
+                            Number.isSafeInteger(chapterItem.lastPageRead) // If the last page read is a number / isn't NaN, then...
+                              ? Number(chapterItem.lastPageRead) + 1 // ...set the last page read to that number (add 1 because its zero-indexed)
+                              : chapterItem.read // otherwise, check if the chapter is marked read
+                              ? Infinity // if so, mark as infinity. the reader will correct it anyway.
+                              : -1, // otherwise, default to negative one.
+                            chapterItem.dateFetch
+                              ? Number(chapterItem.dateFetch.toString())
+                              : -1,
+                            -1,
+                            !!chapterItem.bookmark,
+                            chapterItem.manga
+                          );
 
-                        return true;
-                      })
-                      .catch(window.electron.log.error);
-                  });
+                          return true;
+                        })
+                        .finally(() => {
+                          if (idx === allChapters.length - 1)
+                            setLoadingContext(false);
+                        })
+                        .catch(window.electron.log.error);
+                    },
+                    10
+                  );
                 }
                 return true;
               });
@@ -506,8 +516,23 @@ const Settings = () => {
         }}
       />
       <div className={css(styles.container)}>
+        <>
+          <Backdrop
+            open={isInLoadingContext}
+            onClickCapture={(e) => e.stopPropagation()}
+            className={css(styles.progressBackup)}
+          >
+            <div className={css(styles.circularProgressContainer)}>
+              <CircularProgress
+                className={css(styles.circularProgress)}
+                variant="indeterminate"
+              />
+            </div>
+          </Backdrop>
+        </>
         <Tooltip title="Back">
           <IconButton
+            disabled={isInLoadingContext}
             className={css(styles.backButton)}
             onClick={() => Navigate('/')}
             size="large"

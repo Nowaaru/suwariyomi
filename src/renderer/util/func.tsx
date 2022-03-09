@@ -8,7 +8,7 @@ import Switch from '../components/switch';
 import type { Schema } from './auxiliary';
 import { Chapter } from '../../main/util/manga';
 
-const stylesObject = {
+export const settingsStylesObject = {
   optionLabel: {
     fontFamily: '"Roboto", "Poppins", "Helvetica", "Arial", sans-serif',
     fontSize: '1.25rem',
@@ -17,6 +17,7 @@ const stylesObject = {
     color: '#FFFFFF',
     verticalAlign: 'middle',
     minWidth: '80%',
+    maxWidth: '80%',
     display: 'inline-flex',
     flexDirection: 'column',
   },
@@ -47,7 +48,7 @@ const stylesObject = {
 };
 
 // @ts-ignore Aphrodite sucks, part eight undecillion.
-const styles = StyleSheet.create(stylesObject);
+const styles = StyleSheet.create(settingsStylesObject);
 
 export const sortChapters = (chapters: Chapter[], isDescending = true) =>
   chapters.sort((a, b) => {
@@ -130,6 +131,32 @@ export const generateSettings = (
       {elementToDisplay}
     </Box>
   );
+};
+
+// https://stackoverflow.com/a/10344560
+export const processLargeArrayAsync = <T,>(
+  array: T[],
+  fn: (item: T, index: number, array: T[]) => Promise<void>,
+  maxTimePerChunk = 200,
+  context = window
+) => {
+  let index = 0;
+
+  const { now } = Date;
+  function doChunk() {
+    const startTime = now();
+    while (index < array.length && now() - startTime <= maxTimePerChunk) {
+      // callback called with args (value, index, array)
+      fn.call(context, array[index], index, array);
+      ++index;
+    }
+    if (index < array.length) {
+      // set Timeout for async iteration
+      setTimeout(() => window.requestAnimationFrame(doChunk), 1250);
+    }
+  }
+
+  doChunk();
 };
 
 export const filterChaptersToLanguage = (
