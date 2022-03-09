@@ -175,6 +175,21 @@ const Chapter = ({
     dbchapter && currentPage !== -1 && currentPage >= chapter.PageCount;
   const isBookmarked = dbchapter && dbchapter.isBookmarked;
 
+  // If the page count is too large, recorrect it.
+  if (chapter.PageCount < currentPage) {
+    setCurrentPage(chapter.PageCount);
+    window.electron.read.set(
+      source,
+      chapter.ChapterID,
+      chapter.PageCount,
+      chapter.PageCount,
+      lastRead,
+      timeElapsed,
+      !!isBookmarked,
+      manga.MangaID
+    );
+  }
+
   return (
     <Paper
       elevation={3}
