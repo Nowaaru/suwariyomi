@@ -1169,7 +1169,7 @@ const Reader = () => {
     (goTo: -1 | 1) => {
       if (!currentPageState) return;
       if (!readerData.currentchapter) return;
-      if (!imageContainerRef.current) return;
+      if (isScrollBased && !imageContainerRef.current) return;
 
       const isAtStart = currentPage === 1;
       const isAtEnd =
@@ -1186,8 +1186,9 @@ const Reader = () => {
           (isAtEnd && normalizedGoTo === 1)
         ) {
           if (isScrollBased)
-            imageContainerRef.current.scrollTo({
-              top: isAtStart ? 0 : imageContainerRef.current?.scrollHeight,
+            imageContainerRef.current!.scrollTo({
+              // If it's scroll-based then that means that imageContainerRef will be present; non-null operator is required.
+              top: isAtStart ? 0 : imageContainerRef.current!.scrollHeight,
               behavior: 'smooth',
             });
           return setIsInIntermediary(normalizedGoTo);
