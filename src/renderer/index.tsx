@@ -110,10 +110,10 @@ declare global {
         flush: () => void;
       };
       settings: {
-        get: (key: string) => any;
-        getAll: () => { [key: string]: any };
-        set: (key: string, value: any) => void;
-        overwrite: (settings: { [key: string]: any }) => void;
+        get: (key: keyof DefaultSettings) => DefaultSettings[typeof key];
+        getAll: () => DefaultSettings;
+        set: (key: keyof DefaultSettings, value: Record<string, any>) => void;
+        overwrite: (settings: Record<keyof DefaultSettings, any>) => void;
         flush: () => void;
       };
     };
