@@ -724,7 +724,7 @@ const Library = () => {
       looseDescriptions.push(Map);
     }
     // Add random page numbers.
-    if (x.Chapters.length > 0)
+    if (x.Chapters && x.Chapters.length > 0)
       looseDescriptions.push(
         `Chapters${Math.random() > 0.5 ? '>' : '<'}${Math.floor(
           clamp(
