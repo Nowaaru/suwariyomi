@@ -12,13 +12,17 @@ import {
   Alert,
   AlertTitle,
   Paper,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
   // Pagination, - Use when mangadex-full-api exposes the total number of results
 } from '@mui/material';
 
 import { StyleSheet, css } from 'aphrodite';
 import { isEqual } from 'lodash';
 import React, { useEffect, useState, useRef, Fragment } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import LazyLoad, { forceCheck } from 'react-lazyload';
 import ArrowCircleLeftRoundedIcon from '@mui/icons-material/ArrowCircleLeftRounded';
@@ -268,7 +272,10 @@ const styles = StyleSheet.create({
     height: '1px',
     background: 'linear-gradient(to left, #FFFFFF00, #DF2935FF)',
   },
+
   modalBody: {},
+
+  noContentContainer: {},
 });
 
 /*
@@ -321,6 +328,7 @@ const SearchPage = () => {
     severity: 'success' | 'error';
   } | null>(null); // TODO: Implement search alert system
 
+  const Navigate = useNavigate();
   const [modalIsOpen, setIsOpen] = useState(false);
   const specificQueryLoadedPages = useRef<{
     [sourceName: string]: {
@@ -352,10 +360,14 @@ const SearchPage = () => {
     window.electron.util.getSourceFiles().map(Handler.getSource)
   );
 
+  const userSettings = useRef(window.electron.settings.getAll());
+
   const mappedFileNames = mappedFileNamesBase.current.filter(
     (x) =>
-      !specifiedSource ||
-      x.getName().toLowerCase() === specifiedSource.toLowerCase()
+      (!specifiedSource ||
+        x.getName().toLowerCase() === specifiedSource.toLowerCase()) &&
+      x._metadata.isNSFW &&
+      !userSettings.current.browse.showNSFWSources // NSFW sources are hidden if the option is set to do so
   );
 
   const [scrollTarget, setScrollTarget] = useState<Node | Window | undefined>(
@@ -408,12 +420,12 @@ const SearchPage = () => {
 
   useEffect(() => {
     if (!specifiedSource) return;
-    if (!mappedFileNames[0]) return;
+    if (!mappedFileNames?.[0]) return;
     if (isLoadingMoreResults) return;
 
     const generateBaseSearchData = () => ({
       [searchData.searchQuery]: {
-        filters: mappedFileNames[0].getFilters(),
+        filters: mappedFileNames?.[0].getFilters(),
         itemCount: null,
         pageData: {},
       },
@@ -439,11 +451,11 @@ const SearchPage = () => {
             'offset',
             'query'
           ),
-          Exclude(mappedFileNames[0].getFilters(), 'offset', 'query')
+          Exclude(mappedFileNames?.[0].getFilters(), 'offset', 'query')
         ) // If the filters are different, remove the page data.
       ) {
         currentSpecifiedSource[searchData.searchQuery].filters =
-          mappedFileNames[0].getFilters();
+          mappedFileNames?.[0].getFilters();
         currentSpecifiedSource[searchData.searchQuery].pageData = {};
         currentSpecifiedSource[searchData.searchQuery].itemCount = null;
       }
@@ -461,7 +473,7 @@ const SearchPage = () => {
     if (specifiedSourceCurrentValueSearchQuery.pageData[queryOffset]) return;
     setLoading(true);
     Promise.resolve()
-      .then(() => beginSearch(mappedFileNames[0]))
+      .then(() => beginSearch(mappedFileNames?.[0]))
       .then((n) => {
         specifiedSourceCurrentValue[searchData.searchQuery].pageData[
           queryOffset
@@ -472,7 +484,7 @@ const SearchPage = () => {
       .then(async () => {
         if (!specifiedSourceCurrentValueSearchQuery.itemCount)
           specifiedSourceCurrentValueSearchQuery.itemCount =
-            await mappedFileNames[0].getItemCount();
+            await mappedFileNames?.[0].getItemCount();
 
         return setLoading(false); // ?????
       })
@@ -532,7 +544,6 @@ const SearchPage = () => {
     return undefined;
   });
 
-  // TODO: Outline the image itself instead of the cover container + give the coverimage border radius
   const currentSearches = searchData.queriedSearches[searchData.searchQuery];
   let elementHierarchy;
   if (!specifiedSource) {
@@ -675,9 +686,8 @@ const SearchPage = () => {
     });
   } else {
     // ElementHierarchy will be a list of Skeletons instead of MangaItems for now
-    const queryFilters = mappedFileNames[0]?.getFilters();
     const queryData =
-      specificQueryLoadedPages.current[mappedFileNames[0].getName()]?.[
+      specificQueryLoadedPages.current[mappedFileNames[0]?.getName()]?.[
         searchData.searchQuery
       ]?.pageData?.[queryOffset] ?? [];
 
@@ -697,7 +707,37 @@ const SearchPage = () => {
     ));
   }
 
-  return (
+  return !mappedFileNames[0] ? (
+    <div className={css(styles.noContentContainer)}>
+      <Dialog open>
+        <DialogTitle>
+          <Typography variant="h6">No sources found.</Typography>
+        </DialogTitle>
+        <DialogContent>
+          <Typography variant="body1">
+            You have no sources enabled, or some of your settings prevent
+            sources from being displayed. Please check your settings.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              setSpecifiedSource(null);
+            }}
+          >
+            Retry
+          </Button>
+          <Button
+            onClick={() => {
+              Navigate('/library');
+            }}
+          >
+            Go To Library
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </div>
+  ) : (
     <>
       <Modal
         open={modalIsOpen && !isLoadingMoreResults}
@@ -727,7 +767,7 @@ const SearchPage = () => {
                 filterSettings={mappedFileNames[0].getFieldTypes()}
                 onSubmit={(newFilters) => {
                   setQueryOffset(0);
-                  mappedFileNames[0].setFilters(newFilters);
+                  mappedFileNames?.[0].setFilters(newFilters);
                   window.electron.cache.set('filters', newFilters);
                   setIsOpen(false);
 
