@@ -366,8 +366,7 @@ const SearchPage = () => {
     (x) =>
       (!specifiedSource ||
         x.getName().toLowerCase() === specifiedSource.toLowerCase()) &&
-      x._metadata.isNSFW &&
-      !userSettings.current.browse.showNSFWSources // NSFW sources are hidden if the option is set to do so
+      (!x._metadata.isNSFW || userSettings.current.browse.showNSFWSources) // NSFW sources are hidden if the option is set to do so
   );
 
   const [scrollTarget, setScrollTarget] = useState<Node | Window | undefined>(
