@@ -275,15 +275,18 @@ const MangaItem = ({
   backto,
 }: MangaItemProps) => {
   const Navigation = useNavigate();
-  const mangaTags = tags
-    .map(capitalize)
-    .map((tag) => (
-      <Tag
-        key={tag}
-        name={tag}
-        color={Handler.getSource(source)?.tagColours?.[tag]}
-      />
-    ));
+  const mangaTags = tags.map((tag) => (
+    <Tag
+      key={tag}
+      name={tag}
+      color={Handler.getSource(source)?.tagColours?.[tag]}
+    />
+  ));
+
+  // Move all tags with a colour to the front of the list.
+  const sortedTags = mangaTags.filter((tag) => tag.props.color);
+  const nonColourTags = mangaTags.filter((tag) => !tag.props.color).sort();
+  const tagsToDisplay = [...sortedTags, ...nonColourTags];
 
   const mangaData = window.electron.library.getCachedManga(source, mangaid);
   const cachedChapters = mangaData?.Chapters
@@ -344,7 +347,7 @@ const MangaItem = ({
           <div className={css(styles.mangaMetadata)}>
             <div className={css(styles.mangaItemInformationMain)}>
               <h3 className={css(styles.mangaItemTitle)}>{title}</h3>
-              <div className={css(styles.mangaItemTags)}>{mangaTags}</div>
+              <div className={css(styles.mangaItemTags)}>{tagsToDisplay}</div>
               <div className={css(styles.mangaItemSynopsisContainer)}>
                 <p className={css(styles.mangaItemSynopsis)}>
                   {(() => {
