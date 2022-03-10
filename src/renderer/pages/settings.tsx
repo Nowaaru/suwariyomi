@@ -478,6 +478,15 @@ const Settings = () => {
                     allChapters,
                     async (chapterItem, idx) => {
                       // after every n amount of iterations (probably 15) yield
+
+                      const pageNumber = Number.isSafeInteger(
+                        chapterItem.lastPageRead
+                      ) // If the last page read is a number / isn't NaN, then...
+                        ? Number(chapterItem.lastPageRead) + 1 // ...set the last page read to that number (add 1 because its zero-indexed)
+                        : chapterItem.read // otherwise, check if the chapter is marked read
+                        ? Infinity // if so, mark as infinity. the reader will correct it anyway.
+                        : -1; // otherwise, default to negative one.
+
                       await x.handler
                         .IDFromURL(chapterItem?.url, 'chapter')
                         .then(async (chapterID) => {
@@ -485,11 +494,7 @@ const Settings = () => {
                             x.handler.getName(),
                             chapterID,
                             -1,
-                            Number.isSafeInteger(chapterItem.lastPageRead) // If the last page read is a number / isn't NaN, then...
-                              ? Number(chapterItem.lastPageRead) + 1 // ...set the last page read to that number (add 1 because its zero-indexed)
-                              : chapterItem.read // otherwise, check if the chapter is marked read
-                              ? Infinity // if so, mark as infinity. the reader will correct it anyway.
-                              : -1, // otherwise, default to negative one.
+                            pageNumber,
                             chapterItem.dateFetch
                               ? Number(chapterItem.dateFetch.toString())
                               : -1,
