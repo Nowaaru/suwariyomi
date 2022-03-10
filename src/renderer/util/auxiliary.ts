@@ -49,6 +49,13 @@ export const settingsSchemata: {
     },
   },
   library: {
+    displayUserName: {
+      type: 'switch',
+      label: 'Display User Name',
+      description:
+        'Display your OS name when in the library. Otherwise, simply show "Welcome Back."',
+      default: true,
+    },
     refreshCovers: {
       type: 'switch',
       label: 'Refresh Covers',
@@ -81,6 +88,14 @@ export const settingsSchemata: {
       type: 'managed',
       label: 'Theme',
       description: 'The look and feel of the application.',
+    },
+    themeStyleLight: {
+      type: 'managed',
+      label: 'Theme Style - Light',
+    },
+    themeStyleDark: {
+      type: 'managed',
+      label: 'Theme Style - Dark',
     },
   },
   reader: {

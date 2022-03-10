@@ -13,6 +13,7 @@ export const defaultSettings = {
     autoUpdate: true,
   },
   library: {
+    displayUserName: true,
     refreshCovers: false,
     ignoreArticles: false,
     searchSuggestions: false,
@@ -20,6 +21,8 @@ export const defaultSettings = {
   },
   appearance: {
     theme: 'dark',
+    themeStyleDark: 'default',
+    themeStyleLight: 'default',
   },
   reader: {
     lightbarVertical: false,
@@ -90,6 +93,10 @@ export const settingsSchema: Schema<typeof defaultSettings> = {
   library: {
     type: 'object',
     properties: {
+      displayUserName: {
+        type: 'boolean',
+        default: true,
+      },
       refreshCovers: {
         type: 'boolean',
         default: false,
@@ -114,6 +121,14 @@ export const settingsSchema: Schema<typeof defaultSettings> = {
       theme: {
         type: 'string',
         enum: ['light', 'dark'],
+      },
+      themeStyleLight: {
+        type: 'string',
+        default: 'default',
+      },
+      themeStyleDark: {
+        type: 'string',
+        default: 'default',
       },
     },
   },
@@ -303,6 +318,34 @@ const Settings = new SettingsDatabase({
             navLayoutWebtoon: 'top-and-bottom',
           },
           settings.store.reader
+        ),
+      };
+
+      return (settings.store = newSettings);
+    },
+    '>=0.12.0': (settings) => {
+      const newSettings = {
+        ...settings.store,
+        reader: Object.assign(
+          {
+            zoomStartPosition: 'automatic',
+          },
+          settings.store.reader
+        ),
+
+        appearance: Object.assign(
+          {
+            themeStyleLight: 'default',
+            themeStyleDark: 'default',
+          },
+          settings.store.appearance
+        ),
+
+        library: Object.assign(
+          {
+            displayUserName: true,
+          },
+          settings.store.library
         ),
       };
 
