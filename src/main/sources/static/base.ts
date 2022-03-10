@@ -56,6 +56,12 @@ export type SearchFilterFieldTypes = {
 export default abstract class SourceBase {
   protected abstract _sourceName: string;
 
+  public _metadata: {
+    isNSFW: boolean;
+  } = {
+    isNSFW: false,
+  };
+
   public getName(): typeof SourceBase.prototype._sourceName {
     return this._sourceName;
   }
