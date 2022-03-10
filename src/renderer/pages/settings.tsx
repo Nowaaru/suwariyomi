@@ -575,12 +575,16 @@ const Settings = () => {
             ...Object.values(
               mapValues(
                 settingsSchemata[settingsLocation] as Record<string, Schema>,
-                (value: Schema, key: string | number) =>
+                (
+                  value: Schema,
+                  key: keyof DefaultSettings[typeof settingsLocation]
+                ) =>
                   generateSettings(
                     value,
                     settings[settingsLocation][key],
                     (settingsValue: any) => {
                       const newSettings = { ...settings };
+                      // @ts-ignore - nothing i can do here
                       newSettings[settingsLocation][key] = settingsValue;
 
                       setSettings(newSettings);

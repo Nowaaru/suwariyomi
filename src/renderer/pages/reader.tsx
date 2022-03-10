@@ -727,7 +727,7 @@ const Reader = () => {
   >({
     ...window.electron.settings.get('reader'),
     ...window.electron.reader.getMangaSettings(sourceId, mangaId),
-  });
+  } as DefaultSettings['reader']); // also no clue what i could do here /shrug
 
   const webtoonKey = ['continuous-vertical', 'webtoon'].includes(
     readerSettings.readingMode
