@@ -370,6 +370,7 @@ const Library = () => {
   const librarySources = LibraryUtilities.getSources();
   const librarySourcesKeys = Object.keys(librarySources);
 
+  const userSettings = useRef(window.electron.settings.getAll());
   const mappedFileNamesRef = useRef(
     window.electron.util.getSourceFiles().map(Handler.getSource)
   );
@@ -802,7 +803,8 @@ const Library = () => {
                 libraryStyleSheet.infoPaperHeaderMain
               )}
             >
-              {userName.current?.length <= 10
+              {userSettings.current?.library.displayUserName &&
+              userName.current?.length <= 10
                 ? `Welcome back, ${capitalize(userName.current)}.`
                 : 'Welcome back.'}
             </h1>
