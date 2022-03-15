@@ -69,6 +69,10 @@ declare global {
         deleteSource: (sourceName: string) => void;
         flush: () => void;
       };
+      theme: {
+        get: (themeName: string) => Record<string, string | number>;
+        getAll: () => Record<string, string>;
+      };
       cache: {
         get: (key: string) => any;
         set: (key: string, value: any) => void;
