@@ -14,6 +14,7 @@ export const defaultSettings = {
   },
   library: {
     displayUserName: true,
+    updateOnKeyPress: true,
     refreshCovers: false,
     ignoreArticles: false,
     searchSuggestions: false,
@@ -94,6 +95,10 @@ export const settingsSchema: Schema<typeof defaultSettings> = {
     type: 'object',
     properties: {
       displayUserName: {
+        type: 'boolean',
+        default: true,
+      },
+      updateOnKeyPress: {
         type: 'boolean',
         default: true,
       },
@@ -344,6 +349,7 @@ const Settings = new SettingsDatabase({
         library: Object.assign(
           {
             displayUserName: true,
+            updateOnKeyPress: true,
           },
           settings.store.library
         ),

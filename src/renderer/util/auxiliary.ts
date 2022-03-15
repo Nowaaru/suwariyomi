@@ -56,6 +56,13 @@ export const settingsSchemata: {
         'Display your OS name when in the library. Otherwise, simply show "Welcome Back."',
       default: true,
     },
+    updateOnKeyPress: {
+      type: 'switch',
+      label: 'Update on Key Press',
+      description:
+        'Update search results upon every key press. If this causes performance issues, disable this.',
+      default: true,
+    },
     refreshCovers: {
       type: 'switch',
       label: 'Refresh Covers',
