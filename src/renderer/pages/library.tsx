@@ -25,6 +25,7 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import parseQuery from '../util/search';
 
 import { FullManga, Manga as MangaType } from '../../main/util/manga';
+import type { ReadDatabaseValue } from '../../main/util/read';
 import MangaItem from '../components/mangaitem';
 import useQuery from '../util/hook/usequery';
 import Handler from '../../main/sources/handler';
@@ -380,6 +381,7 @@ const Library = () => {
 
   // Filter out sources that are not enabled AND has no manga
   const cachedMangas = useRef<Record<string, Array<FullManga>>>({});
+  const libraryMangas = useRef<Record<string, string[]>>({});
   const sourceList: Record<string, FullManga[]> = useMemo(() => {
     const sourceListTemp: Record<string, FullManga[]> = {};
     librarySourcesKeys
@@ -388,11 +390,22 @@ const Library = () => {
           librarySources[source].Enabled &&
           librarySources[source].Manga.length > 0 &&
           (searchQuery === '' ||
-            (LibraryUtilities.getCachedMangas(source) || []).some((manga) =>
+            (
+              cachedMangas.current[source] ??
+              (LibraryUtilities.getCachedMangas(source) || [])
+            ).some((manga) =>
               manga.Name.toLowerCase().includes(searchQuery.toLowerCase())
             ))
       )
       .forEach((source) => {
+        const libraryMangasOfSource =
+          libraryMangas.current[source] ??
+          LibraryUtilities.getLibraryMangas(source) ??
+          [];
+
+        if (libraryMangasOfSource.length > 0 && !libraryMangas.current[source])
+          libraryMangas.current[source] = libraryMangasOfSource;
+
         sourceListTemp[source] = LibraryUtilities.getLibraryMangas(source)
           .map((x) => {
             const findFN = (y: FullManga) => y.MangaID === x;
@@ -467,8 +480,17 @@ const Library = () => {
 
   const sourceListValues = Object.values(sourceList);
 
+  const allCachedRead = useRef<Record<string, ReadDatabaseValue>>({});
   const allChapters = mappedFileNamesRef.current
-    .map((x) => window.electron.read.get(x.getName()))
+    .map((x) => {
+      if (allCachedRead.current[x.getName()]) {
+        return allCachedRead.current[x.getName()];
+      }
+
+      const alreadyRead = window.electron.read.get(x.getName());
+      allCachedRead.current[x.getName()] = alreadyRead;
+      return alreadyRead;
+    })
     .filter((x) => x !== undefined)
     .flatMap((x) => Object.values(x));
 
@@ -523,6 +545,8 @@ const Library = () => {
               key={Manga.Name}
               source={Manga.SourceID}
               mangaid={Manga.MangaID}
+              cachedMangaData={Manga}
+              cachedChapterData={allCachedRead.current[Manga.SourceID]}
             />
           </LazyLoad>
         );
@@ -787,6 +811,9 @@ const Library = () => {
                     }
                   }
                 }
+              }}
+              onChange={(e) => {
+                setSearchQuery((e.target as unknown as HTMLInputElement).value);
               }}
             />
           </Box>

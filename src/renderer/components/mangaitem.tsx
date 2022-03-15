@@ -11,7 +11,9 @@ import nocover from '../../../assets/images/nocover_dark.png';
 import Handler from '../../main/sources/handler';
 
 // util fdunc
+import type { ReadDatabaseValue } from '../../main/util/read';
 import { getReadUrl, sortChapters } from '../util/func';
+import type { FullManga } from '../../main/util/manga';
 
 type MangaItemListProps = {
   displayType: 'list';
@@ -31,6 +33,8 @@ type MangaItemGenericProps = {
   source: string;
   mangaid: string;
   backto: string;
+  cachedMangaData?: FullManga | undefined;
+  cachedChapterData?: ReadDatabaseValue | undefined;
 };
 
 type MangaItemProps = MangaItemGenericProps &
@@ -264,6 +268,7 @@ const styles = StyleSheet.create({
   },
 });
 
+// If manga data isn't provided beforehand, the component will fetch it from the IPC renderer.
 const MangaItem = ({
   tags,
   title,
@@ -273,6 +278,8 @@ const MangaItem = ({
   synopsis,
   displayType,
   backto,
+  cachedMangaData,
+  cachedChapterData,
 }: MangaItemProps) => {
   const Navigation = useNavigate();
   const mangaTags = tags.map((tag) => (
@@ -288,11 +295,12 @@ const MangaItem = ({
   const nonColourTags = mangaTags.filter((tag) => !tag.props.color).sort();
   const tagsToDisplay = [...sortedTags, ...nonColourTags];
 
-  const mangaData = window.electron.library.getCachedManga(source, mangaid);
+  const mangaData =
+    cachedMangaData ?? window.electron.library.getCachedManga(source, mangaid);
   const cachedChapters = mangaData?.Chapters
     ? sortChapters(mangaData?.Chapters, false).map((chapterObject) => {
-        const cachedChapter =
-          window.electron.read.get(source)?.[chapterObject.ChapterID];
+        const cachedChapter = (cachedChapterData ??
+          window.electron.read.get(source))?.[chapterObject.ChapterID];
 
         return {
           ...cachedChapter,
@@ -475,6 +483,11 @@ const MangaItem = ({
     default:
       return null;
   }
+};
+
+MangaItem.defaultProps = {
+  cachedMangaData: null,
+  cachedChapterData: null,
 };
 
 export default MangaItem;
