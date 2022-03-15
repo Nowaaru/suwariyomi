@@ -377,7 +377,9 @@ const Library = () => {
 
   const forceUpdate = useForceUpdate();
   const hasNoSources = mappedFileNamesRef.current.length <= 0;
+
   // Filter out sources that are not enabled AND has no manga
+  const cachedMangas = useRef<Record<string, Array<FullManga>>>({});
   const sourceList: Record<string, FullManga[]> = useMemo(() => {
     const sourceListTemp: Record<string, FullManga[]> = {};
     librarySourcesKeys
@@ -392,11 +394,16 @@ const Library = () => {
       )
       .forEach((source) => {
         sourceListTemp[source] = LibraryUtilities.getLibraryMangas(source)
-          .map((x) =>
-            LibraryUtilities.getCachedMangas(source).find(
-              (y) => y.MangaID === x
-            )
-          )
+          .map((x) => {
+            const findFN = (y: FullManga) => y.MangaID === x;
+            if (cachedMangas.current[source]) {
+              return cachedMangas.current[source].find(findFN);
+            }
+
+            const cachedManga = LibraryUtilities.getCachedMangas(source);
+            cachedMangas.current[source] = cachedManga;
+            return cachedManga.find(findFN);
+          })
           .filter((x) => x) as FullManga[]; // Remove all undefined values
       });
 
@@ -491,7 +498,7 @@ const Library = () => {
   );
 
   const mangaListArray = useMemo(() => {
-    const mangaListArrayTemp: Array<JSX.Element> = [];
+    const mangaListArrayTemp: Array<React.ReactElement> = [];
     sourceListValues.forEach((MangaList) => {
       MangaList.forEach((Manga) => {
         mangaListArrayTemp.push(
@@ -521,12 +528,15 @@ const Library = () => {
         );
       });
     });
-    return mangaListArrayTemp;
-  }, [sourceListValues]).filter(
-    (x) =>
-      searchQuery === '' ||
-      x.props.title.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+
+    return mangaListArrayTemp.filter(
+      (x) =>
+        searchQuery === '' ||
+        x.props.children.props.title
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase())
+    );
+  }, [sourceListValues, searchQuery]);
 
   librarySourcesKeys.forEach((sourceKey) => {
     accordionArray.push(
@@ -535,6 +545,7 @@ const Library = () => {
           TransitionProps={{
             unmountOnExit: true,
             onEntered: forceCheck,
+            onExited: forceCheck,
           }}
           TransitionComponent={undefined}
           defaultExpanded={
