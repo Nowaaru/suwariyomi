@@ -622,7 +622,13 @@ const View = () => {
         const correspondingChapter = chapterData.current[x.ChapterID];
         if (!correspondingChapter) return false;
 
-        const { currentPage, pageCount } = correspondingChapter;
+        const { currentPage, pageCount } = {
+          ...correspondingChapter,
+          pageCount:
+            correspondingChapter.pageCount > -1
+              ? correspondingChapter.pageCount
+              : x.PageCount,
+        };
         return currentPage > -1 && pageCount > -1 && currentPage >= pageCount;
       }) || currentManga.Chapters.length === 0;
 
