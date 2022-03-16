@@ -245,7 +245,7 @@ class MangaDB {
   static Flush() {
     MangaDatabase.deleteAll();
     LibraryDatabase.deleteAll();
-    enforce();
+    reloadSources();
     return true;
   }
 
