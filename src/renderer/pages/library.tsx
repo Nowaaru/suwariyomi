@@ -12,7 +12,14 @@ import {
 } from '@mui/material';
 
 import { StyleSheet, css } from 'aphrodite/no-important';
-import { useState, useRef, useEffect, useMemo, SyntheticEvent } from 'react';
+import {
+  useState,
+  useRef,
+  useEffect,
+  useMemo,
+  SyntheticEvent,
+  useCallback,
+} from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { userInfo } from 'os';
 import { capitalize, clamp } from 'lodash';
@@ -376,8 +383,8 @@ const Library = () => {
     window.electron.util.getSourceFiles().map(Handler.getSource)
   );
 
-  const forceUpdate = useForceUpdate();
   const hasNoSources = mappedFileNamesRef.current.length <= 0;
+  const forceUpdate = useForceUpdate();
 
   // Filter out sources that are not enabled AND has no manga
   const cachedMangas = useRef<Record<string, Array<FullManga>>>({});
@@ -389,7 +396,7 @@ const Library = () => {
         (source) =>
           librarySources[source].Enabled &&
           librarySources[source].Manga.length > 0 &&
-          (searchQuery === '' ||
+          (searchQuery.trim().length === 0 ||
             (
               cachedMangas.current[source] ??
               (LibraryUtilities.getCachedMangas(source) || [])
@@ -409,7 +416,7 @@ const Library = () => {
         sourceListTemp[source] = LibraryUtilities.getLibraryMangas(source)
           .map((x) => {
             const findFN = (y: FullManga) => y.MangaID === x;
-            if (cachedMangas.current[source]) {
+            if (cachedMangas.current[source]?.length > 0) {
               return cachedMangas.current[source].find(findFN);
             }
 
@@ -421,9 +428,18 @@ const Library = () => {
       });
 
     return sourceListTemp;
-  }, [LibraryUtilities, librarySources, librarySourcesKeys, searchQuery]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    LibraryUtilities,
+    librarySources,
+    librarySourcesKeys,
+    searchQuery,
+    sourcesFetching, // This is to have a re-cache whenever a source starts or finishes fetching
+  ]);
+
   useEffect(() => {
     if (sourcesFetching.length > 0) return;
+
     const allKeys: Record<string, string[]> = {};
     Object.keys(sourceList).forEach((source) => {
       window.electron.library.getLibraryMangas(source).forEach((mangaID) => {
@@ -431,6 +447,7 @@ const Library = () => {
         const mangaIsInCache = sourceList[source].some(
           (manga) => manga.MangaID === mangaID
         );
+
         if (!mangaIsInCache) {
           allKeys[source] = allKeys[source] || [];
           allKeys[source].push(mangaID);
@@ -453,18 +470,21 @@ const Library = () => {
         if (foundSource) {
           foundSource
             .getMangas(mangaIDs, true)
-            .then((mangaList) => {
-              return mangaList.forEach(async (manga) => {
-                window.electron.library.addMangaToCache(
-                  foundSource.getName(),
-                  await manga
-                );
-              });
+            .then(async (mangaList) => {
+              return Promise.allSettled(
+                mangaList.flatMap(async (manga) =>
+                  window.electron.library.addMangaToCache(
+                    foundSource.getName(),
+                    await manga
+                  )
+                )
+              );
             })
             .then(() => {
-              forceUpdate();
               return setSourcesFetching(
-                sourcesFetching.filter((x) => x !== source)
+                sourcesFetching.filter(
+                  (fetchingSource) => fetchingSource !== foundSource.getName()
+                )
               );
             })
             .catch((error) => {
@@ -476,7 +496,7 @@ const Library = () => {
         }
       }
     });
-  }, [sourcesFetching, setSourcesFetching, forceUpdate, sourceList]);
+  }, [sourcesFetching, setSourcesFetching, sourceList]);
 
   const sourceListValues = Object.values(sourceList);
 
