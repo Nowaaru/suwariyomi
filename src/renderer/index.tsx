@@ -1,7 +1,7 @@
 import { functions } from 'electron-log';
 import { render } from 'react-dom';
 import { IpcRendererEvent } from 'electron';
-import { LibrarySources, FullManga } from '../main/util/manga';
+import { LibrarySources, FullManga, LibraryManga } from '../main/util/manga';
 import { ReadDatabaseValue } from '../main/util/read';
 import type { DefaultSettings } from '../main/util/settings';
 import App from './App';
@@ -22,6 +22,7 @@ declare global {
       log: typeof functions;
       util: {
         getSourceFiles: () => string[];
+        getUserDataPath: () => string;
         getSourceDirectory: () => string;
         openInBrowser: (url: string) => void;
       };
@@ -44,12 +45,18 @@ declare global {
         removeMangaFromLibrary: (sourceName: string, mangaId: string) => void;
         getLibraryMangas: (sourceName: string) => string[];
 
-        addMangaToCache: (sourceName: string, fullManga: FullManga) => void;
-        removeMangaFromCache: (sourceName: string, mangaId: string) => void;
+        addMangaToCache: (
+          sourceName: string,
+          fullManga: FullManga | LibraryManga
+        ) => void;
+        removeMangaFromCache: (
+          sourceName: string,
+          ...mangaIds: string[]
+        ) => void;
         getCachedManga: (
           sourceName: string,
           mangaId: string
-        ) => FullManga | undefined;
+        ) => FullManga | LibraryManga | undefined;
         getCachedMangas: (sourceName: string) => FullManga[];
         getAllCachedMangas: () => FullManga[];
       };

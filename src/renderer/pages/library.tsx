@@ -7,38 +7,42 @@ import {
   Paper,
   IconButton,
   Tooltip,
-  FormControl,
+  Select,
   Box,
+  MenuItem,
+  Checkbox,
 } from '@mui/material';
 
 import { StyleSheet, css } from 'aphrodite/no-important';
-import {
+import React, {
   useState,
   useRef,
   useEffect,
   useMemo,
   SyntheticEvent,
-  useCallback,
 } from 'react';
+
 import { Link, useNavigate } from 'react-router-dom';
 import { userInfo } from 'os';
-import { capitalize, clamp } from 'lodash';
+import { capitalize, clamp, isEqual } from 'lodash';
 
 import LazyLoad, { forceCheck } from 'react-lazyload';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SettingsIcon from '@mui/icons-material/Settings';
 import SearchIcon from '@mui/icons-material/Search';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import parseQuery from '../util/search';
 
-import { FullManga, Manga as MangaType } from '../../main/util/manga';
+import { Chapter, FullManga, Manga as MangaType } from '../../main/util/manga';
 import type { ReadDatabaseValue } from '../../main/util/read';
 import MangaItem from '../components/mangaitem';
 import useQuery from '../util/hook/usequery';
 import Handler from '../../main/sources/handler';
-import useMountEffect from '../util/hook/usemounteffect';
 import useForceUpdate from '../util/hook/useforceupdate';
-import Defer from '../components/defer';
+import useMountEffect from '../util/hook/usemounteffect';
+import MiscEnmap from '../../main/util/misc';
 
 const libraryStyleSheet = StyleSheet.create({
   container: {
@@ -335,6 +339,38 @@ const libraryStyleSheet = StyleSheet.create({
       transform: 'scale(1.2) rotate(180deg)',
     },
   },
+
+  accordionSortMethodContainer: {
+    display: 'flex',
+    width: '30%',
+    flexShrink: 2,
+    color: '#FFFFFF',
+    '@media (max-width: 750px)': {
+      width: '33%',
+    },
+  },
+
+  accordionSortMethodSelectItem: {
+    height: '32px',
+    marginLeft: '8px',
+    marginRight: '8px',
+  },
+
+  accordionItemCount: {
+    verticalAlign: 'bottom',
+    lineHeight: '32px',
+    '@media (max-width: 750px)': {
+      display: 'none',
+    },
+  },
+
+  accordionSortOrderCheckbox: {
+    display: 'flex',
+    maxHeight: '24px',
+    maxWidth: '24px',
+    color: '#DF2935',
+    top: '5px',
+  },
 });
 
 const noResultsFlavorTexts = [
@@ -359,7 +395,6 @@ const Library = () => {
     );
   }, []);
 
-  console.log('render test');
   const userName = useRef(userInfo().username);
   const Navigate = useNavigate();
 
@@ -379,9 +414,27 @@ const Library = () => {
   const librarySourcesKeys = Object.keys(librarySources);
 
   const userSettings = useRef(window.electron.settings.getAll());
+  const fetchQueue = useRef<Array<string>>([]);
   const mappedFileNamesRef = useRef(
     window.electron.util.getSourceFiles().map(Handler.getSource)
   );
+
+  useEffect(() => {
+    const suwaLibrary = MiscEnmap.get('suwariyomi_library') ?? {};
+    // Iterate through all sources and then make a `data_source` key for each source.
+    mappedFileNamesRef.current.forEach((source) => {
+      if (!suwaLibrary[`data_${source.getName()}`]) {
+        suwaLibrary[`data_${source.getName()}`] = {};
+      }
+    });
+
+    MiscEnmap.set('suwariyomi_library', suwaLibrary);
+  }, []);
+
+  // If this changes, I expect the library to be reloaded and re-sorted.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const suwariyomiLibrarySettings =
+    (MiscEnmap.get('suwariyomi_library') as Record<any, any>) ?? {};
 
   const hasNoSources = mappedFileNamesRef.current.length <= 0;
   const forceUpdate = useForceUpdate();
@@ -434,29 +487,50 @@ const Library = () => {
     librarySources,
     librarySourcesKeys,
     searchQuery,
+    fetchQueue,
     sourcesFetching, // This is to have a re-cache whenever a source starts or finishes fetching
   ]);
 
   useEffect(() => {
-    if (sourcesFetching.length > 0) return;
+    // Find all sources that have a library size that isn't proportional to their cache size.
+    const queuedSources: string[] = [];
+    mappedFileNamesRef.current.forEach((source) => {
+      if (
+        LibraryUtilities.getCachedMangas(source.getName()).length <
+        LibraryUtilities.getLibraryMangas(source.getName()).length
+      ) {
+        queuedSources.push(source.getName());
+      }
+    });
+
+    if (queuedSources.length > 0) {
+      fetchQueue.current = queuedSources;
+    }
+  });
+
+  useEffect(() => {
+    if (fetchQueue.current.length <= 0) return;
 
     const allKeys: Record<string, string[]> = {};
-    Object.keys(sourceList).forEach((source) => {
-      window.electron.library.getLibraryMangas(source).forEach((mangaID) => {
-        // Determine if the manga is already in the cache
-        const mangaIsInCache = sourceList[source].some(
-          (manga) => manga.MangaID === mangaID
-        );
+    fetchQueue.current
+      .filter((x) => !sourcesFetching.includes(x))
+      .forEach((source) => {
+        window.electron.library.getLibraryMangas(source).forEach((mangaID) => {
+          // Determine if the manga is already in the cache
+          const mangaIsInCache = sourceList[source].some(
+            (manga) => manga.MangaID === mangaID
+          );
 
-        if (!mangaIsInCache) {
-          allKeys[source] = allKeys[source] || [];
-          allKeys[source].push(mangaID);
+          if (!mangaIsInCache) {
+            allKeys[source] = allKeys[source] || [];
+            allKeys[source].push(mangaID);
 
-          if (sourcesFetching.includes(source)) return;
-          setSourcesFetching([...sourcesFetching, source]);
-        }
+            if (sourcesFetching.includes(source)) return;
+            fetchQueue.current.splice(fetchQueue.current.indexOf(source), 1);
+            setSourcesFetching([...sourcesFetching, source]);
+          }
+        });
       });
-    });
 
     // Request all manga that are not in the cache
     const allKeysKeys = Object.keys(allKeys); // AI programming done by a human
@@ -472,12 +546,16 @@ const Library = () => {
             .getMangas(mangaIDs, true)
             .then(async (mangaList) => {
               return Promise.allSettled(
-                mangaList.flatMap(async (manga) =>
-                  window.electron.library.addMangaToCache(
+                mangaList.flatMap(async (manga) => {
+                  const awaitedManga = await manga;
+                  window.electron.log.info(
+                    `Fetched ${awaitedManga.Name} from source ${source}.`
+                  );
+                  return window.electron.library.addMangaToCache(
                     foundSource.getName(),
-                    await manga
-                  )
-                )
+                    awaitedManga
+                  );
+                })
               );
             })
             .then(() => {
@@ -496,7 +574,7 @@ const Library = () => {
         }
       }
     });
-  }, [sourcesFetching, setSourcesFetching, sourceList]);
+  }, [sourcesFetching, setSourcesFetching, sourceList, fetchQueue]);
 
   const sourceListValues = Object.values(sourceList);
 
@@ -530,19 +608,124 @@ const Library = () => {
     (x) => x.currentPage >= x.pageCount
   ).length;
 
-  const allPageCount = allChapters.reduce(
-    (acc, x) =>
-      Math.max(
-        0,
-        acc + (Number.isSafeInteger(x.currentPage) ? x.currentPage : 0)
-      ), // pageCount is -1 if the chapter is unread.
-    0
-  );
+  let allPageCount = 0;
+  const allCachedMangas = window.electron.library.getAllCachedMangas();
+  allCachedMangas.forEach((manga) => {
+    manga.Chapters?.forEach((chapter) => {
+      const cachedVariant =
+        allCachedRead.current[manga.SourceID]?.[chapter.ChapterID];
+
+      if (cachedVariant)
+        allPageCount += Number.isSafeInteger(cachedVariant.currentPage)
+          ? cachedVariant.currentPage
+          : chapter.PageCount;
+    });
+  });
 
   const mangaList = useMemo<Record<string, React.ReactElement[]>>(() => {
     const mangaObjectTemp: Record<string, React.ReactElement[]> = {};
     Object.keys(sourceList).forEach((source) => {
-      mangaObjectTemp[source] = sourceList[source]
+      const { sortOrder = 'asc', sortMethod = 'title' } =
+        suwariyomiLibrarySettings[`data_${source}`] ?? {};
+
+      console.log(sourceList);
+      const serializedReadMethod = sortMethod.toLowerCase().split(' ').join('');
+      mangaObjectTemp[source] = [...sourceList[source]]
+        .filter((x) => x.Chapters?.length > 0)
+        .sort((a, b) => {
+          const getUTCHours = (date: Date) =>
+            date.getUTCHours() + date.getTimezoneOffset() / 60;
+          switch (serializedReadMethod) {
+            case 'unread': {
+              // Generate a percentage of the total chapters that are unread.
+              // I think this is better than simply using the number
+              // of unread chapters because the latter method would prioritize mangas
+              // that are longer, i.e. the reader would say this manga of 500 chapters with
+              // 65 read chapters is further in compared to this manga of 25 chapters with 20
+              // read. The percentage method would prioritize the mangas that are closer to
+              // being finished - for example, if the reader has read the manga of 500 chapters but
+              // is only 65 chapters in, the manga would be pushed back because they're really only
+              // 13% of the way through the manga, versus the manga of 25 chapters with 20 being
+              // 80% of the way through; therefore the latter should be prioritize rather than the former.
+
+              const convertToReadChapters = (manga: FullManga) =>
+                manga.Chapters?.map((x) =>
+                  allChapters.find(
+                    (y) =>
+                      y.mangaid === manga.MangaID &&
+                      y.currentPage >= x.PageCount
+                  )
+                ).filter((x) => x !== undefined);
+              const chapterCountA = convertToReadChapters(a).length;
+              const chapterCountB = convertToReadChapters(b).length;
+
+              const chapterPercentageA = chapterCountA / a.Chapters?.length;
+              const chapterPercentageB = chapterCountB / b.Chapters?.length;
+
+              return chapterPercentageB - chapterPercentageA;
+            }
+            case 'lastread': {
+              const lastReadA: Date = new Date(a.LastRead ?? 0);
+              const lastReadB: Date = new Date(b.LastRead ?? 0);
+
+              // Convert to UTC time
+              [lastReadA, lastReadB].forEach((x) =>
+                x.setUTCHours(getUTCHours(x))
+              );
+
+              return lastReadB.getTime() - lastReadA.getTime();
+            }
+            case 'latestchapter': {
+              // use publishedAt - which is a Date object - to reduce
+              const reducerFN = (acc: Date, x: FullManga['Chapters'][number]) =>
+                acc.getTime() > x.PublishedAt.getTime() ? acc : x.PublishedAt;
+
+              const latestChapterA: Date = a.Chapters?.reduce(
+                reducerFN,
+                new Date(0)
+              );
+              const latestChapterB: Date = b.Chapters?.reduce(
+                reducerFN,
+                new Date(0)
+              );
+
+              [latestChapterA, latestChapterB].forEach((x) =>
+                x.setUTCHours(getUTCHours(x))
+              );
+
+              return latestChapterB.getTime() - latestChapterA.getTime();
+            }
+            case 'totalchapters': {
+              return b.Chapters?.length - a.Chapters?.length;
+            }
+            case 'dateadded': {
+              const dateAddedA: Date = new Date(a.Added ?? 0);
+              const dateAddedB: Date = new Date(b.Added ?? 0);
+
+              // Convert to UTC time
+              [dateAddedA, dateAddedB].forEach((x) =>
+                x.setUTCHours(getUTCHours(x))
+              );
+
+              return dateAddedB.getTime() - dateAddedA.getTime();
+            }
+            case 'datefetched': {
+              const dateFetchedA: Date = new Date(a.DateFetched ?? 0);
+              const dateFetchedB: Date = new Date(b.DateFetched ?? 0);
+
+              // Convert to UTC time
+              [dateFetchedA, dateFetchedB].forEach((x) =>
+                x.setUTCHours(getUTCHours(x))
+              );
+
+              return dateFetchedB.getTime() - dateFetchedA.getTime();
+            }
+            case 'category':
+            default:
+              // 'title':
+              return a.Name.localeCompare(b.Name);
+          }
+        })
         .map((Manga) => (
           <LazyLoad
             height={310}
@@ -577,13 +760,25 @@ const Library = () => {
               .toLowerCase()
               .includes(searchQuery.toLowerCase())
         );
+
+      mangaObjectTemp[source] =
+        sortOrder === 'asc'
+          ? mangaObjectTemp[source].reverse()
+          : mangaObjectTemp[source];
     });
 
     return mangaObjectTemp;
-  }, [searchQuery, sourceList]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    searchQuery,
+    sourceList,
+    allChapters,
+    suwariyomiLibrarySettings,
+    fetchQueue, // This is here to force a re-creation of the manga list when the fetch queue changes (when the refresh button is clicked, especially)
+  ]);
 
   librarySourcesKeys.forEach((sourceKey) => {
-    const mangaListArray = mangaList[sourceKey];
+    const mangaListArray = mangaList[sourceKey] ?? [];
     accordionArray.push(
       <LazyLoad key={`${sourceKey}-lazyload`} scrollContainer="#lazyload">
         <Accordion
@@ -615,11 +810,11 @@ const Library = () => {
                   .map((x) => x.getIcon())[0]
               }
               className={css(libraryStyleSheet.accordionItemIcon)}
-              alt="MangaDex"
+              alt={sourceKey}
             />
             <Typography
               sx={{
-                width: '66%',
+                width: '40%',
                 flexShrink: 2,
                 color: '#FFFFFF',
               }}
@@ -631,12 +826,111 @@ const Library = () => {
               sx={{
                 color: '#FFFFFF',
                 flexShrink: 2,
-                width: '33%',
+                verticalAlign: 'center',
+                lineHeight: '1.5',
+                width: '30%',
               }}
+              className={css(libraryStyleSheet.accordionItemCount)}
             >
               {mangaListArray.length} Manga
               {(mangaListArray.length > 1 && 's') || ''}
             </Typography>
+            {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events */}
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className={css(libraryStyleSheet.accordionSortMethodContainer)}
+            >
+              <Checkbox
+                sx={{
+                  color: '#FFFFFF',
+                }}
+                checked={
+                  suwariyomiLibrarySettings[`data_${sourceKey}`]?.sortOrder ===
+                  'asc'
+                }
+                className={css(libraryStyleSheet.accordionSortOrderCheckbox)}
+                onChange={(e) => {
+                  suwariyomiLibrarySettings[`data_${sourceKey}`] = {
+                    ...(suwariyomiLibrarySettings[`data_${sourceKey}`] ?? {}),
+                    sortOrder: e.target.checked ? 'asc' : 'desc',
+                  };
+
+                  MiscEnmap.set(
+                    'suwariyomi_library',
+                    suwariyomiLibrarySettings
+                  );
+                  forceUpdate();
+                }}
+                icon={<ArrowDownwardIcon />}
+                checkedIcon={<ArrowUpwardIcon />}
+              />
+              <Select
+                className={css(libraryStyleSheet.accordionSortMethodSelectItem)}
+                renderValue={(value) => {
+                  return (
+                    <Typography
+                      sx={{
+                        color: '#FFFFFF',
+                        fontSize: '0.75rem',
+                        fontWeight: '500',
+                        verticalAlign: 'center',
+                        lineHeight: '32px',
+                        letterSpacing: '0.5px',
+                        fontFamily:
+                          '"Poppins", "Roboto", "Helvetica", "Arial", sans-serif',
+                      }}
+                    >
+                      {(
+                        {
+                          Title: 'Title',
+                          Unread: 'Unread',
+                          Category: 'Category',
+                          'Last Read': 'Last Read',
+                          'Latest Chapter': 'Latest Chapter',
+                          'Total Chapters': 'Total Chapters',
+                          'Date Added': 'Date Added',
+                          'Date Fetched': 'Date Fetched',
+                        } as Record<string, string>
+                      )[value] ?? '???'}
+                    </Typography>
+                  );
+                }}
+                value={(() => {
+                  const sortMethod =
+                    suwariyomiLibrarySettings[`data_${sourceKey}`]?.sortMethod;
+
+                  return sortMethod ?? 'Title';
+                })()}
+                onChange={(e) => {
+                  const sortData =
+                    suwariyomiLibrarySettings[`data_${sourceKey}`];
+
+                  if (sortData) {
+                    sortData.sortMethod = e.target.value;
+                  } else {
+                    suwariyomiLibrarySettings[`data_${sourceKey}`] = {
+                      sortMethod: e.target.value,
+                      sortOrder: 'asc',
+                    };
+                  }
+                  MiscEnmap.set(
+                    'suwariyomi_library',
+                    suwariyomiLibrarySettings
+                  );
+
+                  forceUpdate();
+                }}
+              >
+                <MenuItem value="Title">Title</MenuItem>
+                <MenuItem value="Last Read">Last Read</MenuItem>
+                <MenuItem value="Latest Chapter">Latest Chapter</MenuItem>
+                <MenuItem value="Unread">Unread</MenuItem>
+                <MenuItem value="Total Chapters">Total Chapters</MenuItem>
+                <MenuItem value="Date Added">Date Added</MenuItem>
+                <MenuItem value="Date Fetched">Date Fetched</MenuItem>
+                <MenuItem value="Title">Category</MenuItem>
+              </Select>
+            </div>
             <Tooltip title="Search Using This Source">
               <IconButton
                 className={css(libraryStyleSheet.accordionSearchButton)}
@@ -661,16 +955,15 @@ const Library = () => {
                 className={css(libraryStyleSheet.accordionRefreshButton)}
                 onClick={(e) => {
                   if (sourcesFetching.includes(sourceKey)) return;
-
                   e.stopPropagation();
-                  window.electron.library
-                    .getCachedMangas(sourceKey)
-                    .forEach((y) =>
-                      window.electron.library.removeMangaFromCache(
-                        y.SourceID,
-                        y.MangaID
-                      )
-                    );
+
+                  cachedMangas.current[sourceKey] = [];
+                  window.electron.library.removeMangaFromCache(
+                    sourceKey,
+                    ...window.electron.library
+                      .getCachedMangas(sourceKey)
+                      .map((x) => x.MangaID)
+                  );
 
                   forceUpdate();
                 }}

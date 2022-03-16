@@ -7,15 +7,18 @@
 // This preferably should be used for plugins and other things.
 
 import Enmap from 'enmap';
+import { info } from 'electron-log';
 import { app } from 'electron';
 
 const generalEnmap = new Enmap<string, Record<any, any>>({
   name: 'misc',
-  dataDir: app.getPath('userData'),
+  dataDir: app?.getPath('userData') ?? window.electron.util.getUserDataPath(),
 });
 
+info('misc.ts loaded');
 export default class {
   static get(key: string): Record<any, any> | undefined {
+    console.log(generalEnmap.fetchEverything());
     return generalEnmap.get(key);
   }
 

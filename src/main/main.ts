@@ -108,9 +108,15 @@ ipcMain.on('add-manga-to-cache', async (event, sourceName, fullManga) => {
   event.returnValue = await MangaDB.AddMangaToCache(sourceName, fullManga);
 });
 
-ipcMain.on('remove-manga-from-cache', async (event, sourceName, mangaID) => {
-  event.returnValue = await MangaDB.RemoveMangaFromCache(sourceName, mangaID);
-});
+ipcMain.on(
+  'remove-manga-from-cache',
+  async (event, sourceName, ...mangaIDs: string[]) => {
+    event.returnValue = await MangaDB.RemoveMangaFromCache(
+      sourceName,
+      ...mangaIDs
+    );
+  }
+);
 
 ipcMain.on('get-cached-manga', async (event, sourceName, mangaId) => {
   event.returnValue = await MangaDB.GetCachedManga(sourceName, mangaId);
@@ -293,6 +299,10 @@ ipcMain.on('get-app-version', (event) => {
 ipcMain.on('flush-misc', (event) => {
   MiscDB.flush();
   event.returnValue = true;
+});
+
+ipcMain.on('get-userdata-path', (event) => {
+  event.returnValue = app.getPath('userData');
 });
 
 ipcMain.on('maximize', () => {

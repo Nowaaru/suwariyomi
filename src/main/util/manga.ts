@@ -91,6 +91,7 @@ export type Manga = {
   Synopsis: string;
 
   Tags: string[];
+  DateFetched: Date;
   CoverURL?: string;
   Added?: Date; // Null if never added to library
   LastRead?: Date; // Null if never read
@@ -102,7 +103,8 @@ export type MangaWithAuthors = Manga & Pick<Required<Manga>, 'Authors'>;
 export type FullManga = MangaWithAuthors &
   Pick<Required<MangaWithAuthors>, 'Chapters'>;
 
-export type LibraryManga = FullManga & Pick<Required<Manga>, 'Added'>;
+export type LibraryManga = FullManga &
+  Pick<Required<Manga>, 'Added' | 'LastRead'>;
 
 export type LibrarySource = {
   Enabled: boolean;
@@ -265,6 +267,17 @@ class MangaDB {
       if (source.Manga.includes(mangaID)) {
         return false;
       }
+
+      // If there is already a cached manga for this, add the `.Added` field to it.
+      const cachedManga = MangaDatabase.get('CachedManga');
+      if (cachedManga) {
+        const manga = cachedManga.Sources[sourceName][mangaID];
+        if (manga) {
+          manga.Added = new Date();
+          MangaDatabase.set('CachedManga', cachedManga);
+        }
+      }
+
       source.Manga.push(mangaID);
       LibraryDatabase.set('Library', library);
       return true;
@@ -287,6 +300,17 @@ class MangaDB {
       if (index !== -1) {
         source.Manga.splice(index, 1);
         LibraryDatabase.set('Library', library);
+
+        // If there is already a cached manga for this, remove the `.Added` field from it.
+        const cachedManga = MangaDatabase.get('CachedManga');
+        if (cachedManga) {
+          const manga = cachedManga.Sources[sourceName][mangaID];
+          if (manga) {
+            manga.Added = undefined;
+            MangaDatabase.set('CachedManga', cachedManga);
+          }
+        }
+
         return true;
       }
     }
@@ -339,6 +363,22 @@ class MangaDB {
     if (!cachedManga) return false;
 
     const source = cachedManga.Sources[sourceName] || {};
+    const isInLibrary = this.GetLibraryMangas(sourceName).includes(
+      manga.MangaID
+    );
+
+    // Set the .Added and .DateFetched properties automatically if they are not set already.
+    // Added should only be done if the manga is in the library.
+
+    if (isInLibrary) {
+      if (!manga.Added) {
+        manga.Added = new Date();
+      }
+    }
+
+    if (!manga.DateFetched) {
+      manga.DateFetched = new Date();
+    }
 
     // We do not have to check if the manga is already in the cache because
     // this allows us to overwrite manga - for example, if a manga is updated
@@ -364,12 +404,18 @@ class MangaDB {
    * // => false
    * @example
    */
-  static RemoveMangaFromCache(sourceName: string, mangaID: string): boolean {
+  static RemoveMangaFromCache(
+    sourceName: string,
+    ...mangaIDs: string[]
+  ): boolean {
     const cachedManga = MangaDatabase.get('CachedManga');
     if (!cachedManga) return false;
 
     const source = cachedManga.Sources[sourceName];
-    delete source[mangaID];
+    mangaIDs.forEach((mangaID) => {
+      delete source[mangaID];
+    });
+
     MangaDatabase.set('CachedManga', cachedManga);
     return true;
   }

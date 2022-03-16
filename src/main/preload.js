@@ -19,6 +19,9 @@ window.electron = {
     openInBrowser: (url) => {
       ipcRenderer.send('open-in-browser', url);
     },
+    getUserDataPath: () => {
+      return ipcRenderer.sendSync('get-userdata-path');
+    },
   },
   reader: {
     getMangaSettings: (sourceID, mangaID) => {
@@ -55,8 +58,9 @@ window.electron = {
     addMangaToCache: (sourceName, fullManga) => {
       ipcRenderer.send('add-manga-to-cache', sourceName, fullManga);
     },
-    removeMangaFromCache: (sourceName, mangaId) => {
-      ipcRenderer.send('remove-manga-from-cache', sourceName, mangaId);
+    removeMangaFromCache: (sourceName, ...mangaIds) => {
+      console.log(mangaIds);
+      ipcRenderer.send('remove-manga-from-cache', sourceName, ...mangaIds);
     },
     getCachedManga: (sourceName, mangaId) => {
       return ipcRenderer.sendSync('get-cached-manga', sourceName, mangaId);
