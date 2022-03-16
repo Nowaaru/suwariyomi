@@ -374,7 +374,6 @@ const Settings = () => {
           if (!fileBuffer) return;
           load(normalize('assets/data/tachiyomi-model.proto'))
             .then((root) => {
-              console.log('huh?');
               return root.lookupType('Backup');
             })
             .then((backupType) => backupType.decode(fileBuffer))
@@ -453,6 +452,9 @@ const Settings = () => {
                   // Add everything from filteredMangas into the library
                   setLoadingContext(true);
                   filteredMangas.forEach((mangaID: string) => {
+                    window.electron.log.info(
+                      `Processed manga: ${mangaID} from source ${x.handler.getName()}`
+                    );
                     window.electron.library.addMangaToLibrary(
                       x.handler.getName(),
                       mangaID
@@ -479,17 +481,24 @@ const Settings = () => {
                     async (chapterItem, idx) => {
                       // after every n amount of iterations (probably 15) yield
 
-                      const pageNumber = Number.isSafeInteger(
-                        chapterItem.lastPageRead
-                      ) // If the last page read is a number / isn't NaN, then...
-                        ? Number(chapterItem.lastPageRead) + 1 // ...set the last page read to that number (add 1 because its zero-indexed)
-                        : chapterItem.read // otherwise, check if the chapter is marked read
-                        ? Infinity // if so, mark as infinity. the reader will correct it anyway.
-                        : -1; // otherwise, default to negative one.
+                      let pageNumber: number;
+                      if (chapterItem.read) pageNumber = Infinity;
+                      else
+                        pageNumber = Number.isSafeInteger(
+                          chapterItem.lastPageRead
+                        )
+                          ? Number(chapterItem.lastPageRead) + 1
+                          : -1;
 
                       await x.handler
                         .IDFromURL(chapterItem?.url, 'chapter')
                         .then(async (chapterID) => {
+                          window.electron.log.info(
+                            `Processed chapter ${chapterID} from source ${x.handler.getName()}. ${
+                              idx + 1
+                            }/${allChapters.length}
+                            `
+                          );
                           window.electron.read.set(
                             x.handler.getName(),
                             chapterID,
