@@ -68,6 +68,11 @@ window.electron = {
       return ipcRenderer.sendSync('get-all-cached-mangas');
     },
   },
+  misc: {
+    flush: () => {
+      ipcRenderer.send('flush-misc');
+    },
+  },
   read: {
     get: (sourceName) => {
       return ipcRenderer.sendSync('get-read', sourceName);

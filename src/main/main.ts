@@ -23,6 +23,7 @@ import CacheDB from './util/cache';
 import MangaDB from './util/manga';
 import ReadDB from './util/read';
 import ReaderDB from './util/reader';
+import MiscDB from './util/misc';
 import Settings from './util/settings';
 
 export default class AppUpdater {
@@ -287,6 +288,11 @@ ipcMain.on('settings-flush', async (event) => {
 ipcMain.on('get-app-version', (event) => {
   const version = app.getVersion();
   event.returnValue = version;
+});
+
+ipcMain.on('flush-misc', (event) => {
+  MiscDB.flush();
+  event.returnValue = true;
 });
 
 ipcMain.on('maximize', () => {

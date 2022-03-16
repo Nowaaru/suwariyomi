@@ -53,6 +53,9 @@ declare global {
         getCachedMangas: (sourceName: string) => FullManga[];
         getAllCachedMangas: () => FullManga[];
       };
+      misc: {
+        flush: () => void;
+      };
       read: {
         get: (sourceName: string) => ReadDatabaseValue;
         set: (
