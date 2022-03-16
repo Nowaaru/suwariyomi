@@ -813,6 +813,7 @@ const Library = () => {
                 }
               }}
               onChange={(e) => {
+                if (!userSettings.current.library.updateOnKeyPress) return;
                 setSearchQuery((e.target as unknown as HTMLInputElement).value);
               }}
             />
