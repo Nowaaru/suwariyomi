@@ -36,6 +36,8 @@ const getTheme = () => {
   if (appearanceSettings.theme === 'dark') {
     return true;
   }
+
+  return false;
 };
 
 export default (themeType: string) => {
