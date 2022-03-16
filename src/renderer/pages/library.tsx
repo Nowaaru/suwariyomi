@@ -539,11 +539,11 @@ const Library = () => {
     0
   );
 
-  const mangaListArray = useMemo(() => {
-    const mangaListArrayTemp: Array<React.ReactElement> = [];
-    sourceListValues.forEach((MangaList) => {
-      MangaList.forEach((Manga) => {
-        mangaListArrayTemp.push(
+  const mangaList = useMemo<Record<string, React.ReactElement[]>>(() => {
+    const mangaObjectTemp: Record<string, React.ReactElement[]> = {};
+    Object.keys(sourceList).forEach((source) => {
+      mangaObjectTemp[source] = sourceList[source]
+        .map((Manga) => (
           <LazyLoad
             height={310}
             throttle={300}
@@ -569,20 +569,21 @@ const Library = () => {
               cachedChapterData={allCachedRead.current[Manga.SourceID]}
             />
           </LazyLoad>
+        ))
+        .filter(
+          (x) =>
+            searchQuery === '' ||
+            x.props.children.props.title
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase())
         );
-      });
     });
 
-    return mangaListArrayTemp.filter(
-      (x) =>
-        searchQuery === '' ||
-        x.props.children.props.title
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase())
-    );
-  }, [sourceListValues, searchQuery]);
+    return mangaObjectTemp;
+  }, [searchQuery, sourceList]);
 
   librarySourcesKeys.forEach((sourceKey) => {
+    const mangaListArray = mangaList[sourceKey];
     accordionArray.push(
       <LazyLoad key={`${sourceKey}-lazyload`} scrollContainer="#lazyload">
         <Accordion
