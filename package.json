@@ -268,7 +268,7 @@
     "moment": "^2.29.1",
     "native-css": "^1.2.5",
     "neovim": "^4.10.1",
-    "node-fetch": "^2.6.6",
+    "node-fetch": "^2.6.7",
     "node-gzip": "^1.1.2",
     "node-myanimelist": "^3.0.4",
     "node-polyfill-webpack-plugin": "^1.1.4",
