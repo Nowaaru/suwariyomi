@@ -759,6 +759,27 @@ const Reader = () => {
     ];
   }
 
+  const [contextMenuData, setContextMenu] = useState<
+    | {
+        x: number;
+        y: number;
+        open: boolean;
+        pageSrc: string;
+      }
+    | undefined
+  >();
+
+  const onContextMenu = (e: React.MouseEvent, page: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setContextMenu({
+      x: e.clientX,
+      y: e.clientY,
+      open: true,
+      pageSrc: page,
+    });
+  };
+
   const readerNavLayout = `navLayout${webtoonKey}`;
   const associatedTappingStyle =
     readerNavLayout === 'default'
@@ -1729,6 +1750,9 @@ const Reader = () => {
                       className={css(styles.mangaImage, flipImage)}
                       src={currentPageObject.src}
                       alt={`Page ${currentPage}`}
+                      onContextMenu={(e) =>
+                        onContextMenu(e, currentPageObject.src)
+                      }
                     />
                   );
 
@@ -1738,6 +1762,9 @@ const Reader = () => {
                         className={css(styles.mangaImage, flipImage)}
                         src={nextPageObject.src}
                         alt={`Page ${currentPage + 1}`}
+                        onContextMenu={(e) =>
+                          onContextMenu(e, nextPageObject.src)
+                        }
                       />
                     ) : null;
 

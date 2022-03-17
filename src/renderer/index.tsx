@@ -23,6 +23,7 @@ declare global {
       util: {
         getSourceFiles: () => string[];
         getUserDataPath: () => string;
+        getDownloadsPath: () => string;
         getSourceDirectory: () => string;
         openInBrowser: (url: string) => void;
       };

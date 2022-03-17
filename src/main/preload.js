@@ -22,6 +22,9 @@ window.electron = {
     getUserDataPath: () => {
       return ipcRenderer.sendSync('get-userdata-path');
     },
+    getDownloadsPath: () => {
+      return ipcRenderer.sendSync('get-downloads-path');
+    },
   },
   reader: {
     getMangaSettings: (sourceID, mangaID) => {

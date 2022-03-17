@@ -305,6 +305,10 @@ ipcMain.on('get-userdata-path', (event) => {
   event.returnValue = app.getPath('userData');
 });
 
+ipcMain.on('get-downloads-path', (event) => {
+  event.returnValue = app.getPath('downloads');
+});
+
 ipcMain.on('maximize', () => {
   if (mainWindow?.isMaximized()) return mainWindow.unmaximize();
   mainWindow?.maximize();
