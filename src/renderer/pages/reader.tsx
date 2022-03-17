@@ -979,6 +979,7 @@ const Reader = () => {
       mangaId
     );
 
+    if (currentManga) currentManga.LastRead = new Date();
     const updateManga = () =>
       currentManga &&
       window.electron.library.addMangaToCache(sourceId, currentManga);
