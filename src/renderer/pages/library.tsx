@@ -641,30 +641,22 @@ const Library = () => {
             date.getUTCHours() + date.getTimezoneOffset() / 60;
           switch (serializedReadMethod) {
             case 'unread': {
-              // Generate a percentage of the total chapters that are unread.
-              // I think this is better than simply using the number
-              // of unread chapters because the latter method would prioritize mangas
-              // that are longer, i.e. the reader would say this manga of 500 chapters with
-              // 65 read chapters is further in compared to this manga of 25 chapters with 20
-              // read. The percentage method would prioritize the mangas that are closer to
-              // being finished - for example, if the reader has read the manga of 500 chapters but
-              // is only 65 chapters in, the manga would be pushed back because they're really only
-              // 13% of the way through the manga, versus the manga of 25 chapters with 20 being
-              // 80% of the way through; therefore the latter should be prioritize rather than the former.
-
               const convertToReadChapters = (manga: FullManga) =>
-                manga.Chapters?.map((x) =>
-                  allChapters.find(
-                    (y) =>
-                      y.mangaid === manga.MangaID &&
-                      y.currentPage >= x.PageCount
-                  )
-                ).filter((x) => x !== undefined);
+                manga.Chapters?.reduce((acc, x) => {
+                  const cachedChapter =
+                    allCachedRead.current[manga.SourceID]?.[x.ChapterID];
+
+                  if (!cachedChapter || cachedChapter.currentPage === -1)
+                    return acc;
+                  if (cachedChapter.currentPage < x.PageCount) return acc;
+
+                  return acc + 1;
+                }, 0);
 
               const chapterCountA =
-                a.Chapters.length - convertToReadChapters(a).length;
+                a.Chapters.length - convertToReadChapters(a);
               const chapterCountB =
-                b.Chapters.length - convertToReadChapters(b).length;
+                b.Chapters.length - convertToReadChapters(b);
 
               if (chapterCountA === chapterCountB)
                 return a.Name.localeCompare(b.Name);
