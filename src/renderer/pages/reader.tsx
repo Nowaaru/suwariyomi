@@ -973,6 +973,21 @@ const Reader = () => {
   }, [readerData, chapterId]);
 
   useEffect(() => {
+    if (!mangaId) return;
+    const currentManga = window.electron.library.getCachedManga(
+      sourceId,
+      mangaId
+    );
+
+    const updateManga = () =>
+      currentManga &&
+      window.electron.library.addMangaToCache(sourceId, currentManga);
+
+    updateManga();
+    return () => updateManga(); // Update the last read on mount and on unmount.
+  }, [mangaId, sourceId]);
+
+  useEffect(() => {
     const currentChapter = readerData.currentchapter;
     if (currentChapter) {
       // If the chapter is already loaded, don't load it again.
