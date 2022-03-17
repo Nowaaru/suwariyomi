@@ -6,7 +6,7 @@ export type ReadDatabaseValue = {
     isBookmarked: boolean;
     pageCount: number;
     currentPage: number;
-    lastRead: number | -1; // Emphasize -1 as a special value
+    lastRead: Date | undefined;
     timeElapsed: number;
     mangaid?: string;
   };
@@ -35,7 +35,7 @@ export default class ReadDB {
     chapterID: string,
     pageCount: number,
     currentPage: number,
-    lastRead: number | -1,
+    lastRead: Date | undefined,
     timeElapsed: number,
     isBookmarked: boolean,
     mangaid?: string

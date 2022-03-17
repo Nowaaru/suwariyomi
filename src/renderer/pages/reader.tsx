@@ -858,7 +858,7 @@ const Reader = () => {
           chapterId,
           readerData.currentchapter.PageCount,
           readerData.page ?? 0,
-          Date.now(),
+          new Date(),
           timeElapsedMilliseconds,
           currentChapter.isBookmarked,
           mangaId
@@ -1107,7 +1107,7 @@ const Reader = () => {
         (currentDatabaseChapter?.currentPage ?? -1) >= chapterPageCount
           ? chapterPageCount
           : chapterPageNumber,
-        Date.now(),
+        new Date(),
         currentChapterData?.timeElapsed ?? 0,
         isBookmarked,
         mangaId

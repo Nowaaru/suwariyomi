@@ -505,8 +505,10 @@ const Settings = () => {
                             -1,
                             pageNumber,
                             chapterItem.dateFetch
-                              ? Number(chapterItem.dateFetch.toString())
-                              : -1,
+                              ? new Date(
+                                  Number(chapterItem.dateFetch.toString())
+                                )
+                              : new Date(),
                             -1,
                             !!chapterItem.bookmark,
                             chapterItem.manga

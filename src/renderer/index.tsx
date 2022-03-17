@@ -70,7 +70,7 @@ declare global {
           chapterId: string,
           pageCount: number,
           currentPage: number,
-          lastRead: number | -1,
+          lastRead: Date | undefined,
           timeElapsed: number,
           isBookmarked: boolean,
           mangaId: string
