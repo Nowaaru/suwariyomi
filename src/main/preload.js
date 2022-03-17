@@ -10,6 +10,9 @@ const ipcValidChannels = ['fullscreen-toggle'];
 window.electron = {
   log: log.functions,
   util: {
+    downloadImage: (url, payload) => {
+      return ipcRenderer.send('download-image', url, payload);
+    },
     getSourceFiles: () => {
       return ipcRenderer.sendSync('get-fs-sources');
     },

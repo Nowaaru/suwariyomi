@@ -13,7 +13,10 @@
 import path from 'path';
 import fs from 'fs';
 import log from 'electron-log';
+import imageType from 'image-type';
 import Store from 'electron-store';
+import slugify from 'slugify';
+import fetch from 'node-fetch';
 import pkceChallenge from 'pkce-challenge';
 import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
@@ -308,6 +311,52 @@ ipcMain.on('get-userdata-path', (event) => {
 ipcMain.on('get-downloads-path', (event) => {
   event.returnValue = app.getPath('downloads');
 });
+
+ipcMain.on(
+  'download-image',
+  async (
+    event,
+    url: string,
+    payload: {
+      filename: string;
+      sourceid: string;
+      chapternumber: number;
+      manganame: string;
+      mangaid: string;
+    }
+  ) => {
+    const downloadPath = app.getPath('downloads');
+    log.info(downloadPath, payload.sourceid);
+    const targetLocation = path.join(
+      downloadPath,
+      payload.sourceid,
+      `${slugify(payload.manganame)} (${payload.mangaid})`,
+      `ch${payload.chapternumber.toFixed(2)}`
+    );
+
+    if (!fs.existsSync(targetLocation))
+      fs.mkdirSync(targetLocation, { recursive: true });
+
+    const downloadedImageBuffer = await fetch(url).then((res) => res.buffer());
+    const imageExtension = downloadedImageBuffer
+      ? await imageType(downloadedImageBuffer)
+      : null;
+    if (!downloadedImageBuffer || !imageExtension) {
+      event.returnValue = false;
+      return;
+    }
+
+    log.info(`Downloading image to ${targetLocation}`);
+
+    fs.writeFileSync(
+      path.join(targetLocation, `${payload.filename}.${imageExtension.ext}`),
+      downloadedImageBuffer
+    );
+
+    log.info('based cringe?');
+    event.returnValue = true;
+  }
+);
 
 ipcMain.on('maximize', () => {
   if (mainWindow?.isMaximized()) return mainWindow.unmaximize();

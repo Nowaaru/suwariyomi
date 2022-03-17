@@ -21,6 +21,16 @@ declare global {
     electron: {
       log: typeof functions;
       util: {
+        downloadImage: (
+          url: string,
+          payload: {
+            filename: string;
+            mangaid: string;
+            manganame: string;
+            chapternumber: number;
+            sourceid: string;
+          }
+        ) => Promise<void>;
         getSourceFiles: () => string[];
         getUserDataPath: () => string;
         getDownloadsPath: () => string;

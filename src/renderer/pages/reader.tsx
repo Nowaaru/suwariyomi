@@ -16,6 +16,11 @@ import {
   IconButton,
   CircularProgress,
   Tooltip,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
+  Divider,
 } from '@mui/material';
 
 import dayjs from 'dayjs';
@@ -51,6 +56,7 @@ import SourceBase from '../../main/sources/static/base';
 import LoadingModal from '../components/loading';
 import ChapterModal from '../components/chaptermodal';
 import ReaderButton from '../components/readerbutton';
+import ReaderContext from '../components/context/reader';
 import useMountEffect from '../util/hook/usemounteffect';
 import { DefaultSettings } from '../../main/util/settings';
 
@@ -620,6 +626,10 @@ const stylesObject = {
     },
   },
 
+  continuousScrollImage: {
+    marginBottom: '16px',
+  },
+
   flippedImage: {
     transform: 'scaleX(-1)',
   },
@@ -763,7 +773,6 @@ const Reader = () => {
     | {
         x: number;
         y: number;
-        open: boolean;
         pageSrc: string;
       }
     | undefined
@@ -775,7 +784,6 @@ const Reader = () => {
     setContextMenu({
       x: e.clientX,
       y: e.clientY,
-      open: true,
       pageSrc: page,
     });
   };
@@ -1510,6 +1518,9 @@ const Reader = () => {
         if (toolbarState.isHovering || toolbarState.isOpen) return;
         setToolbarState({ ...toolbarState, isOpen: true });
       }}
+      onContextMenu={(e) => {
+        onContextMenu(e, currentPageObject.src);
+      }}
       className={css(styles.container, doCursorShow)}
     >
       <SettingsModal
@@ -1548,7 +1559,72 @@ const Reader = () => {
           }));
         }}
       />
+      <ReaderContext
+        open={!!contextMenuData}
+        onClose={() => setContextMenu(undefined)}
+        anchorReference="anchorPosition"
+        anchorPosition={
+          contextMenuData
+            ? { top: contextMenuData.y, left: contextMenuData.x }
+            : undefined
+        }
+        onItemClick={async (item) => {
+          if (!currentPageObject?.src) return;
+          switch (item) {
+            case 'clipboard': {
+              const blobifiedImage = await (
+                await fetch(currentPageObject.src)
+              ).blob();
+              await navigator.clipboard.write([
+                new ClipboardItem({
+                  [blobifiedImage.type]: blobifiedImage,
+                }),
+              ]);
 
+              break;
+            }
+            case 'save': {
+              [currentPageObject, isDoublePage && nextPageObject]
+                .filter((x) => !!x)
+                .forEach((pageObject) => {
+                  if (!pageObject) return;
+                  window.electron.util.downloadImage(pageObject.src, {
+                    filename: `${mangaId}-${
+                      readerData.currentchapter!.ChapterID
+                    }-${pageObject.page}`,
+                    mangaid: mangaId,
+                    manganame: mangaTitle,
+                    chapternumber: readerData.currentchapter!.Chapter,
+                    sourceid: sourceId,
+                  });
+                });
+              break;
+            }
+            case 'prevchap': {
+              changeChapter(0);
+              break;
+            }
+            case 'nextchap': {
+              changeChapter(1);
+              break;
+            }
+            case 'prevpage': {
+              if (currentPageObject.page === 1) return;
+              changePage(currentPageObject.page - 1);
+              break;
+            }
+            case 'nextpage': {
+              if (currentPageObject.page === currentPageState.length) return;
+              changePage(currentPageObject.page + 1);
+              break;
+            }
+
+            default:
+              break;
+          }
+          setContextMenu(undefined);
+        }}
+      />
       {/* TODO: Move topbar to their own component */}
       <div className={css(styles.topbarContainer, doToolbarShow)}>
         <div className={css(styles.topbar)}>
@@ -1750,9 +1826,6 @@ const Reader = () => {
                       className={css(styles.mangaImage, flipImage)}
                       src={currentPageObject.src}
                       alt={`Page ${currentPage}`}
-                      onContextMenu={(e) =>
-                        onContextMenu(e, currentPageObject.src)
-                      }
                     />
                   );
 
@@ -1762,20 +1835,13 @@ const Reader = () => {
                         className={css(styles.mangaImage, flipImage)}
                         src={nextPageObject.src}
                         alt={`Page ${currentPage + 1}`}
-                        onContextMenu={(e) =>
-                          onContextMenu(e, nextPageObject.src)
-                        }
                       />
                     ) : null;
 
                   const orderToDisplay = [firstPage, secondPage];
-                  return (
-                    <>
-                      {isRightToLeft
-                        ? orderToDisplay.reverse()
-                        : orderToDisplay}
-                    </>
-                  );
+                  return isRightToLeft
+                    ? orderToDisplay.reverse()
+                    : orderToDisplay;
                 }
               }
               return (
@@ -1822,7 +1888,9 @@ const Reader = () => {
                 >{`${
                   !Number.isNaN(Number(volume)) ? `Volume ${volume} ` : ``
                 }Chapter ${
-                  chapter || "You shouldn't be seeing this. 👀"
+                  Number.isSafeInteger(chapter)
+                    ? chapter
+                    : "You shouldn't be seeing this. 👀"
                 }`}</span>
               );
 
@@ -1905,7 +1973,10 @@ const Reader = () => {
                         : IntermediaryNoChapter('There is no previous chapter.') // Otherwise, display that there's no chapter.
                       : null}
                     <img
-                      className={css(styles.mangaImage)}
+                      className={css(
+                        styles.mangaImage,
+                        styles.continuousScrollImage
+                      )}
                       id={`chapter-:${page.chapter}:-page-:${page.page}:`}
                       src={page.src}
                       alt={`Page ${index + 1}`}
@@ -2090,7 +2161,7 @@ const Reader = () => {
         </div>
       )}
       <Sidebar
-        disabled={!readerSettings.lightbarEnabled}
+        disabled={!readerSettings.lightbarEnabled || !!contextMenuData}
         outOf={currentPageState.length}
         Page={currentPage}
         isRightToLeft={isRightToLeft}

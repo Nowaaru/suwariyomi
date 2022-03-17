@@ -163,6 +163,10 @@ const SidebarItem = ({
           : null,
         sidebarStyle.sidebarItem
       )}
+      onContextMenuCapture={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      }}
       onClick={() => {
         onClick(pageValue);
       }}
@@ -245,7 +249,13 @@ const SideBar = ({
     : containerSpecificStylesheet.horizontal;
 
   return disabled ? null : (
-    <div className={css(containerSpecificStylesheet.container)}>
+    <div
+      className={css(containerSpecificStylesheet.container)}
+      onContextMenuCapture={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      }}
+    >
       <div
         className={css(
           containerData,
