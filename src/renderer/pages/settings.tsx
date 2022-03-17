@@ -246,18 +246,36 @@ const ImportSettingsModal = ({
           width: '50%',
           maxWidth: 'unset',
         },
+
+        '& .MuiDialog-paper': {
+          backgroundColor: '#111111',
+        },
       }}
       onClose={() => {
         if (onClose) onClose();
         onCloseNative();
       }}
     >
-      <DialogTitle>Import Settings</DialogTitle>
-      <DialogContent>
+      <DialogTitle
+        sx={{
+          backgroundColor: '#111111',
+          color: 'white',
+        }}
+      >
+        Import Settings
+      </DialogTitle>
+      <DialogContent
+        sx={{
+          backgroundColor: '#111111',
+        }}
+      >
         <List>
           {Object.entries(importSettings).map(([key, value]) => (
             <ListItem key={key}>
               <ListItemText
+                sx={{
+                  color: 'white',
+                }}
                 primary={itemDisplays[key as keyof ImportSettings]}
               />
               <ListItemSecondaryAction>
@@ -265,6 +283,9 @@ const ImportSettingsModal = ({
                   <span>
                     <Checkbox
                       checked={value}
+                      sx={{
+                        color: 'white',
+                      }}
                       disabled={key === 'sources'} // Source importing won't be supported until we get a hefty amount of sources
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                         setImportSettings((prev) => ({
@@ -288,6 +309,9 @@ const ImportSettingsModal = ({
 
             onImport(importSettings);
           }}
+          sx={{
+            color: '#DF2935',
+          }}
         >
           Import
         </Button>
@@ -295,6 +319,9 @@ const ImportSettingsModal = ({
           onClick={() => {
             if (onClose) onClose();
             onCloseNative();
+          }}
+          sx={{
+            color: '#DF2935',
           }}
         >
           Cancel
