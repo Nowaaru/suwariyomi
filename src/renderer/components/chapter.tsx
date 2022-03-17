@@ -169,7 +169,7 @@ const Chapter = ({
   source: string;
   manga: DatabaseManga;
 }) => {
-  const { lastRead = -1, timeElapsed = 0 } = dbchapter ?? {};
+  const { lastRead = undefined, timeElapsed = 0 } = dbchapter ?? {};
   const [currentPage, setCurrentPage] = useState(dbchapter?.currentPage ?? -1);
   const isRead =
     dbchapter && currentPage !== -1 && currentPage >= chapter.PageCount;
