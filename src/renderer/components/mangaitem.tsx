@@ -353,7 +353,12 @@ const MangaItem = ({
 
   const allReadChapterCount = cachedChapters.reduce(
     (acc, chapter) =>
-      chapter.currentPage >= chapter.pageCount ? acc + 1 : acc,
+      chapter.currentPage >=
+        (cachedMangaData?.Chapters?.find(
+          (x) => x.ChapterID === chapter.ChapterID
+        )?.PageCount ?? NaN) && chapter.currentPage > 0
+        ? acc + 1
+        : acc,
     0
   );
 
