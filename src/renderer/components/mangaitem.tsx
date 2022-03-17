@@ -369,9 +369,15 @@ const MangaItem = ({
         <div key={elementKey} className={css(styles.mangaItemListContainer)}>
           <div className={css(styles.mangaItemCover, styles.listCover)}>
             {isLibrary && remainingChapters > 0 ? (
-              <span className={css(styles.mangaItemCoverBanner)}>
-                {remainingChapters}
-              </span>
+              <Tooltip
+                title={`${remainingChapters} Remaining Chapters`}
+                placement="right"
+                arrow
+              >
+                <span className={css(styles.mangaItemCoverBanner)}>
+                  {remainingChapters}
+                </span>
+              </Tooltip>
             ) : null}
             <button
               type="button"
