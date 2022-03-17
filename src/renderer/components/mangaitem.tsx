@@ -35,6 +35,7 @@ type MangaItemGenericProps = {
   backto: string;
   cachedMangaData?: FullManga | undefined;
   cachedChapterData?: ReadDatabaseValue | undefined;
+  isLibrary?: boolean;
 };
 
 type MangaItemProps = MangaItemGenericProps &
@@ -61,6 +62,7 @@ const styles = StyleSheet.create({
   mangaItemCover: {
     margin: '10px 15px 10px 10px',
     verticalAlign: 'top',
+    position: 'relative',
   },
 
   gridCover: {
@@ -118,6 +120,7 @@ const styles = StyleSheet.create({
     objectFit: 'contain',
     border: '1px solid transparent',
     transition: 'border 0.3s ease-in-out',
+    position: 'relative',
     ':hover': {
       border: '1px solid #ffffff',
     },
@@ -266,6 +269,22 @@ const styles = StyleSheet.create({
     border: 'none',
     cursor: 'pointer',
   },
+
+  mangaItemCoverBanner: {
+    width: 'fit-content',
+    height: 'fit-content',
+    display: 'inline-block',
+    backgroundColor: '#DF2935',
+    color: '#FFFFFF',
+    boxSizing: 'border-box',
+    borderRadius: '15%',
+    position: 'absolute',
+    zIndex: 150,
+    top: '5px',
+    left: '-5px',
+    padding: '5px',
+    fontFamily: '"Poppins", "Roboto", "Helvetica", "Arial", sans-serif',
+  },
 });
 
 // If manga data isn't provided beforehand, the component will fetch it from the IPC renderer.
@@ -280,6 +299,7 @@ const MangaItem = ({
   backto,
   cachedMangaData,
   cachedChapterData,
+  isLibrary,
 }: MangaItemProps) => {
   const Navigation = useNavigate();
   const mangaTags = tags.map((tag) => (
@@ -297,6 +317,7 @@ const MangaItem = ({
 
   const mangaData =
     cachedMangaData ?? window.electron.library.getCachedManga(source, mangaid);
+
   const cachedChapters = mangaData?.Chapters
     ? sortChapters(mangaData?.Chapters, false).map((chapterObject) => {
         const cachedChapter = (cachedChapterData ??
@@ -330,6 +351,16 @@ const MangaItem = ({
     firstUnreadCachedChapter?.currentPage ?? 1
   );
 
+  const allReadChapterCount = cachedChapters.reduce(
+    (acc, chapter) =>
+      chapter.currentPage >= chapter.pageCount ? acc + 1 : acc,
+    0
+  );
+
+  const remainingChapters = Math.max(
+    0,
+    (mangaData?.Chapters?.length ?? 0) - allReadChapterCount
+  );
   const viewParams = `/view?source=${source}&title=${title}&id=${mangaid}&backto=${backto}`;
   const elementKey = `${source}-${mangaid}`;
   switch (displayType) {
@@ -337,6 +368,11 @@ const MangaItem = ({
       return (
         <div key={elementKey} className={css(styles.mangaItemListContainer)}>
           <div className={css(styles.mangaItemCover, styles.listCover)}>
+            {isLibrary && remainingChapters > 0 ? (
+              <span className={css(styles.mangaItemCoverBanner)}>
+                {remainingChapters}
+              </span>
+            ) : null}
             <button
               type="button"
               className={css(styles.mangaItemCoverButton)}
@@ -486,6 +522,7 @@ const MangaItem = ({
 };
 
 MangaItem.defaultProps = {
+  isLibrary: false,
   cachedMangaData: null,
   cachedChapterData: null,
 };
