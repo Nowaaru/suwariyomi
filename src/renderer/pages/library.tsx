@@ -627,10 +627,14 @@ const Library = () => {
     Object.keys(sourceList).forEach((source) => {
       const { sortOrder = 'asc', sortMethod = 'title' } =
         suwariyomiLibrarySettings[`data_${source}`] ?? {};
-
-      console.log(sourceList);
       const serializedReadMethod = sortMethod.toLowerCase().split(' ').join('');
-      mangaObjectTemp[source] = [...sourceList[source]]
+
+      // Special sort methods for unread manga.
+      const clonedMangaList = [...sourceList[source]].filter(
+        (x) => x.Chapters?.length > 0
+      );
+
+      mangaObjectTemp[source] = clonedMangaList
         .filter((x) => x.Chapters?.length > 0)
         .sort((a, b) => {
           const getUTCHours = (date: Date) =>
@@ -656,13 +660,16 @@ const Library = () => {
                       y.currentPage >= x.PageCount
                   )
                 ).filter((x) => x !== undefined);
-              const chapterCountA = convertToReadChapters(a).length;
-              const chapterCountB = convertToReadChapters(b).length;
 
-              const chapterPercentageA = chapterCountA / a.Chapters?.length;
-              const chapterPercentageB = chapterCountB / b.Chapters?.length;
+              const chapterCountA =
+                a.Chapters.length - convertToReadChapters(a).length;
+              const chapterCountB =
+                b.Chapters.length - convertToReadChapters(b).length;
 
-              return chapterPercentageB - chapterPercentageA;
+              if (chapterCountA === chapterCountB)
+                return a.Name.localeCompare(b.Name);
+
+              return chapterCountB - chapterCountA;
             }
             case 'lastread': {
               const lastReadA: Date = new Date(a.LastRead ?? 0);
@@ -750,6 +757,7 @@ const Library = () => {
               mangaid={Manga.MangaID}
               cachedMangaData={Manga}
               cachedChapterData={allCachedRead.current[Manga.SourceID]}
+              isLibrary
             />
           </LazyLoad>
         ))
@@ -922,9 +930,9 @@ const Library = () => {
                 }}
               >
                 <MenuItem value="Title">Title</MenuItem>
+                <MenuItem value="Unread">Unread</MenuItem>
                 <MenuItem value="Last Read">Last Read</MenuItem>
                 <MenuItem value="Latest Chapter">Latest Chapter</MenuItem>
-                <MenuItem value="Unread">Unread</MenuItem>
                 <MenuItem value="Total Chapters">Total Chapters</MenuItem>
                 <MenuItem value="Date Added">Date Added</MenuItem>
                 <MenuItem value="Date Fetched">Date Fetched</MenuItem>
