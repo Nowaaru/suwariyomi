@@ -1555,7 +1555,7 @@ const Reader = () => {
         }}
       />
       <ReaderContext
-        open={!!contextMenuData}
+        open={!!contextMenuData && !modalIsOpen}
         onClose={() => setContextMenu(undefined)}
         anchorReference="anchorPosition"
         anchorPosition={
