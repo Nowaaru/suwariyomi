@@ -92,8 +92,17 @@ const SettingsModal = ({
         'pageLayoutWebtoon',
       ],
     },
-    Filter: {},
   });
+
+  const customTabs = {
+    Filter: (
+      <>
+        <Typography className={css(styles.settingsModalFlagSetTitle)}>
+          Coloring
+        </Typography>
+      </>
+    ),
+  };
 
   return (
     <Dialog
