@@ -1,6 +1,6 @@
 {
   "name": "suwariyomi",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "description": "Manga reader made with electron-react-boilerplate. Inspired by tachiyomi.",
   "main": "./dist/main/main.js",
   "author": {
