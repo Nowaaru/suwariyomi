@@ -270,7 +270,6 @@
     "neovim": "^4.10.1",
     "node-fetch": "^2.6.6",
     "node-gzip": "^1.1.2",
-    "node-myanimelist": "^3.0.4",
     "node-polyfill-webpack-plugin": "^1.1.4",
     "os": "^0.1.2",
     "patch-package": "^6.4.7",
