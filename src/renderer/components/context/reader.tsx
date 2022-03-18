@@ -29,7 +29,9 @@ const contextDividerLine = {
 };
 
 const styles = StyleSheet.create({
-  contextMenu: {},
+  contextMenu: {
+    zIndex: 32000,
+  },
   contextMenuFont: {
     fontSize: '0.8rem',
   },
