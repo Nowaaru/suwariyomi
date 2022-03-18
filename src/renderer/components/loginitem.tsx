@@ -1,7 +1,6 @@
 import React from 'react';
 import { Tooltip } from '@mui/material';
 import { StyleSheet, css } from 'aphrodite';
-import { Mal } from 'node-myanimelist';
 
 // TODO: Unionize this
 const AniListIntegrationHandler = async () => {
@@ -39,7 +38,7 @@ const AniListIntegrationHandler = async () => {
 };
 
 const MyAnimeListIntegrationHandler = async () => {
-  const Authentication = Mal.auth('0d6dcc52b59961cf75acf698e8eaefde');
+  const Authentication = {} as any;
   const PKCE = await window.electron.auth.generatePKCE();
   const authorizationURL = Authentication.getOAuthUrl(PKCE.code_challenge);
   return window.electron.auth
