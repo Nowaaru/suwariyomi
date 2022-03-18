@@ -287,6 +287,7 @@
     "react-window": "^1.8.6",
     "regenerator-runtime": "^0.13.9",
     "slugify": "^1.6.5",
+    "string-strip-html": "^8.3.0",
     "throttle-debounce": "^3.0.1",
     "ts-localstorage": "^1.1.0",
     "uglify-js": "^3.14.5",

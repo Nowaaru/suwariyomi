@@ -1,6 +1,7 @@
 import { StyleSheet, css } from 'aphrodite';
 import { Button, Tooltip } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
+import { stripHtml } from 'string-strip-html';
 import capitalize from 'lodash/capitalize';
 
 import LazyLoad from 'react-lazyload';
@@ -406,12 +407,8 @@ const MangaItem = ({
               <div className={css(styles.mangaItemSynopsisContainer)}>
                 <p className={css(styles.mangaItemSynopsis)}>
                   {(() => {
-                    return (
-                      new DOMParser().parseFromString(
-                        synopsis || 'No synopsis available.', // Use OR instead of null check to implicitly cast empty strings to boolean.
-                        'text/html'
-                      ).body.textContent || 'No synopsis available.'
-                    );
+                    return stripHtml(synopsis || 'No synopsis available.')
+                      .result;
                   })()}
                 </p>
               </div>
