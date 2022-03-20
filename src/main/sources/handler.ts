@@ -2,6 +2,7 @@
 /* eslint-disable new-cap */
 /* eslint-disable global-require */
 /* eslint-disable import/no-dynamic-require */
+import path from 'path';
 import SourceBase from './static/base';
 
 const requireFunc =
@@ -18,8 +19,11 @@ export default class Handler {
     const foundSource = fileSources.find(
       (sourcePath) => sourcePath.toLowerCase() === sourceName.toLowerCase()
     );
+
     return foundSource
-      ? new (requireFunc(`${fileSourceDirectory}\\${foundSource}\\main.js`))()
+      ? new (requireFunc(
+          path.join(fileSourceDirectory, foundSource, 'main.js')
+        ))()
       : null;
   }
 }
