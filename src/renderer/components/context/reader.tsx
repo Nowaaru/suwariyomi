@@ -96,28 +96,28 @@ const ReaderMenu = (
         text: 'Save to Disk',
       },
     ],
-    Chapters: [
-      {
-        op: 'prevchap',
-        icon: <SkipPreviousIcon />,
-        text: 'Previous Chapter',
-      },
-      {
-        op: 'nextchap',
-        icon: <SkipNextIcon />,
-        text: 'Next Chapter',
-      },
-    ],
     Pages: [
+      {
+        op: 'nextpage',
+        icon: <NavigateNextIcon />,
+        text: 'Next Page',
+      },
       {
         op: 'prevpage',
         icon: <NavigateBeforeIcon />,
         text: 'Previous Page',
       },
+    ],
+    Chapters: [
       {
-        op: 'nextpage',
-        icon: <NavigateNextIcon />,
-        text: 'Next Page',
+        op: 'nextchap',
+        icon: <SkipNextIcon />,
+        text: 'Next Chapter',
+      },
+      {
+        op: 'prevchap',
+        icon: <SkipPreviousIcon />,
+        text: 'Previous Chapter',
       },
     ],
     Misc: [
@@ -141,6 +141,7 @@ const ReaderMenu = (
         '& .MuiPaper-root': contextMenuInner,
       }}
       className={css(styles.contextMenu)}
+      transitionDuration={0}
     >
       {Object.keys(dataSet).map((key) => {
         return (
