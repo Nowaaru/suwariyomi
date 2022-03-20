@@ -516,19 +516,12 @@ const Library = () => {
       .filter((x) => !sourcesFetching.includes(x))
       .forEach((source) => {
         window.electron.library.getLibraryMangas(source).forEach((mangaID) => {
-          // Determine if the manga is already in the cache
-          const mangaIsInCache = sourceList[source].some(
-            (manga) => manga.MangaID === mangaID
-          );
+          allKeys[source] = allKeys[source] || [];
+          allKeys[source].push(mangaID);
 
-          if (!mangaIsInCache) {
-            allKeys[source] = allKeys[source] || [];
-            allKeys[source].push(mangaID);
-
-            if (sourcesFetching.includes(source)) return;
-            fetchQueue.current.splice(fetchQueue.current.indexOf(source), 1);
-            setSourcesFetching([...sourcesFetching, source]);
-          }
+          if (sourcesFetching.includes(source)) return;
+          fetchQueue.current.splice(fetchQueue.current.indexOf(source), 1);
+          setSourcesFetching([...sourcesFetching, source]);
         });
       });
 
@@ -958,6 +951,8 @@ const Library = () => {
                   e.stopPropagation();
 
                   cachedMangas.current[sourceKey] = [];
+                  if (!fetchQueue.current.includes(sourceKey))
+                    fetchQueue.current.push(sourceKey);
                   forceUpdate();
                 }}
               >
