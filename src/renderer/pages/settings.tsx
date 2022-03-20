@@ -285,6 +285,21 @@ const ImportSettingsModal = ({
                       checked={value}
                       sx={{
                         color: 'white',
+                        '&.Mui-checked svg': {
+                          color: '#DF2935',
+                        },
+                        '&.Mui-checked:hover': {
+                          backgroundColor: '#DF293509',
+                        },
+                        '&:not(Mui-checked):hover': {
+                          backgroundColor: '#FFFFFF09',
+                        },
+                        '&:not(.Mui-checked) .MuiTouchRipple-root': {
+                          color: '#FFFFFF',
+                        },
+                        '&.Mui-checked .MuiTouchRipple-root': {
+                          color: '#DF2935',
+                        },
                       }}
                       disabled={key === 'sources'} // Source importing won't be supported until we get a hefty amount of sources
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
