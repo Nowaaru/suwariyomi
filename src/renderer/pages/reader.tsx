@@ -1565,6 +1565,7 @@ const Reader = () => {
         }
         onItemClick={async (item) => {
           if (!currentPageObject?.src) return;
+          setContextMenu(undefined);
           switch (item) {
             case 'clipboard': {
               const blobifiedImage = await (
@@ -1602,22 +1603,19 @@ const Reader = () => {
             case 'nextchap': {
               changeChapter(1);
               break;
-            }
+            } // For some reason the scrolling with handleClick via context menu won't work if setTimeout isn't used.
             case 'prevpage': {
-              if (currentPageObject.page === 1) return;
-              changePage(currentPageObject.page - 1);
+              setTimeout(() => handleClick(-1), 0);
               break;
             }
             case 'nextpage': {
-              if (currentPageObject.page === currentPageState.length) return;
-              changePage(currentPageObject.page + 1);
+              setTimeout(() => handleClick(1), 0);
               break;
             }
 
             default:
               break;
           }
-          setContextMenu(undefined);
         }}
       />
       {/* TODO: Move topbar to their own component */}
@@ -1882,11 +1880,7 @@ const Reader = () => {
                   )}
                 >{`${
                   !Number.isNaN(Number(volume)) ? `Volume ${volume} ` : ``
-                }Chapter ${
-                  Number.isSafeInteger(chapter)
-                    ? chapter
-                    : "You shouldn't be seeing this. 👀"
-                }`}</span>
+                }Chapter ${chapter}`}</span>
               );
 
               const IntermediaryPreviousChapter = (
