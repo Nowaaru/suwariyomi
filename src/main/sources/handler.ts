@@ -20,9 +20,9 @@ export default class Handler {
       (sourcePath) => sourcePath.toLowerCase() === sourceName.toLowerCase()
     );
 
-	const p = path.join(fileSourceDirectory, foundSource, 'main.js');
+	const unifiedPath = path.join(fileSourceDirectory, foundSource, 'main.js');
 	 return foundSource
-      ? new (requireFunc(p))()
+      ? new (requireFunc(unifiedPath))()
       : null;
   }
 }
