@@ -363,6 +363,7 @@ class MangaDB {
     if (!cachedManga) return false;
 
     const source = cachedManga.Sources[sourceName] || {};
+    const cachedVariant = cachedManga.Sources[sourceName][manga.MangaID];
     const isInLibrary = this.GetLibraryMangas(sourceName).includes(
       manga.MangaID
     );
@@ -372,7 +373,11 @@ class MangaDB {
 
     if (isInLibrary) {
       if (!manga.Added) {
-        manga.Added = new Date();
+        manga.Added = cachedVariant?.Added ?? new Date();
+      }
+
+      if (!manga.LastRead) {
+        manga.LastRead = cachedVariant?.LastRead ?? new Date();
       }
     }
 

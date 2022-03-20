@@ -958,13 +958,6 @@ const Library = () => {
                   e.stopPropagation();
 
                   cachedMangas.current[sourceKey] = [];
-                  window.electron.library.removeMangaFromCache(
-                    sourceKey,
-                    ...window.electron.library
-                      .getCachedMangas(sourceKey)
-                      .map((x) => x.MangaID)
-                  );
-
                   forceUpdate();
                 }}
               >
