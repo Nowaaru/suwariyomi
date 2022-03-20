@@ -2,8 +2,8 @@
 /* eslint-disable new-cap */
 /* eslint-disable global-require */
 /* eslint-disable import/no-dynamic-require */
-import SourceBase from './static/base';
 import path from 'path';
+import SourceBase from './static/base';
 
 const requireFunc =
   typeof __webpack_require__ === 'function' ? __non_webpack_require__ : require;
@@ -20,9 +20,10 @@ export default class Handler {
       (sourcePath) => sourcePath.toLowerCase() === sourceName.toLowerCase()
     );
 
-	const unifiedPath = path.join(fileSourceDirectory, foundSource, 'main.js');
-	 return foundSource
-      ? new (requireFunc(unifiedPath))()
+    return foundSource
+      ? new (requireFunc(
+          path.join(fileSourceDirectory, foundSource, 'main.js')
+        ))()
       : null;
   }
 }
