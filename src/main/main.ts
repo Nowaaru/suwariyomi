@@ -331,7 +331,7 @@ ipcMain.on(
       downloadPath,
       payload.sourceid,
       `${slugify(payload.manganame)} (${payload.mangaid})`,
-      `ch${payload.chapternumber.toFixed(2)}`
+      `ch${payload.chapternumber.toFixed(0).padStart(2, '0')}`
     );
 
     if (!fs.existsSync(targetLocation))
