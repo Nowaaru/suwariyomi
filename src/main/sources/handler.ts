@@ -3,6 +3,7 @@
 /* eslint-disable global-require */
 /* eslint-disable import/no-dynamic-require */
 import SourceBase from './static/base';
+import path from 'path';
 
 const requireFunc =
   typeof __webpack_require__ === 'function' ? __non_webpack_require__ : require;
@@ -18,8 +19,10 @@ export default class Handler {
     const foundSource = fileSources.find(
       (sourcePath) => sourcePath.toLowerCase() === sourceName.toLowerCase()
     );
-    return foundSource
-      ? new (requireFunc(`${fileSourceDirectory}\\${foundSource}\\main.js`))()
+
+	const p = path.join(fileSourceDirectory, foundSource, 'main.js');
+	 return foundSource
+      ? new (requireFunc(p))()
       : null;
   }
 }
