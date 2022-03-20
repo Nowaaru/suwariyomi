@@ -787,7 +787,17 @@ const View = () => {
               }`}</h2>
             </div>
             <div className={css(styles.mangaTags)}>
-              {currentManga.Tags.map((x) => (
+              {currentManga.Tags.sort((a, b) => {
+                const tagColours = selectedSource?.tagColors;
+                const aColour = tagColours?.[a];
+                const bColour = tagColours?.[b];
+
+                if (!aColour && bColour) return 1;
+                if (aColour && !bColour) return -1;
+
+                // If aColour and bColour are both defined OR both are undefined, then sort by
+                return a.localeCompare(b);
+              }).map((x) => (
                 <Tag
                   key={`${x}-manga-tag`}
                   color={selectedSource?.tagColours?.[x]}
