@@ -339,7 +339,8 @@ const stylesObject = {
     justifyContent: 'center',
     alignItems: 'center',
     padding: '0px 32px 48px 32px',
-    zIndex: -1024,
+    overflowY: 'auto',
+    zIndex: 1024,
     '::-webkit-scrollbar': {
       width: '4px',
     },
@@ -416,9 +417,26 @@ const stylesObject = {
   // All views
   mangaImage: {
     display: 'flex',
+    userSelect: 'none',
+  },
+
+  mangaImageFitComfortable: {
     maxHeight: '95%',
     maxWidth: '65%',
-    userSelect: 'none',
+  },
+
+  mangaImageFitWidth: {
+    maxWidth: '100%',
+  },
+
+  mangaImageFitHeight: {
+    maxHeight: '100%',
+  },
+
+  mangaImageFitContent: {
+    maxWidth: '100%',
+    maxHeight: '100%',
+    objectFit: 'contain',
   },
 
   loadingImage: {
@@ -1501,6 +1519,12 @@ const Reader = () => {
   const flipImage =
     readerSettings.readingMode === 'webtoon' && styles.flippedImage;
 
+  const fitStyle =
+    {
+      'fit-content': styles.mangaImageFitContent,
+      'fit-width': styles.mangaImageFitWidth,
+      'fit-height': styles.mangaImageFitHeight,
+    }[readerSettings.scaleType] ?? styles.mangaImageFitContent;
   // If it's scroll based and there are pages to display, then we can show the pages.
   // So, when loading is true, we can put loading indicators on the top and bottom.
   // Otherwise, show nothing but the loading indicator.
@@ -1816,7 +1840,7 @@ const Reader = () => {
                 ) {
                   const firstPage = (
                     <img
-                      className={css(styles.mangaImage, flipImage)}
+                      className={css(styles.mangaImage, flipImage, fitStyle)}
                       src={currentPageObject.src}
                       alt={`Page ${currentPage}`}
                     />
@@ -1964,7 +1988,8 @@ const Reader = () => {
                     <img
                       className={css(
                         styles.mangaImage,
-                        styles.continuousScrollImage
+                        styles.continuousScrollImage,
+                        fitStyle
                       )}
                       id={`chapter-:${page.chapter}:-page-:${page.page}:`}
                       src={page.src}

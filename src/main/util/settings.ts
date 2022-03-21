@@ -34,7 +34,7 @@ export const defaultSettings = {
     readingMode: 'right-to-left',
     navLayoutPaged: 'left-and-right',
     invertTappingPaged: false,
-    scaleTypePaged: 'fit-screen',
+    scaleType: 'comfortable',
     cropBordersPaged: false,
     pageLayoutPaged: 'single-page',
     zoomStartPosition: 'automatic',
@@ -185,9 +185,9 @@ export const settingsSchema: Schema<typeof defaultSettings> = {
         type: 'boolean',
         default: false,
       },
-      scaleTypePaged: {
+      scaleType: {
         type: 'string',
-        enum: ['fit-screen', 'fit-width', 'fit-height', 'fit-content', 'none'],
+        enum: ['comfortable', 'fit-width', 'fit-height', 'fit-content'],
       },
       cropBordersPaged: {
         type: 'boolean',
@@ -352,6 +352,21 @@ const Settings = new SettingsDatabase({
             updateOnKeyPress: true,
           },
           settings.store.library
+        ),
+      };
+
+      return (settings.store = newSettings);
+    },
+    '>=0.13.0': (settings) => {
+      const newSettings = {
+        ...settings.store,
+        reader: Object.assign(
+          {
+            scaleTypePaged: undefined,
+            // @ts-ignore
+            scaleType: settings.store.reader.scaleTypePaged ?? 'comfortable',
+          },
+          settings.store.reader
         ),
       };
 

@@ -173,13 +173,13 @@ export const settingsSchemata: {
         'Invert the way you tap to navigate to the next/previous page.',
       default: false,
     },
-    scaleTypePaged: {
+    scaleType: {
       type: 'select',
       label: 'Scale Type',
-      description: 'The way the page is scaled.',
-      default: 'fit-screen',
+      description: 'The size of the page when reading.',
+      default: 'comfortable',
       options: [
-        { label: 'Fit Screen', value: 'fit-screen' },
+        { label: 'Comfortable', value: 'comfortable' },
         { label: 'Fit Width', value: 'fit-width' },
         { label: 'Fit Height', value: 'fit-height' },
         { label: 'Fit Content', value: 'fit-content' },
