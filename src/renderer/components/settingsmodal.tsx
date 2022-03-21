@@ -7,7 +7,7 @@ import {
   Typography,
 } from '@mui/material';
 import { StyleSheet, css } from 'aphrodite';
-import { useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 
 import { generateSettings } from '../util/func';
 import { settingsSchemata } from '../util/auxiliary';
@@ -78,7 +78,7 @@ const SettingsModal = ({
         'cropBordersPaged',
         'invertTappingPaged',
         'navLayoutPaged',
-        'scaleTypePaged',
+        'scaleType',
         'zoomStartPosition',
       ],
     },
@@ -94,7 +94,7 @@ const SettingsModal = ({
     },
   });
 
-  const customTabs = {
+  const customTabs: Record<string, React.ReactFragment> = {
     Filter: (
       <>
         <Typography className={css(styles.settingsModalFlagSetTitle)}>
@@ -144,46 +144,47 @@ const SettingsModal = ({
         <div
           className={css(styles.settingsModalDialogContentSettingsContainer)} // WAYTOODANK
         >
-          {Object.keys(
-            readerCategories.current[
-              tab as keyof typeof readerCategories.current
-            ]
-          ).map((readerHeader) => {
-            let headerItem = null;
-            if (readerHeader !== '')
-              headerItem = (
-                <Typography
-                  className={css(styles.settingsModalFlagSetTitle)}
-                  key={readerHeader}
-                >
-                  {readerHeader}
-                </Typography>
-              );
+          {customTabs[tab] ??
+            Object.keys(
+              readerCategories.current[
+                tab as keyof typeof readerCategories.current
+              ]
+            ).map((readerHeader) => {
+              let headerItem = null;
+              if (readerHeader !== '')
+                headerItem = (
+                  <Typography
+                    className={css(styles.settingsModalFlagSetTitle)}
+                    key={readerHeader}
+                  >
+                    {readerHeader}
+                  </Typography>
+                );
 
-            // @ts-ignore This language sucks.
-            const categorySchemata = readerCategories.current[tab][
-              readerHeader
-            ] as string[];
-            return (
-              <>
-                {headerItem}
-                {categorySchemata.map((x) =>
-                  generateSettings(
-                    settingsSchemata.reader[
-                      x as keyof typeof settingsSchemata.reader
-                    ],
-                    settings[x as keyof typeof settings],
-                    (value) => {
-                      onChange({
-                        ...settings,
-                        [x as keyof typeof settings]: value,
-                      });
-                    }
-                  )
-                )}
-              </>
-            );
-          })}
+              // @ts-ignore This language sucks.
+              const categorySchemata = readerCategories.current[tab][
+                readerHeader
+              ] as string[];
+              return (
+                <>
+                  {headerItem}
+                  {categorySchemata.map((x) =>
+                    generateSettings(
+                      settingsSchemata.reader[
+                        x as keyof typeof settingsSchemata.reader
+                      ],
+                      settings[x as keyof typeof settings],
+                      (value) => {
+                        onChange({
+                          ...settings,
+                          [x as keyof typeof settings]: value,
+                        });
+                      }
+                    )
+                  )}
+                </>
+              );
+            })}
 
           {/* <div className={css(styles.settingsModalDialogContentItemContainer)}>
             {Object.values(readerCategories).map((x) => {
