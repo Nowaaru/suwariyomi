@@ -2,7 +2,6 @@ import { StyleSheet, css } from 'aphrodite';
 import { Button, Tooltip } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import { stripHtml } from 'string-strip-html';
-import capitalize from 'lodash/capitalize';
 
 import LazyLoad from 'react-lazyload';
 import Tag from './tag';
@@ -336,21 +335,18 @@ const MangaItem = ({
       (chapter) => chapter.currentPage >= chapter.pageCount
     ).length === cachedChapters?.length;
 
-  const firstUnreadChapter = mangaData?.Chapters?.find(
+  const firstUnreadChapter = mangaData?.Chapters.find(
     (x) =>
       !cachedChapters?.find((y) => y.ChapterID === x.ChapterID) ||
       (cachedChapters?.find((y) => y.ChapterID === x.ChapterID)?.currentPage ??
-        Infinity) < x.PageCount
+        -1) < x.PageCount
   );
 
   const firstUnreadCachedChapter = cachedChapters?.find(
     (x) => firstUnreadChapter?.ChapterID === x.ChapterID
   );
 
-  const unreadChapterCurrentPage = Math.max(
-    1,
-    firstUnreadCachedChapter?.currentPage ?? 1
-  );
+  const unreadChapterCurrentPage = firstUnreadCachedChapter?.currentPage;
 
   const allReadChapterCount = cachedChapters.reduce(
     (acc, chapter) =>
@@ -430,7 +426,8 @@ const MangaItem = ({
                     title={(() => {
                       if (
                         firstUnreadCachedChapter &&
-                        firstUnreadCachedChapter.pageCount !== -1
+                        (firstUnreadCachedChapter.pageCount ?? -1) !== -1 &&
+                        (firstUnreadCachedChapter.currentPage ?? -1) !== -1
                       ) {
                         return `Chapter ${
                           // firstUnreadCachedChapter depends on firstUnreadChapter. If the latter does not exist, the former does not either.
@@ -473,7 +470,13 @@ const MangaItem = ({
                             mangaData.Name,
                             source,
                             firstUnreadChapter.ChapterID,
-                            unreadChapterCurrentPage // Check for <1 in case of setting to unread via `view.tsx`.
+                            Math.max(
+                              !Number.isNaN(Number(unreadChapterCurrentPage))
+                                ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                                  unreadChapterCurrentPage!
+                                : 1,
+                              1
+                            ) // Check for <1 in case of setting to unread via `view.tsx`.
                           )
                         );
                       }}
