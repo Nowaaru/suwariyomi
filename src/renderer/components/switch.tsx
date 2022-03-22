@@ -5,7 +5,6 @@ import {
   Tooltip,
 } from '@mui/material';
 import { omit } from 'lodash';
-import { StyleSheet, css } from 'aphrodite';
 
 const stylesObject = {
   switchTrackOn: {

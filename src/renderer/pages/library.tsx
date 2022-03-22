@@ -24,7 +24,7 @@ import React, {
 
 import { Link, useNavigate } from 'react-router-dom';
 import { userInfo } from 'os';
-import { capitalize, clamp, isEqual } from 'lodash';
+import { capitalize, clamp } from 'lodash';
 
 import LazyLoad, { forceCheck } from 'react-lazyload';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -35,13 +35,12 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import parseQuery from '../util/search';
 
-import { Chapter, FullManga, Manga as MangaType } from '../../main/util/manga';
+import { FullManga, Manga as MangaType } from '../../main/util/manga';
 import type { ReadDatabaseValue } from '../../main/util/read';
 import MangaItem from '../components/mangaitem';
 import useQuery from '../util/hook/usequery';
 import Handler from '../../main/sources/handler';
 import useForceUpdate from '../util/hook/useforceupdate';
-import useMountEffect from '../util/hook/usemounteffect';
 import MiscEnmap from '../../main/util/misc';
 
 const libraryStyleSheet = StyleSheet.create({

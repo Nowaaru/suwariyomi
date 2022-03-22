@@ -579,14 +579,13 @@ const View = () => {
 
   useEffect(() => {
     const sourceChapters = window.electron.read.get(selectedSource.getName());
-    if (!sourceChapters) return console.log('bruh 1');
-    if (!mangaData.current) return console.log('bruh 2');
+    if (!sourceChapters) return;
+    if (!mangaData.current) return;
 
     chapterData.current = sourceChapters;
     const ChaptersNoDuplicates = calculateReadChaptersNoDuplicates();
     const readChapters = calculateReadChapters();
 
-    console.log(ChaptersNoDuplicates?.length, readChapters);
     setChaptersRead(readChapters ?? 0);
     setChaptersNoDuplicates(ChaptersNoDuplicates?.length ?? 0);
   }, [

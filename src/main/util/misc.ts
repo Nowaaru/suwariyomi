@@ -18,7 +18,6 @@ const generalEnmap = new Enmap<string, Record<any, any>>({
 info('misc.ts loaded');
 export default class {
   static get(key: string): Record<any, any> | undefined {
-    console.log(generalEnmap.fetchEverything());
     return generalEnmap.get(key);
   }
 

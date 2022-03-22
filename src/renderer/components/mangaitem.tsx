@@ -3,7 +3,6 @@ import { Button, Tooltip } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import { stripHtml } from 'string-strip-html';
 
-import LazyLoad from 'react-lazyload';
 import Tag from './tag';
 
 // image assets
