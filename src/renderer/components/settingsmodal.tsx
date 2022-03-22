@@ -11,7 +11,6 @@ import {
   FormControlLabel,
   Switch,
   Stack,
-  MenuItem,
 } from '@mui/material';
 
 import { StyleSheet, css } from 'aphrodite';
