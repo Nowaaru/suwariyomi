@@ -238,7 +238,7 @@ const SideBar = ({
       marginTop: isVertical ? '1%' : '0%',
       display: 'flex',
       alignItems: 'center',
-      zIndex: 250000,
+      zIndex: 1290,
     },
   });
 

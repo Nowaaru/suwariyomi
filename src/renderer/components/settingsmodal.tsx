@@ -5,16 +5,25 @@ import {
   Tab,
   Tabs,
   Typography,
+  Box,
+  Button,
+  Slider,
+  FormControlLabel,
+  Switch,
+  Stack,
+  MenuItem,
 } from '@mui/material';
+
 import { StyleSheet, css } from 'aphrodite';
+import { isNumber, isString } from 'lodash';
 import React, { useRef, useState } from 'react';
 
 import { generateSettings } from '../util/func';
 import { settingsSchemata } from '../util/auxiliary';
+import Select from './select';
 import type { DefaultSettings } from '../../main/util/settings';
 
 const stylesObject = {
-  settingsModalDialog: {},
   settingsModalDialogContent: {
     height: 'fit-content',
 
@@ -45,13 +54,19 @@ const stylesObject = {
     color: '#DF2935',
     fontSize: '1rem',
     fontFamily: '"Poppins", "Roboto", "Helvetica", "Arial", sans-serif',
+    marginBottom: '6px',
   },
   settingsModalDialogContentItemContainer: {
     marginLeft: '8px',
   },
+  settingsFilterLabel: {
+    display: 'flex',
+    color: 'white',
+    marginRight: '8px',
+  },
 };
 
-const styles = StyleSheet.create(stylesObject);
+const styles = StyleSheet.create(stylesObject as any) as any;
 const SettingsModal = ({
   onChange,
   onClose,
@@ -67,18 +82,19 @@ const SettingsModal = ({
   open: boolean;
 }) => {
   const [tab, setTab] = useState('General');
+  const [isPreviewing, setPreviewing] = useState(false);
 
   const readerCategories = useRef({
     General: {
       Series: ['readingMode'],
       General: ['lightbarEnabled', 'lightbarVertical', 'lightbarRight'],
+      Miscellaneous: ['scaleType'],
     },
     Paged: {
       '': [
         'cropBordersPaged',
         'invertTappingPaged',
         'navLayoutPaged',
-        'scaleType',
         'zoomStartPosition',
       ],
     },
@@ -97,9 +113,162 @@ const SettingsModal = ({
   const customTabs: Record<string, React.ReactFragment> = {
     Filter: (
       <>
-        <Typography className={css(styles.settingsModalFlagSetTitle)}>
-          Coloring
-        </Typography>
+        <Box className="">
+          <Typography className={css(styles.settingsModalFlagSetTitle)}>
+            Coloring
+          </Typography>
+          <Stack alignItems="flex-start" spacing={2}>
+            <Stack direction="row">
+              <Button
+                sx={{
+                  color: '#DF2935',
+                  '&:hover': {
+                    backgroundColor: '#DF293511',
+                  },
+                }}
+                onClick={() => setPreviewing(!isPreviewing)}
+              >
+                Preview
+              </Button>
+              <FormControlLabel
+                className={css(styles.settingsFilterLabel)}
+                control={
+                  <Switch defaultChecked={settings.useCustomColorFilter} />
+                }
+                label="Use Custom Color Filter"
+                onChange={(_, checked) =>
+                  onChange({ ...settings, useCustomColorFilter: checked })
+                }
+                labelPlacement="start"
+              />
+            </Stack>
+            <FormControlLabel
+              className={css(styles.settingsFilterLabel)}
+              control={
+                <Slider
+                  sx={{
+                    marginLeft: '16px',
+                  }}
+                  min={0}
+                  max={255}
+                  value={settings.filterR}
+                  defaultValue={settings.filterR}
+                  onChange={(_, v) =>
+                    onChange(
+                      isNumber(v) ? { ...settings, filterR: v } : settings
+                    )
+                  }
+                />
+              }
+              sx={{
+                width: '85%',
+              }}
+              label="R"
+              labelPlacement="start"
+            />
+            <FormControlLabel
+              className={css(styles.settingsFilterLabel)}
+              control={
+                <Slider
+                  sx={{
+                    marginLeft: '16px',
+                  }}
+                  min={0}
+                  max={255}
+                  value={settings.filterG}
+                  defaultValue={settings.filterG}
+                  onChange={(_, v) =>
+                    onChange(
+                      isNumber(v) ? { ...settings, filterG: v } : settings
+                    )
+                  }
+                />
+              }
+              sx={{
+                width: '85%',
+              }}
+              label="G"
+              labelPlacement="start"
+            />
+            <FormControlLabel
+              className={css(styles.settingsFilterLabel)}
+              control={
+                <Slider
+                  sx={{
+                    marginLeft: '16px',
+                  }}
+                  min={0}
+                  max={255}
+                  value={settings.filterB}
+                  defaultValue={settings.filterB}
+                  onChange={(_, v) =>
+                    onChange(
+                      isNumber(v) ? { ...settings, filterB: v } : settings
+                    )
+                  }
+                />
+              }
+              sx={{
+                width: '85%',
+              }}
+              label="B"
+              labelPlacement="start"
+            />
+            <FormControlLabel
+              className={css(styles.settingsFilterLabel)}
+              control={
+                <Slider
+                  sx={{
+                    marginLeft: '16px',
+                  }}
+                  min={0}
+                  max={1}
+                  step={0.01}
+                  value={settings.filterA}
+                  defaultValue={settings.filterA}
+                  onChange={(_, v) =>
+                    onChange(
+                      isNumber(v) ? { ...settings, filterA: v } : settings
+                    )
+                  }
+                />
+              }
+              sx={{
+                width: '85%',
+              }}
+              label="A"
+              labelPlacement="start"
+            />
+            <FormControlLabel
+              className={css(styles.settingsFilterLabel)}
+              control={
+                <Select
+                  sx={{
+                    marginLeft: '16px',
+                  }}
+                  values={{
+                    default: 'Default',
+                    multiply: 'Multiply',
+                    screen: 'Screen',
+                    overlay: 'Overlay',
+                    dodge: 'Dodge',
+                    burn: 'Burn',
+                  }}
+                  value={settings.blendMode}
+                  onChange={(e) =>
+                    onChange(
+                      isString(e.target.value)
+                        ? { ...settings, blendMode: e.target.value }
+                        : settings
+                    )
+                  }
+                />
+              }
+              label="Blend Mode"
+              labelPlacement="start"
+            />
+          </Stack>
+        </Box>
       </>
     ),
   };
@@ -107,12 +276,15 @@ const SettingsModal = ({
   return (
     <Dialog
       open={open}
-      onClose={onClose}
+      onClose={isPreviewing ? () => setPreviewing(false) : onClose}
       className={css(styles.settingsModalDialog)}
       sx={{
         // Make the dialog fill a large portion of the screen
         '& .MuiPaper-root': {
+          opacity: isPreviewing ? 0.5 : 1,
+          transition: 'opacity 0.3s ease-in-out',
           width: '50%',
+          maxHeight: '600px',
           maxWidth: 'unset',
         },
       }}
@@ -198,14 +370,5 @@ const SettingsModal = ({
     </Dialog>
   );
 };
-generateSettings(
-  {
-    type: 'switch',
-    default: false,
-    description: 'Test value, lorem ipsum so on.',
-    label: 'Test',
-  },
-  false,
-  () => {}
-);
+
 export default SettingsModal;

@@ -16,6 +16,7 @@ import {
   IconButton,
   CircularProgress,
   Tooltip,
+  Box,
 } from '@mui/material';
 
 import dayjs from 'dayjs';
@@ -350,15 +351,17 @@ const stylesObject = {
         background: '#DF2935',
       },
     },
+    flexDirection: 'column',
+  },
+
+  doublePaged: {
+    flexDirection: 'row',
+    alignItems: 'stretch',
   },
 
   scrollBased: {
-    display: 'flex',
-    justifyContent: 'unset',
-    alignItems: 'center',
-    flexDirection: 'column',
     overflowY: 'auto',
-    zIndex: 1024,
+    justifyContent: 'unset',
   },
 
   disableScroll: {
@@ -415,9 +418,17 @@ const stylesObject = {
   continuousScrollNoChapterIntermediary: {},
 
   // All views
+  mangaImageFilterDiv: {
+    position: 'relative',
+    zIndex: 1025,
+  },
+
   mangaImage: {
+    maxWidth: '100%',
+    maxHeight: '100%',
     display: 'flex',
     userSelect: 'none',
+    position: 'relative',
   },
 
   mangaImageFitComfortable: {
@@ -447,7 +458,7 @@ const stylesObject = {
   },
 
   button: {
-    zIndex: 1025,
+    zIndex: 1026,
     display: 'flex',
     color: 'white',
     position: 'absolute',
@@ -639,9 +650,7 @@ const stylesObject = {
     },
   },
 
-  continuousScrollImage: {
-    marginBottom: '16px',
-  },
+  continuousScrollImage: {},
 
   flippedImage: {
     transform: 'scaleX(-1)',
@@ -663,6 +672,69 @@ const TapIcons = {
   bottom: <ArrowForwardIosSharp className={css(styles.arrow, styles.arrowB)} />,
   left: <ArrowBackIosNewSharp className={css(styles.arrow, styles.arrowL)} />,
   right: <ArrowForwardIosSharp className={css(styles.arrow, styles.arrowR)} />,
+};
+
+const MangaImage = ({
+  isScrollBased,
+  readerSettings,
+  fitStyle,
+  id,
+  src,
+  alt,
+  key,
+  sx,
+}: {
+  isScrollBased?: boolean;
+  readerSettings: DefaultSettings['reader'];
+  fitStyle: object;
+  id: string;
+  src: string;
+  alt: string;
+  key: string;
+  sx?: object;
+}) => {
+  const mangaImage = (
+    <img
+      className={css(
+        styles.mangaImage,
+        isScrollBased && styles.continuousScrollImage
+      )}
+      style={{
+        mixBlendMode: (readerSettings.useCustomColorFilter
+          ? {
+              default: 'normal',
+              dodge: 'color-dodge',
+              burn: 'color-burn',
+            }[readerSettings.blendMode] ?? readerSettings.blendMode
+          : '') as any,
+      }}
+      id={id}
+      src={src}
+      alt={alt}
+      key={key}
+    />
+  );
+
+  return (
+    <Box
+      className={css(styles.mangaImageFilterDiv, fitStyle)}
+      sx={{
+        ...(readerSettings.useCustomColorFilter
+          ? {
+              backgroundColor: `rgba(${readerSettings.filterR}, ${readerSettings.filterG}, ${readerSettings.filterB}, ${readerSettings.filterA})`,
+            }
+          : undefined),
+        ...sx,
+      }}
+    >
+      {mangaImage}
+    </Box>
+  );
+};
+
+MangaImage.defaultProps = {
+  sx: {},
+  isScrollBased: false,
 };
 
 const errorDialog = (
@@ -1087,7 +1159,15 @@ const Reader = () => {
                 [currentChapter.ChapterID]: previousState[
                   currentChapter.ChapterID
                 ].map((x, i) =>
-                  i === index ? { ...x, isLoaded: true, didError: false } : x
+                  i === index
+                    ? {
+                        ...x,
+                        isLoaded: true,
+                        didError: false,
+                        imageWidth: image.width,
+                        imageHeight: image.height,
+                      }
+                    : x
                 ),
               };
               return newPageState;
@@ -1516,11 +1596,9 @@ const Reader = () => {
       />
     ));
 
-  const flipImage =
-    readerSettings.readingMode === 'webtoon' && styles.flippedImage;
-
   const fitStyle =
     {
+      comfortable: styles.mangaImageFitComfortable,
       'fit-content': styles.mangaImageFitContent,
       'fit-width': styles.mangaImageFitWidth,
       'fit-height': styles.mangaImageFitHeight,
@@ -1814,6 +1892,7 @@ const Reader = () => {
           key="ImageContainer"
           className={css(
             styles.imageContainer,
+            isDoublePage && styles.doublePaged,
             isScrollBased && styles.scrollBased,
             isLoading && styles.disableScroll
           )}
@@ -1839,19 +1918,25 @@ const Reader = () => {
                   (isDoublePage && nextPageObject && isNextPageLoaded) // If it's a double page, then we need to make sure the next page is loaded.
                 ) {
                   const firstPage = (
-                    <img
-                      className={css(styles.mangaImage, flipImage, fitStyle)}
+                    <MangaImage
+                      readerSettings={readerSettings}
+                      fitStyle={fitStyle}
+                      id={`chapter-:${currentPageObject.chapter}:-page-:${currentPageObject.page}:`}
                       src={currentPageObject.src}
                       alt={`Page ${currentPage}`}
+                      key={`${currentPageObject.src}-normal-scroll`}
                     />
                   );
 
                   const secondPage =
                     nextPageObject && isDoublePage ? (
-                      <img
-                        className={css(styles.mangaImage, flipImage)}
+                      <MangaImage
+                        readerSettings={readerSettings}
+                        fitStyle={fitStyle}
+                        id={`chapter-:${nextPageObject.chapter}:-page-:${nextPageObject.page}:`}
                         src={nextPageObject.src}
                         alt={`Page ${currentPage + 1}`}
+                        key={`${nextPageObject.src}-normal-scroll`}
                       />
                     ) : null;
 
@@ -1985,16 +2070,20 @@ const Reader = () => {
                         ? IntermediaryPreviousChapter // Show the previous chapter intermediary.
                         : IntermediaryNoChapter('There is no previous chapter.') // Otherwise, display that there's no chapter.
                       : null}
-                    <img
-                      className={css(
-                        styles.mangaImage,
-                        styles.continuousScrollImage,
-                        fitStyle
-                      )}
+                    <MangaImage
+                      readerSettings={readerSettings}
+                      isScrollBased
+                      fitStyle={fitStyle}
                       id={`chapter-:${page.chapter}:-page-:${page.page}:`}
                       src={page.src}
                       alt={`Page ${index + 1}`}
                       key={`${page.src}-normal-scroll`}
+                      sx={{
+                        marginBottom:
+                          readerSettings.readingMode === 'continuous-vertical'
+                            ? '16px'
+                            : '0px',
+                      }}
                     />
                     {pageIsAtEndOfChapter &&
                     page.chapter === readerData.currentchapter?.ChapterID // If the page is at the end of the chapter...

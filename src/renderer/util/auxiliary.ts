@@ -265,6 +265,43 @@ export const settingsSchemata: {
         { label: '75%', value: '75%' },
       ],
     },
+    useCustomColorFilter: {
+      type: 'switch',
+      label: 'Use Custom Color Filter',
+      description:
+        'Use a custom color filter when reading manga. Good for if the page has a hue shift.',
+      default: false,
+    },
+    filterR: {
+      type: 'managed',
+      label: 'R',
+    },
+    filterG: {
+      type: 'managed',
+      label: 'G',
+    },
+    filterB: {
+      type: 'managed',
+      label: 'B',
+    },
+    filterA: {
+      type: 'managed',
+      label: 'A',
+    },
+    blendMode: {
+      type: 'select',
+      label: 'Blend Mode',
+      description: 'The blend mode to use when reading manga.',
+      default: 'default',
+      options: [
+        { label: 'Default', value: 'default' },
+        { label: 'Multiply', value: 'multiply' },
+        { label: 'Screen', value: 'screen' },
+        { label: 'Overlay', value: 'overlay' },
+        { label: 'Dodge', value: 'dodge' },
+        { label: 'Burn', value: 'burn' },
+      ],
+    },
   },
   downloads: {
     deleteRemovedChapters: {

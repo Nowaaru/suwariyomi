@@ -46,6 +46,13 @@ export const defaultSettings = {
     allowZoomOutWebtoon: false,
     // If the next chapter has the same chapter number but a different group, skip it.
     // This usually just means that the chapter was translated by two different translators.
+
+    useCustomColorFilter: false,
+    filterR: 0,
+    filterG: 0,
+    filterB: 0,
+    filterA: 0,
+    blendMode: 'default',
   },
   downloads: {
     location: '/downloads',
@@ -224,6 +231,39 @@ export const settingsSchema: Schema<typeof defaultSettings> = {
         type: 'string',
         enum: ['single-page', 'double-page'],
       },
+      useCustomColorFilter: {
+        type: 'boolean',
+        default: false,
+      },
+      filterR: {
+        type: 'number',
+        default: 0,
+        minimum: 0,
+        maximum: 255,
+      },
+      filterG: {
+        type: 'number',
+        default: 0,
+        minimum: 0,
+        maximum: 255,
+      },
+      filterB: {
+        type: 'number',
+        default: 0,
+        minimum: 0,
+        maximum: 255,
+      },
+      filterA: {
+        type: 'number',
+        default: 0,
+        minimum: 0,
+        maximum: 255,
+      },
+      blendMode: {
+        type: 'string',
+        default: 'default',
+        enum: ['default', 'multiply', 'screen', 'overlay', 'dodge', 'burn'],
+      },
     },
   },
   downloads: {
@@ -365,6 +405,12 @@ const Settings = new SettingsDatabase({
             scaleTypePaged: undefined,
             // @ts-ignore
             scaleType: settings.store.reader.scaleTypePaged ?? 'comfortable',
+            useCustomColorFilter: false,
+            filterR: 0,
+            filterG: 0,
+            filterB: 0,
+            filterA: 0,
+            blendMode: 'default',
           },
           settings.store.reader
         ),
