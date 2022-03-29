@@ -5,7 +5,7 @@ const log = require('electron-log');
 log.catchErrors();
 log.info('preload.js: started');
 
-const ipcValidChannels = ['fullscreen-toggle'];
+const ipcValidChannels = ['fullscreen-toggle', 'open-protocol'];
 
 window.electron = {
   log: log.functions,

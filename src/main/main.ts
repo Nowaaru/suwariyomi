@@ -10,7 +10,7 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 
-import path from 'path';
+import path, { format } from 'path';
 import fs from 'fs';
 import log from 'electron-log';
 import imageType from 'image-type';
@@ -18,7 +18,7 @@ import Store from 'electron-store';
 import slugify from 'slugify';
 import fetch from 'node-fetch';
 import pkceChallenge from 'pkce-challenge';
-import { app, BrowserWindow, shell, ipcMain } from 'electron';
+import { app, BrowserWindow, shell, ipcMain, protocol, dialog } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
@@ -38,12 +38,10 @@ export default class AppUpdater {
 }
 
 log.catchErrors();
-log.info(`Current Version: ${app.getVersion()}`);
 
 const ElectronStore = new Store();
 let mainWindow: BrowserWindow | null = null;
 
-log.info('ipc creating');
 ipcMain.on('ipc-example', async (event, arg) => {
   const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
   console.log(msgTemplate(arg));
@@ -353,7 +351,6 @@ ipcMain.on(
       downloadedImageBuffer
     );
 
-    log.info('based cringe?');
     event.returnValue = true;
   }
 );
@@ -364,8 +361,6 @@ ipcMain.on('maximize', () => {
 
   return true;
 });
-
-log.info('ipc listeners set');
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
@@ -383,8 +378,6 @@ if (isDevelopment) {
 require('electron-debug')();
 // }
 
-log.info('electron-debug set');
-
 const installExtensions = async () => {
   const installer = require('electron-devtools-installer');
   const forceDownload = !!process.env.UPGRADE_EXTENSIONS;
@@ -400,11 +393,9 @@ const installExtensions = async () => {
 
 const createWindow = async () => {
   if (isDevelopment) {
-    log.info('installing extensions');
     await installExtensions();
   }
 
-  log.info('resources path');
   const RESOURCES_PATH = app.isPackaged
     ? path.join(process.resourcesPath, 'assets')
     : path.join(__dirname, '../../assets');
@@ -413,7 +404,6 @@ const createWindow = async () => {
     return path.join(RESOURCES_PATH, ...paths);
   };
 
-  log.info('creating window');
   mainWindow = new BrowserWindow({
     show: false,
     width: 1024,
@@ -451,15 +441,12 @@ const createWindow = async () => {
     toggleFullscreen(false);
   });
 
-  log.info('loading index.html');
   mainWindow.loadURL(resolveHtmlPath('index.html'));
 
-  log.info('showing window');
   mainWindow.on('ready-to-show', () => {
     if (!mainWindow) {
       throw new Error('"mainWindow" is not defined');
     }
-    log.info('showing window');
     if (process.env.START_MINIMIZED) {
       mainWindow.minimize();
     } else {
@@ -468,17 +455,14 @@ const createWindow = async () => {
   });
 
   mainWindow.on('closed', () => {
-    log.info('closed');
     mainWindow = null;
   });
 
-  log.info('menubuilder');
   const menuBuilder = new MenuBuilder(mainWindow);
   menuBuilder.buildMenu();
   (process as any).appMenu = menuBuilder; //eslint-disable-line
 
   // Open urls in the user's browser
-  log.info('on');
   mainWindow.webContents.on('new-window', (event, url) => {
     event.preventDefault();
     shell.openExternal(url);
@@ -489,31 +473,78 @@ const createWindow = async () => {
   // new AppUpdater();
 };
 
-log.info('createWindow set');
-
 /**
  * Add event listeners...
  */
 
-app.on('window-all-closed', () => {
-  // Respect the OSX convention of having the application in memory even
-  // after all windows have been closed
-  if (process.platform !== 'darwin') {
-    app.quit();
+const appIsLocked = app.requestSingleInstanceLock();
+if (!appIsLocked) {
+  app.quit();
+} else {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  app.on('second-instance', (_e, argv) => {
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) mainWindow.restore();
+      log.warn(
+        'Attempt to open another instance of the app. Focusing the existing window.'
+      );
+      mainWindow.focus();
+
+      // Check if the second-instance was fired through a protocol link.
+      const isProtocol = argv.find((arg) => arg.startsWith('suwariyomi://'));
+      if (isProtocol) {
+        log.info('protocol link detected');
+
+        const formattedURL: URL = new URL(isProtocol);
+        mainWindow.webContents.send('open-protocol', {
+          full: isProtocol,
+          location: isProtocol.match(/^suwariyomi:\/\/(.+?)\//)?.[1],
+          query: Object.fromEntries(
+            new URLSearchParams(formattedURL.search) as unknown as Iterable<
+              [string, string]
+            >
+          ),
+        });
+      }
+    }
+  });
+
+  app.on('window-all-closed', () => {
+    // Respect the OSX convention of having the application in memory even
+    // after all windows have been closed
+    if (process.platform !== 'darwin') {
+      app.quit();
+    }
+  });
+
+  // Setup deep links and protocol handler
+  if (process.defaultApp) {
+    if (process.argv.length >= 2) {
+      // This part was really obscure from the electron docs.
+      // Apparently argv includes the app name as the first
+      // element which is why they do it this way. However,
+      // why not just do (process.argv[1]) instead?
+
+      app.setAsDefaultProtocolClient('suwariyomi', process.execPath, [
+        path.resolve(process.argv[1]),
+      ]);
+    } else {
+      app.setAsDefaultProtocolClient('suwariyomi');
+    }
+  } else {
+    app.setAsDefaultProtocolClient('suwariyomi');
   }
-});
 
-log.info('window-all-closed set');
-app
-  .whenReady()
-  .then(() => {
-    createWindow();
-    app.on('activate', () => {
-      // On macOS it's common to re-create a window in the app when the
-      // dock icon is clicked and there are no other windows open.
-      if (mainWindow === null) createWindow();
-    });
-  })
-  .catch(log.error);
+  app
+    .whenReady()
+    .then(() => {
+      createWindow();
 
-log.info('stuff ready!!');
+      app.on('activate', () => {
+        // On macOS it's common to re-create a window in the app when the
+        // dock icon is clicked and there are no other windows open.
+        if (mainWindow === null) createWindow();
+      });
+    })
+    .catch(log.error);
+}

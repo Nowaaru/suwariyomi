@@ -42,6 +42,7 @@ import useQuery from '../util/hook/usequery';
 import Handler from '../../main/sources/handler';
 import useForceUpdate from '../util/hook/useforceupdate';
 import MiscEnmap from '../../main/util/misc';
+import useEvent from '../util/hook/useevent';
 
 const libraryStyleSheet = StyleSheet.create({
   container: {
@@ -384,6 +385,7 @@ let readingPrefixTarget: MangaType | undefined;
 let statusPrefix: string;
 let statusSuffix: string;
 const Library = () => {
+  useEvent();
   useEffect(() => {
     window.electron.cache.delete(
       'searchdata',
