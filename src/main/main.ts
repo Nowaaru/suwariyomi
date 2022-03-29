@@ -28,6 +28,11 @@ import ReadDB from './util/read';
 import ReaderDB from './util/reader';
 import MiscDB from './util/misc';
 import Settings from './util/settings';
+import initRPCConnection, {
+  RPCClient,
+  updateRichPresence,
+  toggleRPC,
+} from './util/rpc';
 
 export default class AppUpdater {
   constructor() {
@@ -534,6 +539,25 @@ if (!appIsLocked) {
   } else {
     app.setAsDefaultProtocolClient('suwariyomi');
   }
+
+  RPCClient.on('ready', () => {
+    log.info('RPCClient is ready.');
+  });
+
+  if (!Settings.getAllSettings().general.discordRPCIntegration)
+    toggleRPC(false);
+
+  initRPCConnection()
+    .then(() => {
+      ipcMain.on('toggle-rpc', (event, isToggled) => {
+        toggleRPC(isToggled);
+      });
+
+      ipcMain.on('update-rpc', (e, presence) => {
+        updateRichPresence(presence);
+      });
+    })
+    .catch(log.error);
 
   app
     .whenReady()

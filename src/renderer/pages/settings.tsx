@@ -380,6 +380,15 @@ const Settings = () => {
   }, [settings]);
 
   useEffect(() => {
+    window.electron.rpc.updateRPC({
+      details: 'Settings',
+      state: 'Personalizing the application...',
+      largeImageKey: 'icon_large',
+      startTimestamp: Date.now(),
+    });
+  }, []);
+
+  useEffect(() => {
     setTimesClicked(0);
   }, [settingsLocation]);
 
@@ -645,6 +654,12 @@ const Settings = () => {
                       // @ts-ignore - nothing i can do here
                       newSettings[settingsLocation][key] = settingsValue;
 
+                      if (
+                        settingsLocation === 'general' &&
+                        key === 'discordRPCIntegration'
+                      ) {
+                        window.electron.rpc.toggleRPC(settingsValue);
+                      }
                       setSettings(newSettings);
                     }
                   )

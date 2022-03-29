@@ -41,6 +41,13 @@ export const settingsSchemata: {
         { label: 'YYYY/MM/DD', value: 'YYYY/MM/DD' },
       ],
     },
+    discordRPCIntegration: {
+      type: 'switch',
+      label: 'Discord Rich Presence Integration',
+      description:
+        'Enable full Discord Rich Presence integration. Disabling this will only show "Suwariyomi" in your presence.',
+      default: true,
+    },
     autoUpdate: {
       label: 'Auto Update',
       description: 'Automatically check for updates to the application',

@@ -598,6 +598,18 @@ const Library = () => {
   const allMangaCount =
     allManga.reduce((acc) => acc + 1, 0) + sourceListValues.flat().length;
 
+  useEffect(() => {
+    window.electron.rpc.updateRPC({
+      state:
+        allMangaCount > 0
+          ? `Overlooking ${allMangaCount} manga`
+          : 'Looking for manga',
+      largeImageKey: 'icon_large',
+      details: 'Library',
+      startTimestamp: Date.now(),
+    });
+  }, [allMangaCount]);
+
   const allChapterCount = allChapters.filter(
     (x) => x.currentPage >= x.pageCount
   ).length;

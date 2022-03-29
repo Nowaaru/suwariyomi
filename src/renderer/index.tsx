@@ -1,5 +1,6 @@
 import { functions } from 'electron-log';
 import { render } from 'react-dom';
+import { Presence } from 'discord-rpc';
 import { IpcRendererEvent } from 'electron';
 import { LibrarySources, FullManga, LibraryManga } from '../main/util/manga';
 import { ReadDatabaseValue } from '../main/util/read';
@@ -20,6 +21,10 @@ declare global {
   interface Window {
     electron: {
       log: typeof functions;
+      rpc: {
+        updateRPC: (presence: Presence) => void;
+        toggleRPC: (rpcEnabled: boolean) => void;
+      };
       util: {
         downloadImage: (
           url: string,

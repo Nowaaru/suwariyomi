@@ -595,6 +595,23 @@ const View = () => {
     calculateReadChaptersNoDuplicates,
   ]);
 
+  useEffect(() => {
+    if (!mangaData.current || !mangaData.current.Name) return;
+    window.electron.rpc.updateRPC({
+      // Using mangaData as a dependency doesn't re-run the useEffect. Unsure as to why that is the case.
+      details: `Viewing ${mangaData.current?.Name}`,
+      largeImageText:
+        calculateReadChapters() > 0
+          ? `Progress: ${calculateReadChapters()}/${
+              calculateReadChaptersNoDuplicates()?.length ??
+              mangaData.current.Chapters.length
+            }`
+          : undefined,
+      largeImageKey: 'icon_large',
+      startTimestamp: Date.now(),
+    });
+  });
+
   const currentManga: FullManga | null = mangaData.current;
   if (currentManga) {
     sortChapters(currentManga.Chapters);

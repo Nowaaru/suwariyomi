@@ -9,6 +9,14 @@ const ipcValidChannels = ['fullscreen-toggle', 'open-protocol'];
 
 window.electron = {
   log: log.functions,
+  rpc: {
+    updateRPC: (presence) => {
+      ipcRenderer.send('update-rpc', presence);
+    },
+    toggleRPC: (enabled) => {
+      ipcRenderer.send('toggle-rpc', enabled);
+    },
+  },
   util: {
     downloadImage: (url, payload) => {
       return ipcRenderer.send('download-image', url, payload);

@@ -11,6 +11,7 @@ export const defaultSettings = {
     locale: 'en',
     dateFormat: 'MM/DD/YYYY',
     autoUpdate: true,
+    discordRPCIntegration: true,
   },
   library: {
     displayUserName: true,
@@ -93,6 +94,10 @@ export const settingsSchema: Schema<typeof defaultSettings> = {
         enum: ['MM/DD/YYYY', 'DD/MM/YYYY', 'YYYY/MM/DD'],
       },
       autoUpdate: {
+        type: 'boolean',
+        default: true,
+      },
+      discordRPCIntegration: {
         type: 'boolean',
         default: true,
       },
@@ -400,6 +405,12 @@ const Settings = new SettingsDatabase({
     '>=0.13.0': (settings) => {
       const newSettings = {
         ...settings.store,
+        library: Object.assign(
+          {
+            discordRPCIntegration: true,
+          },
+          settings.store.library
+        ),
         reader: Object.assign(
           {
             scaleTypePaged: undefined,
