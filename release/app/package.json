@@ -14,6 +14,7 @@
     "postinstall": "npm run electron-rebuild && npm run link-modules"
   },
   "dependencies": {
+    "discord-rpc": "^4.0.1",
     "enmap": "^5.8.7"
   },
   "license": "MIT"
