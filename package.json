@@ -267,7 +267,7 @@
     "long": "^5.2.0",
     "mangadex-api": "^5.0.1",
     "mangadex-full-api": "^5.9.0",
-    "moment": "^2.29.1",
+    "moment": "^2.29.2",
     "native-css": "^1.2.5",
     "neovim": "^4.10.1",
     "node-fetch": "^2.6.7",
