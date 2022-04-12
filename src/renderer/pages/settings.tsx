@@ -646,22 +646,39 @@ const Settings = () => {
                   value: Schema,
                   key: keyof DefaultSettings[typeof settingsLocation]
                 ) =>
-                  generateSettings(
-                    value,
-                    settings[settingsLocation][key],
-                    (settingsValue: any) => {
-                      const newSettings = { ...settings };
-                      // @ts-ignore - nothing i can do here
-                      newSettings[settingsLocation][key] = settingsValue;
-
-                      if (
-                        settingsLocation === 'general' &&
-                        key === 'discordRPCIntegration'
-                      ) {
-                        window.electron.rpc.toggleRPC(settingsValue);
+                  value.type === 'managed' && value.component ? (
+                    <value.component
+                      key={key}
+                      schema={value}
+                      setting={settings[settingsLocation][key]}
+                      onChange={(settingsValue: any) =>
+                        setSettings({
+                          ...settings,
+                          [settingsLocation]: {
+                            ...settings[settingsLocation],
+                            [key]: settingsValue,
+                          },
+                        })
                       }
-                      setSettings(newSettings);
-                    }
+                    />
+                  ) : (
+                    generateSettings(
+                      value,
+                      settings[settingsLocation][key],
+                      (settingsValue: any) => {
+                        const newSettings = { ...settings };
+                        // @ts-ignore - nothing i can do here
+                        newSettings[settingsLocation][key] = settingsValue;
+
+                        if (
+                          settingsLocation === 'general' &&
+                          key === 'discordRPCIntegration'
+                        ) {
+                          window.electron.rpc.toggleRPC(settingsValue);
+                        }
+                        setSettings(newSettings);
+                      }
+                    )
                   )
               )
             ),

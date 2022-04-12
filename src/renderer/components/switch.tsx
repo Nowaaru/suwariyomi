@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable react/jsx-props-no-spreading */
 import {
   Switch as MaterialSwitch,
@@ -38,11 +39,15 @@ const stylesObject = {
 };
 
 const Switch = (
-  props: MaterialSwitchProps & Pick<Required<MaterialSwitchProps>, 'checked'>
+  props: MaterialSwitchProps &
+    Pick<Required<MaterialSwitchProps>, 'checked'> & {
+      tooltipOn?: string;
+      tooltipOff?: string;
+    }
 ) => {
-  const { checked, onChange } = props;
+  const { checked, onChange, tooltipOn, tooltipOff } = props;
   return (
-    <Tooltip title={checked ? 'On' : 'Off'}>
+    <Tooltip title={checked ? tooltipOn! : tooltipOff!}>
       <MaterialSwitch
         {...omit(props, 'children', 'sx')}
         onChange={onChange ?? (() => {})}
@@ -65,6 +70,11 @@ const Switch = (
       />
     </Tooltip>
   );
+};
+
+Switch.defaultProps = {
+  tooltipOn: 'On',
+  tooltipOff: 'Off',
 };
 
 export default Switch;

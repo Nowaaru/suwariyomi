@@ -82,6 +82,7 @@ export const generateSettings = (
     label,
     description,
     options,
+    component: Component,
     default: defaultValue,
   } = schemeItem;
 
@@ -114,6 +115,12 @@ export const generateSettings = (
           onChange={(event, isChecked) => onChange(isChecked ?? defaultValue)}
         />
       );
+      break;
+    case 'managed':
+      if (Component) {
+        // throw new Error('No component provided');
+        elementToDisplay = <Component onChange={onChange} />;
+      } else elementToDisplay = null;
       break;
     default:
       elementToDisplay = null;

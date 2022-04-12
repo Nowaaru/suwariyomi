@@ -1,18 +1,22 @@
 /* eslint-disable import/prefer-default-export */
+import ThemeSwitch from '../components/settings/themeswitch';
+import FilterSlider from '../components/settings/filterslider';
 import type { DefaultSettings } from '../../main/util/settings';
 
 export type Schema = {
   type: 'select' | 'switch' | 'switch' | 'managed'; // where Managed means that the component is provided by the developer and not the app
   label?: string;
+  component?: (...props: any[]) => JSX.Element;
   description?: string;
   default?: any;
-  options?: {
+  options?: Array<{
     label: string;
     value: any;
-  }[];
+  }>;
   optionsFunc?: () => any[];
 };
 
+// @ts-ignore - this keeps whining about readonly type even though readonly has never been mentioned once in this project
 export const settingsSchemata: {
   [settingsContainer in keyof DefaultSettings]: {
     [containerKey in keyof DefaultSettings[settingsContainer]]: Schema;
@@ -22,7 +26,7 @@ export const settingsSchemata: {
     locale: {
       type: 'select',
       label: 'Language',
-      description: 'The language to use for the application',
+      description: 'The language to use for the application.',
       default: 'en',
       options: [
         { label: 'English', value: 'en' },
@@ -33,7 +37,7 @@ export const settingsSchemata: {
     dateFormat: {
       type: 'select',
       label: 'Date Format',
-      description: 'The format to use for dates',
+      description: 'The format to use for dates.',
       default: 'MM/DD/YYYY',
       options: [
         { label: 'MM/DD/YYYY', value: 'MM/DD/YYYY' },
@@ -100,6 +104,7 @@ export const settingsSchemata: {
   appearance: {
     theme: {
       type: 'managed',
+      component: ThemeSwitch,
       label: 'Theme',
       description: 'The look and feel of the application.',
     },
@@ -281,18 +286,26 @@ export const settingsSchemata: {
     },
     filterR: {
       type: 'managed',
+      component: FilterSlider,
+      description: 'The red hue of the page.',
       label: 'R',
     },
     filterG: {
       type: 'managed',
+      component: FilterSlider,
+      description: 'The green hue of the page.',
       label: 'G',
     },
     filterB: {
       type: 'managed',
+      component: FilterSlider,
+      description: 'The blue hue of the page.',
       label: 'B',
     },
     filterA: {
       type: 'managed',
+      component: FilterSlider,
+      description: 'The opacity of the page.',
       label: 'A',
     },
     blendMode: {
@@ -400,4 +413,4 @@ export const settingsSchemata: {
   },
   backup: {},
   security: {},
-};
+} as const;
