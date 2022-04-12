@@ -16,7 +16,7 @@ export function createFolders() {
 
 export let resolveHtmlPath: (htmlFileName: string) => string;
 if (process.env.NODE_ENV === 'development') {
-  const port = process.env.PORT || 4343;
+  const port = process.env.PORT || 4123;
   resolveHtmlPath = (htmlFileName: string) => {
     const url = new URL(`http://localhost:${port}`);
     url.pathname = htmlFileName;
