@@ -91,7 +91,7 @@ export const settingsSchemata: {
       type: 'switch',
       label: 'Show Search Suggestions',
       description:
-        'Show search suggestions when searching for manga. You can press TAB to fill in the search field.',
+        'Show search suggestions when searching for manga. You can press SHIFT + TAB to fill in the search field.',
       default: false,
     },
     updateOngoingManga: {
