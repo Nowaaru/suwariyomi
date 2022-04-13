@@ -649,6 +649,7 @@ const Library = () => {
                 z.toLowerCase().includes(y.toLowerCase())
               );
 
+              // i'm not a real programmer
               const nameTest = x.Name.toLowerCase().includes(y.toLowerCase());
               const [chapterQuery, pageQuery] = [
                 y.match(/(chapters)(<=|>=|<|>|=)(\d+)/i),
@@ -657,18 +658,22 @@ const Library = () => {
                 z !== null && z[1] && z[2] && z[3]
                   ? (
                       {
-                        '<': (a: number) => a < Number(z[3]),
-                        '>': (a: number) => a > Number(z[3]),
-                        '<=': (a: number) => a <= Number(z[3]),
-                        '>=': (a: number) => a >= Number(z[3]),
-                        '=': (a: number) => a === Number(z[3]),
-                      } as Record<string, (toCompare: number) => boolean>
+                        '<': (a: number, b: number) => a < b,
+                        '>': (a: number, b: number) => a > b,
+                        '<=': (a: number, b: number) => a <= b,
+                        '>=': (a: number, b: number) => a >= b,
+                        '=': (a: number, b: number) => a === b,
+                      } as Record<
+                        string,
+                        (toCompare: number, compareTo: number) => boolean
+                      >
                     )[z[2]]?.(
                       z[1].toLowerCase() === 'chapters'
                         ? x.Chapters.length
                         : Object.values(allCachedRead.current[source] ?? {})
                             .filter((a) => a.mangaid === x.MangaID)
-                            .reduce((acc, b) => acc + b.pageCount, 0)
+                            .reduce((acc, b) => acc + b.pageCount, 0),
+                      Number(z[3])
                     ) ?? false
                   : undefined
               );
