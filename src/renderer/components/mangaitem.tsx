@@ -37,7 +37,7 @@ type MangaItemGenericProps = {
   isLibrary?: boolean;
 };
 
-type MangaItemProps = MangaItemGenericProps &
+export type MangaItemProps = MangaItemGenericProps &
   (MangaItemListProps | MangaItemGridProps);
 
 /*

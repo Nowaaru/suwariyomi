@@ -24,7 +24,7 @@ const parseQuery = (searchQuery: string) => {
   });
 
   if (quotationStore.length) return false;
-  return parsedQueries;
+  return parsedQueries.map((x) => x.replace(/(^")|("$)/g, ''));
 };
 
 export default parseQuery;

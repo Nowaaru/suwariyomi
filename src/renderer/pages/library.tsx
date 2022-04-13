@@ -24,7 +24,7 @@ import React, {
 
 import { Link, useNavigate } from 'react-router-dom';
 import { userInfo } from 'os';
-import { capitalize, clamp } from 'lodash';
+import { capitalize, clamp, isUndefined } from 'lodash';
 
 import LazyLoad, { forceCheck } from 'react-lazyload';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -37,7 +37,7 @@ import parseQuery from '../util/search';
 
 import { FullManga, Manga as MangaType } from '../../main/util/manga';
 import type { ReadDatabaseValue } from '../../main/util/read';
-import MangaItem from '../components/mangaitem';
+import MangaItem, { MangaItemProps } from '../components/mangaitem';
 import useQuery from '../util/hook/usequery';
 import Handler from '../../main/sources/handler';
 import useForceUpdate from '../util/hook/useforceupdate';
@@ -451,12 +451,11 @@ const Library = () => {
           librarySources[source].Enabled &&
           librarySources[source].Manga.length > 0 &&
           (searchQuery.trim().length === 0 ||
-            (
-              cachedMangas.current[source] ??
-              (LibraryUtilities.getCachedMangas(source) || [])
-            ).some((manga) =>
+            (cachedMangas.current[source] ??
+              (LibraryUtilities.getCachedMangas(source) ||
+                []))) /* .some((manga) =>
               manga.Name.toLowerCase().includes(searchQuery.toLowerCase())
-            ))
+            ) */
       )
       .forEach((source) => {
         const libraryMangasOfSource =
@@ -641,7 +640,42 @@ const Library = () => {
       );
 
       mangaObjectTemp[source] = clonedMangaList
-        .filter((x) => x.Chapters?.length > 0)
+        .filter((x) => !isUndefined(x.Chapters))
+        .filter(
+          (x) =>
+            !!parsedSearch && // Tag search
+            parsedSearch.every((y) => {
+              const tagsTest = x.Tags.some((z: string) =>
+                z.toLowerCase().includes(y.toLowerCase())
+              );
+
+              const nameTest = x.Name.toLowerCase().includes(y.toLowerCase());
+              const [chapterQuery, pageQuery] = [
+                y.match(/(chapters)(<=|>=|<|>|=)(\d+)/i),
+                y.match(/(pages)(<=|>=|<|>|=)(\d+)/i),
+              ].map((z) =>
+                z !== null && z[1] && z[2] && z[3]
+                  ? (
+                      {
+                        '<': (a: number) => a < Number(z[3]),
+                        '>': (a: number) => a > Number(z[3]),
+                        '<=': (a: number) => a <= Number(z[3]),
+                        '>=': (a: number) => a >= Number(z[3]),
+                        '=': (a: number) => a === Number(z[3]),
+                      } as Record<string, (toCompare: number) => boolean>
+                    )[z[2]]?.(
+                      z[1].toLowerCase() === 'chapters'
+                        ? x.Chapters.length
+                        : Object.values(allCachedRead.current[source] ?? {})
+                            .filter((a) => a.mangaid === x.MangaID)
+                            .reduce((acc, b) => acc + b.pageCount, 0)
+                    ) ?? false
+                  : undefined
+              );
+
+              return tagsTest || nameTest || chapterQuery || pageQuery;
+            })
+        )
         .sort((a, b) => {
           const getUTCHours = (date: Date) =>
             date.getUTCHours() + date.getTimezoneOffset() / 60;
@@ -748,7 +782,7 @@ const Library = () => {
               listDisplayType="verbose"
               title={Manga.Name}
               coverUrl={Manga.CoverURL || undefined}
-              tags={Manga.Tags?.slice(0, 10) ?? []}
+              tags={Manga.Tags ?? []}
               synopsis={Manga.Synopsis}
               key={Manga.Name}
               source={Manga.SourceID}
@@ -758,14 +792,7 @@ const Library = () => {
               isLibrary
             />
           </LazyLoad>
-        ))
-        .filter(
-          (x) =>
-            searchQuery === '' ||
-            x.props.children.props.title
-              .toLowerCase()
-              .includes(searchQuery.toLowerCase())
-        );
+        ));
 
       mangaObjectTemp[source] =
         sortOrder === 'asc'
