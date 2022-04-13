@@ -650,6 +650,7 @@ const Settings = () => {
                     <value.component
                       key={key}
                       schema={value}
+                      settings={settings}
                       setting={settings[settingsLocation][key]}
                       onChange={(settingsValue: any) =>
                         setSettings({

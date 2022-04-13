@@ -2,6 +2,7 @@ import { StyleSheet, css } from 'aphrodite';
 import { Slider, SliderProps, Box, Typography } from '@mui/material';
 import { noop, clamp } from 'lodash';
 
+import type { DefaultSettings } from '../../../main/util/settings';
 import { settingsStylesObject } from '../../util/func';
 import type { Schema } from '../../util/auxiliary';
 
@@ -34,19 +35,22 @@ const styles = StyleSheet.create(stylesObject as any) as any;
 const FilterSlider = (
   sliderProps: SliderProps & {
     schema: Schema;
+    settings: DefaultSettings;
     setting: number;
   }
 ) => {
-  const { onChange = noop, schema, setting: value } = sliderProps;
+  const { onChange = noop, schema, setting: value, settings } = sliderProps;
   const clampedValue = clamp(value, 0, 255);
   const colorConstantHex = `${'#DF2935'.substring(0, 7)}22`; // Strip off opacity that a themer might have added to their accent color
   const colorConstant = hexToRgb('#DF2935');
+  const isEnabled: boolean = (settings.reader as DefaultSettings['reader'])
+    .useCustomColorFilter;
   if (!colorConstant) throw new Error('Could not parse color constant');
 
   const sliderColor = `rgba(${(clampedValue / 255) * colorConstant.r}, ${
     (clampedValue / 255) * colorConstant.g
   }, ${(clampedValue / 255) * colorConstant.b}, 1)`;
-  return (
+  return isEnabled ? (
     <Box className={css(styles.optionContainer)}>
       <Typography className={css(styles.optionLabel)}>
         {schema.label}
@@ -83,7 +87,7 @@ const FilterSlider = (
         onChange={(e, newValue) => onChange(newValue)}
       />
     </Box>
-  );
+  ) : null;
 };
 
 export default FilterSlider;
