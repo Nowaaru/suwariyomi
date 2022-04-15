@@ -486,7 +486,8 @@ const MangaItem = ({
                         } else if (firstUnreadChapter) {
                           if (
                             firstUnreadChapter.ChapterID ===
-                            mangaData?.Chapters[0].ChapterID
+                              mangaData?.Chapters[0].ChapterID &&
+                            (firstUnreadCachedChapter?.pageCount ?? 0) <= 1
                           ) {
                             return 'Start Reading';
                           }
