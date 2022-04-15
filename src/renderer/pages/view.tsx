@@ -4,10 +4,15 @@ import { useRef, useEffect, useState, useCallback } from 'react';
 import { StyleSheet, css } from 'aphrodite';
 import { URLSearchParams } from 'url';
 import { useNavigate } from 'react-router-dom';
+import { isEqual } from 'lodash';
 import {
   Button,
   CircularProgress,
+  FormControlLabel,
+  FormLabel,
+  IconButton,
   Paper,
+  SelectChangeEvent,
   Tooltip,
   Typography,
 } from '@mui/material';
@@ -15,6 +20,7 @@ import {
 import dayjs from 'dayjs';
 import dayjs_duration from 'dayjs/plugin/duration';
 
+import FilterListIcon from '@mui/icons-material/FilterList';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import HeartBrokenIcon from '@mui/icons-material/HeartBroken';
@@ -23,6 +29,8 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import useMountEffect from '../util/hook/usemounteffect';
 import useKeyboard from '../util/hook/usekeyboard';
 
+import Dialog from '../components/dialog';
+import Select from '../components/select';
 import { FullManga } from '../../main/util/manga';
 import { ReadDatabaseValue } from '../../main/util/read';
 import {
@@ -35,6 +43,7 @@ import Tag from '../components/tag';
 import Chapter from '../components/chapter';
 import Handler from '../../main/sources/handler';
 import useQuery from '../util/hook/usequery';
+import Switch from '../components/switch';
 /*
 TODO: Use this implementation to implement themeing
 const abcdefg: StyleDeclaration<
@@ -461,8 +470,48 @@ const styles = StyleSheet.create({
   },
 
   backTypography: {},
+
+  chapterFilterIcon: {
+    color: '#DF2935',
+    marginLeft: '8px',
+  },
+
+  chapterFilterUsed: {
+    color: '#2990DF',
+  },
+
+  viewMangaDialog: {},
+
+  viewMangaDialogTitle: {},
+
+  viewMangaDialogContent: {},
+
+  viewMangaDialogContentInner: {
+    width: '50vh',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+  },
+
+  viewMangaLabel: {
+    display: 'flex',
+    color: 'white',
+    marginLeft: '8px',
+    marginBottom: '8px',
+  },
+
+  filterSelect: {
+    marginLeft: '12px',
+  },
 });
 
+const defaultFilters = {
+  group: null,
+  showRead: false,
+  showUnread: false,
+  showBookmarked: false,
+  showInProgress: false,
+};
 const View = () => {
   const Query = useQuery();
   const Navigate = useNavigate();
@@ -473,6 +522,16 @@ const View = () => {
   const [shiftPressed, setShiftPressed] = useState<boolean>(false);
   const [chaptersRead, setChaptersRead] = useState<number>(0);
   const [chaptersNoDuplicates, setChaptersNoDuplicates] = useState<number>(0);
+  const [filterModalOpen, setFilterModalOpen] = useState<boolean>(false);
+  const [viewFilters, setFilter] = useState<{
+    group: string | null;
+    showRead: boolean;
+    showUnread: boolean;
+    showBookmarked: boolean;
+    showInProgress: boolean;
+  }>(defaultFilters);
+
+  const filtersInUse = !isEqual(viewFilters, defaultFilters);
   const { id, source, backto } = Object.fromEntries(
     Query as unknown as URLSearchParams
   );
@@ -690,6 +749,116 @@ const View = () => {
           if (Node) setScrollTarget(Node);
         }}
       >
+        <Dialog
+          className={css(styles.viewMangaDialog)}
+          open={filterModalOpen && !!mangaData.current}
+          onClose={() => setFilterModalOpen(false)}
+          title="Filter"
+        >
+          <div className={css(styles.viewMangaDialogContentInner)}>
+            <FormControlLabel
+              className={css(styles.viewMangaLabel)}
+              control={
+                <Select
+                  className={css(styles.filterSelect)}
+                  values={(() => {
+                    const selectValues: Record<string, string> = {
+                      none: 'None',
+                    };
+                    currentManga.Chapters.forEach((x) => {
+                      if (x.Groups) {
+                        x.Groups.forEach((y) => {
+                          selectValues[y] = y;
+                        });
+                      }
+                    });
+
+                    return selectValues;
+                  })()}
+                  value={viewFilters?.group ?? 'none'}
+                  onChange={(e) => {
+                    return setFilter({
+                      ...viewFilters,
+                      group: e.target.value !== 'none' ? e.target.value : null,
+                    });
+                  }}
+                />
+              }
+              label="Filter By Group"
+              labelPlacement="start"
+            />
+            <FormControlLabel
+              className={css(styles.viewMangaLabel)}
+              control={
+                <Switch
+                  checked={viewFilters.showRead}
+                  onChange={(e) => {
+                    return setFilter({
+                      ...viewFilters,
+                      showRead: e.target.checked,
+                      showInProgress: false,
+                      showUnread: false,
+                    });
+                  }}
+                />
+              }
+              label="Only Show Read Chapters"
+              labelPlacement="start"
+            />
+            <FormControlLabel
+              className={css(styles.viewMangaLabel)}
+              control={
+                <Switch
+                  checked={viewFilters.showUnread}
+                  onChange={(e) => {
+                    return setFilter({
+                      ...viewFilters,
+                      showRead: false,
+                      showInProgress: false,
+                      showUnread: e.target.checked,
+                    });
+                  }}
+                />
+              }
+              label="Only Show Unread Chapters"
+              labelPlacement="start"
+            />
+            <FormControlLabel
+              className={css(styles.viewMangaLabel)}
+              control={
+                <Switch
+                  checked={viewFilters.showBookmarked}
+                  onChange={(e) => {
+                    return setFilter({
+                      ...viewFilters,
+                      showBookmarked: e.target.checked,
+                    });
+                  }}
+                />
+              }
+              label="Only Show Bookmarked Chapters"
+              labelPlacement="start"
+            />
+            <FormControlLabel
+              className={css(styles.viewMangaLabel)}
+              control={
+                <Switch
+                  checked={viewFilters.showInProgress}
+                  onChange={(e) => {
+                    return setFilter({
+                      ...viewFilters,
+                      showRead: false,
+                      showUnread: false,
+                      showInProgress: e.target.checked,
+                    });
+                  }}
+                />
+              }
+              label="Only Show In-Progress Chapters"
+              labelPlacement="start"
+            />
+          </div>
+        </Dialog>
         <div className={css(styles.backAppBar)}>
           <Button
             className={css(styles.backButton)}
@@ -832,44 +1001,114 @@ const View = () => {
         </div>
         <hr className={css(styles.dataRule)} />
         <div className={css(styles.metadataContainer)}>
-          <h2 className={css(styles.chaptersHeader)}>Chapters</h2>
+          <h2 className={css(styles.chaptersHeader)}>
+            Chapters
+            <Tooltip
+              title={`Filter${filtersInUse ? ' (in-use)' : ''}`}
+              placement="right"
+            >
+              <IconButton
+                className={css(
+                  styles.chapterFilterIcon,
+                  filtersInUse && styles.chapterFilterUsed
+                )}
+                onClick={() => setFilterModalOpen(true)}
+              >
+                <FilterListIcon />
+              </IconButton>
+            </Tooltip>
+          </h2>
+
           <div className={css(styles.dataContainer)}>
             <div className={css(styles.chaptersContainer)}>
               <div className={css(styles.chapters, styles.scrollBar)}>
-                {currentManga.Chapters.map((x) => {
-                  const foundChapter = chapterData.current[x.ChapterID] || {};
+                {currentManga.Chapters.filter(
+                  // Filter for group
+                  (chapter) =>
+                    !viewFilters.group ||
+                    chapter.Groups.find((group) => group === viewFilters.group)
+                )
+                  .filter((chapter) => {
+                    // Filter for read
+                    const currentChapterData =
+                      chapterData.current[chapter.ChapterID];
 
-                  return (
-                    <Chapter
-                      onMarkRead={() => {
-                        chapterData.current =
-                          window.electron.read.get(selectedSource.getName()) ??
-                          chapterData.current;
-                        setChaptersRead(calculateReadChapters());
-                      }}
-                      onReadClick={() => {
-                        Navigate(
-                          getReadUrl(
-                            currentManga.MangaID,
-                            currentManga.Name,
-                            source,
-                            x.ChapterID,
-                            foundChapter.currentPage >= x.PageCount
-                              ? 1
-                              : Math.max(1, foundChapter.currentPage)
-                          )
-                        );
-                      }}
-                      modifierShift={shiftPressed}
-                      key={`${x.ChapterID}-chapter`}
-                      downloadable={selectedSource.canDownload}
-                      dbchapter={foundChapter}
-                      chapter={x}
-                      source={selectedSource.getName()}
-                      manga={currentManga}
-                    />
-                  );
-                })}
+                    const didReadChapter =
+                      !!currentChapterData &&
+                      currentChapterData?.pageCount > 0 &&
+                      currentChapterData?.currentPage >=
+                        currentChapterData?.pageCount &&
+                      currentChapterData?.currentPage > 0;
+
+                    if (
+                      !viewFilters.showRead &&
+                      !viewFilters.showUnread &&
+                      !viewFilters.showInProgress
+                    )
+                      return true;
+
+                    if (
+                      viewFilters.showInProgress &&
+                      !didReadChapter &&
+                      currentChapterData?.currentPage > 0
+                    )
+                      return true;
+                    if (viewFilters.showRead) return didReadChapter;
+                    if (viewFilters.showUnread) return !didReadChapter;
+
+                    return false;
+                  })
+                  .filter((chapter) => {
+                    // Filter for bookmark
+                    const currentChapterData =
+                      chapterData.current[chapter.ChapterID];
+
+                    return (
+                      !viewFilters.showBookmarked ||
+                      currentChapterData?.isBookmarked
+                    );
+                  })
+                  .map((x) => {
+                    const foundChapter = chapterData.current[x.ChapterID] || {};
+
+                    return (
+                      <Chapter
+                        onMarkRead={() => {
+                          chapterData.current =
+                            window.electron.read.get(
+                              selectedSource.getName()
+                            ) ?? chapterData.current;
+                          setChaptersRead(calculateReadChapters());
+                        }}
+                        onBookmark={() => {
+                          chapterData.current =
+                            window.electron.read.get(
+                              selectedSource.getName()
+                            ) ?? chapterData.current;
+                        }}
+                        onReadClick={() => {
+                          Navigate(
+                            getReadUrl(
+                              currentManga.MangaID,
+                              currentManga.Name,
+                              source,
+                              x.ChapterID,
+                              foundChapter.currentPage >= x.PageCount
+                                ? 1
+                                : Math.max(1, foundChapter.currentPage)
+                            )
+                          );
+                        }}
+                        modifierShift={shiftPressed}
+                        key={`${x.ChapterID}-chapter`}
+                        downloadable={selectedSource.canDownload}
+                        dbchapter={foundChapter}
+                        chapter={x}
+                        source={selectedSource.getName()}
+                        manga={currentManga}
+                      />
+                    );
+                  })}
               </div>
             </div>
             <Paper elevation={3} className={css(styles.utilityContainer)}>
