@@ -9,7 +9,6 @@ import {
   Button,
   Slider,
   FormControlLabel,
-  Switch,
   Stack,
 } from '@mui/material';
 
@@ -19,6 +18,9 @@ import React, { useRef, useState } from 'react';
 
 import { generateSettings } from '../util/func';
 import { settingsSchemata } from '../util/auxiliary';
+import { generateSliderStyles } from './settings/filterslider';
+
+import Switch from './switch';
 import Select from './select';
 import type { DefaultSettings } from '../../main/util/settings';
 
@@ -131,9 +133,7 @@ const SettingsModal = ({
               </Button>
               <FormControlLabel
                 className={css(styles.settingsFilterLabel)}
-                control={
-                  <Switch defaultChecked={settings.useCustomColorFilter} />
-                }
+                control={<Switch checked={settings.useCustomColorFilter} />}
                 label="Use Custom Color Filter"
                 onChange={(_, checked) =>
                   onChange({ ...settings, useCustomColorFilter: checked })
@@ -147,6 +147,7 @@ const SettingsModal = ({
                 <Slider
                   sx={{
                     marginLeft: '16px',
+                    ...generateSliderStyles('#DF293522', '#DF2910'),
                   }}
                   min={0}
                   max={255}
@@ -171,6 +172,7 @@ const SettingsModal = ({
                 <Slider
                   sx={{
                     marginLeft: '16px',
+                    ...generateSliderStyles('#DF293522', '#DF2910CC'),
                   }}
                   min={0}
                   max={255}
@@ -195,6 +197,7 @@ const SettingsModal = ({
                 <Slider
                   sx={{
                     marginLeft: '16px',
+                    ...generateSliderStyles('#DF293522', '#DF2910CC'),
                   }}
                   min={0}
                   max={255}
@@ -219,6 +222,7 @@ const SettingsModal = ({
                 <Slider
                   sx={{
                     marginLeft: '16px',
+                    ...generateSliderStyles('#DF293522', '#DF2910CC'),
                   }}
                   min={0}
                   max={1}

@@ -31,6 +31,29 @@ const hexToRgb = (hex: string) => {
     : null;
 };
 
+export const generateSliderStyles = (
+  headHexColour: string,
+  sliderColor: string
+) => ({
+  '&.MuiSlider-root': stylesObject.sliderHead,
+  '&.MuiSlider-root span.MuiSlider-thumb': stylesObject.sliderHead,
+  '&.MuiSlider-root span.MuiSlider-thumb:hover': {
+    boxShadow: `0px 0px 0px 8px ${headHexColour}`,
+  },
+  '&.MuiSlider-root span.MuiSlider-thumb.Mui-active': {
+    boxShadow: `0px 0px 0px 8px ${headHexColour}`,
+  },
+  '&.MuiSlider-root span.MuiSlider-thumb.Mui-focusVisaible': {
+    boxShadow: `0px 0px 0px 8px ${headHexColour}`,
+  },
+  '&.MuiSlider-root span.Mui-active': stylesObject.sliderHead,
+  '&.MuiSlider-root .MuiSlider-rail': stylesObject.sliderRail,
+  '&.MuiSlider-root .MuiSlider-track': {
+    backgroundColor: sliderColor,
+    color: sliderColor,
+  },
+});
+
 const styles = StyleSheet.create(stylesObject as any) as any;
 const FilterSlider = (
   sliderProps: SliderProps & {
@@ -61,25 +84,7 @@ const FilterSlider = (
 
       <Slider
         className={css(styles.sliderObject)}
-        sx={{
-          '&.MuiSlider-root': styles.sliderHead,
-          '&.MuiSlider-root span.MuiSlider-thumb': stylesObject.sliderHead,
-          '&.MuiSlider-root span.MuiSlider-thumb:hover': {
-            boxShadow: `0px 0px 0px 8px ${colorConstantHex}`,
-          },
-          '&.MuiSlider-root span.MuiSlider-thumb.Mui-active': {
-            boxShadow: `0px 0px 0px 8px ${colorConstantHex}`,
-          },
-          '&.MuiSlider-root span.MuiSlider-thumb.Mui-focusVisaible': {
-            boxShadow: `0px 0px 0px 8px ${colorConstantHex}`,
-          },
-          '&.MuiSlider-root span.Mui-active': stylesObject.sliderHead,
-          '&.MuiSlider-root .MuiSlider-rail': stylesObject.sliderRail,
-          '&.MuiSlider-root .MuiSlider-track': {
-            backgroundColor: sliderColor,
-            color: sliderColor,
-          },
-        }}
+        sx={generateSliderStyles(colorConstantHex, sliderColor)}
         value={clampedValue}
         max={255}
         min={0}
