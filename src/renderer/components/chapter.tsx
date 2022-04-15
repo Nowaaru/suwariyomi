@@ -148,6 +148,7 @@ dayjs.extend(dayjs_advancedFormat);
 
 const Chapter = ({
   onReadClick,
+  onBookmark,
   onMarkRead,
 
   modifierShift,
@@ -159,6 +160,7 @@ const Chapter = ({
   manga,
 }: {
   onReadClick: (chapterId: string) => void;
+  onBookmark?: (wasBookmarked: boolean) => void;
   onMarkRead?: (wasMarked: boolean) => void;
 
   downloadable: boolean;
@@ -276,6 +278,8 @@ const Chapter = ({
             checked,
             manga.MangaID
           );
+
+          onBookmark?.(checked);
         }}
         defaultChecked={isBookmarked}
       />
@@ -327,6 +331,7 @@ const Chapter = ({
 
 Chapter.defaultProps = {
   modifierShift: false,
+  onBookmark: () => {},
   onMarkRead: () => {},
   dbchapter: {},
   className: '',
