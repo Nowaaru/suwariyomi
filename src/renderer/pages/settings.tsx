@@ -751,6 +751,31 @@ const Settings = () => {
                     </Button>
                   </Box>
                 ),
+                tracking: (
+                  <Box className={css(styles.optionContainer)}>
+                    <Typography className={css(styles.optionLabel)}>
+                      Enable Tracking
+                      <Typography
+                        className={css(styles.optionLabelDescription)}
+                      >
+                        Turning this off will allow you to disable automatic
+                        updates to your trackers without having to manually
+                        disconnect them.
+                      </Typography>
+                    </Typography>
+                    <Tooltip title="...yet.">
+                      <Button
+                        className={css(styles.settingsButton)}
+                        style={{
+                          marginTop: '1rem',
+                        }}
+                        component="label"
+                      >
+                        Not Implemented!
+                      </Button>
+                    </Tooltip>
+                  </Box>
+                ),
               } as { [key: string]: JSX.Element }
             )[settingsLocation],
           ]}
