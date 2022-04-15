@@ -645,6 +645,10 @@ const Library = () => {
           (x) =>
             !!parsedSearch && // Tag search
             parsedSearch.every((y) => {
+              const isNegated = y.startsWith('-');
+              // eslint-disable-next-line no-param-reassign
+              if (isNegated) y = y.slice(1);
+
               const tagsTest = x.Tags.some((z: string) =>
                 z.toLowerCase().includes(y.toLowerCase())
               );
@@ -678,7 +682,11 @@ const Library = () => {
                   : undefined
               );
 
-              return tagsTest || nameTest || chapterQuery || pageQuery;
+              const queryVerification =
+                tagsTest || nameTest || chapterQuery || pageQuery;
+
+              console.log(queryVerification);
+              return isNegated ? !queryVerification : queryVerification;
             })
         )
         .sort((a, b) => {

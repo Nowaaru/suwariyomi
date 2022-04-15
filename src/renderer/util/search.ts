@@ -1,9 +1,16 @@
+/* eslint-disable no-param-reassign */
 const parseQuery = (searchQuery: string) => {
   const splitQuery = searchQuery.split(' ');
   const parsedQueries: string[] = [];
   const quotationStore: string[] = [];
+  const negatedQueries: boolean[] = [];
 
   splitQuery.forEach((query: string) => {
+    if (query.startsWith('-')) {
+      query = query.slice(1);
+      negatedQueries.push(true);
+    }
+
     if (query.startsWith('"') && !query.endsWith('"')) {
       quotationStore.push(query.slice(1));
       return;
@@ -24,7 +31,9 @@ const parseQuery = (searchQuery: string) => {
   });
 
   if (quotationStore.length) return false;
-  return parsedQueries.map((x) => x.replace(/(^")|("$)/g, ''));
+  return parsedQueries
+    .map((x) => x.replace(/(^")|("$)/g, ''))
+    .map((x, i) => (negatedQueries[i] ? `-${x}` : x));
 };
 
 export default parseQuery;
