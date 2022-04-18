@@ -776,10 +776,13 @@ const View = () => {
                     return selectValues;
                   })()}
                   value={viewFilters?.group ?? 'none'}
-                  onChange={(e) => {
+                  onChange={(e: SelectChangeEvent<string>) => {
                     return setFilter({
                       ...viewFilters,
-                      group: e.target.value !== 'none' ? e.target.value : null,
+                      group:
+                        e.target.value !== 'none'
+                          ? (e.target.value as string)
+                          : null,
                     });
                   }}
                 />

@@ -42,7 +42,10 @@ const stylesObject = {
 const styles = StyleSheet.create(stylesObject);
 
 const Select = (
-  props: Exclude<Exclude<MaterialSelectProps, 'children'>, 'renderValue'> & {
+  props: Exclude<
+    Exclude<MaterialSelectProps<string>, 'children'>,
+    'renderValue'
+  > & {
     value: string;
     values: {
       // OptionValue: OptionLabel
