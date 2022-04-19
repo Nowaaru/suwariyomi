@@ -68,6 +68,26 @@ ipcMain.on('electron-store-flush', () => {
   ElectronStore.clear();
 });
 
+ipcMain.handle(
+  'show-open-dialog',
+  async (event, arg: Electron.OpenDialogOptions) => {
+    if (!mainWindow) return;
+    const { title, defaultPath, filters, properties, message, buttonLabel } =
+      arg;
+
+    const { filePaths } = await dialog.showOpenDialog(mainWindow, {
+      title,
+      defaultPath,
+      filters,
+      properties,
+      message,
+      buttonLabel,
+    });
+
+    return filePaths;
+  }
+);
+
 ipcMain.handle('generate-pkce', async () => {
   const challenge = await pkceChallenge();
   // event.reply('generate-pkce', challenge);

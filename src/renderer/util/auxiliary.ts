@@ -1,6 +1,7 @@
 /* eslint-disable import/prefer-default-export */
 import ThemeSwitch from '../components/settings/themeswitch';
 import FilterSlider from '../components/settings/filterslider';
+import DownloadLocation from '../components/settings/downloadlocation';
 import type { DefaultSettings } from '../../main/util/settings';
 
 export type Schema = {
@@ -340,6 +341,7 @@ export const settingsSchemata: {
     location: {
       type: 'managed',
       label: 'Download Location',
+      component: DownloadLocation,
       description:
         'Where to save the downloaded chapters. If your path has holes, the folder(s) will be created if it does not exist.',
       default: '%TEMP%',

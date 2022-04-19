@@ -18,6 +18,10 @@ window.electron = {
     },
   },
   util: {
+    showOpenDialog: (options) => {
+      return ipcRenderer.invoke('show-open-dialog', options);
+    },
+
     downloadImage: (url, payload) => {
       return ipcRenderer.send('download-image', url, payload);
     },

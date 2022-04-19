@@ -26,6 +26,9 @@ declare global {
         toggleRPC: (rpcEnabled: boolean) => void;
       };
       util: {
+        showOpenDialog: (
+          options: Electron.OpenDialogOptions
+        ) => Promise<string[] | undefined>;
         downloadImage: (
           url: string,
           payload: {

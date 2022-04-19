@@ -3,6 +3,7 @@
 // Others typically use Enmap, but this time we'll
 // be using Electron-Store; since it's very light-weight
 // and enmap is meant to be used with a lot of data.
+import { app } from 'electron';
 import SettingsDatabase, { Schema } from 'electron-store';
 
 export const defaultSettings = {
@@ -56,7 +57,7 @@ export const defaultSettings = {
     blendMode: 'default',
   },
   downloads: {
-    location: '/downloads',
+    location: app.getPath('downloads'),
     saveChaptersAsCBZ: false,
     removeWhenMarkedRead: false,
     removeAfterRead: false,
@@ -424,6 +425,12 @@ const Settings = new SettingsDatabase({
             blendMode: 'default',
           },
           settings.store.reader
+        ),
+        downloads: Object.assign(
+          {
+            location: defaultSettings.downloads.location,
+          },
+          settings.store.downloads
         ),
       };
 
