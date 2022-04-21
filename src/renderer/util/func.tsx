@@ -1,6 +1,7 @@
 /* eslint-disable import/prefer-default-export */
 import { Box, Typography } from '@mui/material';
 import { StyleSheet, css } from 'aphrodite';
+import dayjs from 'dayjs';
 
 import Select from '../components/select';
 import Switch from '../components/switch';
@@ -71,6 +72,16 @@ export const getReadUrl = (
   page: number
 ) =>
   `/read?id=${mangaId}&title=${mangaName}&source=${sourceId}&chapter=${chapterId}&page=${page}`;
+
+export const convertDateToFormatted = (
+  date: dayjs.Dayjs,
+  format: 'MM/DD/YYYY' | 'DD/MM/YYYY' | 'YYYY/MM/DD'
+) =>
+  ({
+    'MM/DD/YYYY': date.format('MMMM Do YYYY'),
+    'DD/MM/YYYY': date.format('Do MMMM YYYY'),
+    'YYYY/MM/DD': date.format('YYYY MMMM Do'),
+  }[format]);
 
 export const generateSettings = (
   schemeItem: Schema,

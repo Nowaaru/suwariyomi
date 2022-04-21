@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Paper, Button, Checkbox, IconButton, Tooltip } from '@mui/material';
 import { useState } from 'react';
 import { StyleSheet, css } from 'aphrodite';
@@ -12,6 +13,7 @@ import BookmarkIcon from '@mui/icons-material/Bookmark';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 
 import { ReadDatabaseValue } from '../../main/util/read';
+import { convertDateToFormatted } from '../util/func';
 import {
   Chapter as DatabaseChapter,
   Manga as DatabaseManga,
@@ -151,6 +153,7 @@ const Chapter = ({
   onBookmark,
   onMarkRead,
 
+  dateformat = 'MM/DD/YYYY',
   modifierShift,
   downloadable,
   dbchapter,
@@ -163,6 +166,7 @@ const Chapter = ({
   onBookmark?: (wasBookmarked: boolean) => void;
   onMarkRead?: (wasMarked: boolean) => void;
 
+  dateformat?: string;
   downloadable: boolean;
   modifierShift?: boolean;
   dbchapter?: ReadDatabaseValue[string];
@@ -225,7 +229,10 @@ const Chapter = ({
         ) : null}
         {chapter.PublishedAt ? (
           <h4 className={css(styles.chapterDateData)}>
-            {dayjs(chapter.PublishedAt).format('MMMM Do YYYY')}
+            {convertDateToFormatted(
+              dayjs(chapter.PublishedAt),
+              dateformat as any
+            )}
           </h4>
         ) : null}
       </div>
@@ -334,6 +341,7 @@ Chapter.defaultProps = {
   onBookmark: () => {},
   onMarkRead: () => {},
   dbchapter: {},
+  dateformat: 'MM/DD/YYYY',
   className: '',
 };
 

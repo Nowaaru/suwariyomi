@@ -516,6 +516,9 @@ const View = () => {
   const Query = useQuery();
   const Navigate = useNavigate();
   const chapterData = useRef<ReadDatabaseValue>({});
+  const dateFormat = useRef<string>(
+    window.electron.settings.getAll().general.dateFormat
+  );
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
   const [isHovering, setIsHovering] = useState<boolean>(false);
   const [scrollTarget, setScrollTarget] = useState<Node | undefined>();
@@ -1076,6 +1079,7 @@ const View = () => {
 
                     return (
                       <Chapter
+                        dateformat={dateFormat.current}
                         onMarkRead={() => {
                           chapterData.current =
                             window.electron.read.get(
