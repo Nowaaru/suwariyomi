@@ -28,7 +28,8 @@ const AniListIntegrationHandler = async () => {
     .then((returnData) => {
       if (!returnData) return false;
 
-      const previousAuthorization = window.electron.store.get('authorization');
+      const previousAuthorization =
+        window.electron.store.get('authorization') || {};
       previousAuthorization.anilist = returnData;
       window.electron.store.set('authorization', previousAuthorization);
 

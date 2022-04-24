@@ -7,6 +7,8 @@ import fs from 'fs';
 import log from 'electron-log';
 import { app } from 'electron';
 
+import type { SupportedTrackers } from '../../renderer/util/tracker/tracker';
+
 const requireFunc =
   typeof __webpack_require__ === 'function' ? __non_webpack_require__ : require;
 
@@ -104,7 +106,9 @@ export type FullManga = MangaWithAuthors &
   Pick<Required<MangaWithAuthors>, 'Chapters'>;
 
 export type LibraryManga = FullManga &
-  Pick<Required<Manga>, 'Added' | 'LastRead'>;
+  Pick<Required<Manga>, 'Added' | 'LastRead'> & {
+    Tracking: Record<SupportedTrackers, Record<string, any>>;
+  };
 
 export type LibrarySource = {
   Enabled: boolean;

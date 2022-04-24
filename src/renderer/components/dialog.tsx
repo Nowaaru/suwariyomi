@@ -4,6 +4,7 @@ import {
   DialogContent,
   DialogTitle,
   DialogProps as MuiDialogProps,
+  DialogActions,
 } from '@mui/material';
 import { StyleSheet, css } from 'aphrodite';
 import { omit } from 'lodash';
@@ -37,6 +38,10 @@ const stylesObject = {
       },
     },
   },
+
+  modalDialogActions: {
+    background: '#111111',
+  },
 };
 
 const styles = StyleSheet.create(stylesObject);
@@ -54,7 +59,11 @@ const Dialog = (props: DialogProps) => {
           <DialogContent className={css(styles.modalDialogContent)}>
             {children}
           </DialogContent>
-          {actions}
+          {actions ? (
+            <DialogActions className={css(styles.modalDialogActions)}>
+              {actions}
+            </DialogActions>
+          ) : null}
         </>
       )}
     </MuiDialog>

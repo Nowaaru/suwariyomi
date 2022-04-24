@@ -9,7 +9,6 @@ import {
   Button,
   CircularProgress,
   FormControlLabel,
-  FormLabel,
   IconButton,
   Paper,
   SelectChangeEvent,
@@ -25,13 +24,20 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import HeartBrokenIcon from '@mui/icons-material/HeartBroken';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import CheckIcon from '@mui/icons-material/Check';
 
 import useMountEffect from '../util/hook/usemounteffect';
 import useKeyboard from '../util/hook/usekeyboard';
 
 import Dialog from '../components/dialog';
 import Select from '../components/select';
-import { FullManga } from '../../main/util/manga';
+import {
+  getTracker,
+  Media,
+  SupportedTrackers,
+  supportedTrackers,
+} from '../util/tracker/tracker';
+import { FullManga, LibraryManga } from '../../main/util/manga';
 import { ReadDatabaseValue } from '../../main/util/read';
 import {
   filterChaptersToLanguage,
@@ -44,6 +50,7 @@ import Chapter from '../components/chapter';
 import Handler from '../../main/sources/handler';
 import useQuery from '../util/hook/usequery';
 import Switch from '../components/switch';
+import TrackerItem from '../components/trackeritem';
 /*
 TODO: Use this implementation to implement themeing
 const abcdefg: StyleDeclaration<
@@ -389,6 +396,10 @@ const styles = StyleSheet.create({
       'radial-gradient(circle at center,rgb(127,127,127,1) 84%, rgba(127,127,127,0) 85%)',
   },
 
+  shortDataRule: {
+    width: '75%',
+  },
+
   timeElapsedContainer: {
     marginTop: '8px',
   },
@@ -503,6 +514,52 @@ const styles = StyleSheet.create({
   filterSelect: {
     marginLeft: '12px',
   },
+
+  trackingContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    marginTop: '8px',
+  },
+
+  trackingContainerItem: {
+    display: 'flex',
+    width: '32px',
+    height: '32px',
+    padding: '0px',
+    background: 'none',
+    marginLeft: '16px',
+    outline: 'none',
+    border: 'none',
+    cursor: 'pointer',
+    position: 'relative',
+  },
+
+  trackingContainerItemOverlay: {
+    position: 'absolute',
+    top: '0px',
+    left: '0px',
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    borderRadius: '4px',
+    transition: 'opacity 0.2s ease-in-out',
+    ':hover': {
+      opacity: 0,
+    },
+  },
+
+  trackingContainerItemOverlayIcon: {
+    color: 'lime',
+  },
+
+  trackerMangaDialog: {},
+
+  trackerMangaDialogContentInner: {},
+
+  trackerMangaDialogContentInnerItem: {},
 });
 
 const defaultFilters = {
@@ -519,6 +576,13 @@ const View = () => {
   const dateFormat = useRef<string>(
     window.electron.settings.getAll().general.dateFormat
   );
+  const authenticatedTrackers = useRef<SupportedTrackers[]>(
+    supportedTrackers.filter(window.electron.auth.checkAuthenticated)
+  );
+  const [searchModalData, setSearchModalData] = useState<{
+    media: Media[];
+    tracker: SupportedTrackers;
+  } | null>(null);
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
   const [isHovering, setIsHovering] = useState<boolean>(false);
   const [scrollTarget, setScrollTarget] = useState<Node | undefined>();
@@ -752,6 +816,90 @@ const View = () => {
           if (Node) setScrollTarget(Node);
         }}
       >
+        <Dialog
+          actions={[
+            <Button
+              key="clear"
+              onClick={() => {
+                const libraryManga = currentManga as LibraryManga;
+                if (!searchModalData?.tracker) return;
+                if (libraryManga?.Tracking?.[searchModalData.tracker])
+                  delete libraryManga.Tracking[searchModalData.tracker];
+
+                window.electron.library.addMangaToCache(
+                  libraryManga.SourceID,
+                  libraryManga
+                );
+                setSearchModalData(null);
+              }}
+              sx={{
+                color: '#DF2935',
+                ':hover': { backgroundColor: '#DF293511' },
+              }}
+              className={css(styles.interactionButton)}
+            >
+              Clear
+            </Button>,
+            <Button
+              key="close"
+              onClick={() => {
+                setSearchModalData(null);
+              }}
+              className={css(styles.interactionButton)}
+              sx={{
+                color: '#DF2935',
+                ':hover': { backgroundColor: '#DF293511' },
+              }}
+            >
+              Close
+            </Button>,
+          ]}
+          className={css(styles.trackerMangaDialog)}
+          title={`${searchModalData?.tracker} Tracking for ${currentManga.Name}`}
+          open={!!searchModalData}
+          onClose={() => setSearchModalData(null)}
+        >
+          <div className={css(styles.trackerMangaDialogContentInner)}>
+            {searchModalData?.media?.map((x) => {
+              if (!x.mediaId) return null;
+              return (
+                <TrackerItem
+                  chosen={
+                    (currentManga as LibraryManga)?.Tracking?.[
+                      searchModalData.tracker
+                    ]?.mediaId === x.mediaId
+                  }
+                  media={x}
+                  key={x.mediaId}
+                  id={x.mediaId}
+                  onClick={() => {
+                    const {
+                      Tracking = {
+                        AniList: {},
+                        MyAnimeList: {},
+                      },
+                    }: {
+                      Tracking: Record<
+                        SupportedTrackers,
+                        Record<string, string | number | null | object>
+                      >;
+                    } = currentManga as LibraryManga;
+                    Tracking[searchModalData.tracker] = x;
+
+                    (currentManga as LibraryManga).Tracking = Tracking;
+                    window.electron.library.addMangaToCache(
+                      currentManga.SourceID,
+                      currentManga
+                    );
+
+                    console.log(searchModalData);
+                    setSearchModalData(null);
+                  }}
+                />
+              );
+            })}
+          </div>
+        </Dialog>
         <Dialog
           className={css(styles.viewMangaDialog)}
           open={filterModalOpen && !!mangaData.current}
@@ -1242,6 +1390,64 @@ const View = () => {
                         })()}
                       </div>
                     </div>
+                    {/* Fourth component: Tracking */}
+                    {authenticatedTrackers.current?.length > 0 ? (
+                      <div className={css(styles.trackingContainer)}>
+                        {(() => {
+                          return authenticatedTrackers.current.map(
+                            (trackingName) => {
+                              const TrackerClass = getTracker(trackingName);
+
+                              const tracker = new TrackerClass();
+                              return (
+                                <button
+                                  type="button"
+                                  className={css(styles.trackingContainerItem)}
+                                  key={trackingName}
+                                  onClick={() => {
+                                    tracker
+                                      .searchMangas(currentManga.Name)
+                                      .then((data) => {
+                                        const mediaData = data?.data?.Page;
+                                        console.log(data);
+
+                                        return setSearchModalData(
+                                          mediaData
+                                            ? Object.assign(mediaData, {
+                                                tracker: trackingName,
+                                              })
+                                            : null
+                                        );
+                                      })
+                                      .catch(console.error);
+                                  }}
+                                >
+                                  <img
+                                    src={tracker.getIcon()}
+                                    alt={trackingName}
+                                  />
+                                  {(currentManga as LibraryManga).Tracking?.[
+                                    trackingName
+                                  ] ? (
+                                    <div
+                                      className={css(
+                                        styles.trackingContainerItemOverlay
+                                      )}
+                                    >
+                                      <CheckIcon
+                                        className={css(
+                                          styles.trackingContainerItemOverlayIcon
+                                        )}
+                                      />
+                                    </div>
+                                  ) : null}
+                                </button>
+                              );
+                            }
+                          );
+                        })()}
+                      </div>
+                    ) : null}
                   </div>
                 </>
               ) : null}

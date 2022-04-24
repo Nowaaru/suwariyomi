@@ -118,7 +118,13 @@ declare global {
           code_challenge: string;
           code_verifier: string;
         };
+        getAuthentication: (specificLogin: string) => string;
         checkAuthenticated: (specificLogin?: string) => boolean;
+        setAuthenticated: (
+          specificLogin: string,
+          access_token: string,
+          expires_in: number
+        ) => void;
       };
       ipcRenderer: {
         minimize: () => void;

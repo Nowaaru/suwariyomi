@@ -180,10 +180,11 @@ window.electron = {
       );
 
       // Iterate through authorizationStore; if any of the values' have both an access_token and an expires_in, return true
+      const lowercasedSpecificLogin = specificLogin?.toLowerCase();
       if (specificLogin)
         return (
-          authorizationStore[specificLogin].access_token &&
-          authorizationStore[specificLogin].expires_in
+          authorizationStore[lowercasedSpecificLogin]?.access_token &&
+          authorizationStore[lowercasedSpecificLogin]?.expires_in
         );
 
       const isAuthenticated = Object.keys(authorizationStore).some(
@@ -194,6 +195,26 @@ window.electron = {
             : true) // if there is no expires_in, assume it's valid
       );
       return isAuthenticated;
+    },
+    getAuthentication(specificLogin) {
+      return ipcRenderer.sendSync('electron-store-get', 'authorization')?.[
+        specificLogin?.toLowerCase()
+      ]?.access_token;
+    },
+    setAuthenticated(specificLogin, access_token, expires_in) {
+      const authorizationStore = ipcRenderer.sendSync(
+        'electron-store-get',
+        'authorization'
+      );
+      authorizationStore[specificLogin] = {
+        access_token,
+        expires_in,
+      };
+      ipcRenderer.send(
+        'electron-store-set',
+        'authorization',
+        authorizationStore
+      );
     },
   },
   ipcRenderer: {

@@ -42,7 +42,7 @@ import { useNavigate } from 'react-router-dom';
 import { clamp, isEqual, throttle } from 'lodash';
 
 import { filterChaptersToLanguage, sortChapters } from '../util/func';
-import { Chapter } from '../../main/util/manga';
+import { Chapter, LibraryManga } from '../../main/util/manga';
 
 import Handler from '../../main/sources/handler';
 import Sidebar from '../components/sidebar';
@@ -54,6 +54,7 @@ import ChapterModal from '../components/chaptermodal';
 import ReaderButton from '../components/readerbutton';
 import ReaderContext from '../components/context/reader';
 import useMountEffect from '../util/hook/usemounteffect';
+import { getTracker, SupportedTrackers } from '../util/tracker/tracker';
 import { DefaultSettings } from '../../main/util/settings';
 
 type ViewStyles =
@@ -1259,6 +1260,71 @@ const Reader = () => {
     ) => {
       const currentChapterData =
         window.electron.read.get(sourceId)?.[currentChapterId];
+
+      if (chapterPageCount <= chapterPageNumber) {
+        const cachedManga = window.electron.library.getCachedManga(
+          sourceId,
+          mangaId
+        );
+
+        if ((cachedManga as LibraryManga).Tracking) {
+          // If the tracker's progress is lower than the current chapter, update it.
+          const libraryManga = cachedManga as LibraryManga;
+          (Object.keys(libraryManga.Tracking) as SupportedTrackers[]).forEach(
+            (Tracker: SupportedTrackers) => {
+              const TrackerClass = getTracker(Tracker);
+              if (!TrackerClass) return;
+
+              console.log(cachedManga);
+              const TrackerObject = new TrackerClass();
+              const trackingItem = libraryManga.Tracking[Tracker];
+              const mangaChapter = cachedManga?.Chapters?.find(
+                (x) => x.ChapterID === currentChapterId
+              );
+
+              if (
+                !trackingItem ||
+                !trackingItem.mediaId ||
+                !trackingItem.mediaListEntry?.id ||
+                !trackingItem.mediaListEntry?.progress ||
+                !mangaChapter?.Chapter
+              )
+                return;
+
+              if (
+                trackingItem.mediaListEntry.progress <
+                Math.floor(mangaChapter.Chapter)
+              ) {
+                TrackerObject.updateManga(
+                  {
+                    mediaId: Number(trackingItem.mediaId),
+                    status: 'CURRENT',
+                    progress: Math.floor(mangaChapter?.Chapter),
+                    progressVolumes: mangaChapter?.Volume ?? 0,
+                    id: Number(trackingItem.mediaListEntry.id),
+                  },
+                  ['progress', 'progressVolumes']
+                )
+                  .then(() => {
+                    if (!cachedManga?.SourceID) return;
+                    libraryManga.Tracking[Tracker].mediaListEntry.progress =
+                      Math.floor(mangaChapter?.Chapter);
+
+                    libraryManga.Tracking[
+                      Tracker
+                    ].mediaListEntry.progressVolumes =
+                      mangaChapter?.Volume ?? 0;
+                    return window.electron.library.addMangaToCache(
+                      libraryManga.SourceID,
+                      libraryManga
+                    );
+                  })
+                  .catch(console.error);
+              }
+            }
+          );
+        }
+      }
 
       return window.electron.read.set(
         selectedSource.getName(),
