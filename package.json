@@ -243,10 +243,12 @@
   },
   "dependencies": {
     "@apollo/client": "^3.5.10",
+    "@date-io/dayjs": "^2.13.1",
     "@emotion/css": "^11.7.1",
     "@emotion/styled": "^11.6.0",
     "@mui/icons-material": "^5.2.5",
     "@mui/material": "^5.2.7",
+    "@mui/x-date-pickers": "^5.0.0-alpha.2",
     "aphrodite": "^2.4.0",
     "axios": "^0.25.0",
     "dayjs": "^1.10.7",

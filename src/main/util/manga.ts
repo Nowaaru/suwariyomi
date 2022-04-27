@@ -105,9 +105,22 @@ export type MangaWithAuthors = Manga & Pick<Required<Manga>, 'Authors'>;
 export type FullManga = MangaWithAuthors &
   Pick<Required<MangaWithAuthors>, 'Chapters'>;
 
+export type MangaTrackingData = {
+  progress: number | null;
+  progressVolumes: number | null;
+  id: number | null;
+  listId: number | null;
+  publicationStatus: string | null;
+  readingStatus: string | null;
+  startedAt: Date | null;
+  completedAt: Date | null;
+  score: number | null;
+  title: string | null;
+};
+
 export type LibraryManga = FullManga &
   Pick<Required<Manga>, 'Added' | 'LastRead'> & {
-    Tracking: Record<SupportedTrackers, Record<string, any>>;
+    Tracking: Record<SupportedTrackers, MangaTrackingData | null>;
   };
 
 export type LibrarySource = {

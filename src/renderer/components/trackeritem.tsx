@@ -65,9 +65,7 @@ const TrackerItem = ({
   onClick?: () => void;
 }) => {
   const coverImage =
-    media.coverImage.medium ??
-    media.coverImage.large ??
-    media.coverImage.extraLarge;
+    media.covers?.medium ?? media.covers?.large ?? media.covers?.extraLarge;
 
   const [isBackgroundIlluminated, setIllumination] = useState<boolean>(chosen!);
   return (
@@ -88,10 +86,10 @@ const TrackerItem = ({
       ) : null}
       <div className={css(styles.containerContentText)}>
         <span className={css(styles.containerContentTitle)}>
-          {media.title.userPreferred ??
-            media.title.romaji ??
-            media.title.english ??
-            media.title.native ??
+          {media.title?.userPreferred ??
+            media.title?.romaji ??
+            media.title?.english ??
+            media.title?.native ??
             'No Title'}
         </span>
         {media.chapters ?? media.volumes ? (

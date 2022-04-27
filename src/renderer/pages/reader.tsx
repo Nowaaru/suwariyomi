@@ -1284,36 +1284,29 @@ const Reader = () => {
 
               if (
                 !trackingItem ||
-                !trackingItem.mediaId ||
-                !trackingItem.mediaListEntry?.id ||
-                !trackingItem.mediaListEntry?.progress ||
+                !trackingItem.listId ||
+                !trackingItem.id ||
+                !trackingItem.progress ||
                 !mangaChapter?.Chapter
               )
                 return;
 
-              if (
-                trackingItem.mediaListEntry.progress <
-                Math.floor(mangaChapter.Chapter)
-              ) {
+              if (trackingItem.progress < Math.floor(mangaChapter.Chapter)) {
                 TrackerObject.updateManga(
                   {
-                    mediaId: Number(trackingItem.mediaId),
                     status: 'CURRENT',
                     progress: Math.floor(mangaChapter?.Chapter),
                     progressVolumes: mangaChapter?.Volume ?? 0,
-                    id: Number(trackingItem.mediaListEntry.id),
+                    id: Number(trackingItem.listId),
                   },
                   ['progress', 'progressVolumes']
                 )
                   .then(() => {
                     if (!cachedManga?.SourceID) return;
-                    libraryManga.Tracking[Tracker].mediaListEntry.progress =
-                      Math.floor(mangaChapter?.Chapter);
+                    if (!libraryManga.Tracking[Tracker]) return;
 
-                    libraryManga.Tracking[
-                      Tracker
-                    ].mediaListEntry.progressVolumes =
-                      mangaChapter?.Volume ?? 0;
+                    trackingItem.progress = Math.floor(mangaChapter?.Chapter);
+                    trackingItem.progressVolumes = mangaChapter?.Volume ?? 0;
                     return window.electron.library.addMangaToCache(
                       libraryManga.SourceID,
                       libraryManga

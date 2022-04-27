@@ -46,16 +46,19 @@ const Select = (
     Exclude<MaterialSelectProps<string>, 'children'>,
     'renderValue'
   > & {
-    value: string;
     values: {
       // OptionValue: OptionLabel
       [optionValue: string]: string;
     };
   }
 ) => {
-  const { value, values, sx } = props;
-  if (!Object.keys(values).find((optionValue) => optionValue === value))
-    throw new Error(`Value "${value}" not found in values`);
+  const { value, values, sx, defaultValue } = props;
+  if (
+    !Object.keys(values).find(
+      (optionValue) => optionValue === (value ?? defaultValue)
+    )
+  )
+    throw new Error(`Value "${value ?? defaultValue}" not found in values`);
 
   return (
     <MaterialSelect
@@ -77,7 +80,8 @@ const Select = (
         ...(sx ?? {}),
       }}
       renderValue={(selected) => {
-        const displayValue = values[selected as string];
+        console.log(`selected: ${selected}`);
+        const displayValue = values[(selected ?? defaultValue) as string];
         return (
           <Typography className={css(styles.selected)}>
             {displayValue}
