@@ -4,7 +4,7 @@ import { useRef, useEffect, useState, useCallback } from 'react';
 import { StyleSheet, css } from 'aphrodite';
 import { URLSearchParams } from 'url';
 import { useNavigate } from 'react-router-dom';
-import { isEqual, has, clamp } from 'lodash';
+import { isEqual, has, clamp, isEmpty } from 'lodash';
 
 import {
   Button,
@@ -39,13 +39,8 @@ import {
   Media,
   SupportedTrackers,
   supportedTrackers,
-  TrackingProps,
 } from '../util/tracker/tracker';
-import {
-  FullManga,
-  LibraryManga,
-  MangaTrackingData,
-} from '../../main/util/manga';
+import { FullManga, LibraryManga } from '../../main/util/manga';
 import { ReadDatabaseValue } from '../../main/util/read';
 import {
   filterChaptersToLanguage,
@@ -58,7 +53,7 @@ import Chapter from '../components/chapter';
 import Handler from '../../main/sources/handler';
 import useQuery from '../util/hook/usequery';
 import Switch from '../components/switch';
-import TrackerItem from '../components/trackeritem';
+import TrackerModal from '../components/trackermodal';
 /*
 TODO: Use this implementation to implement themeing
 const abcdefg: StyleDeclaration<
@@ -562,26 +557,6 @@ const styles = StyleSheet.create({
   trackingContainerItemOverlayIcon: {
     color: 'lime',
   },
-
-  trackerMangaDialog: {},
-
-  trackerMangaDialogContentInner: {
-    height: '50vh',
-    marginBottom: '16px',
-    overflowY: 'auto',
-  },
-
-  trackerMangaDialogContentInnerItem: {},
-
-  viewMangaDialogContentStats: {},
-
-  viewMangaDialogContentStatsItemContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginTop: '8px',
-  },
 });
 
 const defaultFilters = {
@@ -591,13 +566,6 @@ const defaultFilters = {
   showBookmarked: false,
   showInProgress: false,
 };
-
-const removeQuotes = (str: string) => str.replace(/['"]+/g, '');
-const compileDateFromObject = (date: {
-  year: number;
-  month: number;
-  day: number;
-}) => new Date(`${date.year}-${date.month}-${date.day}T00:00:00.000`);
 
 const View = () => {
   const Query = useQuery();
@@ -879,368 +847,6 @@ const View = () => {
           if (Node) setScrollTarget(Node);
         }}
       >
-        <Dialog
-          actions={[
-            <Button
-              key="clear"
-              onClick={() => {
-                const libraryManga = currentManga as LibraryManga;
-                if (!searchModalData?.tracker) return;
-                if (libraryManga?.Tracking?.[searchModalData.tracker])
-                  delete libraryManga.Tracking[searchModalData.tracker];
-
-                window.electron.library.addMangaToCache(
-                  libraryManga.SourceID,
-                  libraryManga
-                );
-                setSearchModalData(null);
-              }}
-              sx={{
-                color: '#DF2935',
-                ':hover': { backgroundColor: '#DF293511' },
-              }}
-              className={css(styles.interactionButton)}
-            >
-              Clear
-            </Button>,
-            <Button
-              key="close"
-              onClick={() => {
-                setSearchModalData(null);
-              }}
-              className={css(styles.interactionButton)}
-              sx={{
-                color: '#DF2935',
-                ':hover': { backgroundColor: '#DF293511' },
-              }}
-            >
-              Close
-            </Button>,
-          ]}
-          className={css(styles.trackerMangaDialog)}
-          title={`${searchModalData?.tracker} Tracking for ${currentManga.Name}`}
-          open={!!searchModalData}
-          onClose={() => setSearchModalData(null)}
-        >
-          <div className={css(styles.trackerMangaDialogContentInner)}>
-            {searchModalData?.media?.map((x) => {
-              if (!x.mediaId) return null;
-              return (
-                <TrackerItem
-                  chosen={
-                    (currentManga as LibraryManga)?.Tracking?.[
-                      searchModalData.tracker
-                    ]?.listId === x.mediaId
-                  }
-                  media={x}
-                  key={x.mediaId}
-                  id={x.mediaId}
-                  onClick={() => {
-                    if (!searchModalData?.tracker) return;
-                    if (!x.userTrackedInfo) return;
-
-                    const {
-                      Tracking = {
-                        AniList: null,
-                        MyAnimeList: null,
-                      },
-                    }: {
-                      Tracking: Record<
-                        SupportedTrackers,
-                        MangaTrackingData | null
-                      >;
-                    } = currentManga as LibraryManga;
-
-                    const {
-                      startedAt,
-                      completedAt,
-                      progress,
-                      progressVolumes,
-                      readingStatus,
-                      score,
-                    } = x.userTrackedInfo;
-
-                    const {
-                      day: startedDay,
-                      month: startedMonth,
-                      year: startedYear,
-                    } = startedAt;
-
-                    const {
-                      day: finishedDay,
-                      month: finishedMonth,
-                      year: finishedYear,
-                    } = completedAt;
-
-                    Tracking[searchModalData.tracker] = {
-                      progress,
-                      progressVolumes,
-                      score,
-                      readingStatus,
-                      publicationStatus: x.publicationStatus,
-                      title: x.title,
-                      id: x.userTrackedInfo.listId,
-                      listId: x.mediaId,
-                      startedAt:
-                        startedAt && startedDay && startedMonth && startedYear
-                          ? new Date(startedYear, startedMonth - 1, startedDay)
-                          : null,
-                      completedAt:
-                        completedAt &&
-                        finishedDay &&
-                        finishedMonth &&
-                        finishedYear
-                          ? new Date(
-                              finishedYear,
-                              finishedMonth - 1,
-                              finishedDay
-                            )
-                          : null,
-                    } as MangaTrackingData;
-
-                    (currentManga as LibraryManga).Tracking = Tracking;
-                    window.electron.library.addMangaToCache(
-                      currentManga.SourceID,
-                      currentManga
-                    );
-
-                    setSearchModalData(null);
-                  }}
-                />
-              );
-            })}
-          </div>
-          {(() => {
-            if (!isInLibrary || !has(currentManga, 'Tracking')) return null;
-            if (!searchModalData?.tracker) return null;
-
-            const libraryManga = currentManga as LibraryManga;
-            const currentTracker =
-              libraryManga.Tracking[searchModalData.tracker];
-
-            if (!currentTracker) return null;
-            if (!currentTracker.id) return null;
-
-            const currentDateStartedAt = currentTracker?.startedAt;
-            const currentDateFinishedAt = currentTracker?.completedAt;
-            const TrackerClass = getTracker(searchModalData.tracker);
-            const trackerInstance = new TrackerClass();
-
-            return (
-              <div className={css(styles.viewMangaDialogContentStats)}>
-                <div
-                  className={css(
-                    styles.viewMangaDialogContentStatsItemContainer
-                  )}
-                >
-                  <Select
-                    values={{
-                      current: 'Reading',
-                      completed: 'Completed',
-                      paused: 'Paused',
-                      dropped: 'Dropped',
-                      planning: 'Planning',
-                      rereading: 'Rereading',
-                    }}
-                    defaultValue={
-                      currentTracker.readingStatus?.toLowerCase() ?? 'current'
-                    }
-                    onChange={(e) => {
-                      const newStatus = e.target.value;
-                      currentTracker.readingStatus = newStatus;
-
-                      window.electron.library.addMangaToCache(
-                        libraryManga.SourceID,
-                        libraryManga
-                      );
-
-                      trackerInstance
-                        .updateManga(
-                          {
-                            id: currentTracker.id as number,
-                            status:
-                              newStatus.toUpperCase() as unknown as Required<TrackingProps>['status'],
-                          },
-                          ['id', 'status']
-                        )
-                        .then(forceUpdate)
-                        .catch(console.error);
-                    }}
-                  />
-                  <TextField
-                    label="Chapter Progress"
-                    defaultValue={currentTracker.progress}
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                    onBlur={(e) => {
-                      const newProgress = Number(
-                        e.target.value.replace(/\D/g, '')
-                      );
-
-                      // We instead set currentTracker.progress to the return value of updateManga in case the user enters a non-number.
-                      // The server (should) return the correct progress value.
-                      trackerInstance
-                        .updateManga(
-                          {
-                            id: currentTracker.id as number,
-                            progress: newProgress,
-                          },
-                          ['progress']
-                        )
-                        .then((res) => {
-                          currentTracker.progress = res.data.progress;
-                          return true;
-                        })
-                        .catch(console.error);
-                    }}
-                  />
-                  <TextField
-                    label="Score"
-                    defaultValue={currentTracker.score}
-                    onChange={(e) => {
-                      if (e.target.value.match(/[^0-9.]|(\.$)/g)) return;
-                      const newScore = clamp(
-                        Number(Number(e.target.value).toFixed(1)),
-                        0,
-                        10
-                      );
-
-                      const is100Scale = trackerInstance.is100Scored();
-                      let scoreKey;
-
-                      // Special cases where trackers might use a different scoring key.
-                      switch (trackerInstance.getName()) {
-                        case 'AniList':
-                          scoreKey = 'scoreRaw';
-                          break;
-                        default:
-                          scoreKey = 'score';
-                      }
-
-                      currentTracker.score = newScore;
-                      window.electron.library.addMangaToCache(
-                        libraryManga.SourceID,
-                        libraryManga
-                      );
-
-                      trackerInstance.updateManga(
-                        {
-                          id: currentTracker.id as number,
-                          [scoreKey]: newScore * (is100Scale ? 10 : 1),
-                        },
-                        ['id']
-                      );
-                    }}
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                  />
-                </div>
-                <div
-                  className={css(
-                    styles.viewMangaDialogContentStatsItemContainer
-                  )}
-                >
-                  <TextField
-                    type="date"
-                    label="Started At"
-                    defaultValue={
-                      currentDateStartedAt
-                        ? currentDateStartedAt.toISOString().split('T')[0]
-                        : undefined
-                    }
-                    onBlur={(e) => {
-                      const newDate = new Date(
-                        `${e.target.value}T00:00:00.000`
-                      );
-                      trackerInstance
-                        .updateManga(
-                          {
-                            id: currentTracker.id as number,
-                            status:
-                              currentTracker.readingStatus?.toUpperCase() as unknown as Required<TrackingProps>['status'],
-                            startedAt: {
-                              day: newDate.getDate(),
-                              month: newDate.getMonth() + 1,
-                              year: newDate.getFullYear(),
-                            },
-                          },
-                          [
-                            trackerInstance.getName() === 'AniList' // Special case for AniList because GraphQL is agonizing dreadful pain
-                              ? `startedAt { year month day }`
-                              : `startedAt`,
-                          ]
-                        )
-                        .then((res: Record<string, any>) => {
-                          if (res.data?.userTrackedInfo) {
-                            currentTracker.startedAt = compileDateFromObject(
-                              res.data.userTrackedInfo.startedAt
-                            );
-
-                            window.electron.library.addMangaToCache(
-                              libraryManga.SourceID,
-                              libraryManga
-                            );
-                          }
-                          return true;
-                        })
-                        .catch(console.error);
-                    }}
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                  />
-                  <TextField
-                    type="date"
-                    label="Completed At"
-                    defaultValue={
-                      currentDateFinishedAt
-                        ? currentDateFinishedAt.toISOString().split('T')[0]
-                        : undefined
-                    }
-                    onBlur={(e) => {
-                      const newDate = new Date(
-                        `${e.target.value}T00:00:00.000`
-                      );
-                      trackerInstance
-                        .updateManga(
-                          {
-                            id: currentTracker.id as number,
-                            status:
-                              currentTracker.readingStatus?.toUpperCase() as unknown as Required<TrackingProps>['status'],
-                            completedAt: {
-                              day: newDate.getDate(),
-                              month: newDate.getMonth() + 1,
-                              year: newDate.getFullYear(),
-                            },
-                          },
-                          [`startedAt { year month day }`]
-                        )
-                        .then((res: Record<string, any>) => {
-                          if (res.data?.userTrackedInfo) {
-                            currentTracker.completedAt = compileDateFromObject(
-                              res.data.userTrackedInfo.startedAt
-                            );
-
-                            window.electron.library.addMangaToCache(
-                              libraryManga.SourceID,
-                              libraryManga
-                            );
-                          }
-                          return true;
-                        })
-                        .catch(console.error);
-                    }}
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                  />
-                </div>
-              </div>
-            );
-          })()}
-        </Dialog>
         <Dialog
           className={css(styles.viewMangaDialog)}
           open={filterModalOpen && !!mangaData.current}
@@ -1607,6 +1213,24 @@ const View = () => {
                   })}
               </div>
             </div>
+            <TrackerModal
+              open={
+                Object.values(searchModalData?.tracker ?? {}).filter((x) => x)
+                  .length !== 0
+              }
+              libraryManga={
+                isInLibrary &&
+                has(currentManga, 'Tracking') &&
+                Object.values((currentManga as LibraryManga).Tracking).filter(
+                  (x) => x
+                ).length !== 0
+                  ? (currentManga as LibraryManga)
+                  : undefined
+              }
+              onError={console.error}
+              onClose={() => setSearchModalData(null)}
+              searchModalData={searchModalData}
+            />
             <Paper elevation={3} className={css(styles.utilityContainer)}>
               {/* If this manga is not in the cache then only show the start reading button */}
               {/* First component: Reading button */}
