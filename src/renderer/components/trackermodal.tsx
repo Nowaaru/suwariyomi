@@ -1,4 +1,4 @@
-import { Button, DialogProps, TextField } from '@mui/material';
+import { Button, DialogProps } from '@mui/material';
 import { css, StyleSheet } from 'aphrodite';
 import { clamp } from 'lodash';
 
@@ -13,6 +13,7 @@ import type { LibraryManga, MangaTrackingData } from '../../main/util/manga';
 import TrackerItem from './trackeritem';
 import Dialog from './dialog';
 import Select from './select';
+import TextField from './textfield';
 
 const styles = StyleSheet.create({
   trackerMangaDialog: {},
