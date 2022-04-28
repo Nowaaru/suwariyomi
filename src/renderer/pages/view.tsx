@@ -4,7 +4,7 @@ import { useRef, useEffect, useState, useCallback } from 'react';
 import { StyleSheet, css } from 'aphrodite';
 import { URLSearchParams } from 'url';
 import { useNavigate } from 'react-router-dom';
-import { isEqual, has } from 'lodash';
+import { isEqual, has, clamp } from 'lodash';
 
 import {
   Button,
@@ -1078,21 +1078,60 @@ const View = () => {
                         e.target.value.replace(/\D/g, '')
                       );
 
-                      currentTracker.progress = newProgress;
-                      trackerInstance.updateManga(
-                        {
-                          id: currentTracker.id as number,
-                          status:
-                            currentTracker.readingStatus?.toUpperCase() as unknown as Required<TrackingProps>['status'],
-                          progress: newProgress,
-                        },
-                        ['id']
-                      );
+                      // We instead set currentTracker.progress to the return value of updateManga in case the user enters a non-number.
+                      // The server (should) return the correct progress value.
+                      trackerInstance
+                        .updateManga(
+                          {
+                            id: currentTracker.id as number,
+                            progress: newProgress,
+                          },
+                          ['progress']
+                        )
+                        .then((res) => {
+                          currentTracker.progress = res.data.progress;
+                          return true;
+                        })
+                        .catch(console.error);
                     }}
                   />
                   <TextField
                     label="Score"
                     defaultValue={currentTracker.score}
+                    onChange={(e) => {
+                      if (e.target.value.match(/[^0-9.]|(\.$)/g)) return;
+                      const newScore = clamp(
+                        Number(Number(e.target.value).toFixed(1)),
+                        0,
+                        10
+                      );
+
+                      const is100Scale = trackerInstance.is100Scored();
+                      let scoreKey;
+
+                      // Special cases where trackers might use a different scoring key.
+                      switch (trackerInstance.getName()) {
+                        case 'AniList':
+                          scoreKey = 'scoreRaw';
+                          break;
+                        default:
+                          scoreKey = 'score';
+                      }
+
+                      currentTracker.score = newScore;
+                      window.electron.library.addMangaToCache(
+                        libraryManga.SourceID,
+                        libraryManga
+                      );
+
+                      trackerInstance.updateManga(
+                        {
+                          id: currentTracker.id as number,
+                          [scoreKey]: newScore * (is100Scale ? 10 : 1),
+                        },
+                        ['id']
+                      );
+                    }}
                     InputLabelProps={{
                       shrink: true,
                     }}
@@ -1127,7 +1166,11 @@ const View = () => {
                               year: newDate.getFullYear(),
                             },
                           },
-                          [`startedAt { year month day }`]
+                          [
+                            trackerInstance.getName() === 'AniList' // Special case for AniList because GraphQL is agonizing dreadful pain
+                              ? `startedAt { year month day }`
+                              : `startedAt`,
+                          ]
                         )
                         .then((res: Record<string, any>) => {
                           if (res.data?.userTrackedInfo) {

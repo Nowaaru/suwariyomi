@@ -11,8 +11,7 @@ export interface TrackingProps {
     | 'REPEATING';
 }
 
-interface AniListTrackingStatusProps
-  extends Required<Pick<TrackingProps, 'status'>> {
+interface AniListTrackingProps extends Pick<TrackingProps, 'status'> {
   id: number;
   score?: number;
   progress?: number;
@@ -82,6 +81,8 @@ abstract class TrackerBase {
     return supportedTrackers;
   }
 
+  abstract is100Scored(): boolean;
+
   abstract getName(): string;
 
   abstract getIcon(): string;
@@ -89,7 +90,7 @@ abstract class TrackerBase {
   abstract getMangaList(): Record<string, string>;
 
   abstract updateManga(
-    opts: AniListTrackingStatusProps,
+    opts: AniListTrackingProps,
     toReturn: any
   ): Promise<Record<string, any>>;
 
@@ -103,13 +104,17 @@ abstract class TrackerBase {
 }
 
 class AniListTracker extends TrackerBase {
+  is100Scored(): boolean {
+    return true;
+  }
+
   getIcon(): string {
     return 'https://anilist.co/img/icons/favicon-32x32.png';
   }
 
   updateManga(
-    opts: AniListTrackingStatusProps,
-    toReturn: Array<keyof AniListTrackingStatusProps | string>
+    opts: AniListTrackingProps,
+    toReturn: Array<keyof AniListTrackingProps | string>
   ): Promise<Record<string, string | number | object>> {
     const accessToken = window.electron.auth.getAuthentication('anilist');
     const gqlQuery = `
@@ -197,7 +202,7 @@ class AniListTracker extends TrackerBase {
                     readingStatus: status
                     progress
                     progressVolumes
-                    score
+                    score: score(format: POINT_10)
                     startedAt {
                       year
                       month
@@ -236,8 +241,12 @@ class AniListTracker extends TrackerBase {
 }
 
 class MyAnimeListTracker extends TrackerBase {
+  is100Scored(): boolean {
+    return false;
+  }
+
   updateManga(
-    opts: AniListTrackingStatusProps,
+    opts: AniListTrackingProps,
     toReturn: any
   ): Promise<Record<string, any>> {
     throw new Error('Method not implemented.');
