@@ -18,7 +18,15 @@ import Store from 'electron-store';
 import slugify from 'slugify';
 import fetch from 'node-fetch';
 import pkceChallenge from 'pkce-challenge';
-import { app, BrowserWindow, shell, ipcMain, protocol, dialog } from 'electron';
+import {
+  app,
+  BrowserWindow,
+  shell,
+  ipcMain,
+  dialog,
+  Tray,
+  Menu,
+} from 'electron';
 import { autoUpdater } from 'electron-updater';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
@@ -416,6 +424,7 @@ const installExtensions = async () => {
     .catch(log.error);
 };
 
+let isQuitting = false;
 const createWindow = async () => {
   if (isDevelopment) {
     await installExtensions();
@@ -491,6 +500,24 @@ const createWindow = async () => {
   mainWindow.webContents.on('new-window', (event, url) => {
     event.preventDefault();
     shell.openExternal(url);
+  });
+
+  // Check if the user has enabled the setting to minimize to tray when minimizing/closing the application.
+  mainWindow.on('minimize', (e: Electron.Event) => {
+    if (Settings.getAllSettings().general.minimizeToTray) {
+      e.preventDefault();
+      mainWindow?.hide();
+    }
+  });
+
+  mainWindow.on('close', (e) => {
+    if (Settings.getAllSettings().general.closeToTray) {
+      if (!isQuitting) {
+        e.preventDefault();
+        mainWindow?.hide();
+        e.returnValue = false;
+      }
+    }
   });
 
   // Remove this if your app does not use auto updates
@@ -579,16 +606,60 @@ if (!appIsLocked) {
     })
     .catch(log.error);
 
+  let appIcon = null;
   app
     .whenReady()
     .then(() => {
       createWindow();
+      const supportsClick =
+        process.platform === 'darwin' || process.platform === 'win32';
+      appIcon = new Tray(
+        path.join(
+          __dirname,
+          '../../',
+          `assets/icons/icon.${
+            (
+              {
+                win32: 'ico',
+                darwin: 'icns',
+              } as any
+            )[process.platform] ?? 'png'
+          }`
+        )
+      );
+      const contextMenu = Menu.buildFromTemplate(
+        [
+          !supportsClick
+            ? { label: 'Open', click: () => mainWindow?.show() }
+            : null,
+          {
+            label: 'Quit',
+            click: () => {
+              isQuitting = true;
+              app.quit();
+            },
+          },
+        ].filter((item) => item) as any
+      );
+
+      appIcon.on('double-click', () => {
+        if (mainWindow && supportsClick) {
+          if (mainWindow.isVisible()) {
+            mainWindow.hide();
+          } else {
+            mainWindow.show();
+          }
+        }
+      });
 
       app.on('activate', () => {
         // On macOS it's common to re-create a window in the app when the
         // dock icon is clicked and there are no other windows open.
         if (mainWindow === null) createWindow();
       });
+
+      appIcon.setToolTip('Suwariyomi');
+      appIcon.setContextMenu(contextMenu);
     })
     .catch(log.error);
 }

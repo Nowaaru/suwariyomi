@@ -59,6 +59,19 @@ export const settingsSchemata: {
       type: 'switch',
       default: true,
     },
+    minimizeToTray: {
+      label: 'Minimize to Tray',
+      description:
+        'Send the window to the system tray instead of minimizing it.',
+      type: 'switch',
+      default: false,
+    },
+    closeToTray: {
+      label: 'Minimize on Close',
+      description: 'Minimize the window instead of directly closing it.',
+      type: 'switch',
+      default: false,
+    },
   },
   library: {
     displayUserName: {

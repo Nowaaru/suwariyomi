@@ -13,6 +13,8 @@ export const defaultSettings = {
     dateFormat: 'MM/DD/YYYY',
     autoUpdate: true,
     discordRPCIntegration: true,
+    minimizeToTray: false,
+    closeToTray: true,
   },
   library: {
     displayUserName: true,
@@ -99,6 +101,14 @@ export const settingsSchema: Schema<typeof defaultSettings> = {
         default: true,
       },
       discordRPCIntegration: {
+        type: 'boolean',
+        default: true,
+      },
+      minimizeToTray: {
+        type: 'boolean',
+        default: false,
+      },
+      closeToTray: {
         type: 'boolean',
         default: true,
       },
@@ -406,6 +416,13 @@ const Settings = new SettingsDatabase({
     '>=0.13.0': (settings) => {
       const newSettings = {
         ...settings.store,
+        general: Object.assign(
+          {
+            minimizeToTray: false,
+            closeToTray: true,
+          },
+          settings.store.general
+        ),
         library: Object.assign(
           {
             discordRPCIntegration: true,
