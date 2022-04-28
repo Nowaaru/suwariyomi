@@ -14,7 +14,19 @@ import App from './App';
 */
 
 /*
-  TODO: Implement a preferences page.
+  TODO: Migrate the updating of Mangas from the renderer process to the main process.
+        Intensive processes such as these (furthermore, ones that aren't related to the renderer process)
+        should be in the main process.
+
+        [ ] Set up event connections between the main process and the renderer process to signify when
+            a manga has been updated.
+
+        [ ] When library.tsx is loaded, on mount the renderer process should send a request to the main process
+            to see if any sources are currently being updated by the main process. Any sources that are being
+            updated should be displayed as loading via the refresh button turning grey and spinning.
+
+        [ ] When view.tsx (or library.tsx) is loaded, if the main process is currently updating a source, the main process
+            should send a request to the renderer process to update the view with the new data.
 */
 
 declare global {

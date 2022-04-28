@@ -26,6 +26,7 @@ import {
   dialog,
   Tray,
   Menu,
+  Notification,
 } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import MenuBuilder from './menu';
