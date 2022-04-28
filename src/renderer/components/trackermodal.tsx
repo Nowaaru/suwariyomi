@@ -97,7 +97,7 @@ const TrackerModal = (
           }}
           className={css(styles.interactionButton)}
         >
-          Clear.
+          Clear
         </Button>,
         <Button
           key="close"
