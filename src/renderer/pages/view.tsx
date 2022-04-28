@@ -74,6 +74,7 @@ const styles = StyleSheet.create({
 
   container: {
     width: '100%',
+    marginTop: '16px',
     height: '100%',
     overflowX: 'hidden',
     overflowY: 'auto',
@@ -93,6 +94,7 @@ const styles = StyleSheet.create({
 
   upperContainer: {
     position: 'relative',
+    top: '4px',
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'initial',
