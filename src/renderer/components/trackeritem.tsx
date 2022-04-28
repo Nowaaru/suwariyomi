@@ -2,6 +2,7 @@
 import { StyleSheet, css } from 'aphrodite';
 import { Box } from '@mui/material';
 import { useState } from 'react';
+import sanitizeHtml from 'sanitize-html';
 
 import { Media } from '../util/tracker/tracker';
 
@@ -67,6 +68,7 @@ const TrackerItem = ({
   const coverImage =
     media.covers?.medium ?? media.covers?.large ?? media.covers?.extraLarge;
 
+  const descriptionTrimLength = 200;
   const [isBackgroundIlluminated, setIllumination] = useState<boolean>(chosen!);
   return (
     <Box
@@ -101,9 +103,12 @@ const TrackerItem = ({
           </span>
         ) : null}
         <span className={css(styles.containerContentDescription)}>
-          {media.description?.replace(/<[^>]*>?/gm, '').substring(0, 200) ??
-            'No description provided.'}
-          {media.description?.length ?? 0 > 200 ? '...' : null}
+          {sanitizeHtml(
+            media.description ?? 'No description provided.'
+          ).substring(0, descriptionTrimLength)}
+          {(media.description?.length ?? 0) > descriptionTrimLength
+            ? '...'
+            : null}
         </span>
       </div>
     </Box>
