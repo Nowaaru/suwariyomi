@@ -91,6 +91,7 @@ export type Manga = {
   SourceID: string;
   Authors?: string[]; // Null, can be obtained by calling getAuthors()
   Synopsis: string;
+  Status?: 'ongoing' | 'completed' | 'hiatus' | 'canceled';
 
   Tags: string[];
   DateFetched: Date;
