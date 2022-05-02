@@ -16,15 +16,21 @@ export const updateRichPresence = throttle((data: Presence) => {
 }, 15000);
 
 setInterval(() => {
-  if (currentRPC) RPCClient.setActivity(RPCEnabled ? currentRPC : {});
+  if (RPCEnabled) RPCClient.setActivity(currentRPC ?? {});
 }, 15000);
 
 export const toggleRPC = (enabled: boolean) => {
   RPCEnabled = enabled;
+  if (!RPCEnabled) {
+    RPCClient.clearActivity();
+  } else RPCClient.setActivity(currentRPC);
 };
 
 export default async () => {
   if (isInitialized) return;
   isInitialized = true;
-  return RPCClient.login({ clientId: RPCId }).catch(console.error);
+  return RPCClient.login({ clientId: RPCId }).catch((e) => {
+    console.error('Failed to initialize RPC client.', e);
+    toggleRPC(false);
+  });
 };
