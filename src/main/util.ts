@@ -14,6 +14,14 @@ export function createFolders() {
   });
 }
 
+export const getSourceDirectory = (): string =>
+  path.resolve(path.join(app.getPath('userData'), 'sources'));
+
+export function getSourceFiles(): string[] {
+  const sources = fs.readdirSync(getSourceDirectory());
+  return sources;
+}
+
 export let resolveHtmlPath: (htmlFileName: string) => string;
 if (process.env.NODE_ENV === 'development') {
   const port = process.env.PORT || 4123;

@@ -30,13 +30,14 @@ import {
 } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import MenuBuilder from './menu';
-import { resolveHtmlPath } from './util';
+import { getSourceDirectory, getSourceFiles, resolveHtmlPath } from './util';
 import CacheDB from './util/cache';
 import MangaDB from './util/manga';
 import ReadDB from './util/read';
 import ReaderDB from './util/reader';
 import MiscDB from './util/misc';
 import Settings from './util/settings';
+import { init as initUpdater } from './util/mangaupdate';
 import initRPCConnection, {
   RPCClient,
   updateRichPresence,
@@ -108,14 +109,12 @@ ipcMain.handle('flush', () => {
   MangaDB.Flush();
 });
 
-const sourcesPath = path.resolve(path.join(app.getPath('userData'), 'sources'));
 ipcMain.on('get-sources-path', (event) => {
-  event.returnValue = sourcesPath;
+  event.returnValue = getSourceDirectory();
 });
 
 ipcMain.on('get-fs-sources', async (event) => {
-  const sources = await fs.readdirSync(sourcesPath);
-  event.returnValue = sources;
+  event.returnValue = getSourceFiles();
 });
 
 ipcMain.on('get-sources', (event) => {
@@ -139,8 +138,8 @@ ipcMain.on('get-library-mangas', async (event, sourceName) => {
   event.returnValue = await MangaDB.GetLibraryMangas(sourceName);
 });
 
-ipcMain.on('add-manga-to-cache', async (event, sourceName, fullManga) => {
-  event.returnValue = await MangaDB.AddMangaToCache(sourceName, fullManga);
+ipcMain.on('add-mangas-to-cache', async (event, ...fullMangas) => {
+  event.returnValue = await MangaDB.addMangasToCache(...fullMangas);
 });
 
 ipcMain.on(
@@ -504,9 +503,21 @@ const createWindow = async () => {
   });
 
   // Check if the user has enabled the setting to minimize to tray when minimizing/closing the application.
+  let didMinimizeToTray = false;
+  const minimizeToTrayNotification = () => {
+    if (!didMinimizeToTray) {
+      new Notification({
+        title: 'Minimized to tray',
+        body: 'The application has now been moved to the tray. You can restore it by clicking the tray icon.',
+      }).show();
+      didMinimizeToTray = true;
+    }
+  };
+
   mainWindow.on('minimize', (e: Electron.Event) => {
     if (Settings.getAllSettings().general.minimizeToTray) {
       e.preventDefault();
+      minimizeToTrayNotification();
       mainWindow?.hide();
     }
   });
@@ -515,11 +526,16 @@ const createWindow = async () => {
     if (Settings.getAllSettings().general.closeToTray) {
       if (!isQuitting) {
         e.preventDefault();
+        minimizeToTrayNotification();
         mainWindow?.hide();
         e.returnValue = false;
       }
     }
+    e.returnValue = true;
   });
+
+  // Manga Updater
+  setTimeout(() => initUpdater(mainWindow), isDevelopment ? 5000 : 30000);
 
   // Remove this if your app does not use auto updates
   // eslint-disable-next-line

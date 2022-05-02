@@ -3,6 +3,7 @@
 /* eslint-disable global-require */
 /* eslint-disable import/no-dynamic-require */
 import path from 'path';
+import { getSourceFiles, getSourceDirectory } from '../util';
 import SourceBase from './static/base';
 
 const requireFunc =
@@ -13,8 +14,13 @@ const requireFunc =
 
 export default class Handler {
   public static getSource(sourceName: string): SourceBase {
-    const fileSources = window.electron.util.getSourceFiles();
-    const fileSourceDirectory = window.electron.util.getSourceDirectory();
+    const isRenderer = typeof window !== 'undefined';
+    const fileSources = isRenderer
+      ? window.electron.util.getSourceFiles()
+      : getSourceFiles();
+    const fileSourceDirectory = isRenderer
+      ? window.electron.util.getSourceDirectory()
+      : getSourceDirectory();
 
     const foundSource = fileSources.find(
       (sourcePath) => sourcePath.toLowerCase() === sourceName.toLowerCase()

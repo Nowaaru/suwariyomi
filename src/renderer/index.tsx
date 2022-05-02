@@ -70,16 +70,28 @@ declare global {
         flush: () => void;
       };
       library: {
+        cycle: {
+          getUpdateQueue: () => Array<LibraryManga | FullManga>[];
+          addToUpdateQueue: (
+            ...mangaObjects: (
+              | LibraryManga
+              | FullManga
+              | { MangaID: string; SourceID: string }
+            )[]
+          ) => void;
+          forceUpdateCycle: () => void;
+          isUpdating: () => boolean;
+          flushUpdateQueue: () => void;
+          isSourceUpdating: (sourceID: string) => boolean;
+          get processedTotal(): number;
+          get isBusy(): boolean;
+        };
         getSources: () => LibrarySources;
         flush: () => void;
         addMangaToLibrary: (sourceName: string, mangaId: string) => void;
         removeMangaFromLibrary: (sourceName: string, mangaId: string) => void;
         getLibraryMangas: (sourceName: string) => string[];
-
-        addMangaToCache: (
-          sourceName: string,
-          fullManga: FullManga | LibraryManga
-        ) => void;
+        addMangasToCache: (fullManga: FullManga | LibraryManga) => void;
         removeMangaFromCache: (
           sourceName: string,
           ...mangaIds: string[]

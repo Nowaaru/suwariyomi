@@ -108,6 +108,27 @@ export const settingsSchemata: {
         'Show search suggestions when searching for manga. You can press SHIFT + TAB to fill in the search field.',
       default: false,
     },
+    updateFrequency: {
+      type: 'select',
+      label: 'Update Frequency',
+      description: 'How often to update the library.',
+      default: '86400',
+      options: [
+        { label: 'Manual', value: 'manual' },
+        { label: 'Every 12 hours', value: '43200' },
+        { label: 'Daily', value: '86400' },
+        { label: 'Every 2 days', value: '172800' },
+        { label: 'Every 3 days', value: '259200' },
+        { label: 'Weekly', value: '604800' },
+      ],
+    },
+    updateNotifications: {
+      type: 'switch',
+      label: 'Update Notifications',
+      description:
+        'Show notifications whenever the update cycle starts and ends, and when a new chapter is added.',
+      default: true,
+    },
     updateOngoingManga: {
       type: 'switch',
       label: 'Only Update Ongoing Manga',

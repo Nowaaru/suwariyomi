@@ -37,7 +37,7 @@ import parseQuery from '../util/search';
 
 import { FullManga, Manga as MangaType } from '../../main/util/manga';
 import type { ReadDatabaseValue } from '../../main/util/read';
-import MangaItem, { MangaItemProps } from '../components/mangaitem';
+import MangaItem from '../components/mangaitem';
 import useQuery from '../util/hook/usequery';
 import Handler from '../../main/sources/handler';
 import useForceUpdate from '../util/hook/useforceupdate';
@@ -421,6 +421,41 @@ const Library = () => {
   );
 
   useEffect(() => {
+    const updateFn = (
+      e: Event,
+      mangaData: { manga: FullManga; source: string }
+    ) => {
+      console.log(`Manga ${mangaData.manga.Name} updated.`);
+    };
+    const cycleCompleteFn = () => {
+      fetchQueue.current = [];
+      setSourcesFetching([]);
+    };
+
+    const cycleStartFn = () => {
+      console.log('Update cycle started.');
+      Object.keys(librarySources).forEach((source) => {
+        if (
+          window.electron.library.cycle.isSourceUpdating(source) &&
+          !sourcesFetching.includes(source)
+        ) {
+          setSourcesFetching([...sourcesFetching, source]);
+        }
+      });
+    };
+
+    window.electron.ipcRenderer.on('update-cycle-complete', cycleCompleteFn);
+    window.electron.ipcRenderer.on('update-cycle-start', cycleStartFn);
+    window.electron.ipcRenderer.on('manga-update', updateFn);
+
+    return () => {
+      window.electron.ipcRenderer.off('update-cycle-complete', cycleCompleteFn);
+      window.electron.ipcRenderer.off('update-cycle-start', cycleStartFn);
+      window.electron.ipcRenderer.off('manga-update', updateFn);
+    };
+  }, [librarySources, sourcesFetching]);
+
+  useEffect(() => {
     const suwaLibrary = MiscEnmap.get('suwariyomi_library') ?? {};
     // Iterate through all sources and then make a `data_source` key for each source.
     mappedFileNamesRef.current.forEach((source) => {
@@ -495,11 +530,13 @@ const Library = () => {
     // Find all sources that have a library size that isn't proportional to their cache size.
     const queuedSources: string[] = [];
     mappedFileNamesRef.current.forEach((source) => {
+      const sourceName = source.getName();
       if (
-        LibraryUtilities.getCachedMangas(source.getName()).length <
-        LibraryUtilities.getLibraryMangas(source.getName()).length
+        LibraryUtilities.getCachedMangas(sourceName).length /
+          LibraryUtilities.getLibraryMangas(sourceName).length <
+        0.8
       ) {
-        queuedSources.push(source.getName());
+        queuedSources.push(sourceName);
       }
     });
 
@@ -515,14 +552,16 @@ const Library = () => {
     fetchQueue.current
       .filter((x) => !sourcesFetching.includes(x))
       .forEach((source) => {
-        window.electron.library.getLibraryMangas(source).forEach((mangaID) => {
-          allKeys[source] = allKeys[source] || [];
-          allKeys[source].push(mangaID);
+        window.electron.library
+          .getLibraryMangas(source)
+          .filter((x) => librarySources[source]?.Manga.includes(x))
+          .forEach((mangaID) => {
+            allKeys[source] = allKeys[source] || [];
+            allKeys[source].push(mangaID);
 
-          if (sourcesFetching.includes(source)) return;
-          fetchQueue.current.splice(fetchQueue.current.indexOf(source), 1);
-          setSourcesFetching([...sourcesFetching, source]);
-        });
+            if (sourcesFetching.includes(source)) return;
+            fetchQueue.current.splice(fetchQueue.current.indexOf(source), 1);
+          });
       });
 
     // Request all manga that are not in the cache
@@ -530,47 +569,21 @@ const Library = () => {
     allKeysKeys.forEach((source) => {
       const mangaIDs = allKeys[source];
       if (mangaIDs.length > 0) {
-        const foundSource = mappedFileNamesRef.current.find(
-          (sourceObject) => sourceObject.getName() === source
+        window.electron.library.cycle.addToUpdateQueue(
+          ...mangaIDs.map((x) => ({
+            SourceID: source,
+            MangaID: x,
+          }))
         );
-
-        if (foundSource) {
-          foundSource
-            .getMangas(mangaIDs, true)
-            .then(async (mangaList) => {
-              return Promise.allSettled(
-                mangaList.flatMap(async (manga) => {
-                  const awaitedManga = await manga;
-                  window.electron.log.info(
-                    `Fetched ${awaitedManga.Name} from source ${source}.`
-                  );
-                  return window.electron.library.addMangaToCache(
-                    foundSource.getName(),
-                    awaitedManga
-                  );
-                })
-              );
-            })
-            .then(() => {
-              return setSourcesFetching(
-                sourcesFetching.filter(
-                  (fetchingSource) => fetchingSource !== foundSource.getName()
-                )
-              );
-            })
-            .catch((error) => {
-              window.electron.log.error(
-                `Failed to get manga from ${source}:`,
-                error
-              );
-            });
-        }
       }
     });
-  }, [sourcesFetching, setSourcesFetching, sourceList, fetchQueue]);
+
+    if (!window.electron.library.cycle.isBusy) {
+      window.electron.library.cycle.forceUpdateCycle();
+    }
+  }, [sourcesFetching, sourceList, fetchQueue, librarySources]);
 
   const sourceListValues = Object.values(sourceList);
-
   const allCachedRead = useRef<Record<string, ReadDatabaseValue>>({});
   const allChapters = mappedFileNamesRef.current
     .map((x) => {

@@ -1118,8 +1118,7 @@ const Reader = () => {
 
     if (currentManga) currentManga.LastRead = new Date();
     const updateManga = () =>
-      currentManga &&
-      window.electron.library.addMangaToCache(sourceId, currentManga);
+      currentManga && window.electron.library.addMangasToCache(currentManga);
 
     updateManga();
     return () => updateManga(); // Update the last read on mount and on unmount.
@@ -1307,8 +1306,7 @@ const Reader = () => {
 
                     trackingItem.progress = Math.floor(mangaChapter?.Chapter);
                     trackingItem.progressVolumes = mangaChapter?.Volume ?? 0;
-                    return window.electron.library.addMangaToCache(
-                      libraryManga.SourceID,
+                    return window.electron.library.addMangasToCache(
                       libraryManga
                     );
                   })

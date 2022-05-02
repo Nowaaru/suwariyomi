@@ -13,6 +13,7 @@ module.exports = {
     'no-underscore-dangle': 'off',
     'class-methods-use-this': 'off',
     'no-else-return': 'off',
+    'promise/always-return': 'off',
     'consistent-return': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/ban-ts-comment': 'off',

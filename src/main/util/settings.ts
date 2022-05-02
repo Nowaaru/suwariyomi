@@ -23,6 +23,7 @@ export const defaultSettings = {
     ignoreArticles: false,
     searchSuggestions: false,
     updateOngoingManga: false,
+    updateFrequency: '86400',
   },
   appearance: {
     theme: 'dark',
@@ -136,6 +137,15 @@ export const settingsSchema: Schema<typeof defaultSettings> = {
       searchSuggestions: {
         type: 'boolean',
         default: false,
+      },
+      updateFrequency: {
+        type: 'string',
+        default: '86400',
+        enum: ['manual', '43200', '86400', '172800', '259200', '604800'],
+      },
+      updateNotifications: {
+        type: 'boolean',
+        default: true,
       },
       updateOngoingManga: {
         type: 'boolean',
@@ -426,6 +436,7 @@ const Settings = new SettingsDatabase({
         library: Object.assign(
           {
             discordRPCIntegration: true,
+            updateFrequency: '86400',
           },
           settings.store.library
         ),

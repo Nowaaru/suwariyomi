@@ -150,7 +150,7 @@ export default abstract class SourceBase {
   public abstract getMangas(
     mangaIDs: string[],
     doFull: boolean
-  ): Promise<Array<FullManga[]>>;
+  ): Promise<Promise<FullManga>[]>;
 
   public abstract getUrl(mangaID: string): string;
 

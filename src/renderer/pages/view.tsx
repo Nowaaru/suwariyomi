@@ -689,7 +689,7 @@ const View = () => {
     selectedSource
       .getManga(id, true)
       .then((x) => {
-        window.electron.library.addMangaToCache(source, x);
+        window.electron.library.addMangasToCache(x);
 
         const newData = { ...x };
         newData.Chapters = filterChaptersToLanguage(

@@ -85,11 +85,7 @@ const TrackerModal = (
             if (libraryManga?.Tracking?.[searchModalData.tracker])
               delete libraryManga.Tracking[searchModalData.tracker];
 
-            window.electron.library.addMangaToCache(
-              libraryManga.SourceID,
-              libraryManga
-            );
-
+            window.electron.library.addMangasToCache(libraryManga);
             onClose();
           }}
           sx={{
@@ -183,11 +179,7 @@ const TrackerModal = (
                 } as MangaTrackingData;
 
                 libraryManga.Tracking = Tracking;
-                window.electron.library.addMangaToCache(
-                  libraryManga.SourceID,
-                  libraryManga
-                );
-
+                window.electron.library.addMangasToCache(libraryManga);
                 onClose();
               }}
             />
@@ -227,11 +219,7 @@ const TrackerModal = (
                   const newStatus = e.target.value;
                   currentTracker.readingStatus = newStatus;
 
-                  window.electron.library.addMangaToCache(
-                    libraryManga.SourceID,
-                    libraryManga
-                  );
-
+                  window.electron.library.addMangasToCache(libraryManga);
                   trackerInstance
                     .updateManga(
                       {
@@ -294,11 +282,7 @@ const TrackerModal = (
                   }
 
                   currentTracker.score = newScore;
-                  window.electron.library.addMangaToCache(
-                    libraryManga.SourceID,
-                    libraryManga
-                  );
-
+                  window.electron.library.addMangasToCache(libraryManga);
                   trackerInstance.updateManga(
                     {
                       id: currentTracker.id as number,
@@ -349,10 +333,7 @@ const TrackerModal = (
                           res.data.userTrackedInfo.startedAt
                         );
 
-                        window.electron.library.addMangaToCache(
-                          libraryManga.SourceID,
-                          libraryManga
-                        );
+                        window.electron.library.addMangasToCache(libraryManga);
                       }
                       return true;
                     })
@@ -392,10 +373,7 @@ const TrackerModal = (
                           res.data.userTrackedInfo.startedAt
                         );
 
-                        window.electron.library.addMangaToCache(
-                          libraryManga.SourceID,
-                          libraryManga
-                        );
+                        window.electron.library.addMangasToCache(libraryManga);
                       }
                       return true;
                     })

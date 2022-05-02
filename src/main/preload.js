@@ -5,7 +5,14 @@ const log = require('electron-log');
 log.catchErrors();
 log.info('preload.js: started');
 
-const ipcValidChannels = ['fullscreen-toggle', 'open-protocol'];
+const ipcValidChannels = [
+  'fullscreen-toggle',
+  'open-protocol',
+  'manga-open',
+  'manga-update',
+  'update-cycle-complete',
+  'update-cycle-start',
+];
 
 window.electron = {
   log: log.functions,
@@ -21,7 +28,6 @@ window.electron = {
     showOpenDialog: (options) => {
       return ipcRenderer.invoke('show-open-dialog', options);
     },
-
     downloadImage: (url, payload) => {
       return ipcRenderer.send('download-image', url, payload);
     },
@@ -58,6 +64,32 @@ window.electron = {
     },
   },
   library: {
+    cycle: {
+      getUpdateQueue: () => {
+        return ipcRenderer.sendSync('get-update-queue');
+      },
+      addToUpdateQueue: (...mangaObjects) => {
+        return ipcRenderer.send('add-to-update-queue', ...mangaObjects);
+      },
+      forceUpdateCycle: () => {
+        return ipcRenderer.send('force-update-cycle');
+      },
+      isUpdating(manga) {
+        return ipcRenderer.sendSync('is-updating', manga);
+      },
+      flushUpdateQueue: () => {
+        return ipcRenderer.send('flush-update-queue');
+      },
+      isSourceUpdating: (sourceID) => {
+        return ipcRenderer.sendSync('is-source-updating', sourceID);
+      },
+      get processedTotal() {
+        return ipcRenderer.sendSync('get-processed-total');
+      },
+      get isBusy() {
+        return ipcRenderer.sendSync('is-busy');
+      },
+    },
     flush: () => {
       ipcRenderer.send('flush-db');
     },
@@ -73,11 +105,10 @@ window.electron = {
     getLibraryMangas: (sourceName) => {
       return ipcRenderer.sendSync('get-library-mangas', sourceName);
     },
-    addMangaToCache: (sourceName, fullManga) => {
-      ipcRenderer.send('add-manga-to-cache', sourceName, fullManga);
+    addMangasToCache: (...fullManga) => {
+      ipcRenderer.send('add-mangas-to-cache', ...fullManga);
     },
     removeMangaFromCache: (sourceName, ...mangaIds) => {
-      console.log(mangaIds);
       ipcRenderer.send('remove-manga-from-cache', sourceName, ...mangaIds);
     },
     getCachedManga: (sourceName, mangaId) => {
