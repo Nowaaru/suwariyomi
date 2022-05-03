@@ -9,7 +9,7 @@ import Tag from './tag';
 import nocover from '../../../assets/images/nocover_dark.png';
 import Handler from '../../main/sources/handler';
 
-// util fdunc
+// util func
 import type { ReadDatabaseValue } from '../../main/util/read';
 import { getReadUrl, sortChapters } from '../util/func';
 import type { FullManga } from '../../main/util/manga';

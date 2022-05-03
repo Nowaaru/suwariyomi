@@ -43,6 +43,7 @@ import { omit, mapValues } from 'lodash';
 
 import Handler from '../../main/sources/handler';
 import SourceBase from '../../main/sources/static/base';
+import LoginItem from '../components/loginitem';
 
 import type { DefaultSettings } from '../../main/util/settings';
 import { Schema, settingsSchemata } from '../util/auxiliary';
@@ -754,26 +755,23 @@ const Settings = () => {
                 tracking: (
                   <Box className={css(styles.optionContainer)}>
                     <Typography className={css(styles.optionLabel)}>
-                      Enable Tracking
+                      Tracking
                       <Typography
                         className={css(styles.optionLabelDescription)}
                       >
-                        Turning this off will allow you to disable automatic
-                        updates to your trackers without having to manually
-                        disconnect them.
+                        Set your trackers here.
                       </Typography>
                     </Typography>
-                    <Tooltip title="...yet.">
-                      <Button
-                        className={css(styles.settingsButton)}
-                        style={{
-                          marginTop: '1rem',
+                    <div>
+                      <LoginItem
+                        authenticator="AniList"
+                        onDeauth={() => {
+                          window.electron.log.info('AniList deauthenticated.');
                         }}
-                        component="label"
-                      >
-                        Not Implemented!
-                      </Button>
-                    </Tooltip>
+                        trackedtitle="Click to deauthorize."
+                        title="Track using AniList"
+                      />
+                    </div>
                   </Box>
                 ),
               } as { [key: string]: JSX.Element }

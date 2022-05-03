@@ -1,4 +1,3 @@
-import '../css/Login.css';
 import { StyleSheet, css } from 'aphrodite';
 import { useNavigate } from 'react-router-dom';
 
@@ -70,22 +69,8 @@ const LoginMenu = () => {
           <div className="login-content">
             <div className="login-content-inner">
               <div className="icons">
-                <LoginItem
-                  src={anilist}
-                  isDisabled={!!checkAuthenticated('anilist')}
-                  onAuth={onAuth}
-                  disabledtitle="Already logged in!"
-                  authenticator="anilist"
-                  alt="Login with AniList"
-                />
-                <LoginItem
-                  src={myanimelist}
-                  isDisabled={!!checkAuthenticated('myanimelist')}
-                  onAuth={onAuth}
-                  disabledtitle="Already logged in!"
-                  authenticator="myanimelist"
-                  alt="Login with MyAnimeList"
-                />
+                <LoginItem onAuth={onAuth} authenticator="AniList" />
+                <LoginItem onAuth={onAuth} authenticator="MyAnimeList" />
               </div>
             </div>
             {submitButton}

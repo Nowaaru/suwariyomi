@@ -1,7 +1,8 @@
-import React from 'react';
+/* eslint-disable react/sort-comp */
+import { useCallback, useMemo, useState } from 'react';
 import { Tooltip } from '@mui/material';
 import { StyleSheet, css } from 'aphrodite';
-
+import { SupportedTrackers, getTracker } from '../util/tracker/tracker';
 // TODO: Unionize this
 const AniListIntegrationHandler = async () => {
   window.electron.auth
@@ -69,7 +70,7 @@ const MyAnimeListIntegrationHandler = async () => {
 };
 
 const styles = StyleSheet.create({
-  isDisabled: {
+  greyedOut: {
     filter: 'grayscale(0.25) brightness(25%)',
   },
   loginItem: {
@@ -80,6 +81,7 @@ const styles = StyleSheet.create({
     background: 'rgb(14, 14, 14)',
     border: '2px solid rgb(14, 14, 14)',
     borderRadius: '100%',
+    marginTop: '10px',
     marginRight: '10px',
     marginBottom: '10px',
     cursor: 'pointer',
@@ -89,111 +91,141 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   img: {
-    width: '100%',
-    height: '100%',
+    maxWidth: '100%',
+    maxHeight: '100%',
   },
 });
 
-// const LoginItem = ({
-//   src = '',
-//   alt = 'Login Item' as string,
-//   title = 'Login Item' as string,
-//   disabledtitle = 'Already logged in!' as string,
-//   isDisabled = false as boolean,
-//   onClick = (() => {}) as () => void,
-// }) => {
-//   return (
-//     <Tooltip title={isDisabled ? disabledtitle : alt || title} placement="top">
-//       <span>
-//         <button
-//           disabled={isDisabled}
-//           type="button"
-//           onClick={onClick}
-//           className={`login-item ${css(styles.loginItem)}`}
-//         >
-//           <img
-//             src={src}
-//             alt={alt}
-//             title={title || alt}
-//             className={css(styles.img, isDisabled ? styles.isDisabled : false)}
-//           />
-//         </button>
-//       </span>
-//     </Tooltip>
-//   );
-// };
-
 type ComponentProps = {
-  src?: string;
-  alt?: string;
   title?: string;
-  disabledtitle?: string;
-  isDisabled?: boolean;
-  authenticator: 'anilist' | 'myanimelist';
+  authenticator: SupportedTrackers;
+  trackedtitle?: string;
   onAuth?: () => void;
+  onDeauth?: () => void;
 };
 
 const Authenticators = {
-  anilist: AniListIntegrationHandler,
-  myanimelist: MyAnimeListIntegrationHandler,
+  AniList: AniListIntegrationHandler,
+  MyAnimeList: MyAnimeListIntegrationHandler,
 };
 
-class LoginItem extends React.Component<ComponentProps, ComponentProps> {
-  constructor(props: ComponentProps) {
-    super(props);
+const LoginItem = ({
+  title,
+  authenticator,
+  trackedtitle,
+  onAuth,
+  onDeauth,
+}: ComponentProps) => {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(
+    window.electron.auth.checkAuthenticated(authenticator)
+  );
 
-    this.state = this.props;
-    this.handleClick = this.handleClick.bind(this);
-  }
+  const Tracker = useMemo(() => getTracker(authenticator), [authenticator]);
+  const handleClick = useCallback(async () => {
+    return Authenticators[authenticator]();
+  }, [authenticator]);
 
-  handleClick = async () => {
-    const { authenticator } = this.props;
-    return Authenticators[authenticator]().then(() => {
-      this.setState({ isDisabled: true });
-      return true;
-    });
-  };
+  if (!Tracker)
+    throw new Error(`Tracker support for ${authenticator} does not exist.`);
+  const displayTitle = (isAuthenticated ? trackedtitle : title) ?? '';
+  return (
+    <Tooltip title={displayTitle} placement="top">
+      <button
+        type="button"
+        onClick={() => {
+          if (isAuthenticated) {
+            window.electron.auth.deleteAuthenticated(authenticator);
+            setIsAuthenticated(false);
+            if (onDeauth) return onDeauth();
+          }
 
-  render() {
-    const {
-      src = '',
-      alt = 'Login Item' as string,
-      title = 'Login Item' as string,
-      disabledtitle = 'Already logged in!' as string,
-      isDisabled = false as boolean,
-      onAuth = (() => {}) as () => void,
-    } = this.state;
-
-    const { handleClick } = this;
-    return (
-      <Tooltip
-        title={isDisabled ? disabledtitle : alt || title}
-        placement="top"
+          return handleClick()
+            .then(() => {
+              setIsAuthenticated(true);
+              if (onAuth) return onAuth();
+            })
+            .catch(console.error);
+        }}
+        className={`${css(styles.loginItem)}`}
       >
-        <span>
-          <button
-            disabled={isDisabled}
-            type="button"
-            onClick={() => {
-              return handleClick().then(() => {
-                return onAuth();
-              });
-            }}
-            className={`login-item ${css(styles.loginItem)}`}
-          >
-            <img
-              src={src}
-              alt=""
-              className={css(
-                styles.img,
-                isDisabled ? styles.isDisabled : false
-              )}
-            />
-          </button>
-        </span>
-      </Tooltip>
-    );
-  }
-}
+        <img
+          src={new Tracker().getIcon()}
+          alt=""
+          className={css(styles.img, isAuthenticated && styles.greyedOut)}
+        />
+      </button>
+    </Tooltip>
+  );
+};
+
+LoginItem.defaultProps = {
+  onAuth: () => {},
+  onDeauth: () => {},
+  trackedtitle: '',
+  title: '',
+};
+
+// class LoginItem extends React.Component<ComponentProps, ComponentProps> {
+//   constructor(props: ComponentProps) {
+//     super(props);
+//     const { authenticator } = this.props;
+//     const Tracker = getTracker(authenticator);
+
+//     this.tracker = new Tracker();
+//     this.handleClick = this.handleClick.bind(this);
+//   }
+
+//   handleClick = async () => {
+//     const { authenticator } = this.props;
+//     return Authenticators[authenticator]();
+//   };
+
+//   render() {
+//     const {
+//       title = 'Authenticate' as string,
+//       trackedtitle = 'Click to unauthenticate.',
+//       onAuth = (() => {}) as () => void,
+//       onDeauth = (() => {}) as () => void,
+//       authenticator,
+//     } = this.props;
+
+//     const { handleClick } = this;
+//     if (!this.tracker)
+//       throw new Error(`Tracker support for ${authenticator} does not exist.`);
+
+//     let isAuthenticated =
+//       window.electron.auth.checkAuthenticated(authenticator);
+//     return (
+//       <Tooltip title={isAuthenticated ? trackedtitle : title} placement="top">
+//         <button
+//           type="button"
+//           onClick={() => {
+//             if (isAuthenticated) {
+//               window.electron.auth.deleteAuthenticated(authenticator);
+//               isAuthenticated = false;
+//               return onDeauth();
+//             }
+
+//             return handleClick()
+//               .then(() => {
+//                 isAuthenticated = true;
+//                 return onAuth();
+//               })
+//               .catch(console.error);
+//           }}
+//           className={`${css(styles.loginItem)}`}
+//         >
+//           <img
+//             src={this.tracker.getIcon()}
+//             alt=""
+//             className={css(styles.img, isAuthenticated && styles.greyedOut)}
+//           />
+//         </button>
+//       </Tooltip>
+//     );
+//   }
+
+//   tracker: TrackerBase;
+// }
 
 export default LoginItem;

@@ -237,15 +237,38 @@ window.electron = {
         'electron-store-get',
         'authorization'
       );
-      authorizationStore[specificLogin] = {
-        access_token,
-        expires_in,
-      };
-      ipcRenderer.send(
-        'electron-store-set',
-        'authorization',
-        authorizationStore
+
+      if (authorizationStore) {
+        authorizationStore[specificLogin] = {
+          access_token,
+          expires_in,
+        };
+        ipcRenderer.send(
+          'electron-store-set',
+          'authorization',
+          authorizationStore
+        );
+        return true;
+      }
+      return false;
+    },
+    deleteAuthenticated(specificLogin) {
+      const authorizationStore = ipcRenderer.sendSync(
+        'electron-store-get',
+        'authorization'
       );
+
+      if (authorizationStore) {
+        delete authorizationStore[specificLogin.toLowerCase()];
+        ipcRenderer.send(
+          'electron-store-set',
+          'authorization',
+          authorizationStore
+        );
+
+        return true;
+      }
+      return false;
     },
   },
   ipcRenderer: {

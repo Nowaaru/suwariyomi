@@ -76,7 +76,7 @@ export type Media = {
   } | null;
 };
 
-abstract class TrackerBase {
+export abstract class TrackerBase {
   static getSupportedTrackers(): typeof supportedTrackers {
     return supportedTrackers;
   }

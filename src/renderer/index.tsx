@@ -148,7 +148,8 @@ declare global {
           specificLogin: string,
           access_token: string,
           expires_in: number
-        ) => void;
+        ) => boolean;
+        deleteAuthenticated: (specificLogin?: string) => boolean;
       };
       ipcRenderer: {
         minimize: () => void;
