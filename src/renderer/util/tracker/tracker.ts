@@ -142,24 +142,27 @@ class AniListTracker extends TrackerBase {
             }
           `;
 
-    return fetch('https://graphql.anilist.co', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-        Authorization: `Bearer ${accessToken}`,
-      },
-      body: JSON.stringify({
-        query: gqlQuery,
-        variables: {},
-      }),
-    })
-      .then((res) => res.json())
-      .then((json) => {
-        console.log(json);
-        return json;
+    return new Promise((resolve, reject) => {
+      fetch('https://graphql.anilist.co', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({
+          query: gqlQuery,
+          variables: {},
+        }),
       })
-      .catch(console.error);
+        .then((res) => res.json())
+        .then((json) => {
+          if (!json?.data || json.data.errors) {
+            return reject(json);
+          } else return resolve(json);
+        })
+        .catch(reject);
+    });
   }
 
   getName(): string {
