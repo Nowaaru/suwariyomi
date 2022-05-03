@@ -188,7 +188,7 @@ const TrackerModal = (
       </div>
       {(() => {
         if (!searchModalData?.tracker) return null;
-        const currentTracker = libraryManga.Tracking[searchModalData.tracker];
+        const currentTracker = libraryManga.Tracking?.[searchModalData.tracker];
 
         if (!currentTracker) return null;
         if (!currentTracker.id) return null;
