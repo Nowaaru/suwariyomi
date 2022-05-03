@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable new-cap */
 /* eslint-disable global-require */
 /* eslint-disable import/no-dynamic-require */

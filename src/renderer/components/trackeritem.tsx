@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { StyleSheet, css } from 'aphrodite';
 import { Box } from '@mui/material';
 import { useState } from 'react';

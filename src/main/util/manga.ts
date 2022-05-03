@@ -203,9 +203,7 @@ const reloadSources = async () => {
 
     // These are already present due to the ensure() call above.
     const [currentMangaData, currentLibraryData] = [
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       MangaDatabase.get('CachedManga')!,
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       LibraryDatabase.get('Library')!,
     ];
 

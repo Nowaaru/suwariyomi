@@ -78,7 +78,6 @@ const ReaderMenu = (
     'className'
   >
 ) => {
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const onItemClick = props.onItemClick!; // Will be present due to defaultProps.
   const dataSet: Record<
     string,

@@ -430,7 +430,7 @@ const MangaItem = ({
                       ) {
                         return `Chapter ${
                           // firstUnreadCachedChapter depends on firstUnreadChapter. If the latter does not exist, the former does not either.
-                          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+
                           firstUnreadChapter!.Chapter
                         } - Page ${unreadChapterCurrentPage} of ${
                           firstUnreadCachedChapter.pageCount
@@ -471,8 +471,7 @@ const MangaItem = ({
                             firstUnreadChapter.ChapterID,
                             Math.max(
                               !Number.isNaN(Number(unreadChapterCurrentPage))
-                                ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                                  unreadChapterCurrentPage!
+                                ? unreadChapterCurrentPage!
                                 : 1,
                               1
                             ) // Check for <1 in case of setting to unread via `view.tsx`.

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable react/jsx-props-no-spreading */
 
 import { Box, Typography, UseSwitchProps } from '@mui/material';

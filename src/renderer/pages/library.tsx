@@ -1171,7 +1171,7 @@ const Library = () => {
                   if (e.shiftKey) {
                     e.preventDefault();
                     e.stopPropagation();
-                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+
                     if ((e.target as any).value.length === 0) {
                       (e.target as any).value = selectedDescription.current;
                       forceCheck();

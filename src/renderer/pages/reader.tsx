@@ -3,7 +3,6 @@
 // based off of another value.
 // ..or so I'm told.
 
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable consistent-return */
 import {
   Button,

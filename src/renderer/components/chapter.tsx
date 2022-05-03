@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Paper, Button, Checkbox, IconButton, Tooltip } from '@mui/material';
 import { useState } from 'react';
 import { StyleSheet, css } from 'aphrodite';
@@ -288,11 +287,11 @@ const Chapter = ({
 
           onBookmark?.(checked);
         }}
-        defaultChecked={isBookmarked}
+        checked={!!isBookmarked}
       />
       {modifierShift ? (
         <Checkbox
-          defaultChecked={isRead}
+          checked={!!isRead}
           checkedIcon={
             <VisibilityOffIcon className={css(styles.markUnreadIcon)} />
           }
