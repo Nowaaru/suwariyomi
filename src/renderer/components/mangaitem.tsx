@@ -386,7 +386,7 @@ const MangaItem = ({
               onClick={() => Navigation(viewParams)}
             >
               <img
-                src={coverUrl ?? nocover}
+                src={stripHtml(coverUrl ?? nocover).result}
                 className={css(
                   styles.mangaItemListCoverImage,
                   styles.coverImage
@@ -511,7 +511,7 @@ const MangaItem = ({
           >
             <div className={css(styles.mangaItemCover, styles.gridCover)}>
               <img
-                src={coverUrl ?? nocover}
+                src={stripHtml(coverUrl ?? nocover).result}
                 className={css(
                   styles.mangaItemGridCoverImage,
                   styles.coverImage
