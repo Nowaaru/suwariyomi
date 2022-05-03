@@ -406,7 +406,7 @@ if (isDevelopment) {
   app.getVersion = () => require('../../release/app/package.json').version;
 }
 
-app.setAppUserModelId(process.execPath);
+if (process.platform === 'win32') app.setAppUserModelId(app.name);
 
 // if (isDevelopment) {
 require('electron-debug')();
@@ -522,6 +522,7 @@ const createWindow = async () => {
       new Notification({
         title: 'Minimized to tray',
         body: 'The application has now been moved to the tray. You can restore it by clicking the tray icon.',
+        icon: appIconLocation,
       }).show();
       didMinimizeToTray = true;
     }
@@ -548,7 +549,10 @@ const createWindow = async () => {
   });
 
   // Manga Updater
-  setTimeout(() => initUpdater(mainWindow), isDevelopment ? 5000 : 30000);
+  setTimeout(
+    () => initUpdater(mainWindow, appIconLocation),
+    isDevelopment ? 5000 : 30000
+  );
 
   // Remove this if your app does not use auto updates
   // eslint-disable-next-line

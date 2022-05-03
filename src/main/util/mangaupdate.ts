@@ -1,5 +1,5 @@
+import log from 'electron-log';
 import { BrowserWindow, ipcMain, Notification } from 'electron';
-
 import MangaDB, { FullManga, LibraryManga } from './manga';
 
 import MiscDB from './misc';
@@ -11,10 +11,13 @@ import SourceBase from '../sources/static/base';
 export class MangaQueue {
   private queue: LibraryManga[];
 
+  private notificationIcon?: string;
+
   private window: BrowserWindow | null;
 
-  constructor(browserWindow: BrowserWindow | null) {
+  constructor(browserWindow: BrowserWindow | null, icon?: string) {
     this.queue = [];
+    this.notificationIcon = icon;
     this.window = browserWindow;
   }
 
@@ -43,7 +46,7 @@ export class MangaQueue {
 
   public async processQueue(): Promise<void> {
     // Pre-make bases for all sources
-    console.log(`Beginning update cycle... (${this.queue.length} manga)`);
+    log.info(`Beginning update cycle... (${this.queue.length} manga)`);
     this.window?.webContents.send('update-cycle-start', this.queue.length);
 
     const allUpdatedManga: FullManga[] = [];
@@ -62,6 +65,7 @@ export class MangaQueue {
       new Notification({
         title: 'Warning',
         body: 'Large amount of manga in queue could cause decreased application performance and increased battery usage.',
+        icon: this.notificationIcon,
       }).show();
 
     // Process queue
@@ -100,7 +104,7 @@ export class MangaQueue {
                   manga.Added = oldManga.Added ?? manga.Added;
                   manga.DateFetched = new Date();
 
-                  console.log(
+                  log.info(
                     `Fetched ${manga.Name} from source ${source.getName()}.`
                   );
                   // Any new chapters should be added to the Object above.
@@ -120,22 +124,22 @@ export class MangaQueue {
           );
         })
         .catch((err) => {
-          console.error(err);
+          log.error(err);
         });
     });
 
     const setArray = await Promise.allSettled(arrayOfPromises);
     setArray.forEach((e) => {
-      if (e.status === 'rejected') console.error(e.reason);
+      if (e.status === 'rejected') log.error(e.reason);
     });
 
     const chapterKeys = Object.keys(allNewChapters);
     if (chapterKeys.length > 0) {
       const sortedMangas = Object.values(allNewChapters).sort(
-        (a, b) => a.LastRead.getTime() - b.LastRead.getTime()
+        (a, b) => (a.LastRead?.getTime() ?? 0) - (b.LastRead?.getTime() ?? 0)
       );
 
-      console.log(`Sorted Manga Length: ${sortedMangas.length}`);
+      log.info(`Sorted Manga Length: ${sortedMangas.length}`);
       const manga = sortedMangas[0];
       const chapterNotif = new Notification({
         title: `New Chapter${sortedMangas.length > 1 ? 's' : ''}`,
@@ -151,6 +155,7 @@ export class MangaQueue {
             text: 'Open',
           },
         ],
+        icon: this.notificationIcon,
       });
 
       chapterNotif.on('action', async (event, action) => {
@@ -164,10 +169,12 @@ export class MangaQueue {
       chapterNotif.show();
     }
 
+    log.warn('Adding to cache.');
     MangaDB.addMangasToCache(...allUpdatedManga);
+    log.warn('Done adding to cache.');
 
     if (this.window) {
-      this.window.setProgressBar(0);
+      this.window.setProgressBar(-1);
       this.window.flashFrame(true);
       setTimeout(() => {
         if (this.window) this.window.flashFrame(false);
@@ -177,7 +184,7 @@ export class MangaQueue {
     this.queue.length = 0;
     this._isProcessing = false;
     this.window?.webContents.send('update-cycle-complete');
-    console.log('Update cycle completed.');
+    log.info('Update cycle completed.');
   }
 
   public hasManga(manga: LibraryManga): boolean {
@@ -196,8 +203,8 @@ export class MangaQueue {
       return;
     }
 
-    console.warn(`Manga ${manga.MangaID} already in queue.`);
-    if (!manga.MangaID) return console.log(manga);
+    log.warn(`Manga ${manga.MangaID} already in queue.`);
+    if (!manga.MangaID) return log.info(manga);
   }
 
   public removeManga(manga: LibraryManga): void {
@@ -214,7 +221,7 @@ export class MangaQueue {
 }
 
 const mainAppMiscDBKey = 'suwariyomi_main';
-export const init = (win: BrowserWindow | null) => {
+export const init = (win: BrowserWindow | null, icon?: string) => {
   if (!MiscDB.get(mainAppMiscDBKey)) {
     MiscDB.set(mainAppMiscDBKey, {});
   }
@@ -227,7 +234,7 @@ export const init = (win: BrowserWindow | null) => {
     }
   }
 
-  const internalQueue = new MangaQueue(win);
+  const internalQueue = new MangaQueue(win, icon);
   const updateCheckInterval: NodeJS.Timer = setInterval(() => {
     const { updateFrequency, updateOngoingManga } =
       SettingsDB.getAllSettings().library;
@@ -250,7 +257,7 @@ export const init = (win: BrowserWindow | null) => {
           .filter(
             (x) =>
               x.DateFetched === null ||
-              x.DateFetched.getTime() + Number(updateFrequency) * 1000 <
+              (x.DateFetched?.getTime() ?? 0) + Number(updateFrequency) * 1000 <
                 now.getTime()
           )
           .filter(
@@ -302,6 +309,6 @@ export const init = (win: BrowserWindow | null) => {
   ipcMain.on('force-update-cycle', (event) => {
     event.returnValue = internalQueue.processing;
     if (!internalQueue.processing)
-      internalQueue.processQueue().catch(console.error);
+      internalQueue.processQueue().catch(log.error);
   });
 };

@@ -429,6 +429,7 @@ const Library = () => {
     };
     const cycleCompleteFn = () => {
       fetchQueue.current = [];
+      console.log('Update cycle complete.');
       setSourcesFetching([]);
     };
 
