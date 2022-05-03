@@ -40,7 +40,11 @@ import {
   SupportedTrackers,
   supportedTrackers,
 } from '../util/tracker/tracker';
-import { FullManga, LibraryManga } from '../../main/util/manga';
+import {
+  FullManga,
+  LibraryManga,
+  MangaTrackingData,
+} from '../../main/util/manga';
 import { ReadDatabaseValue } from '../../main/util/read';
 import {
   filterChaptersToLanguage,
@@ -665,8 +669,6 @@ const View = () => {
             progress,
             progressVolumes,
             id: mangaId,
-
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           } = libraryManga.Tracking[tracker]!;
 
           const TrackerClass = getTracker(tracker);
@@ -1173,11 +1175,54 @@ const View = () => {
                   })
                   .map((x) => {
                     const foundChapter = chapterData.current[x.ChapterID] || {};
-
                     return (
                       <Chapter
                         dateformat={dateFormat.current}
                         onMarkRead={() => {
+                          const { updateWhenMarkedAsRead } =
+                            window.electron.settings.getAll().tracking;
+                          if (
+                            has(mangaData.current ?? {}, 'Tracking') &&
+                            updateWhenMarkedAsRead
+                          ) {
+                            const libraryManga =
+                              mangaData.current as LibraryManga;
+                            const tracking = libraryManga.Tracking;
+                            const trackingKeys = Object.keys(
+                              tracking
+                            ) as (keyof typeof tracking)[];
+                            trackingKeys.forEach((key) => {
+                              if (!tracking[key]) return;
+
+                              const ActualTracker = getTracker(key);
+                              const trackerInstance = new ActualTracker();
+                              const { id: listId, progress } = tracking[
+                                key
+                              ] as MangaTrackingData;
+
+                              if (listId && progress && chapterToDisplay) {
+                                trackerInstance
+                                  .updateManga(
+                                    {
+                                      id: listId,
+                                      progress: chapterToDisplay.Chapter,
+                                    },
+                                    ['progress']
+                                  )
+                                  .then((res) => {
+                                    const newProgress = res?.data?.progress;
+                                    if (newProgress) {
+                                      tracking[key]!.progress = newProgress;
+                                      window.electron.library.addMangasToCache(
+                                        libraryManga
+                                      );
+                                    }
+                                  })
+                                  .catch(console.error);
+                              }
+                            });
+                          }
+
                           chapterData.current =
                             window.electron.read.get(
                               selectedSource.getName()
@@ -1220,15 +1265,7 @@ const View = () => {
                 Object.values(searchModalData?.tracker ?? {}).filter((x) => x)
                   .length !== 0
               }
-              libraryManga={
-                isInLibrary &&
-                has(currentManga, 'Tracking') &&
-                Object.values((currentManga as LibraryManga).Tracking).filter(
-                  (x) => x
-                ).length !== 0
-                  ? (currentManga as LibraryManga)
-                  : undefined
-              }
+              libraryManga={currentManga as LibraryManga}
               onError={console.error}
               onClose={() => setSearchModalData(null)}
               searchModalData={searchModalData}
