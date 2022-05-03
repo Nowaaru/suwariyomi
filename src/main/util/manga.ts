@@ -252,7 +252,6 @@ class MangaDB {
    * // => [...]
    */
   static GetSources(): LibrarySources {
-    console.log(LibraryDatabase.get('Library'));
     return LibraryDatabase.get('Library')?.Sources ?? {};
   }
 
