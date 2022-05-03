@@ -75,6 +75,7 @@ export const defaultSettings = {
   tracking: {
     syncChaptersAfterReading: true,
     trackWhenAddingToLibrary: false,
+    updateWhenMarkedAsRead: false,
   },
   backup: {},
   security: {},
@@ -346,6 +347,10 @@ export const settingsSchema: Schema<typeof defaultSettings> = {
         default: true,
       },
       trackWhenAddingToLibrary: {
+        type: 'boolean',
+        default: false,
+      },
+      updateWhenMarkedAsRead: {
         type: 'boolean',
         default: false,
       },

@@ -425,7 +425,7 @@ export const settingsSchemata: {
   tracking: {
     syncChaptersAfterReading: {
       type: 'switch',
-      label: 'Sync Chapters After Reading',
+      label: 'Update Tracking After Reading',
       description:
         'Automatically sync the chapter list with the website after you have finished reading a chapter.',
       default: false,
@@ -435,6 +435,12 @@ export const settingsSchemata: {
       label: 'Track When Adding To Library',
       description:
         'Automatically track new chapters when you add a manga to your library. This usually only works for silent-tracking sites like Komga.',
+      default: false,
+    },
+    updateWhenMarkedAsRead: {
+      type: 'switch',
+      label: 'Update When Marked As Read',
+      description: 'Update trackers when you mark a chapter as read/unread.',
       default: false,
     },
   },
