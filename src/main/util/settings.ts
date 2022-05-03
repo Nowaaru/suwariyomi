@@ -429,43 +429,16 @@ const Settings = new SettingsDatabase({
       return (settings.store = newSettings);
     },
     '>=0.13.0': (settings) => {
-      const newSettings = {
-        ...settings.store,
-        general: Object.assign(
-          {
-            minimizeToTray: false,
-            closeToTray: true,
-          },
-          settings.store.general
-        ),
-        library: Object.assign(
-          {
-            discordRPCIntegration: true,
-            updateFrequency: '86400',
-          },
-          settings.store.library
-        ),
-        reader: Object.assign(
-          {
-            scaleTypePaged: undefined,
-            // @ts-ignore
-            scaleType: settings.store.reader.scaleTypePaged ?? 'comfortable',
-            useCustomColorFilter: false,
-            filterR: 0,
-            filterG: 0,
-            filterB: 0,
-            filterA: 0,
-            blendMode: 'default',
-          },
-          settings.store.reader
-        ),
-        downloads: Object.assign(
-          {
-            location: defaultSettings.downloads.location,
-          },
-          settings.store.downloads
-        ),
-      };
+      const newSettings = { ...settings.store };
+      // @ts-ignore
+      const oldScaleType = newSettings.reader.scaleTypePaged;
+      if (oldScaleType) {
+        newSettings.reader.scaleType = oldScaleType ?? 'comfortable';
+      }
+
+      if (newSettings.downloads.location === '/downloads') {
+        newSettings.downloads.location = defaultSettings.downloads.location;
+      }
 
       return (settings.store = newSettings);
     },
