@@ -59,7 +59,6 @@ let mainWindow: BrowserWindow | null = null;
 
 ipcMain.on('ipc-example', async (event, arg) => {
   const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
-  console.log(msgTemplate(arg));
   event.reply('ipc-example', msgTemplate('pong'));
 });
 
@@ -407,6 +406,8 @@ if (isDevelopment) {
   app.getVersion = () => require('../../release/app/package.json').version;
 }
 
+app.setAppUserModelId(process.execPath);
+
 // if (isDevelopment) {
 require('electron-debug')();
 // }
@@ -425,18 +426,30 @@ const installExtensions = async () => {
 };
 
 let isQuitting = false;
+const RESOURCES_PATH = app.isPackaged
+  ? path.join(process.resourcesPath, 'assets')
+  : path.join(__dirname, '../../assets');
+
+const getAssetPath = (...paths: string[]): string => {
+  return path.join(RESOURCES_PATH, ...paths);
+};
+
+const appIconLocation = getAssetPath(
+  'icons',
+  `icon.${
+    (
+      {
+        win32: 'ico',
+        darwin: 'icns',
+      } as any
+    )[process.platform] ?? 'png'
+  }`
+);
+
 const createWindow = async () => {
   if (isDevelopment) {
     await installExtensions();
   }
-
-  const RESOURCES_PATH = app.isPackaged
-    ? path.join(process.resourcesPath, 'assets')
-    : path.join(__dirname, '../../assets');
-
-  const getAssetPath = (...paths: string[]): string => {
-    return path.join(RESOURCES_PATH, ...paths);
-  };
 
   mainWindow = new BrowserWindow({
     show: false,
@@ -444,7 +457,7 @@ const createWindow = async () => {
     height: 728,
     minWidth: 727, // i see it. 727. when you see it. 727. when you see it. the funny number. blue zenith 727pp cookiezi.
     minHeight: 825,
-    icon: getAssetPath('icon.png'),
+    icon: getAssetPath('icons', 'icon.png'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: true,
@@ -611,18 +624,19 @@ if (!appIsLocked) {
   if (!Settings.getAllSettings().general.discordRPCIntegration)
     toggleRPC(false);
 
-  initRPCConnection()
-    .then(() => {
-      ipcMain.on('toggle-rpc', (event, isToggled) => {
-        toggleRPC(isToggled);
-      });
+  setTimeout(() => {
+    initRPCConnection()
+      .then(() => {
+        ipcMain.on('toggle-rpc', (event, isToggled) => {
+          toggleRPC(isToggled);
+        });
 
-      ipcMain.on('update-rpc', (e, presence) => {
-        updateRichPresence(presence);
-      });
-    })
-    .catch(log.error);
-
+        ipcMain.on('update-rpc', (e, presence) => {
+          updateRichPresence(presence);
+        });
+      })
+      .catch(log.error);
+  }, 5000);
   let appIcon = null;
   app
     .whenReady()
@@ -630,20 +644,8 @@ if (!appIsLocked) {
       createWindow();
       const supportsClick =
         process.platform === 'darwin' || process.platform === 'win32';
-      appIcon = new Tray(
-        path.join(
-          __dirname,
-          '../../',
-          `assets/icons/icon.${
-            (
-              {
-                win32: 'ico',
-                darwin: 'icns',
-              } as any
-            )[process.platform] ?? 'png'
-          }`
-        )
-      );
+
+      appIcon = new Tray(appIconLocation);
       const contextMenu = Menu.buildFromTemplate(
         [
           !supportsClick
