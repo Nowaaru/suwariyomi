@@ -643,7 +643,7 @@ const Library = () => {
   const mangaList = useMemo<Record<string, React.ReactElement[]>>(() => {
     const mangaObjectTemp: Record<string, React.ReactElement[]> = {};
     Object.keys(sourceList).forEach((source) => {
-      const { sortOrder = 'asc', sortMethod = 'title' } =
+      const { sortOrder = 'desc', sortMethod = 'title' } =
         suwariyomiLibrarySettings[`data_${source}`] ?? {};
       const serializedReadMethod = sortMethod.toLowerCase().split(' ').join('');
 
@@ -969,7 +969,7 @@ const Library = () => {
                   } else {
                     suwariyomiLibrarySettings[`data_${sourceKey}`] = {
                       sortMethod: e.target.value,
-                      sortOrder: 'asc',
+                      sortOrder: 'desc',
                     };
                   }
                   MiscEnmap.set(
