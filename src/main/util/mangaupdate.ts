@@ -237,7 +237,7 @@ export const init = (win: BrowserWindow | null, icon?: string) => {
   const internalQueue = new MangaQueue(win, icon);
   const updateCheckInterval: NodeJS.Timer = setInterval(() => {
     const { updateFrequency, updateOngoingManga } =
-      SettingsDB.getAllSettings().library;
+      SettingsDB.getAllSettings().library ?? {};
     if (updateFrequency !== 'manual') {
       if (internalQueue.processing) return;
       const mainVariables = MiscDB.get(mainAppMiscDBKey) as Record<any, any>;
@@ -273,7 +273,8 @@ export const init = (win: BrowserWindow | null, icon?: string) => {
           MiscDB.set(mainAppMiscDBKey, mainVariables);
         }
       }
-    } else return clearInterval(updateCheckInterval);
+    } else if (updateFrequency === 'manual')
+      return clearInterval(updateCheckInterval); // If settings are not loadede quite yet, wait until they are before clearing the interval.
   }, 1000);
 
   ipcMain.on('get-update-queue', (event) => {
