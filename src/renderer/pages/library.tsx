@@ -398,6 +398,7 @@ const Library = () => {
 
   const userName = useRef(userInfo().username);
   const Navigate = useNavigate();
+  const forceUpdate = useForceUpdate();
 
   const { library: LibraryUtilities } = window.electron;
   const mangaItemDisplayFormat: 'list' | 'grid' = 'list';
@@ -474,8 +475,6 @@ const Library = () => {
     (MiscEnmap.get('suwariyomi_library') as Record<any, any>) ?? {};
 
   const hasNoSources = mappedFileNamesRef.current.length <= 0;
-  const forceUpdate = useForceUpdate();
-
   // Filter out sources that are not enabled AND has no manga
   const cachedMangas = useRef<Record<string, Array<FullManga>>>({});
   const libraryMangas = useRef<Record<string, string[]>>({});
