@@ -500,6 +500,8 @@ const Settings = () => {
                   .map((y) => y.value)
                   .filter((z) => !libraryMangas.includes(z));
 
+                let mangaImported = !importSettings.manga;
+                let chaptersImported = !importSettings.chapters;
                 if (importSettings.manga) {
                   // Add everything from filteredMangas into the library
                   setLoadingContext(true);
@@ -513,7 +515,9 @@ const Settings = () => {
                     );
                   });
 
-                  setLoadingContext(false);
+                  mangaImported = true;
+                  if (mangaImported && chaptersImported)
+                    setLoadingContext(false);
                 }
 
                 if (importSettings.chapters) {
@@ -569,7 +573,12 @@ const Settings = () => {
                           return true;
                         })
                         .finally(() => {
-                          if (idx === allChapters.length - 1)
+                          chaptersImported = true;
+                          if (
+                            idx === allChapters.length - 1 &&
+                            mangaImported &&
+                            chaptersImported
+                          )
                             setLoadingContext(false);
                         })
                         .catch(window.electron.log.error);
