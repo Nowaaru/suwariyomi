@@ -80,7 +80,6 @@ const Select = (
         ...(sx ?? {}),
       }}
       renderValue={(selected) => {
-        console.log(`selected: ${selected}`);
         const displayValue = values[(selected ?? defaultValue) as string];
         return (
           <Typography className={css(styles.selected)}>

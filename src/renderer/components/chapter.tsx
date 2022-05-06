@@ -304,7 +304,7 @@ const Chapter = ({
           onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
             const { checked } = event.target;
             const newCurrentPage = checked ? chapter.PageCount : -1;
-            window.electron.read.set(
+            window.electron.read.setSync(
               source,
               chapter.ChapterID,
               chapter.PageCount,

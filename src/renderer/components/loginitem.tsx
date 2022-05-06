@@ -28,9 +28,11 @@ const AniListIntegrationHandler = async () => {
     )
     .then((returnData) => {
       if (!returnData) return false;
+      returnData.expires_in = Date.now() + returnData.expires_in * 1000;
 
       const previousAuthorization =
         window.electron.store.get('authorization') || {};
+
       previousAuthorization.anilist = returnData;
       window.electron.store.set('authorization', previousAuthorization);
 
@@ -122,7 +124,8 @@ const LoginItem = ({
 
   const Tracker = useMemo(() => getTracker(authenticator), [authenticator]);
   const handleClick = useCallback(async () => {
-    return Authenticators[authenticator]();
+    await Authenticators[authenticator]();
+    return true;
   }, [authenticator]);
 
   if (!Tracker)

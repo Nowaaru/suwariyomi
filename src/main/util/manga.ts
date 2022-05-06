@@ -7,7 +7,10 @@ import fs from 'fs';
 import log from 'electron-log';
 import { app } from 'electron';
 
-import type { SupportedTrackers } from '../../renderer/util/tracker/tracker';
+import type {
+  SupportedTrackers,
+  TrackingProps,
+} from '../../renderer/util/tracker/tracker';
 
 const requireFunc =
   typeof __webpack_require__ === 'function' ? __non_webpack_require__ : require;
@@ -107,16 +110,16 @@ export type FullManga = MangaWithAuthors &
   Pick<Required<MangaWithAuthors>, 'Chapters'>;
 
 export type MangaTrackingData = {
-  progress: number | null;
-  progressVolumes: number | null;
-  id: number | null;
-  listId: number | null;
-  publicationStatus: string | null;
-  readingStatus: string | null;
-  startedAt: Date | null;
-  completedAt: Date | null;
-  score: number | null;
-  title: string | null;
+  progress?: number | null;
+  progressVolumes?: number | null;
+  id?: number | null;
+  listId?: number | null;
+  publicationStatus?: string | null;
+  readingStatus?: Required<TrackingProps>['status'] | null;
+  startedAt?: Date | null;
+  completedAt?: Date | null;
+  score?: number | null;
+  title?: string | null;
 };
 
 export type LibraryManga = FullManga &

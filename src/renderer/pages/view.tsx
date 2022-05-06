@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import { useRef, useEffect, useState, useCallback } from 'react';
+import { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import { StyleSheet, css } from 'aphrodite';
 import { URLSearchParams } from 'url';
 import { useNavigate } from 'react-router-dom';
@@ -654,36 +654,6 @@ const View = () => {
       );
 
       mangaData.current = cachedManga;
-      // Fetch the tracker (if present and is in library)
-      if (isInLibrary && has(cachedManga, 'Tracker')) {
-        const libraryManga = cachedManga as LibraryManga;
-        (
-          Object.keys(libraryManga.Tracking) as Array<
-            keyof typeof libraryManga.Tracking
-          >
-        ).forEach((tracker) => {
-          if (!libraryManga.Tracking[tracker]) return;
-
-          const {
-            listId,
-            progress,
-            progressVolumes,
-            id: mangaId,
-          } = libraryManga.Tracking[tracker]!;
-
-          const TrackerClass = getTracker(tracker);
-          if (TrackerClass && mangaId) {
-            const trackerInstance = new TrackerClass();
-            trackerInstance
-              .searchMangas(mangaId)
-              .then((mediaItem) => {
-                // TODO: Re-query the tracker to get the latest data when the user visits the page
-                return false;
-              })
-              .catch(console.error);
-          }
-        });
-      }
       setIsLoaded(true);
       return;
     }
@@ -707,14 +677,20 @@ const View = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   });
 
-  const calculateReadChaptersNoDuplicates = useCallback(
+  // This should only be used for aesthetic purposes. This does not take into consideration whether
+  // the user has read the chapter or not - so if a user reads a chapter that has multiple scanlators,
+  // but not the first chapter the filter pass-through finds, it won't be counted as read.
+
+  const calculateChaptersNoDuplicates = useCallback(
     () =>
-      mangaData?.current?.Chapters?.filter(
-        (value, index, self) =>
+      mangaData?.current?.Chapters?.filter((value, index, self) => {
+        const didFindSelf =
           self.findIndex(
             (secondValue) => secondValue.Chapter === value.Chapter
-          ) === index
-      ),
+          ) === index;
+
+        return didFindSelf;
+      }),
     [mangaData]
   );
 
@@ -725,13 +701,15 @@ const View = () => {
         chapterData.current[
           Object.keys(chapterData.current).find((y) => y === x.ChapterID) ?? '0'
         ];
+
       if (!alreadyIndexedChapters.has(x.Chapter) && foundChapter) {
         if (
           foundChapter.currentPage > -1 &&
           x.PageCount > -1 &&
           foundChapter.currentPage >= x.PageCount
-        )
+        ) {
           alreadyIndexedChapters.add(x.Chapter);
+        }
       }
     });
 
@@ -744,7 +722,7 @@ const View = () => {
     if (!mangaData.current) return;
 
     chapterData.current = sourceChapters;
-    const ChaptersNoDuplicates = calculateReadChaptersNoDuplicates();
+    const ChaptersNoDuplicates = calculateChaptersNoDuplicates();
     const readChapters = calculateReadChapters();
 
     setChaptersRead(readChapters ?? 0);
@@ -753,7 +731,7 @@ const View = () => {
     mangaData,
     selectedSource,
     calculateReadChapters,
-    calculateReadChaptersNoDuplicates,
+    calculateChaptersNoDuplicates,
   ]);
 
   useEffect(() => {
@@ -764,7 +742,7 @@ const View = () => {
       largeImageText:
         calculateReadChapters() > 0
           ? `Progress: ${calculateReadChapters()}/${
-              calculateReadChaptersNoDuplicates()?.length ??
+              calculateChaptersNoDuplicates()?.length ??
               mangaData.current.Chapters.length
             }`
           : undefined,
@@ -1181,10 +1159,14 @@ const View = () => {
                         onMarkRead={() => {
                           const { updateWhenMarkedAsRead } =
                             window.electron.settings.getAll().tracking;
+
                           if (
                             has(mangaData.current ?? {}, 'Tracking') &&
                             updateWhenMarkedAsRead
                           ) {
+                            chapterData.current = window.electron.read.get(
+                              mangaData.current!.SourceID
+                            );
                             const libraryManga =
                               mangaData.current as LibraryManga;
                             const tracking = libraryManga.Tracking;
@@ -1196,7 +1178,7 @@ const View = () => {
 
                               const ActualTracker = getTracker(key);
                               const trackerInstance = new ActualTracker();
-                              const { id: listId, progress } = tracking[
+                              const { listId, progress } = tracking[
                                 key
                               ] as MangaTrackingData;
 
@@ -1205,7 +1187,7 @@ const View = () => {
                                   .updateManga(
                                     {
                                       id: listId,
-                                      progress: chapterToDisplay.Chapter,
+                                      progress: calculateReadChapters(),
                                     },
                                     ['progress']
                                   )
@@ -1223,11 +1205,11 @@ const View = () => {
                             });
                           }
 
+                          setChaptersRead(calculateReadChapters());
                           chapterData.current =
                             window.electron.read.get(
                               selectedSource.getName()
                             ) ?? chapterData.current;
-                          setChaptersRead(calculateReadChapters());
                         }}
                         onBookmark={() => {
                           chapterData.current =
@@ -1325,7 +1307,7 @@ const View = () => {
                     <div className={css(styles.mangaProgress)}>
                       <div className={css(styles.mangaProgressText)}>
                         {`${calculateReadChapters()} / ${
-                          calculateReadChaptersNoDuplicates()?.length
+                          calculateChaptersNoDuplicates()?.length
                         }`}
                       </div>
                       <div className={css(styles.mangaProgressBar)}>
@@ -1418,6 +1400,7 @@ const View = () => {
                                       tracker
                                         .searchMangas(currentManga.Name)
                                         .then((data) => {
+                                          console.log('view data:', data);
                                           const mediaData = data?.data?.Page;
                                           return setSearchModalData(
                                             mediaData

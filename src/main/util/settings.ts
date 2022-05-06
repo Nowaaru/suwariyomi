@@ -380,7 +380,7 @@ const Settings = new SettingsDatabase({
   defaults: defaultSettings,
   schema: settingsSchema,
   clearInvalidConfig: true,
-  encryptionKey: String(Date.now()),
+  encryptionKey: '座り読み',
   migrations: {
     '>=0.11.0': (settings) => {
       const newSettings = {

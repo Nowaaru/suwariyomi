@@ -13,7 +13,6 @@ const TextField = (props: MaterialTextFieldProps) => {
   const textFieldLabelFocused = `${textFieldRoot} label.MuiInputLabel-root.Mui-focused`;
   const textFieldLabel = `${textFieldRoot} label.MuiInputLabel-root`;
 
-  console.log(textFieldLabelFocused);
   return (
     <MaterialTextField
       {...{
@@ -21,6 +20,7 @@ const TextField = (props: MaterialTextFieldProps) => {
         sx: {
           [textFieldInput]: {
             color: 'white',
+            textAlign: 'center',
           },
           [textFieldSetFocused]: {
             borderColor: '#DF2935',

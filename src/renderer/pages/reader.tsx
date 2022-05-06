@@ -1249,16 +1249,12 @@ const Reader = () => {
     return currentChapter?.isBookmarked ?? false;
   }, [readerData.currentchapter, selectedSource]);
 
-  const setRead = useCallback(
+  const updateTracker = useCallback(
     (
-      currentChapterId = chapterId,
+      currentChapterId: string,
       chapterPageCount: number,
-      chapterPageNumber: number,
-      isBookmarked = chapterIsBookmarked
+      chapterPageNumber: number
     ) => {
-      const currentChapterData =
-        window.electron.read.get(sourceId)?.[currentChapterId];
-
       if (chapterPageCount <= chapterPageNumber) {
         const cachedManga = window.electron.library.getCachedManga(
           sourceId,
@@ -1273,7 +1269,6 @@ const Reader = () => {
               const TrackerClass = getTracker(Tracker);
               if (!TrackerClass) return;
 
-              console.log(cachedManga);
               const TrackerObject = new TrackerClass();
               const trackingItem = libraryManga.Tracking[Tracker];
               const mangaChapter = cachedManga?.Chapters?.find(
@@ -1284,27 +1279,35 @@ const Reader = () => {
                 !trackingItem ||
                 !trackingItem.listId ||
                 !trackingItem.id ||
-                !trackingItem.progress ||
-                !mangaChapter?.Chapter
+                !mangaChapter?.Chapter ||
+                trackingItem.progress === null ||
+                trackingItem.progress === undefined ||
+                trackingItem.progress! >= mangaChapter.Chapter
               )
                 return;
 
-              if (trackingItem.progress < Math.floor(mangaChapter.Chapter)) {
+              if (trackingItem.progress! < Math.floor(mangaChapter.Chapter)) {
                 TrackerObject.updateManga(
                   {
-                    status: 'CURRENT',
+                    status: trackingItem.readingStatus ?? 'CURRENT',
                     progress: Math.floor(mangaChapter?.Chapter),
                     progressVolumes: mangaChapter?.Volume ?? 0,
                     id: Number(trackingItem.listId),
                   },
                   ['progress', 'progressVolumes']
                 )
-                  .then(() => {
+                  .then((res) => {
+                    const { data } = res ?? {};
                     if (!cachedManga?.SourceID) return;
                     if (!libraryManga.Tracking[Tracker]) return;
 
-                    trackingItem.progress = Math.floor(mangaChapter?.Chapter);
-                    trackingItem.progressVolumes = mangaChapter?.Volume ?? 0;
+                    trackingItem.progress = Math.floor(
+                      data.userTrackedInfo.progress ?? mangaChapter.Chapter
+                    );
+                    trackingItem.progressVolumes =
+                      data.userTrackedInfo.progressVolumes ??
+                      mangaChapter?.Volume ??
+                      0;
                     return window.electron.library.addMangasToCache(
                       libraryManga
                     );
@@ -1315,7 +1318,21 @@ const Reader = () => {
           );
         }
       }
+    },
+    [mangaId, sourceId]
+  );
 
+  const setRead = useCallback(
+    (
+      currentChapterId = chapterId,
+      chapterPageCount: number,
+      chapterPageNumber: number,
+      isBookmarked = chapterIsBookmarked
+    ) => {
+      const currentChapterData =
+        window.electron.read.get(sourceId)?.[currentChapterId];
+
+      updateTracker(currentChapterId, chapterPageCount, chapterPageNumber);
       return window.electron.read.set(
         selectedSource.getName(),
         currentChapterId,
@@ -1336,6 +1353,7 @@ const Reader = () => {
       mangaId,
       selectedSource,
       sourceId,
+      updateTracker,
     ]
   );
 
@@ -1378,7 +1396,7 @@ const Reader = () => {
         });
       }
     },
-    [readerData, currentPage, isScrollBased, chapterIsBookmarked, setRead]
+    [readerData, currentPage, setRead, chapterIsBookmarked, isScrollBased]
   );
 
   const handleClick = useCallback(
@@ -1748,15 +1766,33 @@ const Reader = () => {
           setContextMenu(undefined);
           switch (item) {
             case 'clipboard': {
-              const blobifiedImage = await (
-                await fetch(currentPageObject.src)
-              ).blob();
-              await navigator.clipboard.write([
-                new ClipboardItem({
-                  [blobifiedImage.type]: blobifiedImage,
-                }),
-              ]);
+              try {
+                const blobifiedImage = URL.createObjectURL(
+                  await (await fetch(currentPageObject.src)).blob()
+                );
+                const pageImage = new Image();
+                pageImage.src = blobifiedImage;
 
+                const canvasElement = document.createElement('canvas');
+                const canvasContext = canvasElement.getContext('2d');
+
+                pageImage.onload = () => {
+                  canvasElement.width = pageImage.naturalWidth;
+                  canvasElement.height = pageImage.naturalHeight;
+                  canvasContext?.drawImage(pageImage, 0, 0);
+                  canvasElement.toBlob(async (newBlobifiedImage) => {
+                    if (!newBlobifiedImage) return;
+
+                    await navigator.clipboard.write([
+                      new ClipboardItem({
+                        [newBlobifiedImage.type]: newBlobifiedImage,
+                      }),
+                    ]);
+                  }, 'image/png');
+                };
+              } catch (e) {
+                window.electron.log.error(e);
+              }
               break;
             }
             case 'save': {

@@ -125,9 +125,79 @@ const TrackerModal = (
               media={x}
               key={x.mediaId}
               id={x.mediaId}
-              onClick={() => {
-                if (!searchModalData?.tracker) return;
-                if (!x.userTrackedInfo) return;
+              onClick={async () => {
+                if (!searchModalData?.tracker)
+                  return console.log('No tracker field.');
+                if (!x.mediaId) return console.log('No mediaId field.');
+                // If there's no userTrackedInfo, that means that the user does not have this on their list.
+
+                const readChapters = window.electron.read.get(
+                  libraryManga.SourceID
+                );
+                const highestChapter = libraryManga.Chapters.reduce(
+                  (acc, curr) => {
+                    const readVar = readChapters[curr.ChapterID];
+                    if (readVar && readVar.currentPage >= readVar.pageCount) {
+                      return curr.Chapter;
+                    }
+
+                    return acc;
+                  },
+                  0
+                );
+
+                const TrackerClass = getTracker(searchModalData.tracker);
+                if (!TrackerClass) return;
+
+                const tracker = new TrackerClass();
+                await tracker
+                  .updateManga(
+                    {
+                      mediaId: x.mediaId,
+                      status:
+                        !x.userTrackedInfo || !x.userTrackedInfo.readingStatus
+                          ? 'CURRENT'
+                          : (x.userTrackedInfo.readingStatus as Exclude<
+                              Required<MangaTrackingData['readingStatus']>,
+                              null
+                            >),
+                    },
+                    ['id', 'status', 'progress']
+                  )
+                  .then(async (res) => {
+                    const { data } = res ?? {};
+                    if (!data) return;
+                    if (!data?.userTrackedInfo?.id) return;
+
+                    if (
+                      (data.userTrackedInfo.progress ?? 0) <= highestChapter
+                    ) {
+                      try {
+                        const mainData = await tracker.updateManga(
+                          {
+                            progress: highestChapter,
+                            mediaId: x.mediaId as number,
+                          },
+                          ['progress']
+                        );
+
+                        if (mainData?.res?.progress) {
+                          data.progress = mainData.progress;
+                        }
+                      } catch (e) {
+                        window.electron.log.error(e);
+                      }
+                    }
+
+                    Object.assign(x.userTrackedInfo, {
+                      listId: data.userTrackedInfo.id,
+                      progress: data.userTrackedInfo.progress,
+                      readingStatus: data.userTrackedInfo.status,
+                    });
+                  })
+                  .catch((error) => {
+                    onError?.(error);
+                  });
 
                 const {
                   Tracking = {
@@ -145,19 +215,19 @@ const TrackerModal = (
                   progressVolumes,
                   readingStatus,
                   score,
-                } = x.userTrackedInfo;
+                } = x.userTrackedInfo ?? {};
 
                 const {
                   day: startedDay,
                   month: startedMonth,
                   year: startedYear,
-                } = startedAt;
+                } = startedAt ?? {};
 
                 const {
                   day: finishedDay,
                   month: finishedMonth,
                   year: finishedYear,
-                } = completedAt;
+                } = completedAt ?? {};
 
                 Tracking[searchModalData.tracker] = {
                   progress,
@@ -166,8 +236,8 @@ const TrackerModal = (
                   readingStatus,
                   publicationStatus: x.publicationStatus,
                   title: x.title,
-                  id: x.userTrackedInfo.listId,
-                  listId: x.mediaId,
+                  id: x.mediaId,
+                  listId: x.userTrackedInfo?.listId,
                   startedAt:
                     startedAt && startedDay && startedMonth && startedYear
                       ? new Date(startedYear, startedMonth - 1, startedDay)
@@ -178,6 +248,7 @@ const TrackerModal = (
                       : null,
                 } as MangaTrackingData;
 
+                console.log(libraryManga.Tracking, x);
                 libraryManga.Tracking = Tracking;
                 window.electron.library.addMangasToCache(libraryManga);
                 onClose();
@@ -217,7 +288,8 @@ const TrackerModal = (
                 }
                 onChange={(e) => {
                   const newStatus = e.target.value;
-                  currentTracker.readingStatus = newStatus;
+                  currentTracker.readingStatus =
+                    newStatus as Required<TrackingProps>['status'];
 
                   window.electron.library.addMangasToCache(libraryManga);
                   trackerInstance

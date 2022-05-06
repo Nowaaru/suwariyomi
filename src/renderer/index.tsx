@@ -29,6 +29,16 @@ import App from './App';
             should send a request to the renderer process to update the view with the new data.
 */
 
+type SetSignature = (
+  sourceName: string,
+  chapterId: string,
+  pageCount: number,
+  currentPage: number,
+  lastRead: Date | undefined,
+  timeElapsed: number,
+  isBookmarked: boolean,
+  mangaId: string
+) => void;
 declare global {
   interface Window {
     electron: {
@@ -79,6 +89,7 @@ declare global {
               | { MangaID: string; SourceID: string }
             )[]
           ) => void;
+          updateSource: (sourceID: string) => boolean;
           forceUpdateCycle: () => void;
           isUpdating: () => boolean;
           flushUpdateQueue: () => void;
@@ -108,16 +119,8 @@ declare global {
       };
       read: {
         get: (sourceName: string) => ReadDatabaseValue;
-        set: (
-          sourceName: string,
-          chapterId: string,
-          pageCount: number,
-          currentPage: number,
-          lastRead: Date | undefined,
-          timeElapsed: number,
-          isBookmarked: boolean,
-          mangaId: string
-        ) => void;
+        set: SetSignature;
+        setSync: SetSignature;
         deleteEntry: (sourceName: string, chapterId: string) => void;
         deleteSource: (sourceName: string) => void;
         flush: () => void;

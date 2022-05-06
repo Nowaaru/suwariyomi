@@ -569,18 +569,11 @@ const Library = () => {
     allKeysKeys.forEach((source) => {
       const mangaIDs = allKeys[source];
       if (mangaIDs.length > 0) {
-        window.electron.library.cycle.addToUpdateQueue(
-          ...mangaIDs.map((x) => ({
-            SourceID: source,
-            MangaID: x,
-          }))
-        );
+        window.electron.library.cycle.updateSource(source);
       }
     });
 
-    if (!window.electron.library.cycle.isBusy) {
-      window.electron.library.cycle.forceUpdateCycle();
-    }
+    window.electron.library.cycle.forceUpdateCycle();
   }, [sourcesFetching, sourceList, fetchQueue, librarySources]);
 
   const sourceListValues = Object.values(sourceList);
@@ -698,7 +691,6 @@ const Library = () => {
               const queryVerification =
                 tagsTest || nameTest || chapterQuery || pageQuery;
 
-              console.log(queryVerification);
               return isNegated ? !queryVerification : queryVerification;
             })
         )

@@ -264,7 +264,7 @@ export const init = (win: BrowserWindow | null, icon?: string) => {
             (x) => !updateOngoingManga || x.Status === 'ongoing'
           ) as LibraryManga[];
 
-        if (mangasToUpdate.length > 0) {
+        if (mangasToUpdate.length > 0 && !internalQueue.processing) {
           mangasToUpdate.forEach((manga) => {
             internalQueue.addManga(manga);
           });
@@ -305,6 +305,19 @@ export const init = (win: BrowserWindow | null, icon?: string) => {
     mangas.flat(0).forEach((manga) => {
       internalQueue.addManga(manga);
     });
+  });
+
+  ipcMain.on('add-source-to-queue', (event, sourceID: string) => {
+    const libraryMangas = MangaDB.GetLibraryMangas(sourceID);
+    const mangas = MangaDB.GetAllCachedMangas().filter(
+      (x) => x.SourceID === sourceID && libraryMangas.includes(x.MangaID)
+    ) as LibraryManga[];
+
+    mangas.forEach((manga) => {
+      internalQueue.addManga(manga);
+    });
+
+    return (event.returnValue = true);
   });
 
   ipcMain.on('force-update-cycle', (event) => {

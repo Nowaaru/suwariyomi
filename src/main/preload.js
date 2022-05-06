@@ -71,6 +71,9 @@ window.electron = {
       addToUpdateQueue: (...mangaObjects) => {
         return ipcRenderer.send('add-to-update-queue', ...mangaObjects);
       },
+      updateSource: (sourceID) => {
+        return ipcRenderer.send('add-source-to-queue', sourceID);
+      },
       forceUpdateCycle: () => {
         return ipcRenderer.send('force-update-cycle');
       },
@@ -141,6 +144,28 @@ window.electron = {
       mangaid
     ) => {
       ipcRenderer.send(
+        'set-read',
+        sourceName,
+        chapterId,
+        pageCount,
+        currentPage,
+        lastRead,
+        timeElapsed,
+        isBookmarked,
+        mangaid
+      );
+    },
+    setSync: (
+      sourceName,
+      chapterId,
+      pageCount,
+      currentPage,
+      lastRead,
+      timeElapsed,
+      isBookmarked,
+      mangaid
+    ) => {
+      ipcRenderer.sendSync(
         'set-read',
         sourceName,
         chapterId,

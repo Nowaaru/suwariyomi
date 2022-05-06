@@ -12,7 +12,8 @@ export interface TrackingProps {
 }
 
 interface AniListTrackingProps extends Pick<TrackingProps, 'status'> {
-  id: number;
+  id?: number;
+  mediaId?: number;
   score?: number;
   progress?: number;
   progressVolumes?: number;
@@ -58,21 +59,21 @@ export type Media = {
   } | null;
   userTrackedInfo: {
     listId: number;
-    score: number | null;
-    readingStatus: string | null;
-    progress: number | null;
-    progressVolumes: number | null;
-    startedAt: {
+    score?: number | null;
+    readingStatus?: string | null;
+    progress?: number | null;
+    progressVolumes?: number | null;
+    startedAt?: {
       year: number;
       month: number;
       day: number;
-    };
-    completedAt: {
+    } | null;
+    completedAt?: {
       year: number;
       month: number;
       day: number;
-    };
-    repeat: number | null;
+    } | null;
+    repeat?: number | null;
   } | null;
 };
 
@@ -222,24 +223,32 @@ class AniListTracker extends TrackerBase {
             }
           `;
 
-    return fetch('https://graphql.anilist.co', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-        Authorization: `Bearer ${window.electron.auth.getAuthentication(
-          'anilist'
-        )}`,
-      },
-      body: JSON.stringify({
-        query: queryString,
-        variables: {
-          search: searchQuery,
+    return new Promise((resolve, reject) =>
+      fetch('https://graphql.anilist.co', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+          Authorization: `Bearer ${window.electron.auth.getAuthentication(
+            'anilist'
+          )}`,
         },
-      }),
-    })
-      .then((res) => res.json())
-      .catch(console.error);
+        body: JSON.stringify({
+          query: queryString,
+          variables: {
+            search: searchQuery,
+          },
+        }),
+      })
+        .then((res) => res.json())
+        .then((json) => {
+          console.log('tracker data:', json);
+          if (!json?.data || json.data.errors) {
+            return reject(json);
+          } else return resolve(json);
+        })
+        .catch(reject)
+    );
   }
 }
 
