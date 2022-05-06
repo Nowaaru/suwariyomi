@@ -20,7 +20,7 @@ found a bug or problem? make an issue!
 user features:
 
 - online reading from one source. it is mangadex.
-- tracker support: [MyAnimeList](https://www.myanimelist.com) and [AniList](https://anilist.co). more soon to come!
+- tracker support: ~~[MyAnimeList](https://www.myanimelist.com) and~~ [AniList](https://anilist.co). more soon to come!
 - its all in dark mode
 
 developer features:
