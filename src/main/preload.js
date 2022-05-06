@@ -83,8 +83,8 @@ window.electron = {
       flushUpdateQueue: () => {
         return ipcRenderer.send('flush-update-queue');
       },
-      isSourceUpdating: (sourceID) => {
-        return ipcRenderer.sendSync('is-source-updating', sourceID);
+      getUpdatingSources: () => {
+        return ipcRenderer.sendSync('get-updating-sources');
       },
       get processedTotal() {
         return ipcRenderer.sendSync('get-processed-total');

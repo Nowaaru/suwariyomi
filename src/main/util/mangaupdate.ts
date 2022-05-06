@@ -61,6 +61,7 @@ export class MangaQueue {
     this._queuedManga = this.queue.length;
     this._processed = 0;
 
+    const tn = Date.now();
     if (this._queuedManga >= 200)
       new Notification({
         title: 'Warning',
@@ -68,6 +69,7 @@ export class MangaQueue {
         icon: this.notificationIcon,
       }).show();
 
+    log.warn(`tn to now: ${Date.now() - tn}ms`);
     // Process queue
     const allNewChapters: { [mangaID: string]: LibraryManga } = {};
     const allPreviousManga = await MangaDB.GetAllCachedMangas();
@@ -93,6 +95,7 @@ export class MangaQueue {
                 const oldManga = allPreviousManga.find(
                   (m) => m.MangaID === manga.MangaID
                 );
+
                 if (oldManga) {
                   (Object.keys(oldManga) as any[]).forEach((key) => {
                     // @ts-ignore - self explanatory maybe?
@@ -293,8 +296,11 @@ export const init = (win: BrowserWindow | null, icon?: string) => {
     event.returnValue = internalQueue.processing;
   });
 
-  ipcMain.on('is-source-updating', (e, sourceID: string) => {
-    return internalQueue.getQueue().some((m) => m.SourceID === sourceID);
+  ipcMain.on('get-updating-sources', (e) => {
+    return (e.returnValue = internalQueue
+      .getQueue()
+      .map((m) => m.SourceID)
+      .filter((x, i, a) => a.indexOf(x) === i));
   });
 
   ipcMain.on('flush-update-queue', () => {

@@ -93,7 +93,7 @@ declare global {
           forceUpdateCycle: () => void;
           isUpdating: () => boolean;
           flushUpdateQueue: () => void;
-          isSourceUpdating: (sourceID: string) => boolean;
+          getUpdatingSources: () => string[];
           get processedTotal(): number;
           get isBusy(): boolean;
         };

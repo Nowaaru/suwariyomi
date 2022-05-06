@@ -436,14 +436,20 @@ const Library = () => {
 
     const cycleStartFn = () => {
       console.log('Update cycle started.');
+      const updatingSources =
+        window.electron.library.cycle.getUpdatingSources();
+
+      const sourcesToAdd: string[] = [];
       Object.keys(librarySources).forEach((source) => {
         if (
-          window.electron.library.cycle.isSourceUpdating(source) &&
+          updatingSources.includes(source) &&
           !sourcesFetching.includes(source)
         ) {
-          setSourcesFetching([...sourcesFetching, source]);
+          sourcesToAdd.push(source);
         }
       });
+
+      setSourcesFetching([...sourcesFetching, ...sourcesToAdd]);
     };
 
     window.electron.ipcRenderer.on('update-cycle-complete', cycleCompleteFn);
