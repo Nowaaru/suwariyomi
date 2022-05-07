@@ -102,7 +102,7 @@ declare global {
         addMangaToLibrary: (sourceName: string, mangaId: string) => void;
         removeMangaFromLibrary: (sourceName: string, mangaId: string) => void;
         getLibraryMangas: (sourceName: string) => string[];
-        addMangasToCache: (fullManga: FullManga | LibraryManga) => void;
+        addMangasToCache: (...fullManga: (FullManga | LibraryManga)[]) => void;
         removeMangaFromCache: (
           sourceName: string,
           ...mangaIds: string[]
