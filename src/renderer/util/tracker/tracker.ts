@@ -60,7 +60,7 @@ export type Media = {
   userTrackedInfo: {
     listId: number;
     score?: number | null;
-    readingStatus?: string | null;
+    readingStatus?: Required<TrackingProps>['status'] | null;
     progress?: number | null;
     progressVolumes?: number | null;
     startedAt?: {
