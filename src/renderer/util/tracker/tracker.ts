@@ -158,7 +158,7 @@ class AniListTracker extends TrackerBase {
       })
         .then((res) => res.json())
         .then((json) => {
-          if (!json?.data || json.data.errors) {
+          if (!json?.data || json.errors) {
             return reject(json);
           } else return resolve(json);
         })
@@ -242,8 +242,7 @@ class AniListTracker extends TrackerBase {
       })
         .then((res) => res.json())
         .then((json) => {
-          console.log('tracker data:', json);
-          if (!json?.data || json.data.errors) {
+          if (!json?.data || json.errors) {
             return reject(json);
           } else return resolve(json);
         })
