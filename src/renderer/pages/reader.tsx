@@ -191,7 +191,7 @@ const stylesObject = {
     alignItems: 'center',
     backgroundColor: 'transparent',
     bottom: '52px',
-    zIndex: 2e4,
+    zIndex: 1028,
     // padding: '12px 0px',
     padding: '-6px',
     boxSizing: 'border-box',
@@ -438,10 +438,12 @@ const stylesObject = {
 
   mangaImageFitWidth: {
     maxWidth: '100%',
+    maxHeight: '95%',
   },
 
   mangaImageFitHeight: {
     maxHeight: '100%',
+    maxWidth: '95%',
   },
 
   mangaImageFitContent: {
@@ -603,7 +605,7 @@ const stylesObject = {
   },
 
   topbarContainer: {
-    zIndex: 2048,
+    zIndex: 1028,
     top: '64px',
     display: 'flex',
     position: 'absolute',
