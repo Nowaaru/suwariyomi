@@ -694,27 +694,33 @@ const View = () => {
     [mangaData]
   );
 
-  const calculateReadChapters = useCallback(() => {
-    const alreadyIndexedChapters = new Set<number>();
-    mangaData.current?.Chapters?.forEach((x) => {
-      const foundChapter =
-        chapterData.current[
-          Object.keys(chapterData.current).find((y) => y === x.ChapterID) ?? '0'
-        ];
+  const calculateReadChapters = useCallback(
+    (ignoreSubchapters?: boolean) => {
+      const alreadyIndexedChapters = new Set<number>();
+      mangaData.current?.Chapters?.filter(
+        (x) => !ignoreSubchapters || Number.isInteger(x.Chapter)
+      ).forEach((x) => {
+        const foundChapter =
+          chapterData.current[
+            Object.keys(chapterData.current).find((y) => y === x.ChapterID) ??
+              '0'
+          ];
 
-      if (!alreadyIndexedChapters.has(x.Chapter) && foundChapter) {
-        if (
-          foundChapter.currentPage > -1 &&
-          x.PageCount > -1 &&
-          foundChapter.currentPage >= x.PageCount
-        ) {
-          alreadyIndexedChapters.add(x.Chapter);
+        if (!alreadyIndexedChapters.has(x.Chapter) && foundChapter) {
+          if (
+            foundChapter.currentPage > -1 &&
+            x.PageCount > -1 &&
+            foundChapter.currentPage >= x.PageCount
+          ) {
+            alreadyIndexedChapters.add(x.Chapter);
+          }
         }
-      }
-    });
+      });
 
-    return alreadyIndexedChapters.size;
-  }, [chapterData]);
+      return alreadyIndexedChapters.size;
+    },
+    [chapterData]
+  );
 
   useEffect(() => {
     const sourceChapters = window.electron.read.get(selectedSource.getName());
@@ -1182,12 +1188,12 @@ const View = () => {
                                 key
                               ] as MangaTrackingData;
 
-                              if (listId && progress && chapterToDisplay) {
+                              if (listId && progress) {
                                 trackerInstance
                                   .updateManga(
                                     {
                                       id: listId,
-                                      progress: calculateReadChapters(),
+                                      progress: calculateReadChapters(true),
                                     },
                                     ['progress']
                                   )
@@ -1248,7 +1254,7 @@ const View = () => {
                   .length !== 0
               }
               libraryManga={currentManga as LibraryManga}
-              onError={console.error}
+              onError={window.electron.log.error}
               onClose={() => setSearchModalData(null)}
               searchModalData={searchModalData}
             />
@@ -1400,15 +1406,81 @@ const View = () => {
                                       tracker
                                         .searchMangas(currentManga.Name)
                                         .then((data) => {
-                                          console.log('view data:', data);
                                           const mediaData = data?.data?.Page;
-                                          return setSearchModalData(
-                                            mediaData
-                                              ? Object.assign(mediaData, {
-                                                  tracker: trackingName,
-                                                })
-                                              : null
-                                          );
+                                          const currentTracking = (
+                                            currentManga as LibraryManga
+                                          ).Tracking;
+
+                                          if (mediaData) {
+                                            const foundMedia =
+                                              mediaData.media.find(
+                                                (x: Media) =>
+                                                  currentTracking?.[
+                                                    trackingName
+                                                  ]?.id === x.mediaId
+                                              );
+
+                                            if (
+                                              foundMedia &&
+                                              foundMedia.userTrackedInfo &&
+                                              currentTracking
+                                            ) {
+                                              const UTI =
+                                                foundMedia.userTrackedInfo; // heh.
+
+                                              let startedAtDate:
+                                                | Date
+                                                | undefined;
+                                              let completedAtDate:
+                                                | Date
+                                                | undefined;
+
+                                              if (UTI.startedAt)
+                                                startedAtDate = new Date(
+                                                  `${UTI.startedAt.year}-${UTI.startedAt.month}-${UTI.startedAt.day}`
+                                                );
+
+                                              if (UTI.completedAt)
+                                                completedAtDate = new Date(
+                                                  `${UTI.completedAt.year}-${UTI.completedAt.month}-${UTI.completedAt.day}`
+                                                );
+
+                                              currentTracking[trackingName] = {
+                                                ...currentTracking[
+                                                  trackingName
+                                                ],
+                                                ...UTI,
+                                                startedAt: Number.isNaN(
+                                                  Number(
+                                                    startedAtDate?.getTime()
+                                                  )
+                                                )
+                                                  ? currentTracking[
+                                                      trackingName
+                                                    ]?.startedAt
+                                                  : startedAtDate,
+                                                completedAt: Number.isNaN(
+                                                  Number(
+                                                    completedAtDate?.getTime()
+                                                  )
+                                                )
+                                                  ? currentTracking[
+                                                      trackingName
+                                                    ]?.completedAt
+                                                  : completedAtDate,
+                                              };
+
+                                              window.electron.library.addMangasToCache(
+                                                currentManga
+                                              );
+                                            }
+
+                                            return setSearchModalData(
+                                              Object.assign(mediaData, {
+                                                tracker: trackingName,
+                                              })
+                                            );
+                                          }
                                         })
                                         .catch(console.error);
                                     }}
