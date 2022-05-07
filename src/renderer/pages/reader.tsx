@@ -992,28 +992,6 @@ const Reader = () => {
     timeStartedChapter,
   ]);
 
-  const readerStart = useMemo(() => Date.now(), []);
-  useEffect(() => {
-    if (!readerData) return;
-    if (!readerData.chapters) return;
-    if (!readerData.currentchapter) return;
-    if (!readerData.page || !readerData.currentchapter?.PageCount) return;
-    if (readerData.page <= 0 || readerData.currentchapter.PageCount <= 0)
-      return;
-
-    window.electron.rpc.updateRPC({
-      state: `Chapter ${readerData.currentchapter!.Chapter} of ${
-        readerData.chapters?.length
-      }`,
-      largeImageKey: 'icon_large',
-      largeImageText: `Page ${readerData.page} of ${
-        readerData.currentchapter!.PageCount
-      }`,
-      details: `Reading ${mangaTitle}`,
-      startTimestamp: readerStart,
-    });
-  }, [readerData, readerStart, mangaTitle]);
-
   const currentPageState =
     pageState[readerData.currentchapter?.ChapterID ?? chapterId];
 
@@ -1553,6 +1531,36 @@ const Reader = () => {
     // tappingLayout depends on tappingLayoutMemo - so if tappingLayoutMemo changes, tappingLayout will change as well.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [handleClick, tappingLayoutMemo]);
+
+  const readerStart = useMemo(() => Date.now(), []);
+  useEffect(() => {
+    if (!readerData?.currentchapter?.PageCount) return;
+    if (!readerData.currentchapter.ChapterID) return;
+
+    if (readerData.currentchapter.PageCount === 1)
+      setRead(readerData.currentchapter.ChapterID, 1, 1, chapterIsBookmarked);
+  }, [chapterIsBookmarked, readerData, setRead]);
+
+  useEffect(() => {
+    if (!readerData) return;
+    if (!readerData.chapters) return;
+    if (!readerData.currentchapter) return;
+    if (!readerData.page || !readerData.currentchapter?.PageCount) return;
+    if (readerData.page <= 0 || readerData.currentchapter.PageCount <= 0)
+      return;
+
+    window.electron.rpc.updateRPC({
+      state: `Chapter ${readerData.currentchapter!.Chapter} of ${
+        readerData.chapters?.length
+      }`,
+      largeImageKey: 'icon_large',
+      largeImageText: `Page ${readerData.page} of ${
+        readerData.currentchapter!.PageCount
+      }`,
+      details: `Reading ${mangaTitle}`,
+      startTimestamp: readerStart,
+    });
+  }, [readerData, readerStart, mangaTitle, setRead, chapterIsBookmarked]);
 
   useEffect(() => {
     if (isLoading) return;
