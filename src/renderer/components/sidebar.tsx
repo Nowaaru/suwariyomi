@@ -19,7 +19,7 @@ export const sidebarStyle = StyleSheet.create({
   left: {
     left: 0,
     top: 0,
-    borderRadius: '5px 0px',
+    borderRadius: '0 5px 5px 0px',
   },
   right: {
     position: 'absolute',
@@ -76,7 +76,7 @@ const SidebarItem = ({
       position: 'relative',
       top: !isVertical
         ? isSelected
-          ? '-4px'
+          ? '-8px'
           : forceShow
           ? '0px'
           : '12px'
@@ -84,8 +84,8 @@ const SidebarItem = ({
       left: isVertical // why am i such an awful programmer?
         ? isSelected
           ? isRight
-            ? '-4px'
-            : '4px'
+            ? '-8px'
+            : '8px'
           : forceShow
           ? '0px'
           : isRight
@@ -110,7 +110,7 @@ const SidebarItem = ({
       },
       ':hover': {
         transform: 'scale(1.05), translateY(-15px)',
-        [isVertical ? (isRight ? 'left' : 'right') : 'top']: '-4px',
+        [isVertical ? (isRight ? 'left' : 'right') : 'top']: '-8px',
         '::before': {
           opacity: 1,
         },
