@@ -29,6 +29,7 @@ body {
   position: absolute !important;
   min-width: 727px;
   min-height: 825px;
+  margin: 8px 0 0 0 !important;
 }
 
 button {
