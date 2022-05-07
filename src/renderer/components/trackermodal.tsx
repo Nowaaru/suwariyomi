@@ -248,7 +248,6 @@ const TrackerModal = (
                       : null,
                 } as MangaTrackingData;
 
-                console.log(libraryManga.Tracking, x);
                 libraryManga.Tracking = Tracking;
                 window.electron.library.addMangasToCache(libraryManga);
                 onClose();
@@ -262,7 +261,7 @@ const TrackerModal = (
         const currentTracker = libraryManga.Tracking?.[searchModalData.tracker];
 
         if (!currentTracker) return null;
-        if (!currentTracker.id) return null;
+        if (!currentTracker.listId) return null;
 
         const currentDateStartedAt = currentTracker?.startedAt;
         const currentDateFinishedAt = currentTracker?.completedAt;
@@ -295,12 +294,17 @@ const TrackerModal = (
                   trackerInstance
                     .updateManga(
                       {
-                        id: currentTracker.id as number,
+                        id: currentTracker.listId as number,
                         status:
                           newStatus.toUpperCase() as unknown as Required<TrackingProps>['status'],
                       },
-                      ['id', 'status']
+                      ['status']
                     )
+                    .then((res) => {
+                      if (!res?.data?.userTrackedInfo?.status) return;
+                      currentTracker.readingStatus =
+                        res.data.userTrackedInfo.status;
+                    })
                     .catch(onError);
                 }}
               />
@@ -318,7 +322,7 @@ const TrackerModal = (
                   trackerInstance
                     .updateManga(
                       {
-                        id: currentTracker.id as number,
+                        id: currentTracker.listId as number,
                         progress: newProgress,
                       },
                       ['progress']
@@ -342,7 +346,7 @@ const TrackerModal = (
                   );
 
                   const is100Scale = trackerInstance.is100Scored();
-                  let scoreKey;
+                  let scoreKey: string;
 
                   // Special cases where trackers might use a different scoring key.
                   switch (trackerInstance.getName()) {
@@ -355,13 +359,19 @@ const TrackerModal = (
 
                   currentTracker.score = newScore;
                   window.electron.library.addMangasToCache(libraryManga);
-                  trackerInstance.updateManga(
-                    {
-                      id: currentTracker.id as number,
-                      [scoreKey]: newScore * (is100Scale ? 10 : 1),
-                    },
-                    ['id']
-                  );
+                  trackerInstance
+                    .updateManga(
+                      {
+                        id: currentTracker.listId as number,
+                        [scoreKey]: newScore * (is100Scale ? 10 : 1),
+                      },
+                      ['id', 'score']
+                    )
+                    .then((res) => {
+                      if (!res.data[scoreKey]) return;
+                      currentTracker.score = res.data[scoreKey];
+                    })
+                    .catch(onError);
                 }}
                 InputLabelProps={{
                   shrink: true,
@@ -384,7 +394,7 @@ const TrackerModal = (
                   trackerInstance
                     .updateManga(
                       {
-                        id: currentTracker.id as number,
+                        id: currentTracker.listId as number,
                         status:
                           currentTracker.readingStatus?.toUpperCase() as unknown as Required<TrackingProps>['status'],
                         startedAt: {
@@ -428,7 +438,7 @@ const TrackerModal = (
                   trackerInstance
                     .updateManga(
                       {
-                        id: currentTracker.id as number,
+                        id: currentTracker.listId as number,
                         status:
                           currentTracker.readingStatus?.toUpperCase() as unknown as Required<TrackingProps>['status'],
                         completedAt: {
