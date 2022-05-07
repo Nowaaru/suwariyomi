@@ -50,7 +50,7 @@ export const settingsSchemata: {
       type: 'switch',
       label: 'Discord Rich Presence Integration',
       description:
-        'Enable full Discord Rich Presence integration. Disabling this will only show "Suwariyomi" in your presence.',
+        'Enable full Discord Rich Presence integration. Disabling this will remove the presence from your status.',
       default: true,
     },
     autoUpdate: {
