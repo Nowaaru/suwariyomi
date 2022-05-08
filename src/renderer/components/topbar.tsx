@@ -29,6 +29,12 @@ export const Styling = StyleSheet.create({
     position: 'absolute',
     zIndex: 261,
     userSelect: 'none',
+    '::after': {
+      content: '"SUWARIYOMI"',
+      fontFamily: "'Bebas Neue', cursive",
+      verticalAlign: 'text-bottom',
+      color: 'white',
+    },
   },
   close: {
     backgroundColor: '#A51A1A',
