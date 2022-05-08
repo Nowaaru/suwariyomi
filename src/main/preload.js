@@ -46,6 +46,9 @@ window.electron = {
     getDownloadsPath: () => {
       return ipcRenderer.sendSync('get-downloads-path');
     },
+    get appVersion() {
+      return ipcRenderer.sendSync('get-app-version');
+    },
   },
   reader: {
     getMangaSettings: (sourceID, mangaID) => {

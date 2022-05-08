@@ -66,6 +66,7 @@ declare global {
         getDownloadsPath: () => string;
         getSourceDirectory: () => string;
         openInBrowser: (url: string) => void;
+        get appVersion(): string;
       };
       reader: {
         getMangaSettings: (

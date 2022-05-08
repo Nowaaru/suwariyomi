@@ -192,6 +192,14 @@ const stylesObject = {
   circularProgress: {
     borderRadius: '16px',
   },
+
+  appVersion: {
+    position: 'absolute',
+    fontFamily: 'Poppins',
+    right: '12px',
+    bottom: '12px',
+    color: '#FFFFFF33',
+  },
 };
 
 const categoryIcons: {
@@ -592,6 +600,9 @@ const Settings = () => {
             .catch(console.error);
         }}
       />
+      <span className={css(styles.appVersion)}>
+        v{window.electron.util.appVersion}
+      </span>
       <div className={css(styles.container)}>
         <>
           <Backdrop

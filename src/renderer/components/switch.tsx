@@ -48,7 +48,7 @@ const Switch = (
   return (
     <Tooltip title={checked ? tooltipOn! : tooltipOff!}>
       <MaterialSwitch
-        {...omit(props, 'children', 'sx')}
+        {...omit(props, 'children', 'sx', 'tooltipOn', 'tooltipOff')}
         onChange={onChange ?? (() => {})}
         sx={{
           // Material UI is pain, part.. like, eight trillion?
