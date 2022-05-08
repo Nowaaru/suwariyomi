@@ -48,6 +48,9 @@
           "x64"
         ]
       },
+      "publish": [
+        "github"
+      ],
       "icon": "assets/icons/icon.icns",
       "type": "distribution",
       "hardenedRuntime": true,
@@ -73,11 +76,17 @@
       "target": [
         "nsis"
       ],
+      "publish": [
+        "github"
+      ],
       "icon": "assets/icons/icon.ico"
     },
     "linux": {
       "target": [
         "appimage"
+      ],
+      "publish": [
+        "github"
       ],
       "category": "development",
       "icon": "assets/icons/icon.png"
