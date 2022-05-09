@@ -124,4 +124,4 @@ npm install
 to test the program, run `npm start`.
 if you have a port conflict, change the port in `.erb/scripts/check-port-in-use.js` (or figure out command line args in node)
 
-###### powered by [electron](https://github.com/electron/electron), [electron-react-boilerplate](https://github.com/electron-react-boilerplate), [Material UI](https://mui.com/), [TachiyomiJ2K](https://github.com/Jays2Kings/tachiyomiJ2K), [Tachiyomi](https://github.com/tachiyomiorg/tachiyomi) and [react](https://github.com/facebook/react). thank you.
+###### powered by [Tachiyomi](https://github.com/tachiyomiorg/tachiyomi), [TachiyomiJ2K](https://github.com/Jays2Kings/tachiyomiJ2K), [electron](https://github.com/electron/electron), [electron-react-boilerplate](https://github.com/electron-react-boilerplate), [Material UI](https://mui.com/), and [react](https://github.com/facebook/react). thank you.
