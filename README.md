@@ -21,17 +21,24 @@ user features:
 
 - online reading from one source. it is mangadex.
 - tracker support: ~~[MyAnimeList](https://www.myanimelist.com) and~~ [AniList](https://anilist.co). more soon to come!
+- image filtering with alpha, red, green, blue and blend modes.
+- very pretty UI 
+- very nice UX
+- very responsive! (laymans: faaaast)
+- lots of settings for you to customize your app just right
+- ability copy pages to the clipboard when reading via the context menu
+- ability to download individual pages when reading via the context menu
 - its all in dark mode
 
 developer features:
 
-- modular sources (i did it in react, be proud.)
-- it's fast
-- i made it fast as well
-- why doesn't it build
-- very segmented for easy understanding; hopefully inviting for new contributors
+- modular sources
+- very segmented for easy understanding
 - the code is pretty
-- made in react. i don't know how to react
+- made in react
+- easy-to-make sources
+- utilizes Aphrodite for styling
+- utilizes Material UI for ui design
 
 planned features:
 
@@ -117,4 +124,4 @@ npm install
 to test the program, run `npm start`.
 if you have a port conflict, change the port in `.erb/scripts/check-port-in-use.js` (or figure out command line args in node)
 
-###### powered by [electron](https://github.com/electron/electron), [electron-react-boilerplate](https://github.com/electron-react-boilerplate), [Material UI](https://mui.com/), and [react](https://github.com/facebook/react). thank you.
+###### powered by [electron](https://github.com/electron/electron), [electron-react-boilerplate](https://github.com/electron-react-boilerplate), [Material UI](https://mui.com/), [TachiyomiJ2K](https://github.com/Jays2Kings/tachiyomiJ2K), [Tachiyomi](https://github.com/tachiyomiorg/tachiyomi) and [react](https://github.com/facebook/react). thank you.
