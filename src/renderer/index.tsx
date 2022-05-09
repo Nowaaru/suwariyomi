@@ -62,6 +62,7 @@ declare global {
           }
         ) => Promise<void>;
         getSourceFiles: () => string[];
+        getSourceMetadata: (sourceId?: string) => LibrarySources;
         getUserDataPath: () => string;
         getDownloadsPath: () => string;
         getSourceDirectory: () => string;

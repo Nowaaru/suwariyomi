@@ -260,6 +260,8 @@
     "@mui/icons-material": "^5.2.5",
     "@mui/material": "^5.2.7",
     "@mui/x-date-pickers": "^5.0.0-alpha.2",
+    "@types/adm-zip": "^0.5.0",
+    "adm-zip": "^0.5.9",
     "aphrodite": "^2.4.0",
     "axios": "^0.25.0",
     "dayjs": "^1.10.7",

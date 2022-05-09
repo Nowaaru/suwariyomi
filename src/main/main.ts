@@ -17,6 +17,7 @@ import imageType from 'image-type';
 import Store from 'electron-store';
 import slugify from 'slugify';
 import fetch from 'node-fetch';
+import AdmZip from 'adm-zip';
 import pkceChallenge from 'pkce-challenge';
 import {
   app,
@@ -52,10 +53,92 @@ export default class AppUpdater {
   }
 }
 
+const setupSourceCatalogue = async (sourceData: boolean | object = false) => {
+  ipcMain.on('get-source-catalogue', (event) => {
+    return (event.returnValue = sourceData);
+  });
+};
+
+const downloadSource = async (zipName: string): Promise<boolean | Error> => {
+  return new Promise((resolve, reject) => {
+    fetch(
+      `https://github.com/Nowaaru/suwariyomi-sources/raw/dist/zip/${zipName}.zip`
+    )
+      .then((x) => {
+        if (x.status === 200) {
+          return x.body;
+        }
+
+        throw new Error(`Failed to download ${zipName}. Status: ${x.status}`);
+      })
+      .then((y) => {
+        const writeDir = fs.mkdtempSync(
+          path.join(app.getPath('temp'), `suwariyomi-`)
+        );
+
+        const outFile = path.join(writeDir, `${zipName}.zip`);
+        const noWatchFile = path.join(writeDir, 'no-watch');
+        fs.writeFileSync(outFile, '');
+        fs.writeFileSync(noWatchFile, '');
+
+        const writeStream = fs.createWriteStream(outFile);
+        y.pipe(writeStream);
+        y.on('error', reject);
+
+        writeStream.on('error', reject);
+        writeStream.on('finish', () => {
+          const zipFile = new AdmZip(outFile);
+          zipFile.extractAllToAsync(
+            path.join(getSourceDirectory(), zipName),
+            true,
+            true,
+            (err) => {
+              fs.rm(noWatchFile, { recursive: true, force: true }, (fsErr) => {
+                try {
+                  fs.rmSync(writeDir, { recursive: true, force: true });
+                } catch (e) {
+                  reject(e);
+                }
+                if (err ?? fsErr) reject(err ?? fsErr);
+                else resolve(true);
+              });
+            }
+          );
+        });
+
+        return true;
+      })
+      .catch(reject);
+  });
+};
+
+fetch(
+  'https://raw.githubusercontent.com/Nowaaru/suwariyomi-sources/dist/metadata.json'
+)
+  .then((res) => res.json())
+  .then(setupSourceCatalogue)
+  .catch((err) => {
+    log.error(err);
+    setupSourceCatalogue(false);
+  });
+
 log.catchErrors();
 
 const ElectronStore = new Store();
 let mainWindow: BrowserWindow | null = null;
+
+ipcMain.on('download-source', (event, sourceName: string) => {
+  const onError = (res: any) =>
+    event.sender.send('download-source-error', sourceName, res.message);
+
+  downloadSource(sourceName)
+    .then((res) => {
+      if (res instanceof Error) return onError(res);
+
+      event.sender.send('download-source-success', sourceName);
+    })
+    .catch(onError);
+});
 
 ipcMain.on('ipc-example', async (event, arg) => {
   const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
@@ -118,6 +201,19 @@ ipcMain.on('get-fs-sources', async (event) => {
 
 ipcMain.on('get-sources', (event) => {
   event.returnValue = MangaDB.GetSources();
+});
+
+ipcMain.on('get-source-metadata', (event, sourceID: string) => {
+  const sourceFiles = getSourceFiles();
+  const directoryPath = getSourceDirectory();
+
+  const sourceMetadata = sourceFiles
+    .filter((x) => !sourceID || x.toLowerCase() === sourceID.toLowerCase())
+    .map((file) => path.join(directoryPath, file, 'metadata.json'))
+    .filter((y) => fs.existsSync(y))
+    .map(require);
+
+  return (event.returnValue = sourceMetadata);
 });
 
 ipcMain.on('flush-db', (event) => {

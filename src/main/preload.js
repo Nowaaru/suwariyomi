@@ -12,6 +12,8 @@ const ipcValidChannels = [
   'manga-update',
   'update-cycle-complete',
   'update-cycle-start',
+  'download-source-error',
+  'download-source-success',
 ];
 
 window.electron = {
@@ -22,6 +24,11 @@ window.electron = {
     },
     toggleRPC: (enabled) => {
       ipcRenderer.send('toggle-rpc', enabled);
+    },
+  },
+  download: {
+    downloadSource: (source) => {
+      ipcRenderer.send('download-source', source);
     },
   },
   util: {
@@ -36,6 +43,9 @@ window.electron = {
     },
     getSourceDirectory: () => {
       return ipcRenderer.sendSync('get-sources-path');
+    },
+    getSourceMetadata: () => {
+      return ipcRenderer.sendSync('get-source-metadata');
     },
     openInBrowser: (url) => {
       ipcRenderer.send('open-in-browser', url);

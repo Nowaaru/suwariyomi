@@ -33,6 +33,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import DownloadIcon from '@mui/icons-material/Download';
 import parseQuery from '../util/search';
 
 import { FullManga, Manga as MangaType } from '../../main/util/manga';
@@ -284,6 +285,25 @@ const libraryStyleSheet = StyleSheet.create({
     color: '#DF2935',
     ':hover': {
       transform: 'scale(1.2) rotate(90deg)',
+    },
+  },
+
+  sourcesButton: {
+    position: 'absolute',
+    right: '8px',
+    top: '36px',
+    marginTop: '2px',
+    width: '32px',
+    height: '32px',
+  },
+
+  sourcesIcon: {
+    transition: 'transform 0.4s ease-in-out',
+    width: '24px',
+    height: '24px',
+    color: '#DF2935',
+    ':hover': {
+      transform: 'translateY(4px)',
     },
   },
 
@@ -1286,6 +1306,14 @@ const Library = () => {
                 <SettingsIcon className={css(libraryStyleSheet.settingsIcon)} />
               </IconButton>
             </Tooltip>
+            <Tooltip title="Sources">
+              <IconButton
+                className={css(libraryStyleSheet.sourcesButton)}
+                onClick={() => Navigate('/sources')}
+              >
+                <DownloadIcon className={css(libraryStyleSheet.sourcesIcon)} />
+              </IconButton>
+            </Tooltip>
           </Paper>
         </div>
         {accordionArray.length > 0 ? (
@@ -1311,15 +1339,9 @@ const Library = () => {
               <Link
                 to={
                   hasNoSources
-                    ? '/'
+                    ? '/sources'
                     : `/search?${currentSearchParams.toString()}`
                 }
-                onClick={() => {
-                  if (hasNoSources)
-                    window.electron.util.openInBrowser(
-                      'https://github.com/Nowaaru/suwariyomi-sources'
-                    );
-                }}
                 className={css(
                   libraryStyleSheet.infoPaperHeaderBase,
                   libraryStyleSheet.infoHighlight

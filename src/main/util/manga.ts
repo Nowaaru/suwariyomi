@@ -182,50 +182,62 @@ const enforce = async () => {
 };
 
 const reloadSources = async () => {
-  const allSources = fs.readdirSync(sourcesPath);
-  allSources.forEach((source) => {
-    const mainFilePath = path.join(sourcesPath, source, 'main.js');
-    // Check if main.js exists
-    if (!fs.existsSync(mainFilePath)) {
-      log.error(`${source} does not have a main.js file.`);
-      return;
-    }
+  try {
+    const allSources = fs.readdirSync(sourcesPath);
+    allSources.forEach((source) => {
+      const mainFilePath = path.join(sourcesPath, source, 'main.js');
+      // Check if main.js exists
+      if (!fs.existsSync(mainFilePath)) {
+        log.error(`${source} does not have a main.js file.`);
+        return;
+      }
 
-    try {
-      delete require.cache[require.resolve(mainFilePath)];
-    } catch (e) {
-      log.warn(`${source} main.js file is not in require cache; skipping.`);
-    }
-    const Source = requireFunc(mainFilePath);
-    if (!Source) return;
+      if (!fs.lstatSync(path.join(sourcesPath, source)).isDirectory()) {
+        log.error(`${source} is not a directory.`);
+        return;
+      }
 
-    const sourceObject = new Source();
-    const sourceName = sourceObject.getName();
+      if (fs.existsSync(path.join(sourcesPath, source, 'no-watch')))
+        return log.info(`No-watch file present. Skipping source ${source}. `);
 
-    enforce();
+      try {
+        delete require.cache[require.resolve(mainFilePath)];
+      } catch (e) {
+        log.warn(`${source} main.js file is not in require cache; skipping.`);
+      }
+      const Source = requireFunc(mainFilePath);
+      if (!Source) return;
 
-    // These are already present due to the ensure() call above.
-    const [currentMangaData, currentLibraryData] = [
-      MangaDatabase.get('CachedManga')!,
-      LibraryDatabase.get('Library')!,
-    ];
+      const sourceObject = new Source();
+      const sourceName = sourceObject.getName();
 
-    if (!currentLibraryData.Sources[sourceName]) {
-      currentLibraryData.Sources[sourceName] = {
-        Enabled: true,
-        LastUpdated: 0,
-        Manga: [],
-      };
-      LibraryDatabase.set('Library', currentLibraryData);
-      log.info(`Added ${sourceName} to the library.`);
-    }
+      enforce();
 
-    if (!currentMangaData.Sources[sourceName]) {
-      log.info('Adding new source to MangaDatabase.');
-      currentMangaData.Sources[sourceName] = {};
-      MangaDatabase.set('CachedManga', currentMangaData);
-    }
-  });
+      // These are already present due to the ensure() call above.
+      const [currentMangaData, currentLibraryData] = [
+        MangaDatabase.get('CachedManga')!,
+        LibraryDatabase.get('Library')!,
+      ];
+
+      if (!currentLibraryData.Sources[sourceName]) {
+        currentLibraryData.Sources[sourceName] = {
+          Enabled: true,
+          LastUpdated: 0,
+          Manga: [],
+        };
+        LibraryDatabase.set('Library', currentLibraryData);
+        log.info(`Added ${sourceName} to the library.`);
+      }
+
+      if (!currentMangaData.Sources[sourceName]) {
+        log.info('Adding new source to MangaDatabase.');
+        currentMangaData.Sources[sourceName] = {};
+        MangaDatabase.set('CachedManga', currentMangaData);
+      }
+    });
+  } catch (e) {
+    log.error(e);
+  }
 };
 
 reloadSources();
