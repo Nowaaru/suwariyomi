@@ -432,7 +432,20 @@ const Library = () => {
   currentSearchParams.set('search', searchQuery);
 
   const accordionArray: Array<JSX.Element> = [];
-  const librarySources = LibraryUtilities.getSources();
+  const librarySources = useMemo(() => {
+    const Sources = LibraryUtilities.getSources();
+    const downloadedSources = window.electron.util.getSourceMetadata();
+    Object.keys(Sources).forEach((key) => {
+      if (
+        !Sources[key].Enabled ||
+        !downloadedSources.find((source) => source.name === key)
+      ) {
+        delete Sources[key];
+      }
+    });
+
+    return Sources;
+  }, [LibraryUtilities]);
   const librarySourcesKeys = Object.keys(librarySources);
 
   const userSettings = useRef(window.electron.settings.getAll());
