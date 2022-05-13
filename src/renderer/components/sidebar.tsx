@@ -233,6 +233,7 @@ const SideBar = ({
     container: {
       position: 'absolute',
       width: isVertical ? '5%' : '100%',
+      top: isVertical ? '0' : 'unset',
       [isVertical ? (isRight ? 'right' : 'left') : 'bottom']: '0',
       height: isVertical ? '95%' : '5%',
       marginTop: isVertical ? '1%' : '0%',

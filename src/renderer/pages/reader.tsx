@@ -438,12 +438,10 @@ const stylesObject = {
 
   mangaImageFitWidth: {
     maxWidth: '100%',
-    maxHeight: '95%',
   },
 
   mangaImageFitHeight: {
     maxHeight: '100%',
-    maxWidth: '95%',
   },
 
   mangaImageFitContent: {
