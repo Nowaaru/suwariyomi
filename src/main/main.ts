@@ -76,18 +76,23 @@ const downloadSource = async (zipName: string): Promise<boolean | Error> => {
           path.join(app.getPath('temp'), `suwariyomi-`)
         );
 
-        const outFile = path.join(writeDir, `${zipName}.zip`);
-        const noWatchFile = path.join(writeDir, 'no-watch');
-        fs.writeFileSync(outFile, '');
+        const outDir = path.join(getSourceDirectory(), zipName);
+        if (!fs.existsSync(outDir)) {
+          fs.mkdirSync(path.join(getSourceDirectory(), zipName));
+        }
+
+        const outTempFile = path.join(writeDir, `${zipName}.zip`);
+        const noWatchFile = path.join(outDir, 'no-watch');
+        fs.writeFileSync(outTempFile, '');
         fs.writeFileSync(noWatchFile, '');
 
-        const writeStream = fs.createWriteStream(outFile);
+        const writeStream = fs.createWriteStream(outTempFile);
         y.pipe(writeStream);
         y.on('error', reject);
 
         writeStream.on('error', reject);
         writeStream.on('finish', () => {
-          const zipFile = new AdmZip(outFile);
+          const zipFile = new AdmZip(outTempFile);
           zipFile.extractAllToAsync(
             path.join(getSourceDirectory(), zipName),
             true,
