@@ -29,6 +29,7 @@ import {
   Menu,
   Notification,
 } from 'electron';
+import type { SourceMetadata } from 'renderer';
 import { autoUpdater } from 'electron-updater';
 import MenuBuilder from './menu';
 import { getSourceDirectory, getSourceFiles, resolveHtmlPath } from './util';
@@ -45,6 +46,10 @@ import initRPCConnection, {
   toggleRPC,
 } from './util/rpc';
 
+log.catchErrors();
+
+const ElectronStore = new Store();
+let mainWindow: BrowserWindow | null = null;
 export default class AppUpdater {
   constructor() {
     log.transports.file.level = 'info';
@@ -105,7 +110,10 @@ const downloadSource = async (zipName: string): Promise<boolean | Error> => {
                   reject(e);
                 }
                 if (err ?? fsErr) reject(err ?? fsErr);
-                else resolve(true);
+                else {
+                  mainWindow?.webContents.send('source-update', zipName);
+                  resolve(true);
+                }
               });
             }
           );
@@ -127,11 +135,6 @@ fetch(
     setupSourceCatalogue(false);
   });
 
-log.catchErrors();
-
-const ElectronStore = new Store();
-let mainWindow: BrowserWindow | null = null;
-
 ipcMain.on('download-source', (event, sourceName: string) => {
   const onError = (res: any) =>
     event.sender.send('download-source-error', sourceName, res.message);
@@ -145,7 +148,19 @@ ipcMain.on('download-source', (event, sourceName: string) => {
     .catch(onError);
 });
 
-ipcMain.on('ipc-example', async (event, arg) => {
+ipcMain.on('remove-source', (event, sourceData: SourceMetadata) => {
+  if (!fs.existsSync(sourceData.path ?? ''))
+    return log.error(
+      'Source directory does not exist for source',
+      `${sourceData.name}.`
+    );
+
+  fs.writeFileSync(path.join(sourceData.path!, 'no-watch'), '');
+  fs.rmdirSync(sourceData.path!, { recursive: true });
+  event.sender.send('source-remove', sourceData.name);
+});
+
+ipcMain.on('ipc-example', async (event) => {
   const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
   event.reply('ipc-example', msgTemplate('pong'));
 });
@@ -212,11 +227,16 @@ ipcMain.on('get-source-metadata', (event, sourceID: string) => {
   const sourceFiles = getSourceFiles();
   const directoryPath = getSourceDirectory();
 
-  const sourceMetadata = sourceFiles
+  const sourceMetadata: SourceMetadata[] = sourceFiles
     .filter((x) => !sourceID || x.toLowerCase() === sourceID.toLowerCase())
     .map((file) => path.join(directoryPath, file, 'metadata.json'))
     .filter((y) => fs.existsSync(y))
-    .map(require);
+    .map((z) => {
+      // eslint-disable-next-line import/no-dynamic-require
+      const required = require(z);
+
+      return { ...required, path: z.replace('metadata.json', '') };
+    }) as unknown as SourceMetadata[]; // Include the path to make sure that we can recognize the directory despite the name being changed for any reason.
 
   return (event.returnValue = sourceMetadata);
 });

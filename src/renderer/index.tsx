@@ -39,6 +39,17 @@ type SetSignature = (
   isBookmarked: boolean,
   mangaId: string
 ) => void;
+
+export type SourceMetadata = {
+  name: string; // The name of the source.
+  version: string; // The version of the source.
+  icon: string; // The icon for the source.
+  nsfw: boolean; // Whether the source can distribute NSFW content.
+  zip: string; // The name of the zip file in the dist/zip branch.
+  lang: string; // The language of the source.
+  path?: string; // The path to the source.
+};
+
 declare global {
   interface Window {
     electron: {
@@ -46,6 +57,10 @@ declare global {
       rpc: {
         updateRPC: (presence: Presence) => void;
         toggleRPC: (rpcEnabled: boolean) => void;
+      };
+      download: {
+        downloadSource: (sourceZip: string) => Promise<boolean>;
+        removeSource: (sourceData: SourceMetadata) => Promise<boolean>;
       };
       util: {
         showOpenDialog: (
@@ -62,7 +77,8 @@ declare global {
           }
         ) => Promise<void>;
         getSourceFiles: () => string[];
-        getSourceMetadata: (sourceId?: string) => LibrarySources;
+        getSourceMetadata: (sourceId?: string) => SourceMetadata[];
+        getSourceCatalogue: () => SourceMetadata[];
         getUserDataPath: () => string;
         getDownloadsPath: () => string;
         getSourceDirectory: () => string;

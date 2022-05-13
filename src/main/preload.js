@@ -10,6 +10,8 @@ const ipcValidChannels = [
   'open-protocol',
   'manga-open',
   'manga-update',
+  'source-update',
+  'source-remove',
   'update-cycle-complete',
   'update-cycle-start',
   'download-source-error',
@@ -30,6 +32,9 @@ window.electron = {
     downloadSource: (source) => {
       ipcRenderer.send('download-source', source);
     },
+    removeSource: (source) => {
+      ipcRenderer.send('remove-source', source);
+    },
   },
   util: {
     showOpenDialog: (options) => {
@@ -43,6 +48,9 @@ window.electron = {
     },
     getSourceDirectory: () => {
       return ipcRenderer.sendSync('get-sources-path');
+    },
+    getSourceCatalogue: () => {
+      return ipcRenderer.sendSync('get-source-catalogue');
     },
     getSourceMetadata: () => {
       return ipcRenderer.sendSync('get-source-metadata');
