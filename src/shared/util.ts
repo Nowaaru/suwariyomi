@@ -1,5 +1,5 @@
 /* eslint-disable import/prefer-default-export */
-import { resolve } from 'path';
+import { resolve, join } from 'path';
 import { readdir } from 'fs/promises';
 import type { Dirent } from 'fs';
 
@@ -25,7 +25,13 @@ export function clearRequireCache(matchingString: string): boolean {
   const allKeys = Object.keys(getMainRequire().cache);
 
   allKeys.forEach((key) => {
-    if (key.includes(matchingString)) {
+    // Add a / at the end (if necessary) in case there are partial matches (i.e. ends in MangaOwl but there's a MangaOwl.xyz source as well)
+    const newMatchingString =
+      matchingString.endsWith('/') || matchingString.endsWith('\\')
+        ? matchingString
+        : join(matchingString, '/');
+
+    if (key.includes(newMatchingString)) {
       console.log(`Removed ${key} from require cache.`);
       delete require.cache[key];
     }
