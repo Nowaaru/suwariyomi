@@ -78,7 +78,7 @@ export default abstract class SourceBase {
     return this._canDownload;
   }
 
-  protected download: () => Promise<boolean> = async () => {
+  public download: () => Promise<boolean> = async () => {
     return false;
   };
 
