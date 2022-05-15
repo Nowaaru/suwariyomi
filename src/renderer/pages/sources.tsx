@@ -1,13 +1,14 @@
+import { Tooltip } from '@mui/material';
 import { StyleSheet, css } from 'aphrodite';
-import { isEqual } from 'lodash';
-import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 
 import Tabs from '../components/tabs';
 import Button from '../components/button';
 import type { SourceMetadata } from '../index';
+import { clearRequireCache } from '../../shared/util';
 
 const styles = StyleSheet.create({
-  container: { marginLeft: '75px' },
+  container: { marginLeft: '75px', height: '90%' },
   installedcontainer: {
     display: 'flex',
     flexDirection: 'column',
@@ -60,19 +61,22 @@ const styles = StyleSheet.create({
   },
   r18: {
     color: '#DF2935',
-    fontFamily: 'Poppins',
-    fontSize: '10px',
     border: '1px solid #DF2935',
-    borderRadius: '4px',
-    padding: '2px',
   },
-  safe: {
+  tags: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    width: 'fit-content',
+  },
+  tag: {
     color: '#FFFFFF33',
     fontFamily: 'Poppins',
     fontSize: '10px',
     border: '1px solid #FFFFFF33',
     borderRadius: '4px',
     padding: '2px',
+    marginRight: '4px',
   },
   titlecontainer: {
     marginBottom: '4px',
@@ -83,7 +87,7 @@ const styles = StyleSheet.create({
   version: {
     fontSize: '9px',
     color: '#DF2935',
-    fontWeight: 'bold',
+    fontWeight: 500,
     fontFamily: 'Poppins',
     lineHeight: '1',
   },
@@ -104,6 +108,25 @@ const styles = StyleSheet.create({
   installButton: {
     float: 'right',
   },
+  notfoundcontainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100%',
+    width: '100%',
+  },
+  installeddisclaimer: {
+    fontSize: '12px',
+    color: '#FFFFFF55',
+    fontFamily: 'Poppins',
+    lineHeight: '1',
+    display: 'flex',
+  },
+  to: {
+    color: '#95AC67',
+    fontWeight: 800,
+  },
 });
 
 const HeaderLine = ({ label }: { label: string }) => (
@@ -113,13 +136,17 @@ const HeaderLine = ({ label }: { label: string }) => (
   </div>
 );
 
-type SourceMetadataWithUpdater = (SourceMetadata & { needsUpdate?: boolean })[];
+type SourceMetadataWithUpdater = (SourceMetadata & {
+  needsUpdate?: boolean;
+  isObsolete?: boolean;
+})[];
 const Sources = () => {
   const [currentTab, setCurrentTab] = useState(0);
-  const [installed, setInstalled] = useState(
+  const [installed, setInstalled] = useState<SourceMetadataWithUpdater>(
     window.electron.util.getSourceMetadata()
   );
 
+  const showInstalled = currentTab === 0;
   const languageNames = new Intl.DisplayNames(['en'], { type: 'language' });
   const { current: allSourceData } = useRef(
     window.electron.util.getSourceCatalogue()
@@ -135,30 +162,39 @@ const Sources = () => {
     });
     return groups;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [installed]);
+  }, [installed, currentTab]);
+
+  const serializedMetadata: SourceMetadataWithUpdater = useMemo(() => {
+    const sourceMetadata = window.electron.util
+      .getSourceMetadata()
+      .map((source) => {
+        // Compare the old and new source metadata to see if the source has been
+        // updated. If updated, mark with the 'needsUpdate' flag.
+
+        const onlineSource: SourceMetadata | undefined = allSourceData.find(
+          (installedSource) => installedSource.name === source.name
+        );
+
+        if (onlineSource) {
+          if (onlineSource.version !== source.version) {
+            (source as SourceMetadataWithUpdater[number]).needsUpdate = true;
+          }
+        } else (source as SourceMetadataWithUpdater[number]).isObsolete = true;
+
+        return source;
+      });
+
+    return sourceMetadata;
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [installed, allSourceData]);
 
   useEffect(() => {
     const { on, off } = window.electron.ipcRenderer;
     const onFN = () => {
-      const sourceMetadata = window.electron.util.getSourceMetadata();
-      sourceMetadata.map((source) => {
-        // Compare the old and new source metadata to see if the source has been
-        // updated. If updated, mark with the 'needsUpdate' flag.
-
-        const foundSource: SourceMetadataWithUpdater[number] | undefined =
-          installed.find(
-            (installedSource) => installedSource.name === source.name
-          );
-
-        if (foundSource) {
-          if (!isEqual(foundSource, source)) {
-            foundSource.needsUpdate = true;
-          }
-        }
-
-        return foundSource;
-      });
-      setInstalled(sourceMetadata);
+      const Metadata = window.electron.util.getSourceMetadata();
+      console.log('Metadata', Metadata);
+      setInstalled(Metadata);
     };
 
     on('source-update', onFN);
@@ -183,84 +219,135 @@ const Sources = () => {
           },
         ]}
       />
-      {Object.keys(Object.fromEntries(allLanguageGroups)).map((lang) => (
-        <>
-          <HeaderLine
-            label={languageNames.of(lang) ?? `Unknown (${lang})`}
-            key={`${lang}-label`}
-          />
-          <div
-            key={`${lang}-container`}
-            className={css(styles.installedcontainer)}
-          >
-            {allLanguageGroups
-              .get(lang)!
-              .filter(
-                (y) =>
-                  currentTab !== 0 || installed.some((x) => x.name === y.name)
-              )
-              .map((source) => {
-                const isInstalled = installed.some(
-                  (x) => x.name === source.name
-                );
-                return (
-                  <div key={source.name} className={css(styles.itemcontainer)}>
-                    <div className={css(styles.iconcontainer)}>
-                      <img
-                        src={source.icon}
-                        className={css(styles.itemicon)}
-                        alt={`${source.name} Icon`}
-                      />
-                    </div>
-                    <div className={css(styles.metacontainer)}>
-                      <div className={css(styles.titlecontainer)}>
-                        <span className={css(styles.title)}>{source.name}</span>
-                        <span className={css(styles.version, styles.at)}>
-                          @
-                        </span>
-                        <span className={css(styles.version)}>
-                          {source.version.replace(/^@/, '')}
-                        </span>
-                      </div>
-                      <span
-                        className={css(source.nsfw ? styles.r18 : styles.safe)}
-                      >
-                        {source.nsfw ? 'NSFW' : 'SAFE'}
-                      </span>
-                    </div>
-                    <div className={css(styles.installButton)}>
-                      <Button
-                        onClick={() => {
-                          if (isInstalled && !source.needsUpdate) {
-                            const foundSource = installed.find(
-                              (installedSource) =>
-                                installedSource.name === source.name
-                            );
+      {(showInstalled ? installed : allSourceData).length > 0 ? (
+        Object.keys(Object.fromEntries(allLanguageGroups))
+          .filter((lang) => (allLanguageGroups.get(lang)?.length ?? 0) > 0)
+          .map((lang) => (
+            <>
+              <HeaderLine
+                label={languageNames.of(lang) ?? `Unknown (${lang})`}
+                key={`${lang}-label`}
+              />
+              <div
+                key={`${lang}-container`}
+                className={css(styles.installedcontainer)}
+              >
+                {allLanguageGroups
+                  .get(lang)!
+                  .filter(
+                    (y) =>
+                      currentTab !== 0 ||
+                      installed.some((x) => x.name === y.name)
+                  )
+                  .map((source) => {
+                    const localSource = serializedMetadata.find(
+                      (x) => x.name === source.name
+                    );
 
-                            if (!foundSource) return;
-                            return window.electron.download.removeSource(
-                              foundSource
-                            );
-                          }
-                          return window.electron.download.downloadSource(
-                            source.zip
-                          );
-                        }}
-                        label={
-                          isInstalled
-                            ? 'Uninstall'
-                            : source.needsUpdate
-                            ? 'Update'
-                            : 'Install'
-                        }
-                      />
-                    </div>
-                  </div>
-                );
-              })}
-          </div>
-        </>
-      ))}
+                    const isInstalled = !!localSource;
+                    return (
+                      <div
+                        key={source.name}
+                        className={css(styles.itemcontainer)}
+                      >
+                        <div className={css(styles.iconcontainer)}>
+                          <img
+                            src={source.icon}
+                            className={css(styles.itemicon)}
+                            alt={`${source.name} Icon`}
+                          />
+                        </div>
+                        <div className={css(styles.metacontainer)}>
+                          <div className={css(styles.titlecontainer)}>
+                            <span className={css(styles.title)}>
+                              {source.name}
+                            </span>
+                            <span className={css(styles.version, styles.at)}>
+                              @
+                            </span>
+                            <span className={css(styles.version)}>
+                              {(showInstalled
+                                ? localSource
+                                : source
+                              )?.version.replace(/^@/, '')}
+                            </span>
+                            {showInstalled && localSource?.needsUpdate ? (
+                              <span className={css(styles.version, styles.to)}>
+                                {' > '}
+                                {source.version}
+                              </span>
+                            ) : null}
+                          </div>
+                          <div className={css(styles.tags)}>
+                            <Tooltip
+                              title={
+                                source.nsfw
+                                  ? 'The content this source can provide may be inappropriate to show to minors.'
+                                  : ''
+                              }
+                            >
+                              <span
+                                className={css(
+                                  styles.tag,
+                                  source.nsfw && styles.r18
+                                )}
+                              >
+                                {source.nsfw ? 'NSFW' : 'SAFE'}
+                              </span>
+                            </Tooltip>
+                            {showInstalled && localSource?.isObsolete ? (
+                              <Tooltip title="This source is unsupported. Things may break, and you will not be able to reinstall it if uninstalled.">
+                                <span className={css(styles.tag)}>
+                                  OBSOLETE
+                                </span>
+                              </Tooltip>
+                            ) : null}
+                          </div>
+                        </div>
+                        <div className={css(styles.installButton)}>
+                          <Button
+                            onClick={() => {
+                              const foundSource = serializedMetadata.find(
+                                (installedSource) =>
+                                  installedSource.name === source.name
+                              );
+                              if (isInstalled && !foundSource?.needsUpdate) {
+                                if (foundSource?.path)
+                                  clearRequireCache(foundSource.path);
+
+                                const wasSuccessful =
+                                  window.electron.download.removeSource(
+                                    foundSource!
+                                  );
+
+                                return wasSuccessful;
+                              }
+                              return window.electron.download.downloadSource(
+                                source.zip
+                              );
+                            }}
+                            label={
+                              isInstalled
+                                ? localSource.needsUpdate
+                                  ? 'Update'
+                                  : 'Uninstall'
+                                : 'Install'
+                            }
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+              </div>
+            </>
+          ))
+      ) : (
+        <div className={css(styles.notfoundcontainer)}>
+          <span className={css(styles.installeddisclaimer)}>{`${
+            showInstalled ? "You've no sources." : null
+          }`}</span>
+        </div>
+      )}
     </div>
   );
 };
