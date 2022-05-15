@@ -1,3 +1,6 @@
+/* eslint-disable jsx-a11y/interactive-supports-focus */
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable promise/no-nesting */
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { StyleSheet, css } from 'aphrodite';
@@ -199,6 +202,7 @@ const stylesObject = {
     right: '12px',
     bottom: '12px',
     color: '#FFFFFF33',
+    zIndex: 4000,
   },
 };
 
@@ -600,7 +604,14 @@ const Settings = () => {
             .catch(console.error);
         }}
       />
-      <span className={css(styles.appVersion)}>
+      <span
+        className={css(styles.appVersion)}
+        onClick={() =>
+          window.electron.util.openInBrowser(
+            'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
+          )
+        }
+      >
         v{window.electron.util.appVersion}
       </span>
       <div className={css(styles.container)}>
