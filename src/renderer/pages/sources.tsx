@@ -6,6 +6,7 @@ import Tabs from '../components/tabs';
 import Button from '../components/button';
 import type { SourceMetadata } from '../index';
 import { clearRequireCache } from '../../shared/util';
+import Handler from '../../main/sources/handler';
 
 const styles = StyleSheet.create({
   container: { marginLeft: '75px', height: '90%' },
@@ -193,7 +194,6 @@ const Sources = () => {
     const { on, off } = window.electron.ipcRenderer;
     const onFN = () => {
       const Metadata = window.electron.util.getSourceMetadata();
-      console.log('Metadata', Metadata);
       setInstalled(Metadata);
     };
 

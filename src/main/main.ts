@@ -241,6 +241,11 @@ ipcMain.on('get-source-metadata', (event, sourceID: string) => {
     .map((z) => {
       // eslint-disable-next-line import/no-dynamic-require
       const required = require(z);
+      try {
+        delete require.cache[require.resolve(z)];
+      } catch (e) {
+        log.error(e);
+      }
 
       return { ...required, path: z.replace('metadata.json', '') };
     }) as unknown as SourceMetadata[]; // Include the path to make sure that we can recognize the directory despite the name being changed for any reason.
