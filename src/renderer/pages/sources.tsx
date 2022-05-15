@@ -1,12 +1,12 @@
 import { Tooltip } from '@mui/material';
 import { StyleSheet, css } from 'aphrodite';
 import { useState, useEffect, useRef, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 
 import Tabs from '../components/tabs';
 import Button from '../components/button';
 import type { SourceMetadata } from '../index';
 import { clearRequireCache } from '../../shared/util';
-import Handler from '../../main/sources/handler';
 
 const styles = StyleSheet.create({
   container: { marginLeft: '75px', height: '90%' },
@@ -128,6 +128,12 @@ const styles = StyleSheet.create({
     color: '#95AC67',
     fontWeight: 800,
   },
+  backButton: {},
+  backButtonContainer: {
+    display: 'flex',
+    marginLeft: '-50px',
+    marginTop: '10px',
+  },
 });
 
 const HeaderLine = ({ label }: { label: string }) => (
@@ -207,6 +213,21 @@ const Sources = () => {
 
   return (
     <div className={css(styles.container)}>
+      <div className={css(styles.backButtonContainer)}>
+        <Link
+          to="/"
+          style={{
+            textDecoration: 'none',
+          }}
+        >
+          <Button
+            className={css(styles.backButton)}
+            tooltipTitle="Back"
+            tooltipPlacement="bottom"
+            label="Back"
+          />
+        </Link>
+      </div>
       <Tabs
         selectedIndex={currentTab}
         onChange={setCurrentTab}
@@ -225,7 +246,11 @@ const Sources = () => {
           .map((lang) => (
             <>
               <HeaderLine
-                label={languageNames.of(lang) ?? `Unknown (${lang})`}
+                label={
+                  languageNames.of(lang) !== lang
+                    ? languageNames.of(lang)!
+                    : `Unknown (${lang})`
+                }
                 key={`${lang}-label`}
               />
               <div
