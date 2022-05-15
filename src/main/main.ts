@@ -10,7 +10,7 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 
-import path, { format } from 'path';
+import path from 'path';
 import fs from 'fs';
 import log from 'electron-log';
 import imageType from 'image-type';
@@ -163,7 +163,7 @@ ipcMain.on('remove-source', (event, sourceData: SourceMetadata) => {
   }
 
   fs.writeFileSync(path.join(sourceData.path!, 'no-watch'), '');
-  fs.rmdirSync(sourceData.path!, { recursive: true });
+  fs.rmSync(sourceData.path!, { recursive: true });
   event.sender.send('source-remove', sourceData.name);
 });
 
