@@ -31,7 +31,7 @@ import {
 } from 'electron';
 import type { SourceMetadata } from 'renderer';
 import { autoUpdater } from 'electron-updater';
-import { clearRequireCache } from '../shared/util';
+import { clearRequireCache, getMainRequire } from '../shared/util';
 import MenuBuilder from './menu';
 import { getSourceDirectory, getSourceFiles, resolveHtmlPath } from './util';
 import CacheDB from './util/cache';
@@ -240,7 +240,7 @@ ipcMain.on('get-source-metadata', (event, sourceID: string) => {
     .filter((y) => fs.existsSync(y))
     .map((z) => {
       // eslint-disable-next-line import/no-dynamic-require
-      const required = require(z);
+      const required = getMainRequire()(z);
       try {
         delete require.cache[require.resolve(z)];
       } catch (e) {
