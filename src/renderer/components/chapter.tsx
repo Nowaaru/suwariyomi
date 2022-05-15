@@ -261,75 +261,86 @@ const Chapter = ({
           </Button>
         </Tooltip>
       </div>
-      <Checkbox
-        className={css(styles.chapterContainerBookmarkButton)}
-        sx={{
-          '&:hover': {
-            backgroundColor: 'transparent !important',
-          },
-        }}
-        checkedIcon={
-          <BookmarkIcon className={css(styles.bookmarksButtonFilled)} />
-        }
-        icon={<BookmarkBorderIcon className={css(styles.bookmarksButton)} />}
-        onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-          const { checked } = event.target;
-          window.electron.read.set(
-            source,
-            chapter.ChapterID,
-            chapter.PageCount,
-            currentPage,
-            lastRead,
-            timeElapsed,
-            checked,
-            manga.MangaID
-          );
-
-          onBookmark?.(checked);
-        }}
-        checked={!!isBookmarked}
-      />
-      {modifierShift ? (
+      <Tooltip title="Bookmark">
         <Checkbox
-          checked={!!isRead}
-          checkedIcon={
-            <VisibilityOffIcon className={css(styles.markUnreadIcon)} />
-          }
+          className={css(styles.chapterContainerBookmarkButton)}
           sx={{
             '&:hover': {
               backgroundColor: 'transparent !important',
             },
           }}
-          icon={<VisibilityIcon className={css(styles.markReadIcon)} />}
+          checkedIcon={
+            <BookmarkIcon className={css(styles.bookmarksButtonFilled)} />
+          }
+          icon={<BookmarkBorderIcon className={css(styles.bookmarksButton)} />}
           onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
             const { checked } = event.target;
-            const newCurrentPage = checked ? chapter.PageCount : -1;
-            window.electron.read.setSync(
+            window.electron.read.set(
               source,
               chapter.ChapterID,
               chapter.PageCount,
-              newCurrentPage,
+              currentPage,
               lastRead,
               timeElapsed,
-              !!isBookmarked,
+              checked,
               manga.MangaID
             );
 
-            if (onMarkRead) {
-              onMarkRead(checked);
-            }
-            setCurrentPage(newCurrentPage);
+            onBookmark?.(checked);
           }}
+          checked={!!isBookmarked}
         />
-      ) : downloadable ? (
-        <IconButton className={css(styles.downloadButton)}>
-          <DownloadIcon
-            className={css(
-              styles.downloadButtonIcon,
-              styles.disabledDownloadButton
-            )}
+      </Tooltip>
+      {modifierShift ? (
+        <Tooltip title={isRead ? 'Mark as unread' : 'Mark as read'}>
+          <Checkbox
+            checked={!!isRead}
+            checkedIcon={
+              <VisibilityOffIcon className={css(styles.markUnreadIcon)} />
+            }
+            sx={{
+              '&:hover': {
+                backgroundColor: 'transparent !important',
+              },
+            }}
+            icon={<VisibilityIcon className={css(styles.markReadIcon)} />}
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+              const { checked } = event.target;
+              const newCurrentPage = checked ? chapter.PageCount : -1;
+              window.electron.read.setSync(
+                source,
+                chapter.ChapterID,
+                chapter.PageCount,
+                newCurrentPage,
+                lastRead,
+                timeElapsed,
+                !!isBookmarked,
+                manga.MangaID
+              );
+
+              if (onMarkRead) {
+                onMarkRead(checked);
+              }
+              setCurrentPage(newCurrentPage);
+            }}
           />
-        </IconButton>
+        </Tooltip>
+      ) : downloadable ? (
+        <Tooltip
+          title={`Download Ch. ${chapter.Chapter}${
+            chapter.ChapterTitle ? ` - ${chapter.ChapterTitle}` : ''
+          }`}
+          placement="top"
+        >
+          <IconButton className={css(styles.downloadButton)}>
+            <DownloadIcon
+              className={css(
+                styles.downloadButtonIcon,
+                styles.disabledDownloadButton
+              )}
+            />
+          </IconButton>
+        </Tooltip>
       ) : null}
     </Paper>
   );
