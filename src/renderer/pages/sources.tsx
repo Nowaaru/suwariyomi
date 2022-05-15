@@ -311,17 +311,16 @@ const Sources = () => {
                                 (installedSource) =>
                                   installedSource.name === source.name
                               );
+
+                              if (foundSource?.path)
+                                clearRequireCache(foundSource.path);
+
                               if (isInstalled && !foundSource?.needsUpdate) {
-                                if (foundSource?.path)
-                                  clearRequireCache(foundSource.path);
-
-                                const wasSuccessful =
-                                  window.electron.download.removeSource(
-                                    foundSource!
-                                  );
-
-                                return wasSuccessful;
+                                return window.electron.download.removeSource(
+                                  foundSource!
+                                );
                               }
+
                               return window.electron.download.downloadSource(
                                 source.zip
                               );
