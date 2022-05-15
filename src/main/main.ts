@@ -31,6 +31,7 @@ import {
 } from 'electron';
 import type { SourceMetadata } from 'renderer';
 import { autoUpdater } from 'electron-updater';
+import { clearRequireCache } from '../shared/util';
 import MenuBuilder from './menu';
 import { getSourceDirectory, getSourceFiles, resolveHtmlPath } from './util';
 import CacheDB from './util/cache';
@@ -154,6 +155,12 @@ ipcMain.on('remove-source', (event, sourceData: SourceMetadata) => {
       'Source directory does not exist for source',
       `${sourceData.name}.`
     );
+
+  try {
+    clearRequireCache(sourceData.path!);
+  } catch (e) {
+    log.error(e);
+  }
 
   fs.writeFileSync(path.join(sourceData.path!, 'no-watch'), '');
   fs.rmdirSync(sourceData.path!, { recursive: true });

@@ -3,10 +3,10 @@
 /* eslint-disable import/no-dynamic-require */
 import path from 'path';
 import { getSourceFiles, getSourceDirectory } from '../util';
+import { getMainRequire } from '../../shared/util';
 import SourceBase from './static/base';
 
-const requireFunc =
-  typeof __webpack_require__ === 'function' ? __non_webpack_require__ : require;
+const requireFunc = getMainRequire();
 
 // I actually like the export class filled with no class but actual structures; so we'll use that.
 // I just came back to this comment and I have absolutely *no* clue what that was supposed to mean.
