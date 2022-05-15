@@ -186,6 +186,9 @@ const reloadSources = async () => {
     const allSources = fs.readdirSync(sourcesPath);
     allSources.forEach((source) => {
       const mainFilePath = path.join(sourcesPath, source, 'main.js');
+      if (fs.existsSync(path.join(sourcesPath, source, 'no-watch')))
+        return log.info(`No-watch file present. Skipping source ${source}. `);
+
       // Check if main.js exists
       if (!fs.existsSync(mainFilePath)) {
         log.error(`${source} does not have a main.js file.`);
@@ -193,12 +196,11 @@ const reloadSources = async () => {
       }
 
       if (!fs.lstatSync(path.join(sourcesPath, source)).isDirectory()) {
-        log.error(`${source} is not a directory.`);
+        log.error(
+          `${source} is not a directory. Please clean your sources folder.`
+        );
         return;
       }
-
-      if (fs.existsSync(path.join(sourcesPath, source, 'no-watch')))
-        return log.info(`No-watch file present. Skipping source ${source}. `);
 
       try {
         delete require.cache[require.resolve(mainFilePath)];
