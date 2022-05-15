@@ -11,6 +11,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 
+import Handler from '../../main/sources/handler';
 import { ReadDatabaseValue } from '../../main/util/read';
 import { convertDateToFormatted } from '../util/func';
 import {
@@ -332,7 +333,17 @@ const Chapter = ({
           }`}
           placement="top"
         >
-          <IconButton className={css(styles.downloadButton)}>
+          <IconButton
+            className={css(styles.downloadButton)}
+            onClick={() => {
+              const sourceHandler = Handler.getSource(source);
+              if (sourceHandler?.canDownload) {
+                sourceHandler.download(
+                  window.electron.download.getDownloadsPath()
+                );
+              }
+            }}
+          >
             <DownloadIcon
               className={css(
                 styles.downloadButtonIcon,

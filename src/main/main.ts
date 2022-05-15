@@ -253,6 +253,10 @@ ipcMain.on('get-source-metadata', (event, sourceID: string) => {
   return (event.returnValue = sourceMetadata);
 });
 
+ipcMain.on('get-downloads-path', (event) => {
+  event.returnValue = Settings.getAllSettings().downloads.location;
+});
+
 ipcMain.on('flush-db', (event) => {
   MangaDB.Flush();
   event.returnValue = true;

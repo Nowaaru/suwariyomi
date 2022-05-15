@@ -59,6 +59,7 @@ declare global {
         toggleRPC: (rpcEnabled: boolean) => void;
       };
       download: {
+        getDownloadsPath: () => string;
         downloadSource: (sourceZip: string) => Promise<boolean>;
         removeSource: (sourceData: SourceMetadata) => Promise<boolean>;
       };

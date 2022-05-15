@@ -78,7 +78,7 @@ export default abstract class SourceBase {
     return this._canDownload;
   }
 
-  public download: () => Promise<boolean> = async () => {
+  public download: (location: string) => Promise<boolean> = async () => {
     return false;
   };
 

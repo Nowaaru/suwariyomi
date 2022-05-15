@@ -29,6 +29,9 @@ window.electron = {
     },
   },
   download: {
+    getDownloadsPath: () => {
+      return ipcRenderer.sendSync('get-downloads-path');
+    },
     downloadSource: (source) => {
       ipcRenderer.send('download-source', source);
     },
