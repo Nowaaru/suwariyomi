@@ -22,12 +22,16 @@ const styles = StyleSheet.create({
 });
 
 const Button = (
-  props: ButtonProps & { tooltipTitle?: string; label?: string }
+  props: ButtonProps & {
+    tooltipTitle?: string;
+    label?: string;
+    tooltipPlacement?: 'top' | 'bottom';
+  }
 ) => {
-  const { tooltipTitle, label, onClick, ...rest } = props;
+  const { tooltipTitle, tooltipPlacement, label, onClick, ...rest } = props;
   return (
     <div className={css(styles.buttonContainer)}>
-      <Tooltip title={tooltipTitle ?? ''} placement="top">
+      <Tooltip title={tooltipTitle ?? ''} placement={tooltipPlacement ?? 'top'}>
         <MuiButton
           {...rest}
           className={css(styles.button)}
@@ -47,6 +51,7 @@ const Button = (
 
 Button.defaultProps = {
   tooltipTitle: '',
+  tooltipPlacement: 'top',
   label: 'Button',
 };
 
