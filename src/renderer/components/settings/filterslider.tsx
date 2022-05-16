@@ -5,6 +5,18 @@ import { noop, clamp } from 'lodash';
 import type { DefaultSettings } from '../../../main/util/settings';
 import { settingsStylesObject } from '../../util/func';
 import type { Schema } from '../../util/auxiliary';
+import Theme from '../../../main/util/theme';
+
+const { theme, themeStyleDark, themeStyleLight } =
+  window.electron.settings.getAll().appearance;
+
+const currentTheme = new Theme(
+  theme === 'dark' ? themeStyleDark : themeStyleLight,
+  theme as 'dark' | 'light'
+);
+
+const themeColors = currentTheme.getColors();
+const componentStyle = currentTheme.getComponentStyle('filterslider');
 
 const stylesObject = {
   sliderObject: {
@@ -12,12 +24,13 @@ const stylesObject = {
     left: '15px',
   },
   sliderRail: {
-    backgroundColor: '#FFFFFF44',
+    backgroundColor: `${themeColors.white.substring(0, 7)}22`,
   },
   sliderHead: {
     color: 'white',
   },
   ...settingsStylesObject,
+  ...componentStyle,
 };
 
 const hexToRgb = (hex: string) => {
@@ -64,8 +77,8 @@ const FilterSlider = (
 ) => {
   const { onChange = noop, schema, setting: value, settings } = sliderProps;
   const clampedValue = clamp(value, 0, 255);
-  const colorConstantHex = `${'#DF2935'.substring(0, 7)}22`; // Strip off opacity that a themer might have added to their accent color
-  const colorConstant = hexToRgb('#DF2935');
+  const colorConstantHex = `${themeColors.accent.substring(0, 7)}22`; // Strip off opacity that a themer might have added to their accent color
+  const colorConstant = hexToRgb(themeColors.accent);
   const isEnabled: boolean = (settings.reader as DefaultSettings['reader'])
     .useCustomColorFilter;
   if (!colorConstant) throw new Error('Could not parse color constant');

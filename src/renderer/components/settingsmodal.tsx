@@ -23,36 +23,51 @@ import { generateSliderStyles } from './settings/filterslider';
 import Switch from './switch';
 import Select from './select';
 import type { DefaultSettings } from '../../main/util/settings';
+import Theme from '../../main/util/theme';
+
+const { theme, themeStyleDark, themeStyleLight } =
+  window.electron.settings.getAll().appearance;
+
+const currentTheme = new Theme(
+  theme === 'dark' ? themeStyleDark : themeStyleLight,
+  theme as 'dark' | 'light'
+);
+
+const themeColors = currentTheme.getColors();
+const componentStyle = currentTheme.getComponentStyle('settingsmodal');
 
 const stylesObject = {
   settingsModalDialogContent: {
     height: 'fit-content',
 
-    backgroundColor: '#111111',
+    backgroundColor: themeColors.background,
     '::-webkit-scrollbar': {
       width: '4px',
     },
     '::-webkit-scrollbar-thumb': {
-      background: '#FFFFFF',
+      background: themeColors.white,
       ':hover': {
-        background: '#DF2935',
+        background: themeColors.accent,
       },
     },
   },
-  settingsModalDialogTitle: { backgroundColor: '#111111', color: 'white' },
+  settingsModalDialogTitle: {
+    backgroundColor: themeColors.background,
+    color: themeColors.white,
+  },
   settingsModalDialogTabContainer: {
     marginBottom: '16px',
   },
   settingsModalDialogContentSettingsContainer: {},
   settingsModalDialogTab: {
-    color: '#FFFFFF',
+    color: themeColors.white,
     borderRadius: '4px 4px 0px 0px',
   },
   settingsModalDialogTabBar: {
-    backgroundColor: '#DF2935',
+    backgroundColor: themeColors.accent,
   },
   settingsModalFlagSetTitle: {
-    color: '#DF2935',
+    color: themeColors.accent,
     fontSize: '1rem',
     fontFamily: '"Poppins", "Roboto", "Helvetica", "Arial", sans-serif',
     marginBottom: '6px',
@@ -62,9 +77,10 @@ const stylesObject = {
   },
   settingsFilterLabel: {
     display: 'flex',
-    color: 'white',
+    color: themeColors.white,
     marginRight: '8px',
   },
+  ...componentStyle,
 };
 
 const styles = StyleSheet.create(stylesObject as any) as any;
@@ -111,6 +127,7 @@ const SettingsModal = ({
     },
   });
 
+  const lA2 = `${themeColors.accent.substring(0, 7)}22`;
   const customTabs: Record<string, React.ReactFragment> = {
     Filter: (
       <>
@@ -122,9 +139,9 @@ const SettingsModal = ({
             <Stack direction="row">
               <Button
                 sx={{
-                  color: '#DF2935',
+                  color: themeColors.accent,
                   '&:hover': {
-                    backgroundColor: '#DF293511',
+                    backgroundColor: lA2,
                   },
                 }}
                 onClick={() => setPreviewing(!isPreviewing)}
@@ -147,7 +164,7 @@ const SettingsModal = ({
                 <Slider
                   sx={{
                     marginLeft: '16px',
-                    ...generateSliderStyles('#DF293522', '#DF2910'),
+                    ...generateSliderStyles(lA2, themeColors.accent),
                   }}
                   min={0}
                   max={255}
@@ -172,7 +189,7 @@ const SettingsModal = ({
                 <Slider
                   sx={{
                     marginLeft: '16px',
-                    ...generateSliderStyles('#DF293522', '#DF2910CC'),
+                    ...generateSliderStyles(lA2, themeColors.accent),
                   }}
                   min={0}
                   max={255}
@@ -197,7 +214,7 @@ const SettingsModal = ({
                 <Slider
                   sx={{
                     marginLeft: '16px',
-                    ...generateSliderStyles('#DF293522', '#DF2910CC'),
+                    ...generateSliderStyles(lA2, themeColors.accent),
                   }}
                   min={0}
                   max={255}
@@ -222,7 +239,7 @@ const SettingsModal = ({
                 <Slider
                   sx={{
                     marginLeft: '16px',
-                    ...generateSliderStyles('#DF293522', '#DF2910CC'),
+                    ...generateSliderStyles(lA2, themeColors.accent),
                   }}
                   min={0}
                   max={1}

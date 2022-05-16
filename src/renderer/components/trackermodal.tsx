@@ -2,6 +2,8 @@ import { Button, DialogProps } from '@mui/material';
 import { css, StyleSheet } from 'aphrodite';
 import { clamp } from 'lodash';
 
+import Theme from '../../main/util/theme';
+
 import {
   Media,
   SupportedTrackers,
@@ -15,6 +17,17 @@ import Dialog from './dialog';
 import Select from './select';
 import TextField from './textfield';
 
+const { theme, themeStyleDark, themeStyleLight } =
+  window.electron.settings.getAll().appearance;
+
+const currentTheme = new Theme(
+  theme === 'dark' ? themeStyleDark : themeStyleLight,
+  theme as 'dark' | 'light'
+);
+
+const themeColors = currentTheme.getColors();
+const componentStyle = currentTheme.getComponentStyle('trackermodal');
+
 const styles = StyleSheet.create({
   trackerMangaDialog: {},
 
@@ -27,9 +40,9 @@ const styles = StyleSheet.create({
       width: '4px',
     },
     '::-webkit-scrollbar-thumb': {
-      background: '#FFFFFF',
+      background: themeColors.white,
       ':hover': {
-        background: '#DF2935',
+        background: themeColors.accent,
       },
     },
   },
@@ -55,7 +68,9 @@ const styles = StyleSheet.create({
     transition:
       'letter-spacing 0.5s ease-in-out, background-color 0.3s ease-in-out, width 0.3s ease-in-out',
   },
-});
+
+  ...componentStyle,
+}) as any;
 const compileDateFromObject = (date: {
   year: number;
   month: number;
@@ -75,6 +90,8 @@ const TrackerModal = (
 ) => {
   const { libraryManga, searchModalData, onError, onClose = () => {} } = props;
   if (!libraryManga || !searchModalData) return null;
+
+  const lA1 = `${themeColors.accent.substring(0, 7)}11`;
   return (
     <Dialog
       actions={[
@@ -89,8 +106,8 @@ const TrackerModal = (
             onClose();
           }}
           sx={{
-            color: '#DF2935',
-            ':hover': { backgroundColor: '#DF293511' },
+            color: themeColors.accent,
+            ':hover': { backgroundColor: lA1 },
           }}
           className={css(styles.interactionButton)}
         >
@@ -101,8 +118,8 @@ const TrackerModal = (
           onClick={() => onClose()}
           className={css(styles.interactionButton)}
           sx={{
-            color: '#DF2935',
-            ':hover': { backgroundColor: '#DF293511' },
+            color: themeColors.accent,
+            ':hover': { backgroundColor: lA1 },
           }}
         >
           Close

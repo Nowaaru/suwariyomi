@@ -26,6 +26,18 @@ import type {
   Checkable,
   SearchFilterFieldTypeCheckbox3,
 } from '../../main/sources/static/base';
+import Theme from '../../main/util/theme';
+
+const { theme, themeStyleDark, themeStyleLight } =
+  window.electron.settings.getAll().appearance;
+
+const currentTheme = new Theme(
+  theme === 'dark' ? themeStyleDark : themeStyleLight,
+  theme as 'dark' | 'light'
+);
+
+const themeColors = currentTheme.getColors();
+const componentStyle = currentTheme.getComponentStyle('filtersettings');
 
 type GenericSourceFilterType = {
   [key: string]: any;
@@ -56,21 +68,21 @@ const stylesObject = {
   },
 
   FormControlLabel: {
-    color: '#ffffff',
+    color: themeColors.white,
   },
 
   selectComponentSelected: {
-    color: '#ffffff',
+    color: themeColors.white,
   },
 
   FormLabel: {
     fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
     fontWeight: 500,
     fontSize: '1.2rem',
-    color: '#ffffff',
+    color: themeColors.white,
   },
   Red: {
-    color: '#DF2935',
+    color: themeColors.accent,
   },
   FilledWhite: {
     background:
@@ -82,62 +94,40 @@ const stylesObject = {
   textField: {
     width: '100%',
     backgroundColor: 'rgba(28, 27, 24, 0.2)',
-    color: '#FFFFFF',
+    color: themeColors.white,
     marginBottom: '6px',
     borderRadius: '1px',
   },
   searchAdornment: {},
 
   muiRootFieldset: {
-    borderColor: '#DF2935',
+    borderColor: themeColors.accent,
   },
 
   muiRootFieldsetHover: {
-    borderColor: '#DF2935',
+    borderColor: themeColors.accent,
   },
 
   labelRootFocused: {
-    color: '#FFFFFF',
+    color: themeColors.white,
   },
 
   outlinedLabelShrunken: {
-    color: '#FFFFFF',
+    color: themeColors.white,
   },
 
   rootOutlinedInput: {
-    color: '#FFFFFF66',
+    color: `themeColors.white.substring(0,7)66`,
     transition: 'color 0.3s ease-in-out',
   },
 
   rootOutlinedInputFocused: {
-    color: '#FFFFFF',
+    color: themeColors.white,
   },
 
-  /*
-          '& .MuiOutlinedInput-root.Mui-focused fieldset': {
-            borderColor: '#DF2935',
-          },
-          '& .MuiOutlinedInput-root:hover fieldset': {
-            borderColor: '#DF2935',
-          },
-          '& label.MuiInputLabel-root.Mui-focused': {
-            color: 'white',
-          },
-
-          '& .MuiInputLabel-outlined.MuiInputLabel-shrink': {
-            color: 'white',
-          },
-
-          '& .MuiOutlinedInput-root input.MuiOutlinedInput-input': {
-            transition: 'color 0.3s ease-in-out',
-            color: '#FFFFFF66',
-          },
-
-          '& .MuiOutlinedInput-root.Mui-focused input.MuiOutlinedInput-input': {
-            color: '#FFFFFF',
-          },
-          */
+  ...componentStyle,
 };
+
 const styles = StyleSheet.create(stylesObject as any) as typeof stylesObject;
 
 const filterSettingsPropTypes = {

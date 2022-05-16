@@ -14,6 +14,8 @@ import type { ReadDatabaseValue } from '../../main/util/read';
 import { getReadUrl, sortChapters } from '../util/func';
 import type { FullManga } from '../../main/util/manga';
 
+import Theme from '../../main/util/theme';
+
 type MangaItemListProps = {
   displayType: 'list';
   listDisplayType: 'verbose' | 'compact' | 'comfy';
@@ -46,12 +48,23 @@ export type MangaItemProps = MangaItemGenericProps &
   Compact will show the title, cover, and tags.
 */
 
+const { theme, themeStyleDark, themeStyleLight } =
+  window.electron.settings.getAll().appearance;
+
+const currentTheme = new Theme(
+  theme === 'dark' ? themeStyleDark : themeStyleLight,
+  theme as 'dark' | 'light'
+);
+
+const themeColors = currentTheme.getColors();
+const componentStyle = currentTheme.getComponentStyle('mangaitem');
+
 const styles = StyleSheet.create({
   mangaItemListContainer: {
     marginBottom: '10px',
     width: 'calc(100% - 20px)',
     minHeight: '300px',
-    backgroundColor: '#0c0a0c',
+    backgroundColor: themeColors.backgroundDark,
     verticalAlign: 'top',
     overflow: 'hidden',
     display: 'flex',
@@ -84,7 +97,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     margin: '0px 6px 3px 6px',
     fontFamily: '"PT Sans Narrow", "Roboto", "Helvetica", "Arial", sans-serif',
-    color: '#ffffff',
+    color: themeColors.white,
     fontSize: '1rem',
   },
 
@@ -98,7 +111,7 @@ const styles = StyleSheet.create({
     width: '140px',
     height: '200px',
     borderRadius: '10px',
-    backgroundColor: '#0c0a0c',
+    backgroundColor: themeColors.backgroundDark,
     verticalAlign: 'top',
     display: 'inline-flex',
     alignItems: 'center',
@@ -141,7 +154,7 @@ const styles = StyleSheet.create({
     margin: '0',
     marginTop: '20px',
     marginBottom: '10px',
-    color: '#fff',
+    color: themeColors.white,
     fontFamily: '"PT Sans Narrow", "Roboto", "Helvetica", "Arial", sans-serif',
   },
   mangaItemSynopsisContainer: {
@@ -168,7 +181,7 @@ const styles = StyleSheet.create({
       width: '100%',
       background: `linear-gradient(to bottom,
         rgba(0,0,0,0) 20%,
-        #0c0a0c 80%
+        ${themeColors.backgroundDark} 80%
      );`,
       pointerEvents: 'none', // prevent mouse events from going through to the rest of the page
     },
@@ -176,7 +189,7 @@ const styles = StyleSheet.create({
   mangaItemSynopsis: {
     fontSize: '1em',
     display: 'inline-flex',
-    color: '#fff',
+    color: themeColors.white,
     fontFamily: '"Poppins", "Roboto", "Helvetica", "Arial", sans-serif',
     width: '80%',
     height: '85%',
@@ -238,7 +251,7 @@ const styles = StyleSheet.create({
     border: 'none',
     outline: 'none',
     textDecoration: 'none',
-    textDecorationColor: '#fff',
+    textDecorationColor: themeColors.white,
   },
 
   mangaItemButtonWrapper: {
@@ -255,11 +268,11 @@ const styles = StyleSheet.create({
   },
 
   mangaItemStartReadButton: {
-    backgroundColor: '#EE7A3B',
+    backgroundColor: themeColors.accentSpecial,
   },
 
   mangaItemViewButton: {
-    backgroundColor: '#00BCD4',
+    backgroundColor: themeColors.accent2,
   },
 
   mangaItemCoverButton: {
@@ -273,8 +286,8 @@ const styles = StyleSheet.create({
     width: 'fit-content',
     height: 'fit-content',
     display: 'inline-block',
-    backgroundColor: '#DF2935',
-    color: '#FFFFFF',
+    backgroundColor: themeColors.accent,
+    color: themeColors.white,
     boxSizing: 'border-box',
     borderRadius: '15%',
     position: 'absolute',
@@ -284,7 +297,9 @@ const styles = StyleSheet.create({
     padding: '5px',
     fontFamily: '"Poppins", "Roboto", "Helvetica", "Arial", sans-serif',
   },
-});
+
+  ...(componentStyle as any),
+}) as any;
 
 // If manga data isn't provided beforehand, the component will fetch it from the IPC renderer.
 const MangaItem = ({

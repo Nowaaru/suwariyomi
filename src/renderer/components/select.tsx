@@ -5,6 +5,18 @@ import type { SelectProps as MaterialSelectProps } from '@mui/material/Select';
 
 import { omit } from 'lodash';
 import { StyleSheet, css } from 'aphrodite';
+import Theme from '../../main/util/theme';
+
+const { theme, themeStyleDark, themeStyleLight } =
+  window.electron.settings.getAll().appearance;
+
+const currentTheme = new Theme(
+  theme === 'dark' ? themeStyleDark : themeStyleLight,
+  theme as 'dark' | 'light'
+);
+
+const themeColors = currentTheme.getColors();
+const componentStyle = currentTheme.getComponentStyle('select');
 
 const stylesObject = {
   selected: {
@@ -22,24 +34,26 @@ const stylesObject = {
     position: 'relative',
     top: '-5px',
     visibility: 'visible',
-    color: 'white',
+    color: themeColors.white,
   },
 
   icon: {
-    color: 'white',
+    color: themeColors.white,
   },
 
   iconSelected: {
-    color: '#DF2935',
+    color: themeColors.accent,
   },
 
   focused: {
-    borderColor: '#DF2935',
+    borderColor: themeColors.accent,
   },
+
+  ...componentStyle,
 };
 
 // @ts-ignore Aphrodite Sucks: Part 2
-const styles = StyleSheet.create(stylesObject);
+const styles = StyleSheet.create(stylesObject) as any;
 
 const Select = (
   props: Exclude<

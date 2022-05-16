@@ -11,6 +11,18 @@ import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp';
 import { IconButton, Paper } from '@mui/material';
 
 import propTypes from 'prop-types';
+import Theme from '../../main/util/theme';
+
+const { theme, themeStyleDark, themeStyleLight } =
+  window.electron.settings.getAll().appearance;
+
+const currentTheme = new Theme(
+  theme === 'dark' ? themeStyleDark : themeStyleLight,
+  theme as 'dark' | 'light'
+);
+
+const themeColors = currentTheme.getColors();
+const componentStyle = currentTheme.getComponentStyle('shortpagination');
 
 const styles = StyleSheet.create({
   paginationbox: {
@@ -45,7 +57,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: 'fit-content',
     height: 'fit-content',
-    border: '1px solid #11111100',
+    border: '1px solid transparent',
     borderRadius: '0px',
     padding: '6px 0px',
     margin: '0 4px',
@@ -71,7 +83,7 @@ const styles = StyleSheet.create({
   },
 
   paginationinputdeep: {
-    color: '#FFFFFF',
+    color: themeColors.white,
   },
 
   paginationbutton: {
@@ -116,7 +128,7 @@ const styles = StyleSheet.create({
     position: 'relative',
     transition: 'color 0.2s ease-in-out 0s',
     ':hover': {
-      color: '#DF2935',
+      color: themeColors.accent,
     },
   },
 
@@ -153,7 +165,7 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
     borderWidth: '0px',
     ':hover': {
-      borderColor: '#FFFFFF',
+      borderColor: themeColors.white,
       borderWidth: '6px',
     },
   },
@@ -164,7 +176,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     transition: 'color 0.2s ease-in-out 0s',
     ':hover': {
-      color: '#DF2935',
+      color: themeColors.accent,
     },
   },
 
@@ -174,7 +186,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#050401',
     fontFamily: '"Poppins", "Roboto", "Helvetica", "Arial", sans-serif',
     fontSize: '12px',
-    color: '#FFFFFF',
+    color: themeColors.white,
     fontVariant: 'small-caps',
     textTransform: 'uppercase',
     letterSpacing: '0.5px',
@@ -192,7 +204,9 @@ const styles = StyleSheet.create({
   startReached: {},
 
   endReached: {},
-});
+
+  ...componentStyle,
+}) as any;
 
 type PaginationProps = {
   disabled?: boolean;

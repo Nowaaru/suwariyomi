@@ -44,6 +44,18 @@ import Handler from '../../main/sources/handler';
 import useForceUpdate from '../util/hook/useforceupdate';
 import MiscEnmap from '../../main/util/misc';
 import useEvent from '../util/hook/useevent';
+import Theme from '../../main/util/theme';
+
+const { theme, themeStyleDark, themeStyleLight } =
+  window.electron.settings.getAll().appearance;
+
+const currentTheme = new Theme(
+  theme === 'dark' ? themeStyleDark : themeStyleLight,
+  theme as 'dark' | 'light'
+);
+
+const themeColors = currentTheme.getColors();
+const pageStyle = currentTheme.getPageStyle('library');
 
 const libraryStyleSheet = StyleSheet.create({
   container: {
@@ -63,12 +75,12 @@ const libraryStyleSheet = StyleSheet.create({
     alignItems: 'center',
     padding: '8px',
     justifyContent: 'center',
-    border: '1px solid #11111100',
+    border: '1px solid transparent',
     zIndex: 260,
   },
 
   searchbarContainerInner: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: themeColors.white,
     borderRadius: '80%',
     padding: '8px',
     width: '52px',
@@ -105,7 +117,7 @@ const libraryStyleSheet = StyleSheet.create({
       width: '4px',
     },
     '::-webkit-scrollbar-thumb': {
-      background: '#FFFFFF',
+      background: themeColors.white,
     },
   },
   testContainer: {
@@ -125,7 +137,7 @@ const libraryStyleSheet = StyleSheet.create({
   },
 
   paperObject: {
-    backgroundColor: '#080708',
+    backgroundColor: themeColors.backgroundDark,
   },
 
   heatmapContainer: {
@@ -147,7 +159,7 @@ const libraryStyleSheet = StyleSheet.create({
     width: '100%',
     maxWidth: 'calc(900px - 192px - 32px)',
     height: 'calc(192px - 16px)',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: themeColors.white,
     marginLeft: '10px',
     '@media (max-width: 900px)': {
       maxWidth: '75%',
@@ -155,7 +167,7 @@ const libraryStyleSheet = StyleSheet.create({
   },
 
   infoPaperHeaderBase: {
-    color: '#FFFFFF',
+    color: themeColors.white,
     fontFamily: '"Poppins", "Roboto", "Helvetica", "Arial", sans-serif',
     margin: '0',
   },
@@ -169,7 +181,7 @@ const libraryStyleSheet = StyleSheet.create({
 
   infoHighlight: {
     textDecoration: 'none',
-    color: '#DF2935',
+    color: themeColors.accent,
   },
 
   infoRegular: {
@@ -181,7 +193,7 @@ const libraryStyleSheet = StyleSheet.create({
     // border: '2px solid #0E0C0E',
     // use background image instead of border color so we can use gradients
     border: 'none',
-    backgroundImage: 'linear-gradient(to right, #0E0C0E, #00000000)',
+    backgroundImage: 'linear-gradient(to right, #0E0C0E, transparent)',
     width: '100%',
     height: '2px',
   },
@@ -190,7 +202,7 @@ const libraryStyleSheet = StyleSheet.create({
     border: 'none',
     margin: '28px 0px 20px 0px',
     backgroundImage:
-      'radial-gradient(circle at center, #FFFFFE, #00000000 45%)',
+      'radial-gradient(circle at center, #FFFFFE, transparent 45%)',
     width: '100%',
     height: '2px',
   },
@@ -241,7 +253,7 @@ const libraryStyleSheet = StyleSheet.create({
 
   accordionItem: {
     margin: '0px 0px 8px 0px',
-    backgroundColor: '#080708',
+    backgroundColor: themeColors.backgroundDark,
   },
 
   accordionItemIcon: {
@@ -282,7 +294,7 @@ const libraryStyleSheet = StyleSheet.create({
     transition: 'transform 0.4s ease-in-out',
     width: '24px',
     height: '24px',
-    color: '#DF2935',
+    color: themeColors.accent,
     ':hover': {
       transform: 'scale(1.2) rotate(90deg)',
     },
@@ -301,7 +313,7 @@ const libraryStyleSheet = StyleSheet.create({
     transition: 'transform 0.4s ease-in-out',
     width: '24px',
     height: '24px',
-    color: '#DF2935',
+    color: themeColors.accent,
     ':hover': {
       transform: 'translateY(4px)',
     },
@@ -314,10 +326,10 @@ const libraryStyleSheet = StyleSheet.create({
   },
 
   accordionSearchIcon: {
-    color: '#DF2935',
+    color: themeColors.accent,
     transition: 'transform 0.4s ease-in-out, color 0.4s ease-in-out',
     ':hover': {
-      color: '#FFFFFF',
+      color: themeColors.white,
       transform: 'scale(1.2) rotate(65deg)',
     },
   },
@@ -346,16 +358,16 @@ const libraryStyleSheet = StyleSheet.create({
       },
     ],
     ':hover': {
-      color: '#DF2935',
+      color: themeColors.accent,
       transform: '',
     },
   },
 
   accordionRefreshIcon: {
-    color: '#DF2935',
+    color: themeColors.accent,
     transition: 'transform 0.4s ease-in-out, color 0.4s ease-in-out',
     ':hover': {
-      color: '#FFFFFF',
+      color: themeColors.white,
       transform: 'scale(1.2) rotate(180deg)',
     },
   },
@@ -364,7 +376,7 @@ const libraryStyleSheet = StyleSheet.create({
     display: 'flex',
     width: '30%',
     flexShrink: 2,
-    color: '#FFFFFF',
+    color: themeColors.white,
     '@media (max-width: 750px)': {
       width: '33%',
     },
@@ -388,10 +400,12 @@ const libraryStyleSheet = StyleSheet.create({
     display: 'flex',
     maxHeight: '24px',
     maxWidth: '24px',
-    color: '#DF2935',
+    color: themeColors.accent,
     top: '5px',
   },
-});
+
+  ...pageStyle,
+}) as any;
 
 const noResultsFlavorTexts = [
   ["Nobody's reading manga here.", 'How about we look', 'somewhere else?'],
@@ -906,7 +920,7 @@ const Library = () => {
               sx={{
                 width: '40%',
                 flexShrink: 2,
-                color: '#FFFFFF',
+                color: themeColors.white,
               }}
               className={css(libraryStyleSheet.accordionText)}
             >
@@ -914,7 +928,7 @@ const Library = () => {
             </Typography>
             <Typography
               sx={{
-                color: '#FFFFFF',
+                color: themeColors.white,
                 flexShrink: 2,
                 verticalAlign: 'center',
                 lineHeight: '1.5',
@@ -932,7 +946,7 @@ const Library = () => {
             >
               <Checkbox
                 sx={{
-                  color: '#FFFFFF',
+                  color: themeColors.white,
                 }}
                 checked={
                   suwariyomiLibrarySettings[`data_${sourceKey}`]?.sortOrder ===
@@ -960,7 +974,7 @@ const Library = () => {
                   return (
                     <Typography
                       sx={{
-                        color: '#FFFFFF',
+                        color: themeColors.white,
                         fontSize: '0.75rem',
                         fontWeight: '500',
                         verticalAlign: 'center',
@@ -1086,8 +1100,6 @@ const Library = () => {
       filteredMediaList[Math.floor(Math.random() * filteredMediaList.length)];
 
   if (readingPrefixTarget && (!statusPrefix || !statusSuffix)) {
-    // TODO: Integrate with AniList / MyAnimeList. If not logged in to either, get flavor texts from here.
-    // CURRENT: Create a list of flavor texts.
     const flavorTexts = [
       ['How about reading', '?'],
       ["Let's read", '!'],
@@ -1261,7 +1273,9 @@ const Library = () => {
                   libraryStyleSheet.infoHighlight
                 )}
               >
-                {!readingPrefixTarget ? 'some manga' : readingPrefixTarget.Name}
+                {!readingPrefixTarget
+                  ? 'some manga'
+                  : 'Himawari-san' ?? readingPrefixTarget.Name}
               </span>
               <span className={css(libraryStyleSheet.infoRegular)}>
                 {statusSuffix.match(/^[.!?]$/)
@@ -1335,7 +1349,7 @@ const Library = () => {
           <div className={css(libraryStyleSheet.noMangaContainer)}>
             <Typography
               sx={{
-                color: '#FFFFFF',
+                color: themeColors.white,
                 fontSize: '24px',
                 fontWeight: 'bold',
               }}
@@ -1344,7 +1358,7 @@ const Library = () => {
             </Typography>
             <Typography
               sx={{
-                color: '#FFFFFF',
+                color: themeColors.white,
                 fontSize: '16px',
               }}
             >

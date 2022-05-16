@@ -18,6 +18,18 @@ import {
   Chapter as DatabaseChapter,
   Manga as DatabaseManga,
 } from '../../main/util/manga';
+import Theme from '../../main/util/theme';
+
+const { theme, themeStyleDark, themeStyleLight } =
+  window.electron.settings.getAll().appearance;
+
+const currentTheme = new Theme(
+  theme === 'dark' ? themeStyleDark : themeStyleLight,
+  theme as 'dark' | 'light'
+);
+
+const themeColors = currentTheme.getColors();
+const componentStyle = currentTheme.getComponentStyle('trackeritem');
 
 const styles = StyleSheet.create({
   chapter: {
@@ -30,7 +42,7 @@ const styles = StyleSheet.create({
     padding: '8px',
     font: '14px Roboto, sans-serif',
     backgroundColor: '#222222',
-    boxShadow: '0px 0px 5px #000000',
+    boxShadow: `0px 0px 5px ${themeColors.black}`,
   },
   chapterDateData: {
     fontSize: '0.7em',
@@ -39,7 +51,7 @@ const styles = StyleSheet.create({
     marginTop: '36px',
     display: 'inline',
     fontFamily: 'Open Sans, sans-serif',
-    color: 'white',
+    color: themeColors.white,
   },
 
   downloadButton: {
@@ -47,17 +59,17 @@ const styles = StyleSheet.create({
   },
 
   downloadButtonIcon: {
-    color: 'white',
+    color: themeColors.white,
     ':hover': {
-      color: '#DF2935',
+      color: themeColors.accent,
     },
   },
 
   disabledDownloadButton: {
-    color: 'white',
+    color: themeColors.white,
     filter: 'brightness(0.4)',
     ':hover': {
-      color: 'white',
+      color: themeColors.white,
     },
   },
 
@@ -80,12 +92,12 @@ const styles = StyleSheet.create({
   chapterContainerReadButton: {
     display: 'flex',
     fontWeight: 'bold',
-    color: '#DF2935',
+    color: themeColors.accent,
     minWidth: '80px',
   },
 
   chapterContainerBookmarkButton: {
-    color: '#DF2935',
+    color: themeColors.accent,
   },
 
   chapterNumberData: {
@@ -98,7 +110,7 @@ const styles = StyleSheet.create({
     marginRight: '8px',
     display: 'inline',
     fontFamily: 'Open Sans, sans-serif',
-    color: 'white',
+    color: themeColors.white,
   },
 
   chapterTitle: {
@@ -109,16 +121,16 @@ const styles = StyleSheet.create({
   chapterTitleHeader: {
     display: 'inline',
     marginRight: '8px',
-    color: '#FFFFFF',
+    color: themeColors.white,
     textShadow: 'none',
   },
 
   bookmarksButton: {
-    color: 'white',
+    color: themeColors.white,
   },
 
   bookmarksButtonFilled: {
-    color: '#DF2935',
+    color: themeColors.accent,
   },
 
   markAsReadButton: {
@@ -126,25 +138,27 @@ const styles = StyleSheet.create({
   },
 
   markUnreadIcon: {
-    color: '#DF2935',
+    color: themeColors.accent,
     width: '24px',
     height: '24px',
     transition: 'color 0.2s ease-in-out',
     ':hover': {
-      color: 'white',
+      color: themeColors.white,
     },
   },
 
   markReadIcon: {
-    color: '#DF2935',
+    color: themeColors.accent,
     transition: 'color 0.2s ease-in-out',
     width: '24px',
     height: '24px',
     ':hover': {
-      color: 'white',
+      color: themeColors.white,
     },
   },
-});
+
+  ...componentStyle,
+}) as any;
 
 dayjs.extend(dayjs_advancedFormat);
 

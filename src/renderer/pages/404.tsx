@@ -1,6 +1,18 @@
 import { StyleSheet, css } from 'aphrodite';
 import { Link } from 'react-router-dom';
 import Particles from 'react-tsparticles';
+import Theme from '../../main/util/theme';
+
+const { theme, themeStyleDark, themeStyleLight } =
+  window.electron.settings.getAll().appearance;
+
+const currentTheme = new Theme(
+  theme === 'dark' ? themeStyleDark : themeStyleLight,
+  theme as 'dark' | 'light'
+);
+
+const themeColors = currentTheme.getColors();
+const pageStyle = currentTheme.getPageStyle('404');
 
 const StylesNotFound = StyleSheet.create({
   container: {
@@ -13,7 +25,7 @@ const StylesNotFound = StyleSheet.create({
     fontFamily: '"Roboto", sans-serif',
   },
   title: {
-    color: '#FFFFFF',
+    color: themeColors.white,
     fontSize: '48px',
     fontWeight: 'bold',
     marginBottom: '-15px',
@@ -21,7 +33,7 @@ const StylesNotFound = StyleSheet.create({
     zIndex: 3,
   },
   subtitle: {
-    color: '#FFFFFF',
+    color: themeColors.white,
     fontSize: '24px',
     fontWeight: 'bold',
     marginBottom: '-10px',
@@ -29,7 +41,7 @@ const StylesNotFound = StyleSheet.create({
     fontFamily: '"Open Sans", Roboto, Poppins, sans-serif',
   },
   text: {
-    color: '#FFFFFF',
+    color: themeColors.white,
     fontSize: '16px',
     fontWeight: 'bold',
     marginBottom: '10px',
@@ -42,20 +54,22 @@ const StylesNotFound = StyleSheet.create({
     left: 0,
     width: '100%',
     height: '100%',
-    backgroundColor: '#000000',
+    backgroundColor: themeColors.black,
     opacity: 0.8,
     zIndex: 2,
   },
   link: {
-    color: '#DF2935',
+    color: themeColors.accent,
     letterSpacing: 'unset',
     transition: 'all 0.3s ease-in-out',
     ':hover': {
-      color: '#E04550',
+      color: themeColors.accentSpecial,
       letterSpacing: '1px',
     },
   },
-});
+
+  ...pageStyle,
+}) as any;
 
 const Page404 = () => {
   return (
@@ -91,10 +105,10 @@ const Page404 = () => {
           },
           particles: {
             color: {
-              value: '#FFFFFF',
+              value: themeColors.white,
             },
             links: {
-              color: '#FFFFFF',
+              color: themeColors.white,
               distance: 150,
               enable: true,
               opacity: 0.5,

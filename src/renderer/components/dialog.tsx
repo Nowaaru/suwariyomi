@@ -8,6 +8,18 @@ import {
 } from '@mui/material';
 import { StyleSheet, css } from 'aphrodite';
 import { omit } from 'lodash';
+import Theme from '../../main/util/theme';
+
+const { theme, themeStyleDark, themeStyleLight } =
+  window.electron.settings.getAll().appearance;
+
+const currentTheme = new Theme(
+  theme === 'dark' ? themeStyleDark : themeStyleLight,
+  theme as 'dark' | 'light'
+);
+
+const themeColors = currentTheme.getColors();
+const componentStyle = currentTheme.getComponentStyle('trackeritem');
 
 type DialogProps = MuiDialogProps &
   Pick<Required<MuiDialogProps>, 'children' | 'open'> & {
@@ -19,32 +31,37 @@ type DialogProps = MuiDialogProps &
 const stylesObject = {
   dialog: {},
   selected: {
-    border: '4px solid #DF2935',
+    border: `4px solid ${themeColors.accent}`,
   },
 
   modalDialog: { background: 'transparent' },
 
-  modalDialogTitle: { backgroundColor: '#111111', color: 'white' },
+  modalDialogTitle: {
+    backgroundColor: themeColors.background,
+    color: themeColors.white,
+  },
 
   modalDialogContent: {
-    backgroundColor: '#111111',
+    backgroundColor: themeColors.background,
     '::-webkit-scrollbar': {
       width: '4px',
     },
     '::-webkit-scrollbar-thumb': {
-      background: '#FFFFFF',
+      background: themeColors.white,
       ':hover': {
-        background: '#DF2935',
+        background: themeColors.accent,
       },
     },
   },
 
   modalDialogActions: {
-    background: '#111111',
+    background: themeColors.accent,
   },
+
+  ...componentStyle,
 };
 
-const styles = StyleSheet.create(stylesObject);
+const styles = StyleSheet.create(stylesObject) as any;
 const Dialog = (props: DialogProps) => {
   const { children, rawcontent, actions, title } = props;
   return (

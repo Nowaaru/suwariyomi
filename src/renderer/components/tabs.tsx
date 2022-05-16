@@ -7,22 +7,37 @@ import {
 } from 'react';
 import { StyleSheet, css } from 'aphrodite';
 
+import Theme from '../../main/util/theme';
+
+const { theme, themeStyleDark, themeStyleLight } =
+  window.electron.settings.getAll().appearance;
+
+const currentTheme = new Theme(
+  theme === 'dark' ? themeStyleDark : themeStyleLight,
+  theme as 'dark' | 'light'
+);
+
+const themeColors = currentTheme.getColors();
+const componentStyle = currentTheme.getComponentStyle('tabs');
+
 const styles = StyleSheet.create({
   tabs: {
     marginBottom: '12px',
   },
 
   tab: {
-    color: '#FFFFFF',
+    color: themeColors.white,
     marginRight: '12px',
     padding: '6px',
     boxSizing: 'border-box',
     width: '165px',
     height: '36px',
     borderRight: 1,
-    borderColor: '#DF2935',
+    borderColor: themeColors.accent,
   },
-});
+
+  ...componentStyle,
+}) as any;
 
 type Element = ReactElement<any, string | JSXElementConstructor<any>>;
 type TabsProps = {
@@ -53,7 +68,7 @@ const Tabs = ({ tabs, onChange, selectedIndex: defaultIndex }: TabsProps) => {
       className={css(styles.tabs)}
       sx={{
         '.MuiTabs-indicator': {
-          backgroundColor: '#DF2935',
+          backgroundColor: themeColors.accent,
         },
       }}
     >

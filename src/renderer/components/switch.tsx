@@ -5,36 +5,53 @@ import {
   Tooltip,
 } from '@mui/material';
 import { omit } from 'lodash';
+import Theme from '../../main/util/theme';
+
+const { theme, themeStyleDark, themeStyleLight } =
+  window.electron.settings.getAll().appearance;
+
+const currentTheme = new Theme(
+  theme === 'dark' ? themeStyleDark : themeStyleLight,
+  theme as 'dark' | 'light'
+);
+
+const themeColors = currentTheme.getColors();
+const componentStyle = currentTheme.getComponentStyle('switch');
 
 const stylesObject = {
   switchTrackOn: {
     opacity: 0.6,
-    backgroundColor: '#DF2935',
+    backgroundColor: themeColors.accent,
   },
 
   switchTrackOff: {
     opacity: 0.6,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: themeColors.white,
   },
 
   switchBase: {
-    color: 'white',
+    color: themeColors.white,
   },
 
   switchThumb: {},
 
   switchThumbOn: {
-    color: 'white',
-    backgroundColor: '#DF2935',
+    color: themeColors.white,
+    backgroundColor: themeColors.accent,
   },
 
   switchHoverOn: {
-    backgroundColor: '#DF293522',
+    backgroundColor: `${themeColors.accent.substring(0, 7)}22`,
   },
 
   switchHover: {
-    backgroundColor: '#FFFFFF11',
+    backgroundColor:
+      themeColors.white.length === 2
+        ? themeColors.white
+        : `${themeColors.white}11`,
   },
+
+  ...componentStyle,
 };
 
 const Switch = (

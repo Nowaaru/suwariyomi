@@ -10,6 +10,18 @@ import {
 import FilterListIcon from '@mui/icons-material/FilterList';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
+import Theme from '../../main/util/theme';
+
+const { theme, themeStyleDark, themeStyleLight } =
+  window.electron.settings.getAll().appearance;
+
+const currentTheme = new Theme(
+  theme === 'dark' ? themeStyleDark : themeStyleLight,
+  theme as 'dark' | 'light'
+);
+
+const themeColors = currentTheme.getColors();
+const componentStyle = currentTheme.getComponentStyle('filter');
 
 const styles = StyleSheet.create({
   appBarContainer: {
@@ -23,8 +35,8 @@ const styles = StyleSheet.create({
 
   appBar: {
     position: 'relative',
-    backgroundColor: '#080708',
-    color: '#ffffff',
+    backgroundColor: themeColors.backgroundDark,
+    color: themeColors.white,
     width: '128px',
     height: 'fit-content',
     borderRadius: '5%',
@@ -49,10 +61,10 @@ const styles = StyleSheet.create({
   },
 
   filterIcon: {
-    color: '#DF2935',
+    color: themeColors.accent,
     transition: 'color 0.2s ease-in-out, transform 0.2s ease-in-out',
     ':hover': {
-      color: '#FFFFFF',
+      color: themeColors.white,
     },
   },
 
@@ -78,7 +90,9 @@ const styles = StyleSheet.create({
     background: 'none',
     outline: 'none',
   },
-});
+
+  ...componentStyle,
+}) as any;
 
 type FilterProps = {
   onClick: () => void;

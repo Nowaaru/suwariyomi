@@ -1,6 +1,18 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import { ButtonProps, Button as MuiButton, Tooltip } from '@mui/material';
 import { StyleSheet, css } from 'aphrodite';
+import Theme from '../../main/util/theme';
+
+const { theme, themeStyleDark, themeStyleLight } =
+  window.electron.settings.getAll().appearance;
+
+const currentTheme = new Theme(
+  theme === 'dark' ? themeStyleDark : themeStyleLight,
+  theme as 'dark' | 'light'
+);
+
+const themeColors = currentTheme.getColors();
+const componentStyle = currentTheme.getComponentStyle('trackeritem');
 
 const styles = StyleSheet.create({
   buttonContainer: {
@@ -16,10 +28,12 @@ const styles = StyleSheet.create({
   button: {
     display: 'flex',
     fontWeight: 'bold',
-    color: '#DF2935',
+    color: themeColors.accent,
     minWidth: '80px',
   },
-});
+
+  ...componentStyle,
+}) as any;
 
 const Button = (
   props: ButtonProps & {
@@ -37,7 +51,10 @@ const Button = (
           className={css(styles.button)}
           sx={{
             '&:hover': {
-              backgroundColor: '#FFFFFF11 !important',
+              backgroundColor: `${themeColors.white.substring(
+                0,
+                7
+              )}11 !important`,
             },
           }}
           onClick={onClick ?? (() => {})}

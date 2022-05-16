@@ -4,6 +4,19 @@ import {
   TextFieldProps as MaterialTextFieldProps,
 } from '@mui/material';
 
+import Theme from '../../main/util/theme';
+
+const { theme, themeStyleDark, themeStyleLight } =
+  window.electron.settings.getAll().appearance;
+
+const currentTheme = new Theme(
+  theme === 'dark' ? themeStyleDark : themeStyleLight,
+  theme as 'dark' | 'light'
+);
+
+const themeColors = currentTheme.getColors();
+const componentStyle = currentTheme.getComponentStyle('textfield');
+
 const TextField = (props: MaterialTextFieldProps) => {
   const { sx } = props;
   const textFieldRoot = `&.MuiTextField-root`;
@@ -19,19 +32,20 @@ const TextField = (props: MaterialTextFieldProps) => {
         ...props,
         sx: {
           [textFieldInput]: {
-            color: 'white',
+            color: themeColors.white,
             textAlign: 'center',
           },
           [textFieldSetFocused]: {
-            borderColor: '#DF2935',
+            borderColor: themeColors.accent,
           },
           [textFieldLabelFocused]: {
-            color: '#DF2935',
+            color: themeColors.accent,
           },
           [textFieldLabel]: {
-            color: 'white',
+            color: themeColors.white,
           },
           ...(sx ?? {}),
+          ...componentStyle,
         },
       }}
     />

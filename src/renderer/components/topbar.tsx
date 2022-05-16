@@ -3,6 +3,18 @@ import { useState, useEffect, useCallback } from 'react';
 import type { IpcRendererEvent } from 'electron/renderer';
 import icon from '../../../assets/icons/main/32x32.png';
 
+import Theme from '../../main/util/theme';
+
+const { theme, themeStyleDark, themeStyleLight } =
+  window.electron.settings.getAll().appearance;
+
+const currentTheme = new Theme(
+  theme === 'dark' ? themeStyleDark : themeStyleLight,
+  theme as 'dark' | 'light'
+);
+
+const componentStyle = currentTheme.getComponentStyle('topbar');
+
 export const Styling = StyleSheet.create({
   button: {
     width: '16px',
@@ -17,7 +29,7 @@ export const Styling = StyleSheet.create({
   },
 
   topbar: {
-    backgroundColor: '#11111100',
+    backgroundColor: 'transparent',
     position: 'fixed',
     height: '32px',
     width: '100%',
@@ -25,6 +37,7 @@ export const Styling = StyleSheet.create({
     zIndex: Number.MAX_SAFE_INTEGER,
     paddingLeft: '8px',
   },
+
   icon: {
     position: 'absolute',
     zIndex: 261,
@@ -66,7 +79,9 @@ export const Styling = StyleSheet.create({
     width: 'inherit',
     height: 'inherit',
   },
-});
+
+  ...componentStyle,
+}) as any;
 
 const Topbar = () => {
   const { ipcRenderer } = window.electron;

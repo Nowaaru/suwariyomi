@@ -1,10 +1,10 @@
 /* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import { useRef, useEffect, useState, useCallback, useMemo } from 'react';
+import { useRef, useEffect, useState, useCallback } from 'react';
 import { StyleSheet, css } from 'aphrodite';
 import { URLSearchParams } from 'url';
 import { useNavigate } from 'react-router-dom';
-import { isEqual, has, clamp, isEmpty } from 'lodash';
+import { isEqual, has } from 'lodash';
 
 import {
   Button,
@@ -13,7 +13,6 @@ import {
   IconButton,
   Paper,
   SelectChangeEvent,
-  TextField,
   Tooltip,
   Typography,
 } from '@mui/material';
@@ -58,16 +57,18 @@ import Handler from '../../main/sources/handler';
 import useQuery from '../util/hook/usequery';
 import Switch from '../components/switch';
 import TrackerModal from '../components/trackermodal';
-/*
-TODO: Use this implementation to implement themeing
-const abcdefg: StyleDeclaration<
-  Record<string, StyleDeclaration | CSSProperties>
-> = {
-  balls: {
-    margin: '10px',
-  },
-};
-*/
+import Theme from '../../main/util/theme';
+
+const { theme, themeStyleDark, themeStyleLight } =
+  window.electron.settings.getAll().appearance;
+
+const currentTheme = new Theme(
+  theme === 'dark' ? themeStyleDark : themeStyleLight,
+  theme as 'dark' | 'light'
+);
+
+const themeColors = currentTheme.getColors();
+const pageStyle = currentTheme.getPageStyle('view');
 
 dayjs.extend(dayjs_duration);
 const styles = StyleSheet.create({
@@ -109,7 +110,7 @@ const styles = StyleSheet.create({
   metadataContainer: {
     marginTop: '24px',
     marginLeft: '48px',
-    textShadow: '0px 0px 10px #000000',
+    textShadow: `0px 0px 10px ${themeColors.black}`,
   },
 
   dataContainer: {
@@ -123,9 +124,9 @@ const styles = StyleSheet.create({
     width: '45%',
     marginRight: '24px',
     padding: '8px',
-    textShadow: '0px 0px 10px #000000',
+    textShadow: `0px 0px 10px ${themeColors.black}`,
     boxSizing: 'border-box',
-    backgroundColor: '#222222',
+    backgroundColor: themeColors.backgroundLight,
   },
 
   utilityButtonContainer: {
@@ -145,7 +146,7 @@ const styles = StyleSheet.create({
     top: '-16px',
     left: '-16px',
     maxHeight: '32px',
-    backgroundColor: '#222222',
+    backgroundColor: themeColors.backgroundLight,
     borderRadius: '16px',
     objectFit: 'contain',
     cursor: 'pointer',
@@ -167,8 +168,7 @@ const styles = StyleSheet.create({
       position: 'absolute',
       width: '100%',
       height: '384px',
-      background:
-        'linear-gradient(to top, #111111FF 0%,rgba(17,17,17,0.35) 75%)',
+      background: `linear-gradient(to top, ${themeColors.background} 0%,rgba(17,17,17,0.35) 75%)`,
     },
   },
 
@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
     maxWidth: '256px',
     maxHeight: '256px',
     borderRadius: '4px',
-    border: '1px solid #FFFFFF',
+    border: `1px solid ${themeColors.white}`,
   },
 
   mangaTitle: {},
@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
     margin: '0',
     marginTop: '0',
     marginBottom: '0',
-    color: '#FFFFFF',
+    color: themeColors.white,
   },
 
   textData: {
@@ -227,12 +227,12 @@ const styles = StyleSheet.create({
     maxWidth: '500px',
     maxHeight: '120px',
     overflow: 'hidden',
-    backgroundColor: '#111111',
+    backgroundColor: themeColors.background,
     padding: '8px',
     borderRadius: '8px',
-    color: '#FFFFFF',
+    color: themeColors.white,
     position: 'relative',
-    boxShadow: '0px 0px 10px #000000',
+    boxShadow: `0px 0px 10px ${themeColors.black}`,
     boxSizing: 'border-box',
     ':after': {
       top: 1,
@@ -241,8 +241,7 @@ const styles = StyleSheet.create({
       position: 'absolute',
       width: '100%',
       height: '100%',
-      background:
-        'linear-gradient(to top, #111111FF 0%,rgba(17,17,17,0.35) 75%)',
+      background: `linear-gradient(to top, ${themeColors.background} 0%,rgba(17,17,17,0.35) 75%)`,
     },
     transition: 'max-width 0.1s ease-in-out 0s',
     '@media (max-width: 760px)': {
@@ -311,7 +310,7 @@ const styles = StyleSheet.create({
     textShadow: 'none',
     marginBottom: '8px',
     textAlign: 'center',
-    color: '#FFFFFF',
+    color: themeColors.white,
   },
 
   chapters: {
@@ -319,7 +318,7 @@ const styles = StyleSheet.create({
     overflowY: 'auto',
     overflowX: 'visible',
     borderRadius: '8px',
-    boxShadow: '0px 0px 10px #000000',
+    boxShadow: `0px 0px 10px ${themeColors.black}`,
     width: '100%',
   },
 
@@ -328,11 +327,11 @@ const styles = StyleSheet.create({
       width: '4px',
     },
     '::-webkit-scrollbar-thumb': {
-      backgroundColor: '#FFFFFF',
+      backgroundColor: themeColors.white,
       borderRadius: '4px',
       transition: 'background-color 0.2s ease-in-out',
       ':hover': {
-        backgroundColor: '#DF2935',
+        backgroundColor: themeColors.accent,
       },
     },
   },
@@ -345,15 +344,15 @@ const styles = StyleSheet.create({
     fontSize: '0.8em',
     padding: '8px',
     fontWeight: 'bold',
-    backgroundColor: '#DF2935',
-    color: 'white',
+    backgroundColor: themeColors.accent,
+    color: themeColors.white,
     boxSizing: 'border-box',
     borderRadius: '24px',
     width: '100%',
     height: '32px',
     ':hover': {
-      color: '#DF2935',
-      backgroundColor: '#FFFFFF',
+      color: themeColors.accent,
+      backgroundColor: themeColors.white,
     },
   },
 
@@ -362,7 +361,7 @@ const styles = StyleSheet.create({
     marginTop: '8px',
     fontSize: '1.5em',
     fontFamily: 'Poppins, Open Sans,sans-serif',
-    color: '#FFFFFF',
+    color: themeColors.white,
   },
 
   mangaProgress: {},
@@ -372,14 +371,14 @@ const styles = StyleSheet.create({
     maxWidth: '400px',
     height: '8px',
     overflow: 'hidden',
-    backgroundColor: '#DF2935',
+    backgroundColor: themeColors.accent,
     borderRadius: '4px',
   },
 
   mangaProgressBarFiller: {
     transition: 'width 0.3s ease-in-out',
     height: '100%',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: themeColors.white,
     borderRadius: '4px',
   },
 
@@ -390,7 +389,7 @@ const styles = StyleSheet.create({
       fontVariant: 'small-caps',
       fontSize: '0.6em',
       fontWeight: 200,
-      color: '#FFFFFF',
+      color: themeColors.white,
       fontFamily: 'Open Sans, sans-serif',
     },
   },
@@ -420,7 +419,7 @@ const styles = StyleSheet.create({
     marginLeft: '6px',
     fontSize: '1.5rem',
     fontFamily: 'Poppins, sans-serif',
-    color: 'white',
+    color: themeColors.white,
   },
 
   hours: {
@@ -431,7 +430,7 @@ const styles = StyleSheet.create({
       fontVariant: 'small-caps',
       fontSize: '0.6em',
       fontWeight: 200,
-      color: '#FFFFFF',
+      color: themeColors.white,
       fontFamily: 'Open Sans, sans-serif',
     },
   },
@@ -443,7 +442,7 @@ const styles = StyleSheet.create({
       fontVariant: 'small-caps',
       fontSize: '0.6em',
       fontWeight: 200,
-      color: '#FFFFFF',
+      color: themeColors.white,
       fontFamily: 'Open Sans, sans-serif',
     },
   },
@@ -455,7 +454,7 @@ const styles = StyleSheet.create({
       fontVariant: 'small-caps',
       fontSize: '0.6em',
       fontWeight: 200,
-      color: '#FFFFFF',
+      color: themeColors.white,
       fontFamily: 'Open Sans, sans-serif',
     },
   },
@@ -469,7 +468,7 @@ const styles = StyleSheet.create({
   },
 
   backButton: {
-    backgroundColor: '#DF2935',
+    backgroundColor: themeColors.accent,
     // darker backgroundcolor
     borderColor: '#B11B25',
     borderStyle: 'solid',
@@ -477,13 +476,13 @@ const styles = StyleSheet.create({
     borderRadius: '4px',
     width: '100px',
     height: '100%',
-    color: '#FFFFFF',
+    color: themeColors.white,
 
     transition:
       'color 0.2s ease-in-out, background-color 0.2s ease-in-out, border-color 0.2s ease-in-out',
     ':hover': {
-      backgroundColor: '#FFFFFF',
-      color: '#DF2935',
+      backgroundColor: themeColors.white,
+      color: themeColors.accent,
       borderColor: '#D6D6D6',
     },
   },
@@ -491,7 +490,7 @@ const styles = StyleSheet.create({
   backTypography: {},
 
   chapterFilterIcon: {
-    color: '#DF2935',
+    color: themeColors.accent,
     marginLeft: '8px',
   },
 
@@ -515,7 +514,7 @@ const styles = StyleSheet.create({
 
   viewMangaLabel: {
     display: 'flex',
-    color: 'white',
+    color: themeColors.white,
     marginLeft: '8px',
     marginBottom: '8px',
   },
@@ -563,7 +562,9 @@ const styles = StyleSheet.create({
   trackingContainerItemOverlayIcon: {
     color: 'lime',
   },
-});
+
+  ...pageStyle,
+}) as any;
 
 const defaultFilters = {
   group: null,
@@ -1030,19 +1031,19 @@ const View = () => {
                 sx={
                   isInLibrary
                     ? {
-                        backgroundColor: '#FFFFFF',
-                        color: '#DF2935',
+                        backgroundColor: themeColors.white,
+                        color: themeColors.accent,
                         '&:hover': {
-                          backgroundColor: '#DF2935',
-                          color: '#FFFFFF',
+                          backgroundColor: themeColors.accent,
+                          color: themeColors.white,
                         },
                       }
                     : {
-                        backgroundColor: '#DF2935',
-                        color: '#FFFFFF',
+                        backgroundColor: themeColors.accent,
+                        color: themeColors.white,
                         '&:hover': {
-                          backgroundColor: '#FFFFFF',
-                          color: '#DF2935',
+                          backgroundColor: themeColors.white,
+                          color: themeColors.accent,
                         },
                       }
                 }

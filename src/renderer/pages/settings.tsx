@@ -47,6 +47,7 @@ import { omit, mapValues } from 'lodash';
 import Handler from '../../main/sources/handler';
 import SourceBase from '../../main/sources/static/base';
 import LoginItem from '../components/loginitem';
+import Theme from '../../main/util/theme';
 
 import type { DefaultSettings } from '../../main/util/settings';
 import { Schema, settingsSchemata } from '../util/auxiliary';
@@ -102,6 +103,17 @@ export type Backup = {
   backupCategories: unknown[];
 };
 
+const { theme, themeStyleDark, themeStyleLight } =
+  window.electron.settings.getAll().appearance;
+
+const currentTheme = new Theme(
+  theme === 'dark' ? themeStyleDark : themeStyleLight,
+  theme as 'dark' | 'light'
+);
+
+const themeColors = currentTheme.getColors();
+const pageStyle = currentTheme.getPageStyle('settings');
+
 const stylesObject = {
   ...settingsStylesObject,
 
@@ -119,18 +131,18 @@ const stylesObject = {
   },
 
   tab: {
-    color: '#FFFFFF',
+    color: themeColors.white,
     marginRight: '12px',
     padding: '6px',
     boxSizing: 'border-box',
     width: '165px',
     height: '36px',
     borderRight: 1,
-    borderColor: '#DF2935',
+    borderColor: themeColors.accent,
   },
 
   tabSelected: {
-    color: '#DF2935',
+    color: themeColors.accent,
   },
 
   settingContainer: {
@@ -146,9 +158,9 @@ const stylesObject = {
       width: '4px',
     },
     '::-webkit-scrollbar-thumb': {
-      background: '#FFFFFF',
+      background: themeColors.white,
       ':hover': {
-        background: '#DF2935',
+        background: themeColors.accent,
       },
     },
   },
@@ -156,26 +168,26 @@ const stylesObject = {
   backButton: {
     position: 'absolute',
     marginLeft: '12px',
-    color: 'white',
+    color: themeColors.white,
     zIndex: 1600,
     top: '12px',
     left: 0,
   },
 
   selectComponentSelected: {
-    color: '#DF2935',
-    // backgroundColor: '#FFFFFF',
+    color: themeColors.accent,
+    // backgroundColor: themeColors.white,
   },
 
   settingsButton: {
-    border: '1px solid #DF2935',
-    color: '#DF2935',
+    border: `1px solid ${themeColors.accent}`,
+    color: themeColors.accent,
     minWidth: '150px',
     width: 'fit-content',
     height: '42px',
     ':hover': {
-      backgroundColor: '#DF2935',
-      color: '#FFFFFF',
+      backgroundColor: themeColors.accent,
+      color: themeColors.white,
       fontWeight: 'bold',
     },
   },
@@ -204,6 +216,8 @@ const stylesObject = {
     color: '#FFFFFF33',
     zIndex: 4000,
   },
+
+  ...pageStyle,
 };
 
 const categoryIcons: {
@@ -261,7 +275,7 @@ const ImportSettingsModal = ({
         },
 
         '& .MuiDialog-paper': {
-          backgroundColor: '#111111',
+          backgroundColor: themeColors.background,
         },
       }}
       onClose={() => {
@@ -271,15 +285,15 @@ const ImportSettingsModal = ({
     >
       <DialogTitle
         sx={{
-          backgroundColor: '#111111',
-          color: 'white',
+          backgroundColor: themeColors.background,
+          color: themeColors.white,
         }}
       >
         Import Settings
       </DialogTitle>
       <DialogContent
         sx={{
-          backgroundColor: '#111111',
+          backgroundColor: themeColors.background,
         }}
       >
         <List>
@@ -287,7 +301,7 @@ const ImportSettingsModal = ({
             <ListItem key={key}>
               <ListItemText
                 sx={{
-                  color: 'white',
+                  color: themeColors.white,
                 }}
                 primary={itemDisplays[key as keyof ImportSettings]}
               />
@@ -297,21 +311,27 @@ const ImportSettingsModal = ({
                     <Checkbox
                       checked={value}
                       sx={{
-                        color: 'white',
+                        color: themeColors.white,
                         '&.Mui-checked svg': {
-                          color: '#DF2935',
+                          color: themeColors.accent,
                         },
                         '&.Mui-checked:hover': {
-                          backgroundColor: '#DF293509',
+                          backgroundColor: `${themeColors.accent.substring(
+                            0,
+                            7
+                          )}09`,
                         },
                         '&:not(Mui-checked):hover': {
-                          backgroundColor: '#FFFFFF09',
+                          backgroundColor: `${themeColors.white.substring(
+                            0,
+                            7
+                          )}09`,
                         },
                         '&:not(.Mui-checked) .MuiTouchRipple-root': {
-                          color: '#FFFFFF',
+                          color: themeColors.white,
                         },
                         '&.Mui-checked .MuiTouchRipple-root': {
-                          color: '#DF2935',
+                          color: themeColors.accent,
                         },
                       }}
                       disabled={key === 'sources'} // Source importing won't be supported until we get a hefty amount of sources
@@ -338,7 +358,7 @@ const ImportSettingsModal = ({
             onImport(importSettings);
           }}
           sx={{
-            color: '#DF2935',
+            color: themeColors.accent,
           }}
         >
           Import
@@ -349,7 +369,7 @@ const ImportSettingsModal = ({
             onCloseNative();
           }}
           sx={{
-            color: '#DF2935',
+            color: themeColors.accent,
           }}
         >
           Cancel
@@ -376,7 +396,7 @@ const settingsResetText = [
 ];
 
 // @ts-ignore Aphrodite sucks.
-const styles = StyleSheet.create(stylesObject);
+const styles = StyleSheet.create(stylesObject) as any;
 const Settings = () => {
   const [settings, setSettings] = useState(window.electron.settings.getAll());
   const [settingsLocation, setSettingsLocation] =
@@ -648,7 +668,7 @@ const Settings = () => {
           className={css(styles.tabs)}
           sx={{
             '.MuiTabs-indicator': {
-              backgroundColor: '#DF2935',
+              backgroundColor: themeColors.accent,
             },
           }}
         >

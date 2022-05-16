@@ -3,11 +3,23 @@ import { Box } from '@mui/material';
 import { useState } from 'react';
 import sanitizeHtml from 'sanitize-html';
 
+import Theme from '../../main/util/theme';
 import { Media } from '../util/tracker/tracker';
+
+const { theme, themeStyleDark, themeStyleLight } =
+  window.electron.settings.getAll().appearance;
+
+const currentTheme = new Theme(
+  theme === 'dark' ? themeStyleDark : themeStyleLight,
+  theme as 'dark' | 'light'
+);
+
+const themeColors = currentTheme.getColors();
+const componentStyle = currentTheme.getComponentStyle('trackeritem');
 
 const styles = StyleSheet.create({
   chosen: {
-    backgroundColor: '#df293533',
+    backgroundColor: `${themeColors.accent.substring(0, 7)}33`,
   },
   container: {
     display: 'flex',
@@ -51,7 +63,9 @@ const styles = StyleSheet.create({
     fontSize: '1.3em',
     fontWeight: 400,
   },
-});
+
+  ...componentStyle,
+}) as any;
 
 const TrackerItem = ({
   id,

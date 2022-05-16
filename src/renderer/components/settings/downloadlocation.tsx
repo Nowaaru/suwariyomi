@@ -6,24 +6,36 @@ import {
   Tooltip,
 } from '@mui/material';
 import { StyleSheet, css } from 'aphrodite';
-import { dialog } from 'electron';
 import { settingsStylesObject } from '../../util/func';
 import type { Schema } from '../../util/auxiliary';
+import Theme from '../../../main/util/theme';
+
+const { theme, themeStyleDark, themeStyleLight } =
+  window.electron.settings.getAll().appearance;
+
+const currentTheme = new Theme(
+  theme === 'dark' ? themeStyleDark : themeStyleLight,
+  theme as 'dark' | 'light'
+);
+
+const themeColors = currentTheme.getColors();
+const componentStyle = currentTheme.getComponentStyle('downloadlocation');
 
 const styles = StyleSheet.create({
   ...(settingsStylesObject as any),
   settingsButton: {
-    border: '1px solid #DF2935',
-    color: '#DF2935',
+    border: `1px solid ${themeColors.accent}`,
+    color: themeColors.accent,
     minWidth: '150px',
     width: 'fit-content',
     height: '42px',
     ':hover': {
-      backgroundColor: '#DF2935',
-      color: '#FFFFFF',
+      backgroundColor: themeColors.accent,
+      color: themeColors.white,
       fontWeight: 'bold',
     },
   },
+  ...componentStyle,
 }) as any;
 
 const DownloadLocation = (

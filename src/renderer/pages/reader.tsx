@@ -44,7 +44,7 @@ import { filterChaptersToLanguage, sortChapters } from '../util/func';
 import { Chapter, LibraryManga } from '../../main/util/manga';
 
 import Handler from '../../main/sources/handler';
-import Sidebar from '../components/sidebar';
+import Sidebar from '../components/lightbar';
 import SettingsModal from '../components/settingsmodal';
 import useQuery from '../util/hook/usequery';
 import SourceBase from '../../main/sources/static/base';
@@ -55,6 +55,18 @@ import ReaderContext from '../components/context/reader';
 import useMountEffect from '../util/hook/usemounteffect';
 import { getTracker, SupportedTrackers } from '../util/tracker/tracker';
 import { DefaultSettings } from '../../main/util/settings';
+import Theme from '../../main/util/theme';
+
+const { theme, themeStyleDark, themeStyleLight } =
+  window.electron.settings.getAll().appearance;
+
+const currentTheme = new Theme(
+  theme === 'dark' ? themeStyleDark : themeStyleLight,
+  theme as 'dark' | 'light'
+);
+
+const themeColors = currentTheme.getColors();
+const pageStyle = currentTheme.getPageStyle('reader');
 
 type ViewStyles =
   | 'left-to-right'
@@ -159,7 +171,7 @@ const stylesObject = {
 
   dialogText: {
     backgroundColor: 'transparent',
-    color: 'white',
+    color: themeColors.white,
   },
 
   dialogActions: {
@@ -169,7 +181,7 @@ const stylesObject = {
   dialogButton: {
     backgroundColor: 'transparent',
     fontWeight: 'bold',
-    color: '#DF2935',
+    color: themeColors.accent,
   },
 
   noCursor: {
@@ -177,7 +189,7 @@ const stylesObject = {
   },
 
   dialogTitle: {
-    color: 'white',
+    color: themeColors.white,
     backgroundColor: 'transparent',
   },
 
@@ -236,14 +248,14 @@ const stylesObject = {
 
   toolbarIcon: {
     position: 'absolute',
-    color: 'white',
+    color: themeColors.white,
     margin: '0px 4px',
     width: '100%',
     height: '100%',
     top: '0px',
     transition: 'all 0.5s ease-out, top 0.2s ease-out',
     ':hover': {
-      color: '#DF2935',
+      color: themeColors.accent,
       top: '-2px',
     },
   },
@@ -264,7 +276,7 @@ const stylesObject = {
       right: '0px',
       height: '100%',
       pointerEvents: 'none',
-      backgroundColor: 'white',
+      backgroundColor: themeColors.white,
       width: '1px',
       boxSize: 'border-box',
     },
@@ -346,9 +358,9 @@ const stylesObject = {
       width: '4px',
     },
     '::-webkit-scrollbar-thumb': {
-      background: '#FFFFFF',
+      background: themeColors.white,
       ':hover': {
-        background: '#DF2935',
+        background: themeColors.accent,
       },
     },
     flexDirection: 'column',
@@ -388,7 +400,7 @@ const stylesObject = {
   },
 
   loading: {
-    color: 'white',
+    color: themeColors.white,
   },
 
   // Webtoon / Long-strip view
@@ -460,7 +472,7 @@ const stylesObject = {
   button: {
     zIndex: 1026,
     display: 'flex',
-    color: 'white',
+    color: themeColors.white,
     position: 'absolute',
     backgroundColor: 'transparent',
     border: 'none',
@@ -506,7 +518,7 @@ const stylesObject = {
   rightButtonIcon: {},
 
   buttonIcon: {
-    color: 'white',
+    color: themeColors.white,
   },
 
   arrow: {
@@ -537,7 +549,7 @@ const stylesObject = {
 
   intermediary: {
     display: 'flex',
-    color: 'white',
+    color: themeColors.white,
   },
 
   intermediaryInner: {
@@ -574,10 +586,10 @@ const stylesObject = {
     verticalAlign: 'middle',
     width: '48px',
     height: '48px',
-    color: '#CF1925',
+    color: themeColors.accent,
     transition: 'all 0.5s ease-out',
     ':hover': {
-      color: '#DF2935',
+      color: themeColors.accent,
     },
   },
 
@@ -589,7 +601,7 @@ const stylesObject = {
   },
 
   loadingModal: {
-    color: 'white',
+    color: themeColors.white,
   },
 
   chapterHeader: {
@@ -618,14 +630,14 @@ const stylesObject = {
     height: 'fit-content',
     boxSizing: 'border-box',
     padding: '8px',
-    backgroundColor: '#111111EE',
+    backgroundColor: `${themeColors.black.substring(0, 7)}EE`,
     borderRadius: '10px',
     margin: '0px auto',
   },
 
   topbarTitle: {
     fontFamily: '"Poppins", sans-serif',
-    color: 'white',
+    color: themeColors.white,
 
     fontSize: '1.2em',
     verticalAlign: 'middle',
@@ -642,11 +654,11 @@ const stylesObject = {
   continuousScrollIntermediaryButton: {
     boxSizing: 'border-box',
     padding: '8px',
-    color: '#DF2935',
+    color: themeColors.accent,
     backgroundColor: 'transparent',
     ':hover': {
-      backgroundColor: '#DF293522',
-      color: '#CF1925',
+      backgroundColor: `${themeColors.accent.substring(0, 7)}22`,
+      color: themeColors.accent,
     },
   },
 
@@ -655,6 +667,8 @@ const stylesObject = {
   flippedImage: {
     transform: 'scaleX(-1)',
   },
+
+  ...pageStyle,
 };
 
 type StylesObject = Record<

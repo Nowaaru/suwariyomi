@@ -1,9 +1,6 @@
 import { StyleSheet, css } from 'aphrodite';
 import { useNavigate } from 'react-router-dom';
 
-import anilist from '../../../assets/icons/login/anilist/transparent.png';
-import myanimelist from '../../../assets/icons/login/myanimelist/transparent.png';
-
 import LoginItem from '../components/loginitem';
 
 const onAuth = () => {

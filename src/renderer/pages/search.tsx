@@ -40,6 +40,18 @@ import SearchBar from '../components/search';
 import Filter from '../components/filter';
 import Handler from '../../main/sources/handler';
 import FilterSettings from '../components/filtersettings';
+import Theme from '../../main/util/theme';
+
+const { theme, themeStyleDark, themeStyleLight } =
+  window.electron.settings.getAll().appearance;
+
+const currentTheme = new Theme(
+  theme === 'dark' ? themeStyleDark : themeStyleLight,
+  theme as 'dark' | 'light'
+);
+
+const themeColors = currentTheme.getColors();
+const pageStyle = currentTheme.getPageStyle('search');
 
 const styles = StyleSheet.create({
   container: {
@@ -52,7 +64,7 @@ const styles = StyleSheet.create({
       width: '4px',
     },
     '::-webkit-scrollbar-thumb': {
-      background: '#FFFFFF',
+      background: themeColors.white,
     },
   },
 
@@ -72,7 +84,7 @@ const styles = StyleSheet.create({
   },
 
   noResultsSpan: {
-    color: '#FFFFFF',
+    color: themeColors.white,
     fontSize: '1.5em',
     fontWeight: 'bold',
     margin: '0px',
@@ -99,10 +111,10 @@ const styles = StyleSheet.create({
     fontSize: '2rem',
     height: '25px',
     textDecoration: 'none',
-    color: '#ffffff',
+    color: themeColors.white,
     transition: 'all 0.2s ease-in-out',
     ':hover': {
-      color: '#DF2935',
+      color: themeColors.accent,
     },
   },
   returnSpan: {
@@ -112,7 +124,7 @@ const styles = StyleSheet.create({
   accordionItem: {
     width: '95%',
     margin: '0px 0px 8px 0px',
-    backgroundColor: '#080708',
+    backgroundColor: themeColors.backgroundDark,
   },
 
   accordionItemIcon: {
@@ -147,11 +159,11 @@ const styles = StyleSheet.create({
       height: '4px',
     },
     '::-webkit-scrollbar-thumb': {
-      backgroundColor: '#FFFFFF',
+      backgroundColor: themeColors.white,
       borderRadius: '4px',
       transition: 'background-color 0.2s ease-in-out',
       ':hover': {
-        backgroundColor: '#DF2935',
+        backgroundColor: themeColors.accent,
       },
     },
   },
@@ -180,8 +192,8 @@ const styles = StyleSheet.create({
   },
 
   searchButton: {
-    color: '#ffffff',
-    borderColor: 'white',
+    color: themeColors.white,
+    borderColor: themeColors.white,
     padding: '0px 6px 0px 6px !important',
     position: 'relative',
     zIndex: 256,
@@ -215,7 +227,7 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   modalContainer: {
-    backgroundColor: '#080708',
+    backgroundColor: themeColors.backgroundDark,
     position: 'relative',
     display: 'flex',
     flexDirection: 'row',
@@ -232,11 +244,11 @@ const styles = StyleSheet.create({
       width: '4px',
     },
     '::-webkit-scrollbar-thumb': {
-      backgroundColor: '#FFFFFF',
+      backgroundColor: themeColors.white,
       borderRadius: '4px',
       transition: 'background-color 0.2s ease-in-out',
       ':hover': {
-        backgroundColor: '#DF2935',
+        backgroundColor: themeColors.accent,
       },
     },
   },
@@ -247,7 +259,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
   },
   modalHeader: {
-    color: '#ffffff',
+    color: themeColors.white,
     fontWeight: 'bold',
     fontFamily: '"Poppins", "Roboto", "Helvetica", "Arial", sans-serif',
   },
@@ -259,9 +271,9 @@ const styles = StyleSheet.create({
     height: '32px',
   },
   modalCloseIcon: {
-    color: '#ffffff',
+    color: themeColors.white,
     ':hover': {
-      color: '#DF2935',
+      color: themeColors.accent,
     },
   },
   rule: {
@@ -270,13 +282,15 @@ const styles = StyleSheet.create({
     border: 'none',
     outline: 'none',
     height: '1px',
-    background: 'linear-gradient(to left, #FFFFFF00, #DF2935FF)',
+    background: `linear-gradient(to left, #FFFFFF00, ${themeColors.accent})`,
   },
 
   modalBody: {},
 
   noContentContainer: {},
-});
+
+  ...pageStyle,
+}) as any;
 
 /*
   Structure:
@@ -572,7 +586,7 @@ const SearchPage = () => {
               expandIcon={
                 <ExpandMoreIcon
                   sx={{
-                    color: '#ffffff',
+                    color: themeColors.white,
                   }}
                 />
               }
@@ -593,7 +607,7 @@ const SearchPage = () => {
                 sx={{
                   width: '66%',
                   flexShrink: 2,
-                  color: '#FFFFFF',
+                  color: themeColors.white,
                 }}
                 className={css(styles.accordionText)}
               >

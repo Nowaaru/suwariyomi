@@ -1,0 +1,13 @@
+{
+  "accent": "#DF2935",
+  "accent2": "#00BCD4",
+  "accentSpecial": "#EE7A3B",
+
+  "background": "#111111",
+  "backgroundDark": "#080708",
+  "backgroundLight": "#222222",
+  "backgroundTransparent": "#77777720",
+
+  "white": "#ffffff",
+  "black": "#000000"
+}

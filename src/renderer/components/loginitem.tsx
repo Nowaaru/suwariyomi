@@ -3,7 +3,17 @@ import { useCallback, useMemo, useState } from 'react';
 import { Tooltip } from '@mui/material';
 import { StyleSheet, css } from 'aphrodite';
 import { SupportedTrackers, getTracker } from '../util/tracker/tracker';
-// TODO: Unionize this
+import Theme from '../../main/util/theme';
+
+const { theme, themeStyleDark, themeStyleLight } =
+  window.electron.settings.getAll().appearance;
+
+const currentTheme = new Theme(
+  theme === 'dark' ? themeStyleDark : themeStyleLight,
+  theme as 'dark' | 'light'
+);
+
+const componentStyle = currentTheme.getComponentStyle('loginitem');
 const AniListIntegrationHandler = async () => {
   window.electron.auth
     .generateAuthenticationWindow(
@@ -96,7 +106,8 @@ const styles = StyleSheet.create({
     maxWidth: '100%',
     maxHeight: '100%',
   },
-});
+  ...componentStyle,
+}) as any;
 
 type ComponentProps = {
   title?: string;
@@ -167,68 +178,5 @@ LoginItem.defaultProps = {
   trackedtitle: '',
   title: '',
 };
-
-// class LoginItem extends React.Component<ComponentProps, ComponentProps> {
-//   constructor(props: ComponentProps) {
-//     super(props);
-//     const { authenticator } = this.props;
-//     const Tracker = getTracker(authenticator);
-
-//     this.tracker = new Tracker();
-//     this.handleClick = this.handleClick.bind(this);
-//   }
-
-//   handleClick = async () => {
-//     const { authenticator } = this.props;
-//     return Authenticators[authenticator]();
-//   };
-
-//   render() {
-//     const {
-//       title = 'Authenticate' as string,
-//       trackedtitle = 'Click to unauthenticate.',
-//       onAuth = (() => {}) as () => void,
-//       onDeauth = (() => {}) as () => void,
-//       authenticator,
-//     } = this.props;
-
-//     const { handleClick } = this;
-//     if (!this.tracker)
-//       throw new Error(`Tracker support for ${authenticator} does not exist.`);
-
-//     let isAuthenticated =
-//       window.electron.auth.checkAuthenticated(authenticator);
-//     return (
-//       <Tooltip title={isAuthenticated ? trackedtitle : title} placement="top">
-//         <button
-//           type="button"
-//           onClick={() => {
-//             if (isAuthenticated) {
-//               window.electron.auth.deleteAuthenticated(authenticator);
-//               isAuthenticated = false;
-//               return onDeauth();
-//             }
-
-//             return handleClick()
-//               .then(() => {
-//                 isAuthenticated = true;
-//                 return onAuth();
-//               })
-//               .catch(console.error);
-//           }}
-//           className={`${css(styles.loginItem)}`}
-//         >
-//           <img
-//             src={this.tracker.getIcon()}
-//             alt=""
-//             className={css(styles.img, isAuthenticated && styles.greyedOut)}
-//           />
-//         </button>
-//       </Tooltip>
-//     );
-//   }
-
-//   tracker: TrackerBase;
-// }
 
 export default LoginItem;

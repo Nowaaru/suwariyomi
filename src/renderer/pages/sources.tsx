@@ -7,13 +7,26 @@ import Tabs from '../components/tabs';
 import Button from '../components/button';
 import type { SourceMetadata } from '../index';
 import { clearRequireCache } from '../../shared/util';
+import Theme from '../../main/util/theme';
 
+const { theme, themeStyleDark, themeStyleLight } =
+  window.electron.settings.getAll().appearance;
+
+const currentTheme = new Theme(
+  theme === 'dark' ? themeStyleDark : themeStyleLight,
+  theme as 'dark' | 'light'
+);
+
+const themeColors = currentTheme.getColors();
+const pageStyle = currentTheme.getPageStyle('sources');
+
+const light33 = `${themeColors.white.substring(0, 7)}33`;
 const styles = StyleSheet.create({
   container: { marginLeft: '75px', height: '90%' },
   installedcontainer: {
     display: 'flex',
     flexDirection: 'column',
-    background: '#00000044',
+    background: `${themeColors.black.substring(0, 7)}44`,
     marginTop: '8px',
     width: '65%',
     height: '57px',
@@ -21,7 +34,7 @@ const styles = StyleSheet.create({
     marginLeft: '25px',
     boxSizing: 'border-box',
     borderRadius: '4px',
-    color: 'white',
+    color: themeColors.white,
     fontFamily: 'monospace',
     verticalAlign: 'middle',
     alignContent: 'center',
@@ -46,7 +59,7 @@ const styles = StyleSheet.create({
   },
   headerline_label: {
     fontSize: '14px',
-    color: '#FFFFFF55',
+    color: light33,
     fontFamily: 'Poppins',
     letterSpacing: '0.5px',
     lineHeight: 3,
@@ -56,13 +69,15 @@ const styles = StyleSheet.create({
   },
   headerline_divider: {
     height: '1px',
-    background:
-      'linear-gradient(to right, #FFFFFF00 0%,  #FFFFFF55 10%, #FFFFFF00)',
+    background: `linear-gradient(to right, transparent 0%,  ${themeColors.white.substring(
+      0,
+      7
+    )}55 10%, transparent 100%)`,
     width: '65%',
   },
   r18: {
-    color: '#DF2935',
-    border: '1px solid #DF2935',
+    color: themeColors.accent,
+    border: `1px solid ${themeColors.accent}`,
   },
   tags: {
     display: 'flex',
@@ -71,10 +86,10 @@ const styles = StyleSheet.create({
     width: 'fit-content',
   },
   tag: {
-    color: '#FFFFFF33',
+    color: light33,
     fontFamily: 'Poppins',
     fontSize: '10px',
-    border: '1px solid #FFFFFF33',
+    border: `1px solid ${light33}`,
     borderRadius: '4px',
     padding: '2px',
     marginRight: '4px',
@@ -87,7 +102,7 @@ const styles = StyleSheet.create({
   },
   version: {
     fontSize: '9px',
-    color: '#DF2935',
+    color: themeColors.accent,
     fontWeight: 500,
     fontFamily: 'Poppins',
     lineHeight: '1',
@@ -119,7 +134,7 @@ const styles = StyleSheet.create({
   },
   installeddisclaimer: {
     fontSize: '12px',
-    color: '#FFFFFF55',
+    color: light33,
     fontFamily: 'Poppins',
     lineHeight: '1',
     display: 'flex',
@@ -134,7 +149,8 @@ const styles = StyleSheet.create({
     marginLeft: '-50px',
     marginTop: '10px',
   },
-});
+  ...pageStyle,
+}) as any;
 
 const HeaderLine = ({ label }: { label: string }) => (
   <div className={css(styles.headerline)}>

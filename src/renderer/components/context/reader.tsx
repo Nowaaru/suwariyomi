@@ -19,13 +19,25 @@ import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import SendIcon from '@mui/icons-material/Send';
+import Theme from '../../../main/util/theme';
+
+const { theme, themeStyleDark, themeStyleLight } =
+  window.electron.settings.getAll().appearance;
+
+const currentTheme = new Theme(
+  theme === 'dark' ? themeStyleDark : themeStyleLight,
+  theme as 'dark' | 'light'
+);
+
+const themeColors = currentTheme.getColors();
+const componentStyle = currentTheme.getComponentStyle('reader');
 
 const contextMenuInner = {
-  backgroundColor: '#111111',
+  backgroundColor: themeColors.background,
 };
 
 const contextDividerLine = {
-  borderTop: '1px solid #FFFFFF22',
+  borderTop: `${themeColors.white.substring(0, 7)}22`,
 };
 
 const styles = StyleSheet.create({
@@ -36,7 +48,7 @@ const styles = StyleSheet.create({
     fontSize: '0.8rem',
   },
   contextMenuIcon: {
-    color: '#DF2935',
+    color: themeColors.accent,
   },
 
   contextDivider: {
@@ -51,7 +63,8 @@ const styles = StyleSheet.create({
   // Stlyes used with MUI's `sx` fields.
   contextMenuInner,
   contextDividerLine,
-});
+  ...componentStyle,
+}) as any;
 
 type UniversalChildren = JSX.Element[] | JSX.Element | string;
 const ElementDivider = ({ children }: { children: UniversalChildren }) => (

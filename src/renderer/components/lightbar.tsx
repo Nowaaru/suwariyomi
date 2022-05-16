@@ -1,8 +1,22 @@
 import { StyleSheet, css } from 'aphrodite';
 import { useState } from 'react';
+import Theme from '../../main/util/theme';
 
-export const sidebarStyle = StyleSheet.create({
-  sidebar: {},
+const { theme, themeStyleDark, themeStyleLight } =
+  window.electron.settings.getAll().appearance;
+
+const currentTheme = new Theme(
+  theme === 'dark' ? themeStyleDark : themeStyleLight,
+  theme as 'dark' | 'light'
+);
+
+const themeColors = currentTheme.getColors();
+const componentStyleLightbar = currentTheme.getComponentStyle('lightbar');
+const componentStyleLightbarItem =
+  currentTheme.getComponentStyle('lightbaritem');
+
+export const lightbarStyle = StyleSheet.create({
+  lightbar: {},
 
   vertical: {
     display: 'inline-flex',
@@ -33,20 +47,21 @@ export const sidebarStyle = StyleSheet.create({
     left: 0,
     borderRadius: '0px 0px 5px 5px',
   },
-  sidebarItem: {
+  lightbarItem: {
     border: 'none',
     background: 'none',
     cursor: 'pointer',
     flexGrow: 1,
   },
-  sidebarItemBeforeHorizontal: {
+  lightbarItemBeforeHorizontal: {
     margin: '0px 1px',
   },
   before: {},
-  sidebarItemBeforeVertical: {
+  lightbarItemBeforeVertical: {
     margin: '1% 0px 1% 0px',
   },
-});
+  ...componentStyleLightbar,
+}) as any;
 
 const SidebarItem = ({
   pageValue = 1 as number,
@@ -120,7 +135,7 @@ const SidebarItem = ({
       height: isVertical ? '100%' : '3px',
       width: isVertical ? '3px' : '100%',
       position: 'absolute',
-      backgroundColor: isSelected ? '#F00' : '#FFF',
+      backgroundColor: isSelected ? themeColors.accent : themeColors.white,
       [`${isVertical ? (isRight ? 'right' : 'left') : 'bottom'}`]: isVertical
         ? '0%'
         : '8%',
@@ -145,9 +160,10 @@ const SidebarItem = ({
       userFocus: 'none',
       userInput: 'none',
       'user-select': 'none',
-      color: '#FFF',
+      color: themeColors.white,
     },
-  });
+    ...componentStyleLightbarItem,
+  }) as any;
   const showText = !isTooSmall ? (
     <span className={css(selectedStylesheet.pageNumber)}>{pageDisplay}</span>
   ) : null;
@@ -158,10 +174,10 @@ const SidebarItem = ({
         selectedStylesheet.itemGradient,
         !isSmall
           ? isVertical
-            ? sidebarStyle.sidebarItemBeforeVertical
-            : sidebarStyle.sidebarItemBeforeHorizontal
+            ? lightbarStyle.lightbarItemBeforeVertical
+            : lightbarStyle.lightbarItemBeforeHorizontal
           : null,
-        sidebarStyle.sidebarItem
+        lightbarStyle.lightbarItem
       )}
       onContextMenuCapture={(e) => {
         e.preventDefault();
@@ -177,7 +193,7 @@ const SidebarItem = ({
   );
 };
 
-const SideBar = ({
+const Lightbar = ({
   disabled = false,
   isVertical = false,
   isRight = false,
@@ -260,13 +276,13 @@ const SideBar = ({
       <div
         className={css(
           containerData,
-          isVertical ? sidebarStyle.vertical : sidebarStyle.horizontal,
+          isVertical ? lightbarStyle.vertical : lightbarStyle.horizontal,
           isVertical
             ? isRight
-              ? sidebarStyle.right
-              : sidebarStyle.left
-            : sidebarStyle.bottom,
-          sidebarStyle.sidebar
+              ? lightbarStyle.right
+              : lightbarStyle.left
+            : lightbarStyle.bottom,
+          lightbarStyle.lightbar
         )}
         onMouseEnter={() => {
           setHover(true);
@@ -281,4 +297,4 @@ const SideBar = ({
   );
 };
 
-export default SideBar;
+export default Lightbar;

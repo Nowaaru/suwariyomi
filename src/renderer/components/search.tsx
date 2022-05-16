@@ -1,6 +1,18 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import { TextField, TextFieldProps } from '@mui/material';
 import { StyleSheet, css } from 'aphrodite';
+import Theme from '../../main/util/theme';
+
+const { theme, themeStyleDark, themeStyleLight } =
+  window.electron.settings.getAll().appearance;
+
+const currentTheme = new Theme(
+  theme === 'dark' ? themeStyleDark : themeStyleLight,
+  theme as 'dark' | 'light'
+);
+
+const themeColors = currentTheme.getColors();
+const componentStyle = currentTheme.getComponentStyle('search');
 
 const searchStyles = StyleSheet.create({
   searchbarContainer: {
@@ -13,11 +25,11 @@ const searchStyles = StyleSheet.create({
     alignItems: 'center',
     padding: '8px',
     justifyContent: 'center',
-    border: '1px solid #11111100',
+    border: '1px solid transparent',
     zIndex: 260,
   },
   searchbarContainerInner: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: themeColors.white,
     borderRadius: '80%',
     padding: '8px',
     width: '52px',
@@ -46,7 +58,9 @@ const searchStyles = StyleSheet.create({
       opacity: 1,
     },
   },
-});
+
+  ...componentStyle,
+}) as any;
 
 type NewSearchProps = Omit<TextFieldProps, 'variant'>;
 const SearchBar = (props: TextFieldProps & NewSearchProps) => {

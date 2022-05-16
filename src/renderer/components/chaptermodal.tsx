@@ -12,26 +12,41 @@ import Chapter from './chapter';
 import Handler from '../../main/sources/handler';
 
 import { sortChapters } from '../util/func';
+import Theme from '../../main/util/theme';
+
+const { theme, themeStyleDark, themeStyleLight } =
+  window.electron.settings.getAll().appearance;
+
+const currentTheme = new Theme(
+  theme === 'dark' ? themeStyleDark : themeStyleLight,
+  theme as 'dark' | 'light'
+);
+
+const themeColors = currentTheme.getColors();
+const componentStyle = currentTheme.getComponentStyle('chaptermodal');
 
 const stylesObject = {
   dialog: {},
   selected: {
-    border: '4px solid #DF2935',
+    border: `4px solid ${themeColors.accent}`,
   },
 
   chapterModalDialog: { background: 'transparent' },
 
-  chapterModalDialogTitle: { backgroundColor: '#111111', color: 'white' },
+  chapterModalDialogTitle: {
+    backgroundColor: themeColors.background,
+    color: themeColors.white,
+  },
 
   chapterModalDialogContent: {
-    backgroundColor: '#111111',
+    backgroundColor: themeColors.background,
     '::-webkit-scrollbar': {
       width: '4px',
     },
     '::-webkit-scrollbar-thumb': {
-      background: '#FFFFFF',
+      background: themeColors.white,
       ':hover': {
-        background: '#DF2935',
+        background: themeColors.accent,
       },
     },
   },
@@ -43,9 +58,11 @@ const stylesObject = {
   chapterModalDialogErrorContainer: {},
 
   chapterModalDialogErrorRetryButton: {},
+
+  ...componentStyle,
 };
 
-const styles = StyleSheet.create(stylesObject);
+const styles = StyleSheet.create(stylesObject) as any;
 
 const ChapterModal = ({
   onChange,
