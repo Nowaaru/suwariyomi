@@ -70,6 +70,9 @@ window.electron = {
     get appVersion() {
       return ipcRenderer.sendSync('get-app-version');
     },
+    get themes() {
+      return ipcRenderer.sendSync('get-themes');
+    },
   },
   reader: {
     getMangaSettings: (sourceID, mangaID) => {

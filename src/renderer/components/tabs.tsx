@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
   },
 
   tab: {
-    color: themeColors.white,
+    color: themeColors.textLight,
     marginRight: '12px',
     padding: '6px',
     boxSizing: 'border-box',

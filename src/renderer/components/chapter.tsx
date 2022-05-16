@@ -6,7 +6,6 @@ import dayjs from 'dayjs';
 import dayjs_advancedFormat from 'dayjs/plugin/advancedFormat';
 import DownloadIcon from '@mui/icons-material/Download';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import DownloadDoneIcon from '@mui/icons-material/DownloadDone';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
@@ -41,7 +40,7 @@ const styles = StyleSheet.create({
     boxSizing: 'border-box',
     padding: '8px',
     font: '14px Roboto, sans-serif',
-    backgroundColor: '#222222',
+    backgroundColor: themeColors.backgroundLight,
     boxShadow: `0px 0px 5px ${themeColors.black}`,
   },
   chapterDateData: {
@@ -51,7 +50,7 @@ const styles = StyleSheet.create({
     marginTop: '36px',
     display: 'inline',
     fontFamily: 'Open Sans, sans-serif',
-    color: themeColors.white,
+    color: themeColors.textLight,
   },
 
   downloadButton: {
@@ -59,17 +58,17 @@ const styles = StyleSheet.create({
   },
 
   downloadButtonIcon: {
-    color: themeColors.white,
+    color: themeColors.textLight,
     ':hover': {
       color: themeColors.accent,
     },
   },
 
   disabledDownloadButton: {
-    color: themeColors.white,
+    color: themeColors.textLight,
     filter: 'brightness(0.4)',
     ':hover': {
-      color: themeColors.white,
+      color: themeColors.textLight,
     },
   },
 
@@ -110,7 +109,7 @@ const styles = StyleSheet.create({
     marginRight: '8px',
     display: 'inline',
     fontFamily: 'Open Sans, sans-serif',
-    color: themeColors.white,
+    color: themeColors.textLight,
   },
 
   chapterTitle: {
@@ -121,12 +120,12 @@ const styles = StyleSheet.create({
   chapterTitleHeader: {
     display: 'inline',
     marginRight: '8px',
-    color: themeColors.white,
+    color: themeColors.textLight,
     textShadow: 'none',
   },
 
   bookmarksButton: {
-    color: themeColors.white,
+    color: themeColors.textLight,
   },
 
   bookmarksButtonFilled: {
@@ -143,7 +142,7 @@ const styles = StyleSheet.create({
     height: '24px',
     transition: 'color 0.2s ease-in-out',
     ':hover': {
-      color: themeColors.white,
+      color: themeColors.textLight,
     },
   },
 
@@ -153,7 +152,7 @@ const styles = StyleSheet.create({
     width: '24px',
     height: '24px',
     ':hover': {
-      color: themeColors.white,
+      color: themeColors.textLight,
     },
   },
 

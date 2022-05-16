@@ -10,41 +10,39 @@ import defaultThemeLightColors from '../../shared/theme/default/light/colors.jso
 
 const mainRequire = getMainRequire();
 const userData = window.electron.util.getUserDataPath();
+
 class Theme {
   constructor(public themeName: string, public variant: 'light' | 'dark') {
-    const baseThemePath =
-      themeName === 'default'
-        ? 'default'
-        : path.join(userData, 'themes', themeName);
+    this.isDefault = themeName.toLowerCase() === 'default';
+
+    const allThemes = window.electron.util.themes;
+    const theme = allThemes[themeName];
 
     const variantPath =
-      themeName === 'default' ? 'default' : path.join(baseThemePath, variant);
-    const themeMetadata =
-      baseThemePath === 'default'
-        ? defaultThemeMetadata
-        : mainRequire(path.join(baseThemePath, 'metadata.json'));
+      themeName === 'default' ? 'default' : path.join(theme.location, variant);
 
-    this.isDefault = baseThemePath === 'default';
-    this.baseThemePath = baseThemePath;
-    this.variantPath = variantPath;
-    this.metadata = themeMetadata;
-
-    // this can 100% loop forever if the default theme is broken so be wary! :)
     if (
       !existsSync(userData) ||
-      (!existsSync(variantPath) && !this.isDefault)
+      ((!existsSync(variantPath) || !theme) && !this.isDefault)
     ) {
+      // this can 100% loop forever if the default theme is broken so be wary! :)
+
       return new Theme('default', variant);
     }
+
+    this.isDefault = themeName === 'default';
+    this.baseThemePath = themeName;
+    this.variantPath = variantPath;
+    this.metadata = theme?.metadata ?? defaultThemeMetadata;
   }
 
-  public metadata: string;
+  public metadata!: Record<string, string>;
 
-  private baseThemePath: string;
+  private baseThemePath!: string;
 
   private isDefault: boolean;
 
-  private variantPath: string;
+  private variantPath!: string;
 
   public getComponentStyle = (componentName: string) => {
     if (this.isDefault) return {};
@@ -59,6 +57,11 @@ class Theme {
       return {};
     }
 
+    try {
+      delete mainRequire.cache[mainRequire.resolve(componentFile)];
+    } catch (e) {
+      window.electron.log.warn(e);
+    }
     return mainRequire(componentFile);
   };
 
@@ -67,6 +70,12 @@ class Theme {
     const pageFile = path.join(this.variantPath, 'pages', `${pageName}.json`);
     if (!existsSync(pageFile)) {
       return {};
+    }
+
+    try {
+      delete mainRequire.cache[mainRequire.resolve(pageFile)];
+    } catch (e) {
+      window.electron.log.warn(e);
     }
     return mainRequire(pageFile);
   };
@@ -84,6 +93,12 @@ class Theme {
 
         white: string;
         black: string;
+
+        textLight: string;
+        textDark: string;
+
+        tag: string;
+        tagText: string;
       }
     | Record<string, never> => {
     const correspondingDefault = {
@@ -97,6 +112,11 @@ class Theme {
         return {};
       }
 
+      try {
+        delete mainRequire.cache[mainRequire.resolve(colorsFile)];
+      } catch (e) {
+        window.electron.log.warn(e);
+      }
       return { ...correspondingDefault, ...mainRequire(colorsFile) };
     }
 

@@ -12,6 +12,18 @@ import View from './pages/view';
 import Reader from './pages/reader';
 import Settings from './pages/settings';
 import Sources from './pages/sources';
+import Theme from '../main/util/theme';
+
+const { theme, themeStyleDark, themeStyleLight } =
+  window.electron.settings.getAll().appearance;
+
+const currentTheme = new Theme(
+  theme === 'dark' ? themeStyleDark : themeStyleLight,
+  theme as 'dark' | 'light'
+);
+
+const themeColors = currentTheme.getColors();
+const pageStyle = currentTheme.getPageStyle('main');
 
 const styles = StyleSheet.create({
   root: {
@@ -22,10 +34,14 @@ const styles = StyleSheet.create({
     bottom: 0,
   },
   main: {
-    height: '100%',
+    height: '101%',
     width: '100%',
+    backgroundColor: themeColors.background,
+    zIndex: 1,
+    position: 'absolute',
   },
-});
+  ...pageStyle,
+}) as any;
 
 ipcRenderer.on('download-source-error', (_, src, msg) =>
   window.electron.log.error(`DL Error for Source ${src}:`, msg)

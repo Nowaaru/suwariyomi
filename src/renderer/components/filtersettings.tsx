@@ -68,18 +68,18 @@ const stylesObject = {
   },
 
   FormControlLabel: {
-    color: themeColors.white,
+    color: themeColors.textLight,
   },
 
   selectComponentSelected: {
-    color: themeColors.white,
+    color: themeColors.textLight,
   },
 
   FormLabel: {
     fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
     fontWeight: 500,
     fontSize: '1.2rem',
-    color: themeColors.white,
+    color: themeColors.textLight,
   },
   Red: {
     color: themeColors.accent,
@@ -94,7 +94,7 @@ const stylesObject = {
   textField: {
     width: '100%',
     backgroundColor: 'rgba(28, 27, 24, 0.2)',
-    color: themeColors.white,
+    color: themeColors.textLight,
     marginBottom: '6px',
     borderRadius: '1px',
   },
@@ -109,11 +109,11 @@ const stylesObject = {
   },
 
   labelRootFocused: {
-    color: themeColors.white,
+    color: themeColors.textLight,
   },
 
   outlinedLabelShrunken: {
-    color: themeColors.white,
+    color: themeColors.textLight,
   },
 
   rootOutlinedInput: {
@@ -122,7 +122,7 @@ const stylesObject = {
   },
 
   rootOutlinedInputFocused: {
-    color: themeColors.white,
+    color: themeColors.textLight,
   },
 
   ...componentStyle,

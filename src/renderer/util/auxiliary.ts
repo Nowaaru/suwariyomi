@@ -143,14 +143,6 @@ export const settingsSchemata: {
       label: 'Theme',
       description: 'The look and feel of the application.',
     },
-    themeStyleLight: {
-      type: 'managed',
-      label: 'Theme Style - Light',
-    },
-    themeStyleDark: {
-      type: 'managed',
-      label: 'Theme Style - Dark',
-    },
   },
   reader: {
     lightbarVertical: {

@@ -60,6 +60,7 @@ const pageStyle = currentTheme.getPageStyle('library');
 const libraryStyleSheet = StyleSheet.create({
   container: {
     display: 'block',
+    backgroundColor: themeColors.background,
     position: 'absolute',
     width: '100%',
     height: 'calc(100vh - 42px)',
@@ -80,7 +81,8 @@ const libraryStyleSheet = StyleSheet.create({
   },
 
   searchbarContainerInner: {
-    backgroundColor: themeColors.white,
+    backgroundColor: themeColors.backgroundLight,
+    color: themeColors.textLight,
     borderRadius: '80%',
     padding: '8px',
     width: '52px',
@@ -114,16 +116,11 @@ const libraryStyleSheet = StyleSheet.create({
     height: 'calc(100% - 48px)',
     overflowY: 'scroll',
     '::-webkit-scrollbar': {
-      width: '4px',
+      width: '8px',
     },
     '::-webkit-scrollbar-thumb': {
       background: themeColors.white,
     },
-  },
-  testContainer: {
-    width: '100%',
-    height: '250px',
-    // height: "fit-content",
   },
 
   welcomeContainer: {
@@ -159,7 +156,7 @@ const libraryStyleSheet = StyleSheet.create({
     width: '100%',
     maxWidth: 'calc(900px - 192px - 32px)',
     height: 'calc(192px - 16px)',
-    backgroundColor: themeColors.white,
+    backgroundColor: themeColors.textLight,
     marginLeft: '10px',
     '@media (max-width: 900px)': {
       maxWidth: '75%',
@@ -167,13 +164,14 @@ const libraryStyleSheet = StyleSheet.create({
   },
 
   infoPaperHeaderBase: {
-    color: themeColors.white,
+    color: themeColors.textLight,
     fontFamily: '"Poppins", "Roboto", "Helvetica", "Arial", sans-serif',
     margin: '0',
   },
   infoPaperHeaderMain: {
     textAlign: 'left',
     fontSize: '2.4em',
+    textShadow: `0 0 10px ${themeColors.black}`,
   },
   infoPaperHeaderSub: {
     fontSize: '1.2em',
@@ -329,7 +327,7 @@ const libraryStyleSheet = StyleSheet.create({
     color: themeColors.accent,
     transition: 'transform 0.4s ease-in-out, color 0.4s ease-in-out',
     ':hover': {
-      color: themeColors.white,
+      color: themeColors.textLight,
       transform: 'scale(1.2) rotate(65deg)',
     },
   },
@@ -367,7 +365,7 @@ const libraryStyleSheet = StyleSheet.create({
     color: themeColors.accent,
     transition: 'transform 0.4s ease-in-out, color 0.4s ease-in-out',
     ':hover': {
-      color: themeColors.white,
+      color: themeColors.textLight,
       transform: 'scale(1.2) rotate(180deg)',
     },
   },
@@ -376,7 +374,7 @@ const libraryStyleSheet = StyleSheet.create({
     display: 'flex',
     width: '30%',
     flexShrink: 2,
-    color: themeColors.white,
+    color: themeColors.textLight,
     '@media (max-width: 750px)': {
       width: '33%',
     },
@@ -901,7 +899,7 @@ const Library = () => {
           key={sourceKey}
         >
           <AccordionSummary
-            expandIcon={<ExpandMoreIcon htmlColor="#FFFFFF" />}
+            expandIcon={<ExpandMoreIcon htmlColor={themeColors.textLight} />}
             aria-controls="panel1a-content"
             id="panel1a-header"
           >
@@ -920,7 +918,7 @@ const Library = () => {
               sx={{
                 width: '40%',
                 flexShrink: 2,
-                color: themeColors.white,
+                color: themeColors.textLight,
               }}
               className={css(libraryStyleSheet.accordionText)}
             >
@@ -928,7 +926,7 @@ const Library = () => {
             </Typography>
             <Typography
               sx={{
-                color: themeColors.white,
+                color: themeColors.textLight,
                 flexShrink: 2,
                 verticalAlign: 'center',
                 lineHeight: '1.5',
@@ -946,7 +944,7 @@ const Library = () => {
             >
               <Checkbox
                 sx={{
-                  color: themeColors.white,
+                  color: themeColors.textLight,
                 }}
                 checked={
                   suwariyomiLibrarySettings[`data_${sourceKey}`]?.sortOrder ===
@@ -965,7 +963,7 @@ const Library = () => {
                   );
                   forceUpdate();
                 }}
-                icon={<ArrowDownwardIcon />}
+                icon={<ArrowDownwardIcon style={{}} />}
                 checkedIcon={<ArrowUpwardIcon />}
               />
               <Select
@@ -974,7 +972,7 @@ const Library = () => {
                   return (
                     <Typography
                       sx={{
-                        color: themeColors.white,
+                        color: themeColors.textLight,
                         fontSize: '0.75rem',
                         fontWeight: '500',
                         verticalAlign: 'center',
@@ -1223,6 +1221,15 @@ const Library = () => {
                   }
                 }
               }}
+              sx={{
+                '& .MuiInputLabel-root.Mui-focused': {
+                  color: themeColors.accent,
+                },
+
+                '&.MuiTextField-root .MuiFilledInput-root.Mui-focused::after': {
+                  borderBottom: `1px solid ${themeColors.accent}`,
+                },
+              }}
               onChange={(e) => {
                 if (!userSettings.current.library.updateOnKeyPress) return;
                 setSearchQuery((e.target as unknown as HTMLInputElement).value);
@@ -1349,7 +1356,7 @@ const Library = () => {
           <div className={css(libraryStyleSheet.noMangaContainer)}>
             <Typography
               sx={{
-                color: themeColors.white,
+                color: themeColors.textLight,
                 fontSize: '24px',
                 fontWeight: 'bold',
               }}
@@ -1358,7 +1365,7 @@ const Library = () => {
             </Typography>
             <Typography
               sx={{
-                color: themeColors.white,
+                color: themeColors.textLight,
                 fontSize: '16px',
               }}
             >

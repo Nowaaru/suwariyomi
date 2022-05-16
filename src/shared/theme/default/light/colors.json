@@ -1,1 +1,19 @@
-{}
+{
+  "accent": "#EE7A3B",
+  "accent2": "#00BCD4",
+  "accentSpecial": "#DF2935",
+
+  "background": "#FFFFFF",
+  "backgroundDark": "#D8D8D8",
+  "backgroundLight": "#E2E2E2",
+  "backgroundTransparent": "#FFFFFF20",
+
+  "white": "#979797",
+  "black": "#868686",
+
+  "textLight": "#000000",
+  "textDark": "#ACACAC",
+
+  "tag": "#E0956C",
+  "tagText" : "#FFFFFF"
+}

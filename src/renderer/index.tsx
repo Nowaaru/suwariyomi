@@ -50,6 +50,14 @@ export type SourceMetadata = {
   path?: string; // The path to the source.
 };
 
+export type ThemeType = {
+  location: string;
+  metadata: {
+    name: string;
+  };
+  colors: Record<'light' | 'dark', Record<string, string>>;
+};
+
 declare global {
   interface Window {
     electron: {
@@ -85,6 +93,7 @@ declare global {
         getSourceDirectory: () => string;
         openInBrowser: (url: string) => void;
         get appVersion(): string;
+        get themes(): Record<string, ThemeType>;
       };
       reader: {
         getMangaSettings: (

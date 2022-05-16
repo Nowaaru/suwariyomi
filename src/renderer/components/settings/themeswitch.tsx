@@ -11,7 +11,17 @@ import ModeDayIcon from '@mui/icons-material/LightMode';
 import { settingsStylesObject } from '../../util/func';
 import type { Schema } from '../../util/auxiliary';
 import Switch from '../switch';
+import Theme from '../../../main/util/theme';
 
+const { theme, themeStyleDark, themeStyleLight } =
+  window.electron.settings.getAll().appearance;
+
+const currentTheme = new Theme(
+  theme === 'dark' ? themeStyleDark : themeStyleLight,
+  theme as 'dark' | 'light'
+);
+
+const componentStyle = currentTheme.getComponentStyle('themeswitch');
 const styles = StyleSheet.create({
   switchContainer: {
     display: 'flex',
@@ -30,9 +40,10 @@ const styles = StyleSheet.create({
     marginRight: '-4px',
   },
   iconOff: {
-    color: '#FFFFFF00',
+    color: 'transparent',
   },
   ...settingsStylesObject,
+  ...componentStyle,
 } as any) as any;
 
 const ThemeSwitch = (
@@ -42,7 +53,7 @@ const ThemeSwitch = (
   }
 ) => {
   const { onChange = noop, schema, setting } = switchProps;
-  const checked = setting === 'dark';
+  const checked = setting === 'light';
 
   return (
     <Box className={css(styles.optionContainer)}>
@@ -61,7 +72,7 @@ const ThemeSwitch = (
       />
       <Switch
         checked={checked}
-        onChange={() => onChange(checked ? 'light' : 'dark')}
+        onChange={() => onChange(checked ? 'dark' : 'light')}
         tooltipOff="Dark Mode"
         tooltipOn="Light Mode"
       />

@@ -171,7 +171,7 @@ const stylesObject = {
 
   dialogText: {
     backgroundColor: 'transparent',
-    color: themeColors.white,
+    color: themeColors.textLight,
   },
 
   dialogActions: {
@@ -189,7 +189,7 @@ const stylesObject = {
   },
 
   dialogTitle: {
-    color: themeColors.white,
+    color: themeColors.textLight,
     backgroundColor: 'transparent',
   },
 
@@ -248,7 +248,7 @@ const stylesObject = {
 
   toolbarIcon: {
     position: 'absolute',
-    color: themeColors.white,
+    color: themeColors.textLight,
     margin: '0px 4px',
     width: '100%',
     height: '100%',
@@ -276,7 +276,7 @@ const stylesObject = {
       right: '0px',
       height: '100%',
       pointerEvents: 'none',
-      backgroundColor: themeColors.white,
+      backgroundColor: themeColors.textLight,
       width: '1px',
       boxSize: 'border-box',
     },
@@ -355,7 +355,7 @@ const stylesObject = {
     overflowY: 'auto',
     zIndex: 1024,
     '::-webkit-scrollbar': {
-      width: '4px',
+      width: '8px',
     },
     '::-webkit-scrollbar-thumb': {
       background: themeColors.white,
@@ -400,7 +400,7 @@ const stylesObject = {
   },
 
   loading: {
-    color: themeColors.white,
+    color: themeColors.textLight,
   },
 
   // Webtoon / Long-strip view
@@ -472,7 +472,7 @@ const stylesObject = {
   button: {
     zIndex: 1026,
     display: 'flex',
-    color: themeColors.white,
+    color: themeColors.textLight,
     position: 'absolute',
     backgroundColor: 'transparent',
     border: 'none',
@@ -518,7 +518,7 @@ const stylesObject = {
   rightButtonIcon: {},
 
   buttonIcon: {
-    color: themeColors.white,
+    color: themeColors.textLight,
   },
 
   arrow: {
@@ -549,7 +549,7 @@ const stylesObject = {
 
   intermediary: {
     display: 'flex',
-    color: themeColors.white,
+    color: themeColors.textLight,
   },
 
   intermediaryInner: {
@@ -601,7 +601,7 @@ const stylesObject = {
   },
 
   loadingModal: {
-    color: themeColors.white,
+    color: themeColors.textLight,
   },
 
   chapterHeader: {
@@ -637,7 +637,7 @@ const stylesObject = {
 
   topbarTitle: {
     fontFamily: '"Poppins", sans-serif',
-    color: themeColors.white,
+    color: themeColors.textLight,
 
     fontSize: '1.2em',
     verticalAlign: 'middle',

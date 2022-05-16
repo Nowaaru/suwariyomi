@@ -20,7 +20,7 @@ const currentTheme = new Theme(
 const themeColors = currentTheme.getColors();
 const pageStyle = currentTheme.getPageStyle('sources');
 
-const light33 = `${themeColors.white.substring(0, 7)}33`;
+const light33 = `${themeColors.textLight.substring(0, 7)}33`;
 const styles = StyleSheet.create({
   container: { marginLeft: '75px', height: '90%' },
   installedcontainer: {
@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
     marginLeft: '25px',
     boxSizing: 'border-box',
     borderRadius: '4px',
-    color: themeColors.white,
+    color: themeColors.textLight,
     fontFamily: 'monospace',
     verticalAlign: 'middle',
     alignContent: 'center',

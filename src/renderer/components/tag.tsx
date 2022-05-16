@@ -26,8 +26,8 @@ const styles = StyleSheet.create({
     marginRight: '10px',
     marginBottom: '5px',
     borderRadius: '5px',
-    backgroundColor: '#272727',
-    color: themeColors.white,
+    backgroundColor: themeColors.tag ?? '#272727',
+    color: themeColors.textLight,
     fontFamily: '"Poppins", "Roboto", "Helvetica", "Arial", sans-serif',
   },
 });

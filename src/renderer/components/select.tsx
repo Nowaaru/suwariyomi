@@ -20,7 +20,7 @@ const componentStyle = currentTheme.getComponentStyle('select');
 
 const stylesObject = {
   selected: {
-    color: 'white',
+    color: themeColors.textLight,
   },
 
   legend: {
@@ -34,11 +34,11 @@ const stylesObject = {
     position: 'relative',
     top: '-5px',
     visibility: 'visible',
-    color: themeColors.white,
+    color: themeColors.textLight,
   },
 
   icon: {
-    color: themeColors.white,
+    color: themeColors.textLight,
   },
 
   iconSelected: {

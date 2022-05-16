@@ -47,6 +47,7 @@ import { omit, mapValues } from 'lodash';
 import Handler from '../../main/sources/handler';
 import SourceBase from '../../main/sources/static/base';
 import LoginItem from '../components/loginitem';
+import ThemeButton from '../components/settings/themebutton';
 import Theme from '../../main/util/theme';
 
 import type { DefaultSettings } from '../../main/util/settings';
@@ -131,7 +132,7 @@ const stylesObject = {
   },
 
   tab: {
-    color: themeColors.white,
+    color: themeColors.textLight,
     marginRight: '12px',
     padding: '6px',
     boxSizing: 'border-box',
@@ -155,7 +156,7 @@ const stylesObject = {
     overflowY: 'auto',
     paddingBottom: '64px',
     '::-webkit-scrollbar': {
-      width: '4px',
+      width: '8px',
     },
     '::-webkit-scrollbar-thumb': {
       background: themeColors.white,
@@ -168,7 +169,7 @@ const stylesObject = {
   backButton: {
     position: 'absolute',
     marginLeft: '12px',
-    color: themeColors.white,
+    color: themeColors.textLight,
     zIndex: 1600,
     top: '12px',
     left: 0,
@@ -176,7 +177,7 @@ const stylesObject = {
 
   selectComponentSelected: {
     color: themeColors.accent,
-    // backgroundColor: themeColors.white,
+    // backgroundColor: themeColors.textLight,
   },
 
   settingsButton: {
@@ -187,7 +188,7 @@ const stylesObject = {
     height: '42px',
     ':hover': {
       backgroundColor: themeColors.accent,
-      color: themeColors.white,
+      color: themeColors.textLight,
       fontWeight: 'bold',
     },
   },
@@ -215,6 +216,12 @@ const stylesObject = {
     bottom: '12px',
     color: '#FFFFFF33',
     zIndex: 4000,
+  },
+
+  themeSelector: {
+    marginTop: '8px',
+    display: 'flex',
+    flexDirection: 'row',
   },
 
   ...pageStyle,
@@ -286,7 +293,7 @@ const ImportSettingsModal = ({
       <DialogTitle
         sx={{
           backgroundColor: themeColors.background,
-          color: themeColors.white,
+          color: themeColors.textLight,
         }}
       >
         Import Settings
@@ -301,7 +308,7 @@ const ImportSettingsModal = ({
             <ListItem key={key}>
               <ListItemText
                 sx={{
-                  color: themeColors.white,
+                  color: themeColors.textLight,
                 }}
                 primary={itemDisplays[key as keyof ImportSettings]}
               />
@@ -311,7 +318,7 @@ const ImportSettingsModal = ({
                     <Checkbox
                       checked={value}
                       sx={{
-                        color: themeColors.white,
+                        color: themeColors.textLight,
                         '&.Mui-checked svg': {
                           color: themeColors.accent,
                         },
@@ -328,7 +335,7 @@ const ImportSettingsModal = ({
                           )}09`,
                         },
                         '&:not(.Mui-checked) .MuiTouchRipple-root': {
-                          color: themeColors.white,
+                          color: themeColors.textLight,
                         },
                         '&.Mui-checked .MuiTouchRipple-root': {
                           color: themeColors.accent,
@@ -769,6 +776,57 @@ const Settings = () => {
                     >
                       {settingsResetText[timesClicked]}
                     </Button>
+                  </Box>
+                ),
+                appearance: (
+                  <Box className={css(styles.optionContainer)}>
+                    <Typography className={css(styles.optionLabel)}>
+                      {settings.appearance.theme === 'light'
+                        ? 'Theme Style - Light'
+                        : 'Theme Style - Dark'}
+
+                      <Typography
+                        className={css(styles.optionLabelDescription)}
+                      >
+                        Change your theme here.
+                      </Typography>
+                    </Typography>
+                    <div className={css(styles.themeSelector)}>
+                      {[
+                        (() => {
+                          const appearance = settings.appearance.theme as
+                            | 'light'
+                            | 'dark';
+
+                          console.log(appearance);
+                          const themeData = new Theme('default', appearance);
+
+                          const colorSet = themeData.getColors();
+
+                          return {
+                            metadata: themeData.metadata,
+                            colors: {
+                              [appearance]: colorSet,
+                            },
+                          };
+                        })(),
+                        ...Object.values(window.electron.util.themes),
+                      ]
+                        .filter(
+                          (x) =>
+                            x.colors[
+                              settings.appearance.theme as 'light' | 'dark'
+                            ]
+                        )
+                        .map((themeIteration) => (
+                          <ThemeButton
+                            theme={themeIteration.metadata as any}
+                            variant={
+                              settings.appearance.theme as 'light' | 'dark'
+                            }
+                          />
+                        ))}
+                    </div>
                   </Box>
                 ),
                 backup: (

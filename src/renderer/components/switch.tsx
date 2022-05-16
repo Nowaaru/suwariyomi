@@ -26,17 +26,17 @@ const stylesObject = {
 
   switchTrackOff: {
     opacity: 0.6,
-    backgroundColor: themeColors.white,
+    backgroundColor: themeColors.textLight,
   },
 
   switchBase: {
-    color: themeColors.white,
+    color: themeColors.textLight,
   },
 
   switchThumb: {},
 
   switchThumbOn: {
-    color: themeColors.white,
+    color: themeColors.textLight,
     backgroundColor: themeColors.accent,
   },
 

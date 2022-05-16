@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
   appBar: {
     position: 'relative',
     backgroundColor: themeColors.backgroundDark,
-    color: themeColors.white,
+    color: themeColors.textLight,
     width: '128px',
     height: 'fit-content',
     borderRadius: '5%',
@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
     color: themeColors.accent,
     transition: 'color 0.2s ease-in-out, transform 0.2s ease-in-out',
     ':hover': {
-      color: themeColors.white,
+      color: themeColors.textLight,
     },
   },
 

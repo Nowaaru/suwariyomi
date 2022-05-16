@@ -149,6 +149,75 @@ ipcMain.on('download-source', (event, sourceName: string) => {
     .catch(onError);
 });
 
+const themesLocation = path.join(app.getPath('userData'), 'themes');
+if (!fs.existsSync(themesLocation))
+  fs.mkdirSync(themesLocation, { recursive: true });
+
+const generateThemesObject = () => {
+  const themes = fs.readdirSync(themesLocation);
+  const endObject: Record<string, Record<string, any>> = {};
+
+  themes
+    .map((theme) => {
+      const metadataLocation = path.join(
+        themesLocation,
+        theme,
+        'metadata.json'
+      );
+
+      if (!fs.existsSync(metadataLocation)) return null;
+
+      const darkColors = path.join(
+        themesLocation,
+        theme,
+        'dark',
+        'colors.json'
+      );
+      const lightColors = path.join(
+        themesLocation,
+        theme,
+        'light',
+        'colors.json'
+      );
+
+      if (!fs.existsSync(darkColors) && !fs.existsSync(lightColors))
+        return null;
+
+      return {
+        location: path.join(themesLocation, theme),
+        metadata: getMainRequire()(metadataLocation),
+        colors: {
+          dark: fs.existsSync(darkColors) ? getMainRequire()(darkColors) : null,
+          light: fs.existsSync(lightColors)
+            ? getMainRequire()(lightColors)
+            : null,
+        },
+      };
+    })
+    .forEach((theme) => {
+      if (!theme) return;
+      endObject[theme.metadata.name.toLowerCase()] = theme;
+    });
+
+  return endObject;
+};
+
+Object.values(generateThemesObject()).forEach((theme, _, arr) => {
+  // If there's duplicates, throw an error.
+  if (theme.metadata.name.toLowerCase() === 'default')
+    throw new Error(
+      'A theme cannot be named "default" - that is reserved for the default theme.'
+    );
+  if (arr.filter((x) => x.metadata.name === theme.metadata.name).length > 1)
+    throw new Error(
+      `Duplicate theme name: ${theme.metadata.name} in ${theme.location}.`
+    );
+});
+
+ipcMain.on('get-themes', (event) => {
+  return (event.returnValue = generateThemesObject());
+});
+
 ipcMain.on('remove-source', (event, sourceData: SourceMetadata) => {
   if (!fs.existsSync(sourceData.path ?? ''))
     return log.error(

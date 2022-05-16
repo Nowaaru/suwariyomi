@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
     height: '100%',
     overflowY: 'scroll',
     '::-webkit-scrollbar': {
-      width: '4px',
+      width: '8px',
     },
     '::-webkit-scrollbar-thumb': {
       background: themeColors.white,
@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
   },
 
   noResultsSpan: {
-    color: themeColors.white,
+    color: themeColors.textLight,
     fontSize: '1.5em',
     fontWeight: 'bold',
     margin: '0px',
@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
     fontSize: '2rem',
     height: '25px',
     textDecoration: 'none',
-    color: themeColors.white,
+    color: themeColors.textLight,
     transition: 'all 0.2s ease-in-out',
     ':hover': {
       color: themeColors.accent,
@@ -156,10 +156,10 @@ const styles = StyleSheet.create({
     overflowX: 'auto',
     overflowY: 'hidden',
     '::-webkit-scrollbar': {
-      height: '4px',
+      height: '8px',
     },
     '::-webkit-scrollbar-thumb': {
-      backgroundColor: themeColors.white,
+      backgroundColor: themeColors.textLight,
       borderRadius: '4px',
       transition: 'background-color 0.2s ease-in-out',
       ':hover': {
@@ -192,8 +192,8 @@ const styles = StyleSheet.create({
   },
 
   searchButton: {
-    color: themeColors.white,
-    borderColor: themeColors.white,
+    color: themeColors.textLight,
+    bordercolor: themeColors.textLight,
     padding: '0px 6px 0px 6px !important',
     position: 'relative',
     zIndex: 256,
@@ -241,10 +241,10 @@ const styles = StyleSheet.create({
     boxSizing: 'border-box',
     padding: '10px 28px',
     '::-webkit-scrollbar': {
-      width: '4px',
+      width: '8px',
     },
     '::-webkit-scrollbar-thumb': {
-      backgroundColor: themeColors.white,
+      backgroundColor: themeColors.textLight,
       borderRadius: '4px',
       transition: 'background-color 0.2s ease-in-out',
       ':hover': {
@@ -259,7 +259,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
   },
   modalHeader: {
-    color: themeColors.white,
+    color: themeColors.textLight,
     fontWeight: 'bold',
     fontFamily: '"Poppins", "Roboto", "Helvetica", "Arial", sans-serif',
   },
@@ -271,7 +271,7 @@ const styles = StyleSheet.create({
     height: '32px',
   },
   modalCloseIcon: {
-    color: themeColors.white,
+    color: themeColors.textLight,
     ':hover': {
       color: themeColors.accent,
     },
@@ -586,7 +586,7 @@ const SearchPage = () => {
               expandIcon={
                 <ExpandMoreIcon
                   sx={{
-                    color: themeColors.white,
+                    color: themeColors.textLight,
                   }}
                 />
               }
@@ -607,7 +607,7 @@ const SearchPage = () => {
                 sx={{
                   width: '66%',
                   flexShrink: 2,
-                  color: themeColors.white,
+                  color: themeColors.textLight,
                 }}
                 className={css(styles.accordionText)}
               >

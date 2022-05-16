@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     margin: '0px 6px 3px 6px',
     fontFamily: '"PT Sans Narrow", "Roboto", "Helvetica", "Arial", sans-serif',
-    color: themeColors.white,
+    color: themeColors.textLight,
     fontSize: '1rem',
   },
 
@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
     margin: '0',
     marginTop: '20px',
     marginBottom: '10px',
-    color: themeColors.white,
+    color: themeColors.textLight,
     fontFamily: '"PT Sans Narrow", "Roboto", "Helvetica", "Arial", sans-serif',
   },
   mangaItemSynopsisContainer: {
@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
   mangaItemSynopsis: {
     fontSize: '1em',
     display: 'inline-flex',
-    color: themeColors.white,
+    color: themeColors.textLight,
     fontFamily: '"Poppins", "Roboto", "Helvetica", "Arial", sans-serif',
     width: '80%',
     height: '85%',
@@ -251,7 +251,7 @@ const styles = StyleSheet.create({
     border: 'none',
     outline: 'none',
     textDecoration: 'none',
-    textDecorationColor: themeColors.white,
+    textDecorationcolor: themeColors.textLight,
   },
 
   mangaItemButtonWrapper: {
@@ -287,7 +287,7 @@ const styles = StyleSheet.create({
     height: 'fit-content',
     display: 'inline-block',
     backgroundColor: themeColors.accent,
-    color: themeColors.white,
+    color: themeColors.textLight,
     boxSizing: 'border-box',
     borderRadius: '15%',
     position: 'absolute',

@@ -29,7 +29,7 @@ const searchStyles = StyleSheet.create({
     zIndex: 260,
   },
   searchbarContainerInner: {
-    backgroundColor: themeColors.white,
+    backgroundColor: themeColors.textLight,
     borderRadius: '80%',
     padding: '8px',
     width: '52px',

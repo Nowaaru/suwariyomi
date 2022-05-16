@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
   },
 
   paginationinputdeep: {
-    color: themeColors.white,
+    color: themeColors.textLight,
   },
 
   paginationbutton: {
@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
     borderWidth: '0px',
     ':hover': {
-      borderColor: themeColors.white,
+      bordercolor: themeColors.textLight,
       borderWidth: '6px',
     },
   },
@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#050401',
     fontFamily: '"Poppins", "Roboto", "Helvetica", "Arial", sans-serif',
     fontSize: '12px',
-    color: themeColors.white,
+    color: themeColors.textLight,
     fontVariant: 'small-caps',
     textTransform: 'uppercase',
     letterSpacing: '0.5px',

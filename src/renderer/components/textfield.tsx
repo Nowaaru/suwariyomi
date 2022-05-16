@@ -32,7 +32,7 @@ const TextField = (props: MaterialTextFieldProps) => {
         ...props,
         sx: {
           [textFieldInput]: {
-            color: themeColors.white,
+            color: themeColors.textLight,
             textAlign: 'center',
           },
           [textFieldSetFocused]: {
@@ -42,7 +42,7 @@ const TextField = (props: MaterialTextFieldProps) => {
             color: themeColors.accent,
           },
           [textFieldLabel]: {
-            color: themeColors.white,
+            color: themeColors.textLight,
           },
           ...(sx ?? {}),
           ...componentStyle,

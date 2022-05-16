@@ -38,13 +38,13 @@ const stylesObject = {
 
   modalDialogTitle: {
     backgroundColor: themeColors.background,
-    color: themeColors.white,
+    color: themeColors.textLight,
   },
 
   modalDialogContent: {
     backgroundColor: themeColors.background,
     '::-webkit-scrollbar': {
-      width: '4px',
+      width: '8px',
     },
     '::-webkit-scrollbar-thumb': {
       background: themeColors.white,

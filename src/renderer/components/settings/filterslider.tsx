@@ -3,7 +3,7 @@ import { Slider, SliderProps, Box, Typography } from '@mui/material';
 import { noop, clamp } from 'lodash';
 
 import type { DefaultSettings } from '../../../main/util/settings';
-import { settingsStylesObject } from '../../util/func';
+import { settingsStylesObject, hexToRgb } from '../../util/func';
 import type { Schema } from '../../util/auxiliary';
 import Theme from '../../../main/util/theme';
 
@@ -31,17 +31,6 @@ const stylesObject = {
   },
   ...settingsStylesObject,
   ...componentStyle,
-};
-
-const hexToRgb = (hex: string) => {
-  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  return result
-    ? {
-        r: parseInt(result[1], 16),
-        g: parseInt(result[2], 16),
-        b: parseInt(result[3], 16),
-      }
-    : null;
 };
 
 export const generateSliderStyles = (

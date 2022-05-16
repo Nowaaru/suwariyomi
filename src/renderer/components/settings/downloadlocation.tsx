@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
     height: '42px',
     ':hover': {
       backgroundColor: themeColors.accent,
-      color: themeColors.white,
+      color: themeColors.textLight,
       fontWeight: 'bold',
     },
   },

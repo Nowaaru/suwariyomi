@@ -5,9 +5,21 @@ import dayjs from 'dayjs';
 
 import Select from '../components/select';
 import Switch from '../components/switch';
+import Theme from '../../main/util/theme';
 
 import type { Schema } from './auxiliary';
 import { Chapter } from '../../main/util/manga';
+
+const { theme, themeStyleDark, themeStyleLight } =
+  window.electron.settings.getAll().appearance;
+
+const currentTheme = new Theme(
+  theme === 'dark' ? themeStyleDark : themeStyleLight,
+  theme as 'dark' | 'light'
+);
+
+const themeColors = currentTheme.getColors();
+const pageStyle = currentTheme.getPageStyle('func');
 
 export const settingsStylesObject = {
   optionLabel: {
@@ -15,7 +27,7 @@ export const settingsStylesObject = {
     fontSize: '1.25rem',
     fontWeight: 'normal',
     lineHeight: '1.5',
-    color: '#FFFFFF',
+    color: themeColors.textLight,
     verticalAlign: 'middle',
     minWidth: '80%',
     maxWidth: '80%',
@@ -46,10 +58,22 @@ export const settingsStylesObject = {
     height: 'fit-content',
     overflowY: 'auto',
   },
+  ...pageStyle,
+};
+
+export const hexToRgb = (hex: string) => {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result
+    ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16),
+      }
+    : null;
 };
 
 // @ts-ignore Aphrodite sucks, part eight undecillion.
-const styles = StyleSheet.create(settingsStylesObject);
+const styles = StyleSheet.create(settingsStylesObject) as any;
 
 export const sortChapters = (chapters: Chapter[], isDescending = true) =>
   chapters.sort((a, b) => {

@@ -9,5 +9,11 @@
   "backgroundTransparent": "#77777720",
 
   "white": "#ffffff",
-  "black": "#000000"
+  "black": "#000000",
+
+  "textLight": "#ffffff",
+  "textDark": "#000000",
+
+  "tag": "#272727",
+  "tagText": "#FFFFFF"
 }

@@ -42,7 +42,7 @@ const stylesObject = {
 
     backgroundColor: themeColors.background,
     '::-webkit-scrollbar': {
-      width: '4px',
+      width: '8px',
     },
     '::-webkit-scrollbar-thumb': {
       background: themeColors.white,
@@ -53,14 +53,14 @@ const stylesObject = {
   },
   settingsModalDialogTitle: {
     backgroundColor: themeColors.background,
-    color: themeColors.white,
+    color: themeColors.textLight,
   },
   settingsModalDialogTabContainer: {
     marginBottom: '16px',
   },
   settingsModalDialogContentSettingsContainer: {},
   settingsModalDialogTab: {
-    color: themeColors.white,
+    color: themeColors.textLight,
     borderRadius: '4px 4px 0px 0px',
   },
   settingsModalDialogTabBar: {
@@ -77,7 +77,7 @@ const stylesObject = {
   },
   settingsFilterLabel: {
     display: 'flex',
-    color: themeColors.white,
+    color: themeColors.textLight,
     marginRight: '8px',
   },
   ...componentStyle,

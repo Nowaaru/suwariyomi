@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
     margin: '0',
     marginTop: '0',
     marginBottom: '0',
-    color: themeColors.white,
+    color: themeColors.textLight,
   },
 
   textData: {
@@ -213,6 +213,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Open Sans, sans-serif',
     marginBottom: '8px',
     textAlign: 'left',
+    textShadow: `0 0 10px ${themeColors.black}`,
   },
 
   mangaTags: {
@@ -230,7 +231,7 @@ const styles = StyleSheet.create({
     backgroundColor: themeColors.background,
     padding: '8px',
     borderRadius: '8px',
-    color: themeColors.white,
+    color: themeColors.textLight,
     position: 'relative',
     boxShadow: `0px 0px 10px ${themeColors.black}`,
     boxSizing: 'border-box',
@@ -310,7 +311,7 @@ const styles = StyleSheet.create({
     textShadow: 'none',
     marginBottom: '8px',
     textAlign: 'center',
-    color: themeColors.white,
+    color: themeColors.textLight,
   },
 
   chapters: {
@@ -324,10 +325,10 @@ const styles = StyleSheet.create({
 
   scrollBar: {
     '::-webkit-scrollbar': {
-      width: '4px',
+      width: '8px',
     },
     '::-webkit-scrollbar-thumb': {
-      backgroundColor: themeColors.white,
+      backgroundColor: themeColors.textLight,
       borderRadius: '4px',
       transition: 'background-color 0.2s ease-in-out',
       ':hover': {
@@ -345,14 +346,14 @@ const styles = StyleSheet.create({
     padding: '8px',
     fontWeight: 'bold',
     backgroundColor: themeColors.accent,
-    color: themeColors.white,
+    color: themeColors.textLight,
     boxSizing: 'border-box',
     borderRadius: '24px',
     width: '100%',
     height: '32px',
     ':hover': {
-      color: themeColors.accent,
-      backgroundColor: themeColors.white,
+      color: themeColors.backgroundDark,
+      backgroundColor: themeColors.accent,
     },
   },
 
@@ -361,7 +362,7 @@ const styles = StyleSheet.create({
     marginTop: '8px',
     fontSize: '1.5em',
     fontFamily: 'Poppins, Open Sans,sans-serif',
-    color: themeColors.white,
+    color: themeColors.textLight,
   },
 
   mangaProgress: {},
@@ -378,7 +379,7 @@ const styles = StyleSheet.create({
   mangaProgressBarFiller: {
     transition: 'width 0.3s ease-in-out',
     height: '100%',
-    backgroundColor: themeColors.white,
+    backgroundColor: themeColors.textLight,
     borderRadius: '4px',
   },
 
@@ -389,7 +390,7 @@ const styles = StyleSheet.create({
       fontVariant: 'small-caps',
       fontSize: '0.6em',
       fontWeight: 200,
-      color: themeColors.white,
+      color: themeColors.textLight,
       fontFamily: 'Open Sans, sans-serif',
     },
   },
@@ -419,7 +420,7 @@ const styles = StyleSheet.create({
     marginLeft: '6px',
     fontSize: '1.5rem',
     fontFamily: 'Poppins, sans-serif',
-    color: themeColors.white,
+    color: themeColors.textLight,
   },
 
   hours: {
@@ -430,7 +431,7 @@ const styles = StyleSheet.create({
       fontVariant: 'small-caps',
       fontSize: '0.6em',
       fontWeight: 200,
-      color: themeColors.white,
+      color: themeColors.textLight,
       fontFamily: 'Open Sans, sans-serif',
     },
   },
@@ -442,7 +443,7 @@ const styles = StyleSheet.create({
       fontVariant: 'small-caps',
       fontSize: '0.6em',
       fontWeight: 200,
-      color: themeColors.white,
+      color: themeColors.textLight,
       fontFamily: 'Open Sans, sans-serif',
     },
   },
@@ -454,7 +455,7 @@ const styles = StyleSheet.create({
       fontVariant: 'small-caps',
       fontSize: '0.6em',
       fontWeight: 200,
-      color: themeColors.white,
+      color: themeColors.textLight,
       fontFamily: 'Open Sans, sans-serif',
     },
   },
@@ -469,19 +470,19 @@ const styles = StyleSheet.create({
 
   backButton: {
     backgroundColor: themeColors.accent,
-    // darker backgroundcolor
-    borderColor: '#B11B25',
+    // darker backgroundColor
+    borderColor: themeColors.accent,
     borderStyle: 'solid',
     borderWidth: '2px',
     borderRadius: '4px',
     width: '100px',
     height: '100%',
-    color: themeColors.white,
+    color: themeColors.textLight,
 
     transition:
       'color 0.2s ease-in-out, background-color 0.2s ease-in-out, border-color 0.2s ease-in-out',
     ':hover': {
-      backgroundColor: themeColors.white,
+      backgroundColor: themeColors.textLight,
       color: themeColors.accent,
       borderColor: '#D6D6D6',
     },
@@ -514,7 +515,7 @@ const styles = StyleSheet.create({
 
   viewMangaLabel: {
     display: 'flex',
-    color: themeColors.white,
+    color: themeColors.textLight,
     marginLeft: '8px',
     marginBottom: '8px',
   },
@@ -1031,18 +1032,18 @@ const View = () => {
                 sx={
                   isInLibrary
                     ? {
-                        backgroundColor: themeColors.white,
+                        backgroundColor: themeColors.backgroundDark,
                         color: themeColors.accent,
                         '&:hover': {
                           backgroundColor: themeColors.accent,
-                          color: themeColors.white,
+                          color: themeColors.textLight,
                         },
                       }
                     : {
                         backgroundColor: themeColors.accent,
-                        color: themeColors.white,
+                        color: themeColors.textLight,
                         '&:hover': {
-                          backgroundColor: themeColors.white,
+                          backgroundColor: themeColors.textLight,
                           color: themeColors.accent,
                         },
                       }

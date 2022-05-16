@@ -13,6 +13,7 @@ const currentTheme = new Theme(
   theme as 'dark' | 'light'
 );
 
+const colors = currentTheme.getColors();
 const componentStyle = currentTheme.getComponentStyle('topbar');
 
 export const Styling = StyleSheet.create({
@@ -29,9 +30,9 @@ export const Styling = StyleSheet.create({
   },
 
   topbar: {
-    backgroundColor: 'transparent',
+    background: `linear-gradient(to bottom, ${colors.backgroundDark} 60%, transparent 100%)`,
     position: 'fixed',
-    height: '32px',
+    height: '48px',
     width: '100%',
     '-webkit-app-region': 'drag',
     zIndex: Number.MAX_SAFE_INTEGER,

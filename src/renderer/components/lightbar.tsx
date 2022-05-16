@@ -160,7 +160,7 @@ const SidebarItem = ({
       userFocus: 'none',
       userInput: 'none',
       'user-select': 'none',
-      color: themeColors.white,
+      color: themeColors.textLight,
     },
     ...componentStyleLightbarItem,
   }) as any;

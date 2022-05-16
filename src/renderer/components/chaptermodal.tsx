@@ -35,13 +35,13 @@ const stylesObject = {
 
   chapterModalDialogTitle: {
     backgroundColor: themeColors.background,
-    color: themeColors.white,
+    color: themeColors.textLight,
   },
 
   chapterModalDialogContent: {
     backgroundColor: themeColors.background,
     '::-webkit-scrollbar': {
-      width: '4px',
+      width: '8px',
     },
     '::-webkit-scrollbar-thumb': {
       background: themeColors.white,
