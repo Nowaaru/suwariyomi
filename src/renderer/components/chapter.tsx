@@ -339,7 +339,9 @@ const Chapter = ({
               const sourceHandler = Handler.getSource(source);
               if (sourceHandler?.canDownload) {
                 sourceHandler.download(
-                  window.electron.download.getDownloadsPath()
+                  window.electron.download.getDownloadsPath(),
+                  manga.MangaID,
+                  chapter.ChapterID
                 );
               }
             }}
