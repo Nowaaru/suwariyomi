@@ -32,6 +32,7 @@ const styles = StyleSheet.create({
     border: 'none',
     outline: 'none',
     marginBottom: '8px',
+    cursor: 'pointer',
   },
 
   themeButtonDisplay: {
@@ -54,25 +55,30 @@ const styles = StyleSheet.create({
 type ThemeButtonProps = {
   theme: ThemeType['metadata'];
   variant: 'light' | 'dark';
+  selected?: boolean;
+  onClick?: () => void;
 };
 
 const ThemeButton = (props: ThemeButtonProps) => {
-  const { theme, variant } = props;
+  const { theme, variant, onClick, selected } = props;
   const themeItem = new Theme(theme.name.toLowerCase(), variant);
 
   const newThemeColours = themeItem.getColors();
-  const isSelected =
-    theme.name.toLowerCase() === currentTheme.themeName.toLowerCase();
+  console.log(selected);
 
   return (
     <div className={css(styles.themeButtonContainer)}>
-      <button type="button" className={css(styles.themeButton)}>
+      <button
+        onClick={onClick}
+        type="button"
+        className={css(styles.themeButton)}
+      >
         <div
           className={css(styles.themeButtonDisplay)}
           style={{
             backgroundColor: newThemeColours.background,
-            borderWidth: isSelected ? '2px' : '1px',
-            borderColor: isSelected
+            borderWidth: selected ? '2px' : '1px',
+            borderColor: selected
               ? newThemeColours.accent
               : newThemeColours.white,
           }}
@@ -447,6 +453,11 @@ const ThemeButton = (props: ThemeButtonProps) => {
       </div>
     </div>
   );
+};
+
+ThemeButton.defaultProps = {
+  onClick: () => {},
+  selected: false,
 };
 
 export default ThemeButton;

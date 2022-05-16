@@ -16,10 +16,11 @@ class Theme {
     this.isDefault = themeName.toLowerCase() === 'default';
 
     const allThemes = window.electron.util.themes;
-    const theme = allThemes[themeName];
+    const theme = allThemes[themeName.toLowerCase()];
 
-    const variantPath =
-      themeName === 'default' ? 'default' : path.join(theme.location, variant);
+    const variantPath = this.isDefault
+      ? 'default'
+      : path.join(theme.location, variant);
 
     if (
       !existsSync(userData) ||
@@ -109,7 +110,7 @@ class Theme {
       const colorsFile = path.join(this.variantPath, 'colors.json');
 
       if (!existsSync(colorsFile)) {
-        return {};
+        return correspondingDefault;
       }
 
       try {

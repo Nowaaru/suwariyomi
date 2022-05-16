@@ -798,7 +798,6 @@ const Settings = () => {
                             | 'light'
                             | 'dark';
 
-                          console.log(appearance);
                           const themeData = new Theme('default', appearance);
 
                           const colorSet = themeData.getColors();
@@ -821,6 +820,29 @@ const Settings = () => {
                         .map((themeIteration) => (
                           <ThemeButton
                             theme={themeIteration.metadata as any}
+                            onClick={() => {
+                              const newSettings = {
+                                ...settings,
+                                appearance: {
+                                  ...settings.appearance,
+                                  [settings.appearance.theme === 'light'
+                                    ? 'themeStyleLight'
+                                    : 'themeStyleDark']:
+                                    themeIteration.metadata.name,
+                                },
+                              };
+
+                              window.electron.settings.overwrite(newSettings);
+                              setSettings(newSettings);
+                            }}
+                            selected={
+                              settings.appearance[
+                                settings.appearance.theme === 'light'
+                                  ? 'themeStyleLight'
+                                  : 'themeStyleDark'
+                              ].toLowerCase() ===
+                              themeIteration.metadata.name.toLowerCase()
+                            }
                             variant={
                               settings.appearance.theme as 'light' | 'dark'
                             }
