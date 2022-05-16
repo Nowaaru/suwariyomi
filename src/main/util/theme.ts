@@ -86,6 +86,10 @@ class Theme {
         black: string;
       }
     | Record<string, never> => {
+    const correspondingDefault = {
+      dark: defaultThemeDarkColors,
+      light: defaultThemeLightColors,
+    }[this.variant];
     if (!this.isDefault) {
       const colorsFile = path.join(this.variantPath, 'colors.json');
 
@@ -93,12 +97,10 @@ class Theme {
         return {};
       }
 
-      return mainRequire(colorsFile);
+      return { ...correspondingDefault, ...mainRequire(colorsFile) };
     }
 
-    return { dark: defaultThemeDarkColors, light: defaultThemeLightColors }[
-      this.variant
-    ];
+    return correspondingDefault;
   };
 }
 
