@@ -471,16 +471,16 @@ const Library = () => {
       e: Event,
       mangaData: { manga: FullManga; source: string }
     ) => {
-      console.log(`Manga ${mangaData.manga.Name} updated.`);
+      window.electron.log.info(`Manga ${mangaData.manga.Name} updated.`);
     };
     const cycleCompleteFn = () => {
       fetchQueue.current = [];
-      console.log('Update cycle complete.');
+      window.electron.log.info('Update cycle complete.');
       setSourcesFetching([]);
     };
 
     const cycleStartFn = () => {
-      console.log('Update cycle started.');
+      window.electron.log.info('Update cycle started.');
       const updatingSources =
         window.electron.library.cycle.getUpdatingSources();
 

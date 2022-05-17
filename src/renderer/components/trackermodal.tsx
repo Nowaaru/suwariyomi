@@ -144,8 +144,9 @@ const TrackerModal = (
               id={x.mediaId}
               onClick={async () => {
                 if (!searchModalData?.tracker)
-                  return console.log('No tracker field.');
-                if (!x.mediaId) return console.log('No mediaId field.');
+                  return window.electron.log.info('No tracker field.');
+                if (!x.mediaId)
+                  return window.electron.log.info('No mediaId field.');
                 // If there's no userTrackedInfo, that means that the user does not have this on their list.
 
                 const readChapters = window.electron.read.get(
