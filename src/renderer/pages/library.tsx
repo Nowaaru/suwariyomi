@@ -1280,9 +1280,7 @@ const Library = () => {
                   libraryStyleSheet.infoHighlight
                 )}
               >
-                {!readingPrefixTarget
-                  ? 'some manga'
-                  : 'Himawari-san' ?? readingPrefixTarget.Name}
+                {!readingPrefixTarget ? 'some manga' : readingPrefixTarget.Name}
               </span>
               <span className={css(libraryStyleSheet.infoRegular)}>
                 {statusSuffix.match(/^[.!?]$/)
