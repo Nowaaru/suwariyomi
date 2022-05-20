@@ -106,7 +106,6 @@
     "allchaptersread": "All Chapters Read",
     "startreading": "Start Reading",
 
-
     "download_ch_title": "Download Ch. {{ch}} - {{title}}",
     "download_ch": "Download Ch. {{ch}}",
 
@@ -185,6 +184,30 @@
     "trackeritem_desc_culled": "{{desc}}...",
 
     "trackermodal_error_tf": "No tracker field.",
-    "trackermodal_error_mid": "No mediaId field."
+    "trackermodal_error_mid": "No mediaId field.",
+
+    "downloadlocation_tooltip": "Set Download Location",
+    "downloadlocation_label": "Set",
+
+    "colorslider_error": "Cannot parse color constant",
+
+    "themeswitch_darkmode": "Dark Mode",
+    "themeswitch_lightmode": "Light Mode",
+
+    "menu_reader_file": "File",
+    "menu_reader_file_clipboard": "Copy to Clipboard",
+    "menu_reader_file_Save": "Save",
+
+    "menu_reader_pages": "Pages",
+    "menu_reader_pages_nextpage": "Next Page",
+    "menu_reader_pages_prevpage": "Previous Page",
+
+    "menu_reader_chapters": "Chapters",
+    "menu_reader_chapters_nextchap": "Next Chapter",
+    "menu_reader_chapters_prevchap": "Previous Chapter",
+
+    "menu_reader_misc": "Misc",
+    "menu_reader_misc_sharepage": "Share Page",
+    "menu_reader_misc_sharechapter": "Share Chapter"
   }
 }

@@ -22,6 +22,8 @@ import React, {
   SyntheticEvent,
 } from 'react';
 
+import { useTranslation, Trans } from 'react-i18next';
+
 import { Link, useNavigate } from 'react-router-dom';
 import { userInfo } from 'os';
 import { capitalize, clamp, isUndefined } from 'lodash';
@@ -1030,7 +1032,6 @@ const Library = () => {
                 <MenuItem value="Total Chapters">Total Chapters</MenuItem>
                 <MenuItem value="Date Added">Date Added</MenuItem>
                 <MenuItem value="Date Fetched">Date Fetched</MenuItem>
-                <MenuItem value="Title">Category</MenuItem>
               </Select>
             </div>
             <Tooltip title="Search Using This Source">
