@@ -1,0 +1,190 @@
+{
+  "lang": "en",
+  "translation": {
+    "library_flavor_default": "Let's start reading some manga!",
+    "library_flavor_1": "How about reading {{mangaTitle}}",
+    "library_flavor_2": "Let's read {{mangaTitle}}!",
+    "library_flavor_3": "Feel like reading {{mangaTitle}}?",
+    "library_flavor_4": "Want to read {{mangaTitle}}?",
+    "library_flavor_5": "Feeling like reading {{mangaTitle}} today?",
+    "library_flavor_6": "Is it time for the {{mangaTitle}} binge-read marathon?",
+
+    "library_search_error_quotes": "Mismatched quotation marks.",
+    "library_search_placeholder": "Search manga...",
+
+    "library_sort_title": "Title",
+    "library_sort_unread": "Unread",
+    "library_sort_last": "Last Read",
+    "library_sort_latest": "Latest Chapter",
+    "library_sort_total": "Total Chapters",
+    "library_sort_added": "Date Added",
+    "library_sort_fetched": "Date Fetched",
+    "library_sort_category": "Category",
+
+    "library_manga_count": "{{count}} Manga",
+
+    "library_order_asc": "Ascending",
+    "library_order_desc": "Descending",
+
+    "library_welcome_back_name": "Welcome back, {{userName}}.",
+    "library_welcome_back_anon": "Welcome back.",
+
+    "library_sources_none_header": "You have no sources.",
+    "library_sources_none_subheader": "Let's get some more.",
+
+    "library_global_more_header": "Can't find what you're looking for?",
+    "library_global_more_subheader": "How about we search globally?",
+
+    "library_source_tooltip_search": "Search using this source",
+    "library_tooltip": "Library",
+    "chapters_tooltip": "Chapters",
+    "settings_tooltip": "Settings",
+    "sources_tooltip": "Sources",
+    "unread_tooltip": "Unread",
+
+    "reader_open_in_browser_tooltip": "Open in browser",
+    "reader_return_tooltip": "Return to Manga Page",
+
+    "reader_error": "Error",
+
+    "reader_error_source": "You do not have any sources that go by the name of {{name}}.",
+    "reader_error_exist": "The page you specified ({{page}}) does not exist.",
+    "reader_error_page": "Page number is not a valid number. ({{page}})",
+
+    "reader_page_tooltip1": "Single Page",
+    "reader_page_tooltip2": "Double Page",
+
+    "reader_crop_tooltip1": "Crop",
+    "reader_crop_tooltip2": "Uncropped",
+
+    "volumechapter": "Volume {{volume}} Chapter {{chapter}}",
+    "chapter": "Chapter {{chapter}}",
+    "volume": "Volume {{volume}}",
+
+    "count_chapter": "{{chapter}} Chapter",
+    "count_chapter_plural": "{{chapter}} Chapters",
+    "count_volume": "{{volume}} Volume",
+    "count_volume_plural": "{{volume}} Volumes",
+    "comma": ", ",
+
+    "volchap": "VOL. {{volume}} CH. {{chapter}}",
+    "vol": "VOL. {{volume}}",
+    "chap": "CH. {{chapter}}",
+
+    "page": "Page {{page}} / {{total}}",
+    "unread": "Unread",
+    "reread": "Re-read",
+    "read": "Read",
+    "continue": "Continue",
+    "start": "Start",
+    "bookmark": "Bookmark",
+    "mark_unread": "Mark as Unread",
+    "mark_read": "Mark as Read",
+    "retry": "Retry",
+    "back": "Back",
+    "search": "Search",
+    "webtoon": "Webtoon",
+    "paged": "Paged",
+    "general": "General",
+    "filter": "Filter",
+    "notitle": "No Title",
+    "clear": "Clear",
+    "close": "Close",
+
+    "reading": "Reading",
+    "completed": "Completed",
+    "paused": "Paused",
+    "dropped": "Dropped",
+    "planning": "Planning",
+    "rereading": "Rereading",
+
+    "progress": "Chapter Progress",
+    "score": "Score",
+    "startedat": "Started At",
+    "completedat": "Completed At",
+
+    "allchaptersread": "All Chapters Read",
+    "startreading": "Start Reading",
+
+
+    "download_ch_title": "Download Ch. {{ch}} - {{title}}",
+    "download_ch": "Download Ch. {{ch}}",
+
+    "reader_noprev": "There is no previous chapter.",
+    "reader_nonext": "There is no next chapter.",
+
+    "reader_fin": "Finished: {{chapter}}",
+    "reader_next": "Next: {{chapter}}",
+    "reader_cur": "Current: {{chapter}}",
+
+    "reader_return": "Go Home",
+
+    "reader_missing_chapter": "There is {{count}} chapter missing. You might be spoiled if you continue.",
+    "reader_missing_chapter_plural": "There are {{count}} chapters missing. You might be spoiled if you continue.",
+    "reader_missing_return": "Return to Manga Page",
+
+    "sources_unsupported": "This source is unsupported. Things may break, and you will not be able to reinstall this source if it is uninstalled.",
+    "sources_nsfw": "The content this source can show may be inappropriate to minors.",
+
+    "sources_tag_nsfw": "NSFW",
+    "sources_tag_obsolete": "OBSOLETE",
+
+    "sources_update": "Update",
+    "sources_install": "Install",
+    "sources_uninstall": "Uninstall",
+
+    "sources_none": "You've no sources.",
+    "sources_lang_unknown": "Unknown ({{lang}})",
+
+    "sources_tab_all": "All",
+    "sources_tab_installed": "Favorites",
+
+    "search_no_sources_desc": "You have no sources enabled, or some of your settings prevent sources from being displayed. Please check your settings.",
+    "search_no_sources_title": "No sources found.",
+    "search_return": "Go to Library",
+
+    "search_filter_title": "Filters",
+
+    "search_searchbar_title": "Search globally",
+
+    "rpc_library_details": "Library",
+    "rpc_library_state_1": "Overlooking {{mangas}} manga",
+    "rpc_library_state_2": "Looking for manga",
+
+    "rpc_reader_details": "Reading {{chapterTitle}}",
+    "rpc_reader_state": "Chapter {{current}} of {{total}}",
+    "rpc_reader_largeimg_details": "Page {{pg}} of {{pgs}}",
+
+    "rpc_view_details": "Viewing {{mangaTitle}}",
+    "rpc_view_largeimg_details": "Progress: {{ch}} of {{chs}}",
+
+    "rpc_settings_details": "Settings",
+    "rpc_settings_state": "Personalizing the application",
+
+    "mangaitem_no_synopsis": "No synopsis available.",
+    "mangaitem_chapter_unread": "Chapter {{chapter}} - Unread",
+    "mangaitem_chapter_page": "Chapter {{chapter}} - Page {{page}} of {{pages}}",
+    "mangaitem_continue": "Continue Reading",
+    "mangaitem_start": "Start Reading",
+
+    "select_error": "Value {{value}} not found in values.",
+
+    "chaptermodal_error": "An error occured while loading chapters.",
+    "chaptermodal_title": "Chapters",
+
+    "filtersettings_error_options": "No options available for field {{field}}.",
+    "filtersettings_error_type": "Unsupported field type {{fieldtype}} for field {{field}}.",
+
+    "shortpagination_error_gt": "maxpages must be greater than 1",
+    "shortpagination_error_zero": "maxpages must be greater than 0",
+    "shortpagination_error_inclusivity": "pages must be less than maxpages",
+    "shortpaginaton_min": "MIN 1",
+    "shortpaginaton_max": "MAX {{pg}}",
+
+    "trackeritem_nodesc": "No description provided.",
+    "trackeritem_desc_culled": "{{desc}}...",
+
+    "trackermodal_error_tf": "No tracker field.",
+    "trackermodal_error_mid": "No mediaId field."
+  }
+}
