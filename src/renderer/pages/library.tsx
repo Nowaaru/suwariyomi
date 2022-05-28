@@ -440,7 +440,9 @@ const Library = () => {
   const [searchQuery, setSearchQuery] = useState(
     pageQueryParams.get('search') || ''
   );
-  const [sourcesFetching, setSourcesFetching] = useState<string[]>([]);
+  const [sourcesFetching, setSourcesFetching] = useState<string[]>(
+    window.electron.library.cycle.getUpdatingSources()
+  );
   const parsedSearch = parseQuery(searchQuery);
   const currentSearchParams = new URLSearchParams();
   currentSearchParams.set('search', searchQuery);
