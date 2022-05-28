@@ -7,7 +7,7 @@ import { ReadDatabaseValue } from '../main/util/read';
 import type { DefaultSettings } from '../main/util/settings';
 import App from './App';
 
-import '../shared/inter';
+import '../shared/intl';
 
 type SetSignature = (
   sourceName: string,

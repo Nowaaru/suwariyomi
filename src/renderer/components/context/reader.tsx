@@ -19,7 +19,9 @@ import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import SendIcon from '@mui/icons-material/Send';
+
 import Theme from '../../../main/util/theme';
+import { useTranslation } from '../../../shared/intl';
 
 const { theme, themeStyleDark, themeStyleLight } =
   window.electron.settings.getAll().appearance;
@@ -91,6 +93,8 @@ const ReaderMenu = (
     'className'
   >
 ) => {
+  const { t } = useTranslation();
+
   const onItemClick = props.onItemClick!; // Will be present due to defaultProps.
   const dataSet: Record<
     string,
@@ -100,48 +104,48 @@ const ReaderMenu = (
       {
         op: 'clipboard',
         icon: <ContentCopyIcon />,
-        text: 'Copy to Clipboard',
+        text: t('menu_reader_file_clipboard'),
       },
       {
         op: 'save',
         icon: <FileDownloadIcon />,
-        text: 'Save to Disk',
+        text: t('menu_reader_file_save'),
       },
     ],
     Pages: [
       {
         op: 'nextpage',
         icon: <NavigateNextIcon />,
-        text: 'Next Page',
+        text: t('menu_reader_pages_nextpage'),
       },
       {
         op: 'prevpage',
         icon: <NavigateBeforeIcon />,
-        text: 'Previous Page',
+        text: t('menu_reader_pages_prevpage'),
       },
     ],
     Chapters: [
       {
         op: 'nextchap',
         icon: <SkipNextIcon />,
-        text: 'Next Chapter',
+        text: t('menu_reader_chapters_nextchap'),
       },
       {
         op: 'prevchap',
         icon: <SkipPreviousIcon />,
-        text: 'Previous Chapter',
+        text: t('menu_reader_chapters_prevchap'),
       },
     ],
     Misc: [
       {
         op: 'sharepage',
         icon: <ShareIcon />,
-        text: 'Share Page',
+        text: t('menu_reader_misc_sharepage'),
       },
       {
         op: 'sharechapter',
         icon: <SendIcon />,
-        text: 'Share Chapter',
+        text: t('menu_reader_misc_sharechapter'),
       },
     ],
   };

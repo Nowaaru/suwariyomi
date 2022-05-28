@@ -41,6 +41,7 @@ import Filter from '../components/filter';
 import Handler from '../../main/sources/handler';
 import FilterSettings from '../components/filtersettings';
 import Theme from '../../main/util/theme';
+import { useTranslation } from '../../shared/intl';
 
 const { theme, themeStyleDark, themeStyleLight } =
   window.electron.settings.getAll().appearance;
@@ -336,6 +337,7 @@ const returnButton = (
 );
 
 const SearchPage = () => {
+  const { t } = useTranslation();
   const [isLoadingMoreResults, setLoading] = useState(false);
   const [currentAlert, setAlert] = useState<{
     message: string;
@@ -504,12 +506,12 @@ const SearchPage = () => {
       .catch((err) => {
         window.electron.log.error(err);
         setAlert({
-          message:
-            'An error occurred while searching. You might have been rate limited.\nTry again later.',
+          message: t('chaptermodal_error'),
           severity: 'error',
         });
       });
   }, [
+    t,
     searchData,
     mappedFileNames,
     specifiedSource,
@@ -591,7 +593,7 @@ const SearchPage = () => {
                 />
               }
             >
-              <img
+              <img /* this kinda hurts/ */
                 src={
                   mappedFileNames
                     .find(
@@ -601,7 +603,14 @@ const SearchPage = () => {
                     ?.getIcon() ?? ''
                 }
                 className={css(styles.accordionItemIcon)}
-                alt="MangaDex"
+                alt={
+                  mappedFileNames
+                    .find(
+                      (x) =>
+                        x.getName().toLowerCase() === sourceString.toLowerCase()
+                    )
+                    ?.getName() ?? ''
+                }
               />
               <Typography
                 sx={{
@@ -653,9 +662,9 @@ const SearchPage = () => {
                       synopsis={(() => {
                         return (
                           new DOMParser().parseFromString(
-                            MangaObject.Synopsis || 'No synopsis available.', // Use OR instead of null check to implicitly cast empty strings to boolean.
+                            MangaObject.Synopsis || t('mangaitem_no_synopsis'), // Use OR instead of null check to implicitly cast empty strings to boolean.
                             'text/html'
-                          ).body.textContent || 'No synopsis available.'
+                          ).body.textContent || t('mangaitem_no_synopsis')
                         );
                       })()}
                       key={MangaObject.MangaID}
@@ -724,13 +733,10 @@ const SearchPage = () => {
     <div className={css(styles.noContentContainer)}>
       <Dialog open>
         <DialogTitle>
-          <Typography variant="h6">No sources found.</Typography>
+          <Typography variant="h6">{t('search_no_sources_title')}</Typography>
         </DialogTitle>
         <DialogContent>
-          <Typography variant="body1">
-            You have no sources enabled, or some of your settings prevent
-            sources from being displayed. Please check your settings.
-          </Typography>
+          <Typography variant="body1">{t('search_no_sources_desc')}</Typography>
         </DialogContent>
         <DialogActions>
           <Button
@@ -738,14 +744,14 @@ const SearchPage = () => {
               setSpecifiedSource(null);
             }}
           >
-            Retry
+            {t('retry')}
           </Button>
           <Button
             onClick={() => {
               Navigate('/library');
             }}
           >
-            Go To Library
+            {t('search_return')}
           </Button>
         </DialogActions>
       </Dialog>
@@ -864,7 +870,7 @@ const SearchPage = () => {
           }}
         >
           <SearchBar
-            label="Search globally..."
+            label={t('searchbar_title')}
             defaultValue={searchData.searchQuery}
           />
         </Box>

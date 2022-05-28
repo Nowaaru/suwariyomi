@@ -8,6 +8,7 @@ import Button from '../components/button';
 import type { SourceMetadata } from '../index';
 import { clearRequireCache } from '../../shared/util';
 import Theme from '../../main/util/theme';
+import { useTranslation } from '../../shared/intl';
 
 const { theme, themeStyleDark, themeStyleLight } =
   window.electron.settings.getAll().appearance;
@@ -171,9 +172,19 @@ const Sources = () => {
 
   const showInstalled = currentTab === 0;
   const languageNames = new Intl.DisplayNames(['en'], { type: 'language' });
+  const { t } = useTranslation();
   const { current: allSourceData } = useRef(
     window.electron.util.getSourceCatalogue()
   ); // Destructuring `current` since it should not change.
+
+  useEffect(() => {
+    window.electron.rpc.updateRPC({
+      details: t('sources_tooltip'),
+      state: t('rpc_sources_state'),
+      largeImageKey: 'icon_large',
+      startTimestamp: Date.now(),
+    });
+  }, [t]);
   const allLanguageGroups = useMemo(() => {
     const groups = new Map<string, SourceMetadataWithUpdater>();
     allSourceData.forEach((source) => {
@@ -238,9 +249,9 @@ const Sources = () => {
         >
           <Button
             className={css(styles.backButton)}
-            tooltipTitle="Back"
+            tooltipTitle={t('back')}
             tooltipPlacement="bottom"
-            label="Back"
+            label={t('back')}
           />
         </Link>
       </div>
@@ -249,10 +260,10 @@ const Sources = () => {
         onChange={setCurrentTab}
         tabs={[
           {
-            label: 'Installed',
+            label: t('Installed'),
           },
           {
-            label: 'All',
+            label: t('All'),
           },
         ]}
       />
@@ -265,7 +276,7 @@ const Sources = () => {
                 label={
                   languageNames.of(lang) !== lang
                     ? languageNames.of(lang)!
-                    : `Unknown (${lang})`
+                    : t('sources_lang_unknown')
                 }
                 key={`${lang}-label`}
               />
@@ -321,11 +332,7 @@ const Sources = () => {
                           </div>
                           <div className={css(styles.tags)}>
                             <Tooltip
-                              title={
-                                source.nsfw
-                                  ? 'The content this source can provide may be inappropriate to show to minors.'
-                                  : ''
-                              }
+                              title={source.nsfw ? t('sources_nsfw') : ''}
                             >
                               <span
                                 className={css(
@@ -333,13 +340,15 @@ const Sources = () => {
                                   source.nsfw && styles.r18
                                 )}
                               >
-                                {source.nsfw ? 'NSFW' : 'SAFE'}
+                                {source.nsfw
+                                  ? t('sources_tag_nsfw')
+                                  : t('sources_tag_safe')}
                               </span>
                             </Tooltip>
                             {showInstalled && localSource?.isObsolete ? (
-                              <Tooltip title="This source is unsupported. Things may break, and you will not be able to reinstall it if uninstalled.">
+                              <Tooltip title={t('sources_obsolete')}>
                                 <span className={css(styles.tag)}>
-                                  OBSOLETE
+                                  {t('sources_tag_obsolete')}
                                 </span>
                               </Tooltip>
                             ) : null}
@@ -369,9 +378,9 @@ const Sources = () => {
                             label={
                               isInstalled
                                 ? localSource.needsUpdate
-                                  ? 'Update'
-                                  : 'Uninstall'
-                                : 'Install'
+                                  ? t('sources_update')
+                                  : t('sources_uninstall')
+                                : t('sources_install')
                             }
                           />
                         </div>
@@ -384,7 +393,7 @@ const Sources = () => {
       ) : (
         <div className={css(styles.notfoundcontainer)}>
           <span className={css(styles.installeddisclaimer)}>{`${
-            showInstalled ? "You've no sources." : null
+            showInstalled ? t('sources_none') : null
           }`}</span>
         </div>
       )}

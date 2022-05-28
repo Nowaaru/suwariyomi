@@ -51,6 +51,7 @@ import ThemeButton from '../components/settings/themebutton';
 import Theme from '../../main/util/theme';
 
 import type { DefaultSettings } from '../../main/util/settings';
+import { useTranslation } from '../../shared/intl';
 import { Schema, settingsSchemata } from '../util/auxiliary';
 import {
   generateSettings,
@@ -414,6 +415,7 @@ const Settings = () => {
 
   const backupRef = useRef<HTMLInputElement>(null);
   const [isInLoadingContext, setLoadingContext] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     window.electron.settings.overwrite(settings);
@@ -421,12 +423,12 @@ const Settings = () => {
 
   useEffect(() => {
     window.electron.rpc.updateRPC({
-      details: 'Settings',
-      state: 'Personalizing the application...',
+      details: t('settings_tooltip'),
+      state: t('rpc_settings_state'),
       largeImageKey: 'icon_large',
       startTimestamp: Date.now(),
     });
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     setTimesClicked(0);
@@ -441,6 +443,7 @@ const Settings = () => {
     setFileSelectedData(undefined);
   }, [setFileSelectedData]);
 
+  const timesClickedDescending = settingsResetText.length - timesClicked;
   return (
     <>
       <ImportSettingsModal
@@ -546,7 +549,10 @@ const Settings = () => {
                   setLoadingContext(true);
                   filteredMangas.forEach((mangaID: string) => {
                     window.electron.log.info(
-                      `Processed manga: ${mangaID} from source ${x.handler.getName()}`
+                      t('settings_log_processedm', {
+                        mangaID,
+                        source: x.handler.getName(),
+                      })
                     );
                     window.electron.library.addMangaToLibrary(
                       x.handler.getName(),
@@ -589,10 +595,12 @@ const Settings = () => {
                         .IDFromURL(chapterItem?.url, 'chapter')
                         .then(async (chapterID) => {
                           window.electron.log.info(
-                            `Processed chapter ${chapterID} from source ${x.handler.getName()}. ${
-                              idx + 1
-                            }/${allChapters.length}
-                            `
+                            t('settings_log_processedc', {
+                              chapterID,
+                              source: x.handler.getName(),
+                              count: idx + 1,
+                              total: allChapters.length,
+                            })
                           );
                           window.electron.read.set(
                             x.handler.getName(),
@@ -751,13 +759,12 @@ const Settings = () => {
                       <Typography
                         className={css(styles.optionLabelDescription)}
                       >
-                        {`This can't be undone! If you want to proceed, click the button ${
-                          settingsResetText.length - timesClicked
-                        } time${
-                          settingsResetText.length - timesClicked === 1
-                            ? ''
-                            : 's'
-                        }.`}
+                        {t(
+                          `settings_clear_warning${
+                            timesClickedDescending > 1 ? 's' : ''
+                          }`,
+                          { count: timesClickedDescending }
+                        )}
                       </Typography>
                     </Typography>
                     <Button
@@ -781,14 +788,11 @@ const Settings = () => {
                 appearance: (
                   <Box className={css(styles.optionContainer)}>
                     <Typography className={css(styles.optionLabel)}>
-                      {settings.appearance.theme === 'light'
-                        ? 'Theme Style - Light'
-                        : 'Theme Style - Dark'}
-
+                      {t(`setting_theme_${settings.appearance.theme}`)}
                       <Typography
                         className={css(styles.optionLabelDescription)}
                       >
-                        Change your theme here.
+                        {t('setting_theme_desc')}
                       </Typography>
                     </Typography>
                     <div className={css(styles.themeSelector)}>
@@ -854,11 +858,11 @@ const Settings = () => {
                 backup: (
                   <Box className={css(styles.optionContainer)}>
                     <Typography className={css(styles.optionLabel)}>
-                      Restore from Tachiyomi Backup
+                      {t('setting_backup_restore')}
                       <Typography
                         className={css(styles.optionLabelDescription)}
                       >
-                        This may overwrite some of your manga.
+                        {t('setting_backup_Restore_desc')}
                       </Typography>
                     </Typography>
                     <Button
@@ -886,11 +890,11 @@ const Settings = () => {
                 tracking: (
                   <Box className={css(styles.optionContainer)}>
                     <Typography className={css(styles.optionLabel)}>
-                      Tracking
+                      {t('setting_tracking_tracking')}
                       <Typography
                         className={css(styles.optionLabelDescription)}
                       >
-                        Set your trackers here.
+                        {t('setting_tracking_tracking_desc')}
                       </Typography>
                     </Typography>
                     <div>
@@ -899,8 +903,8 @@ const Settings = () => {
                         onDeauth={() => {
                           window.electron.log.info('AniList deauthenticated.');
                         }}
-                        trackedtitle="Click to deauthorize."
-                        title="Track using AniList"
+                        trackedtitle={t('deauthorize')}
+                        title={t('anilist_track')}
                       />
                     </div>
                   </Box>

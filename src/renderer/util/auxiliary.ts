@@ -29,11 +29,7 @@ export const settingsSchemata: {
       label: 'Language',
       description: 'The language to use for the application.',
       default: 'en',
-      options: [
-        { label: 'English', value: 'en' },
-        { label: 'Spanish', value: 'es' },
-        { label: 'Japanese', value: 'ja' },
-      ],
+      options: [{ label: 'English', value: 'en' }],
     },
     dateFormat: {
       type: 'select',

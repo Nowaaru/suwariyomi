@@ -55,6 +55,7 @@ import ReaderContext from '../components/context/reader';
 import useMountEffect from '../util/hook/usemounteffect';
 import { getTracker, SupportedTrackers } from '../util/tracker/tracker';
 import { DefaultSettings } from '../../main/util/settings';
+import { useTranslation } from '../../shared/intl';
 import Theme from '../../main/util/theme';
 
 const { theme, themeStyleDark, themeStyleLight } =
@@ -795,6 +796,7 @@ const Reader = () => {
     isOpen: false,
   });
 
+  const { t } = useTranslation();
   const [scrollY, setScrollYABSOLUTE] = useState(0);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const setScrollY = useCallback(
@@ -938,7 +940,6 @@ const Reader = () => {
     page: number | undefined;
   }>({
     chapters: (() => {
-      // todo: im tired. fix this. cant do it now. brain pain.
       const cachedChapters = window.electron.library.getCachedManga(
         sourceId,
         mangaId
@@ -1045,7 +1046,6 @@ const Reader = () => {
     return () => clearTimeout(moveTimeout);
   }, [toolbarState]);
 
-  // TODO: Clear repitition because this is a mess.
   const getAbsoluteChapter = useCallback(
     (num: number) => readerData.chapters?.[num],
     [readerData.chapters]
@@ -1562,17 +1562,21 @@ const Reader = () => {
       return;
 
     window.electron.rpc.updateRPC({
-      state: `Chapter ${readerData.currentchapter!.Chapter} of ${
-        readerData.chapters?.length
-      }`,
+      state: t('rpc_reader_state', {
+        current: readerData.currentchapter.Chapter,
+        total: readerData.chapters.length,
+      }),
       largeImageKey: 'icon_large',
-      largeImageText: `Page ${readerData.page} of ${
-        readerData.currentchapter!.PageCount
-      }`,
-      details: `Reading ${mangaTitle}`,
+      largeImageText: t('rpc_reader_largeimg_details', {
+        pg: readerData.page,
+        pgs: readerData.currentchapter.PageCount,
+      }),
+      details: t('rpc_reader_details', {
+        mangaTitle,
+      }),
       startTimestamp: readerStart,
     });
-  }, [readerData, readerStart, mangaTitle, setRead, chapterIsBookmarked]);
+  }, [readerData, readerStart, mangaTitle, setRead, chapterIsBookmarked, t]);
 
   useEffect(() => {
     if (isLoading) return;
@@ -1627,12 +1631,12 @@ const Reader = () => {
 
   if (!selectedSource)
     return errorDialog(
-      'Error',
-      `You do not have any sources that go by the name of ${sourceId}.`,
+      t('reader_error'),
+      t('reader_error_source', { name: sourceId }),
       goBack,
       [
         <Button onClick={goBack} className={css(styles.dialogButton)}>
-          Go Home
+          {t('reader_return')}
         </Button>,
       ]
     );
@@ -1643,22 +1647,27 @@ const Reader = () => {
       (!isLoading && currentPage > currentPageState.length)
     )
       return errorDialog(
-        'Error',
-        `The page number you specified (${currentPage}) is out of range.`,
+        t('reader_error'),
+        t('reader_error_exist', { page: currentPage }),
         goBack,
         [
           <Button onClick={goBack} className={css(styles.dialogButton)}>
-            Go Home
+            {t('reader_return')}
           </Button>,
         ]
       );
   }
   if (Number.isNaN(currentPage))
-    return errorDialog('Error', 'Page number is not a valid number.', goBack, [
-      <Button onClick={goBack} className={css(styles.dialogButton)}>
-        Go Home
-      </Button>,
-    ]);
+    return errorDialog(
+      'Error',
+      t('reader_error_page', { count: currentPage }),
+      goBack,
+      [
+        <Button onClick={goBack} className={css(styles.dialogButton)}>
+          {t('reader_return')}
+        </Button>,
+      ]
+    );
 
   const onToolbarEnter = (buttonHover = false) => {
     setToolbarState({
@@ -1725,6 +1734,14 @@ const Reader = () => {
   // So, when loading is true, we can put loading indicators on the top and bottom.
   // Otherwise, show nothing but the loading indicator.
 
+  const generateChapterText = (volume: any, chapter: any, short = false) =>
+    !Number.isNaN(volume)
+      ? !Number.isNaN(chapter)
+        ? t(!short ? 'volumechapter' : 'volchap', { volume, chapter })
+        : t(!short ? 'volume' : 'vol', { volume })
+      : chapter
+      ? t(!short ? 'chapter' : 'chap', { chapter })
+      : '???';
   return isLoading ? (
     <LoadingModal className={css(styles.loadingModal)} />
   ) : (
@@ -1919,7 +1936,10 @@ const Reader = () => {
                 );
               }} // This opens the manga page in a browser.
             >
-              <Tooltip title="Open in Browser" placement="top">
+              <Tooltip
+                title={t('reader_open_in_browser_tooltip')}
+                placement="top"
+              >
                 <PublicIcon
                   className={css(styles.toolbarIcon, styles.globeIcon)}
                 />
@@ -1948,7 +1968,11 @@ const Reader = () => {
                 )}
               >
                 <Tooltip
-                  title={isDoublePage ? 'Double Page' : 'Single Page'}
+                  title={
+                    isDoublePage
+                      ? t('reader_page_tooltip2')
+                      : t('reader_page_tooltip1')
+                  }
                   placement="top"
                 >
                   {isDoublePage ? (
@@ -1982,7 +2006,11 @@ const Reader = () => {
                 )}
               >
                 <Tooltip
-                  title={isPageCropped ? 'Cropped' : 'Uncropped'}
+                  title={
+                    isPageCropped
+                      ? t('reader_crop_tooltip2')
+                      : t('reader_cropp_tooltip1')
+                  }
                   placement="top"
                 >
                   {isPageCropped ? (
@@ -2014,7 +2042,7 @@ const Reader = () => {
               )}
               onClick={() => setSettingsModalOpen(true)}
             >
-              <Tooltip title="Settings" placement="top">
+              <Tooltip title={t('settings_tooltip')} placement="top">
                 <SettingsIcon
                   className={css(styles.settingsIcon, styles.toolbarIcon)}
                 />
@@ -2059,7 +2087,7 @@ const Reader = () => {
                       fitStyle={fitStyle}
                       id={`chapter-:${currentPageObject.chapter}:-page-:${currentPageObject.page}:`}
                       src={currentPageObject.src}
-                      alt={`Page ${currentPage}`}
+                      alt={t('pg', { page: currentPageObject.page })}
                       key={`${currentPageObject.src}-normal-scroll`}
                     />
                   );
@@ -2071,7 +2099,7 @@ const Reader = () => {
                         fitStyle={fitStyle}
                         id={`chapter-:${nextPageObject.chapter}:-page-:${nextPageObject.page}:`}
                         src={nextPageObject.src}
-                        alt={`Page ${currentPage + 1}`}
+                        alt={t('pg', { page: currentPageObject.page + 1 })}
                         key={`${nextPageObject.src}-normal-scroll`}
                       />
                     ) : null;
@@ -2114,19 +2142,17 @@ const Reader = () => {
               const { Volume: currentVolume, Chapter: currentChapter } =
                 readerData.currentchapter || {};
 
-              const generateChapterText = (
-                volume?: number,
-                chapter?: number
-              ) => (
-                <span
-                  className={css(
-                    styles.chapterHeader,
-                    styles.continuousScrollHeader
-                  )}
-                >{`${
-                  !Number.isNaN(Number(volume)) ? `Volume ${volume} ` : ``
-                }Chapter ${chapter}`}</span>
-              );
+              const generateChapterDisplay = (vol?: number, chap?: number) => {
+                const [volume, chapter] = [vol, chap].map(Number);
+                return (
+                  <span
+                    className={css(
+                      styles.chapterHeader,
+                      styles.continuousScrollHeader
+                    )}
+                  >{`${generateChapterText(volume, chapter)}`}</span>
+                );
+              };
 
               const IntermediaryPreviousChapter = (
                 <div
@@ -2138,10 +2164,10 @@ const Reader = () => {
                   key={`previous-${page.chapter}`}
                 >
                   <span className={css(styles.chapterHeader)}>Previous:</span>
-                  {generateChapterText(previousVolume, previousChapter)}
+                  {generateChapterDisplay(previousVolume, previousChapter)}
 
                   <span className={css(styles.chapterHeader)}>Current:</span>
-                  {generateChapterText(currentVolume, currentChapter)}
+                  {generateChapterDisplay(currentVolume, currentChapter)}
 
                   <Button
                     className={css(styles.continuousScrollIntermediaryButton)}
@@ -2149,7 +2175,7 @@ const Reader = () => {
                       changeChapter(0);
                     }}
                   >
-                    Previous Chapter
+                    {t('menu_reader_chapters_prevchap')}
                   </Button>
                 </div>
               );
@@ -2164,10 +2190,10 @@ const Reader = () => {
                   key={`next-${page.chapter}`}
                 >
                   <span className={css(styles.chapterHeader)}>Finished:</span>
-                  {generateChapterText(currentVolume, currentChapter)}
+                  {generateChapterDisplay(currentVolume, currentChapter)}
 
                   <span className={css(styles.chapterHeader)}>Next:</span>
-                  {generateChapterText(nextVolume, nextChapter)}
+                  {generateChapterDisplay(nextVolume, nextChapter)}
 
                   <Button
                     className={css(styles.continuousScrollIntermediaryButton)}
@@ -2175,7 +2201,7 @@ const Reader = () => {
                       changeChapter(1);
                     }}
                   >
-                    Next Chapter
+                    {t('menu_reader_chapters_nexchap')}
                   </Button>
                 </div>
               );
@@ -2204,7 +2230,7 @@ const Reader = () => {
                     page.chapter === readerData.currentchapter?.ChapterID // If the page is at the start of the chapter...
                       ? previousChapterExists // If the previous chapter exists
                         ? IntermediaryPreviousChapter // Show the previous chapter intermediary.
-                        : IntermediaryNoChapter('There is no previous chapter.') // Otherwise, display that there's no chapter.
+                        : IntermediaryNoChapter(t('reader_noprev')) // Otherwise, display that there's no chapter.
                       : null}
                     <MangaImage
                       readerSettings={readerSettings}
@@ -2225,7 +2251,7 @@ const Reader = () => {
                     page.chapter === readerData.currentchapter?.ChapterID // If the page is at the end of the chapter...
                       ? nextChapterExists // If the next chapter exists
                         ? IntermediaryNextChapter // Show the next chapter intermediary.
-                        : IntermediaryNoChapter('There is no next chapter.') // Otherwise, display that there's no chapter.
+                        : IntermediaryNoChapter(t('reader_nonext')) // Otherwise, display that there's no chapter.
                       : null}
                   </>
                 );
@@ -2269,8 +2295,8 @@ const Reader = () => {
                   return (
                     <span className={css(styles.noChapterText)}>
                       {isInIntermediary === 1
-                        ? 'There is no next chapter.'
-                        : 'There is no previous chapter.'}
+                        ? t('reader_nonext')
+                        : t('reader_noprev')}
                     </span>
                   );
                 }
@@ -2307,19 +2333,23 @@ const Reader = () => {
 
                 const isGoingToNextChapter = isInIntermediary === 1;
                 const targetChapterText = (
-                  <span>{`${
-                    !Number.isNaN(roundedNextVolume)
-                      ? `Volume ${nextVolume} `
-                      : ``
-                  }Chapter ${nextChapter}`}</span>
+                  <span>
+                    {generateChapterText(
+                      !Number.isNaN(roundedNextVolume) ? nextVolume : undefined,
+                      nextChapter
+                    )}
+                  </span>
                 ); // Using roundedNextVolume because that resolves to NaN if there is no next volume.
 
                 const currentChapterText = (
-                  <span>{`${
-                    !Number.isNaN(roundedCurrentVolume)
-                      ? `Volume ${currentVolume} `
-                      : ``
-                  }Chapter ${currentChapter}`}</span>
+                  <span>
+                    {generateChapterText(
+                      !Number.isNaN(roundedCurrentVolume)
+                        ? currentVolume
+                        : undefined,
+                      currentChapter
+                    )}
+                  </span>
                 ); // See above.
 
                 return (
@@ -2332,7 +2362,9 @@ const Reader = () => {
                         )}
                       >
                         <div>
-                          {isGoingToNextChapter ? `Finished:` : `Previous:`}
+                          {isGoingToNextChapter
+                            ? t('reader_fin')
+                            : t('reader_cur')}
                         </div>
                         <div>
                           {isGoingToNextChapter
@@ -2348,7 +2380,11 @@ const Reader = () => {
                           styles.chapterHeader
                         )}
                       >
-                        <div>{isGoingToNextChapter ? `Next:` : `Current:`}</div>
+                        <div>
+                          {isGoingToNextChapter
+                            ? t('reader_next')
+                            : t('reader_cur')}
+                        </div>
                         <span>
                           {isGoingToNextChapter
                             ? targetChapterText
@@ -2363,28 +2399,21 @@ const Reader = () => {
                           {/* Grammar... :( */}
                           {/* TODO: When locales are implemented, extract and generalize this. */}
                           {(() => {
-                            // Determine what the singular/plural form of the word is.
-                            const displayVolume =
-                              volumesMissing > 1 ? 'volumes' : 'volume';
-                            const displayChapter =
-                              chaptersMissing > 1 ? 'chapters' : 'chapter';
-
-                            const isAre = (num: number) =>
-                              num > 1 ? 'are' : 'is';
-                            const baseDisplayText =
-                              volumesMissing <= 0
-                                ? `There ${isAre(
-                                    chaptersMissing
-                                  )} ${chaptersMissing} ${displayChapter}`
-                                : `There ${isAre(
-                                    volumesMissing
-                                  )} ${volumesMissing} ${displayVolume}`;
-
-                            return `${baseDisplayText} missing. You might be spoiled if you continue.`;
+                            return t(
+                              `reader_missing_${
+                                volumesMissing > 1 || volumesMissing <= 0
+                                  ? 'volumes'
+                                  : 'volume'
+                              }${
+                                chaptersMissing > 1 || chaptersMissing <= 0
+                                  ? 'chapters'
+                                  : 'chapter'
+                              }`
+                            );
                           })()}
                         </span>
                         <div className={css(styles.homeIconContainer)}>
-                          <Tooltip title="Return to Manga Page">
+                          <Tooltip title={t('reader_missing_return')}>
                             <IconButton onClick={() => Navigate(-1)}>
                               <HomeIcon className={css(styles.homeIcon)} />
                             </IconButton>

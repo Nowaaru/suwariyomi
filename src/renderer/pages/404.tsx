@@ -2,6 +2,7 @@ import { StyleSheet, css } from 'aphrodite';
 import { Link } from 'react-router-dom';
 import Particles from 'react-tsparticles';
 import Theme from '../../main/util/theme';
+import { useTranslation } from '../../shared/intl';
 
 const { theme, themeStyleDark, themeStyleLight } =
   window.electron.settings.getAll().appearance;
@@ -73,6 +74,7 @@ const StylesNotFound = StyleSheet.create({
 }) as any;
 
 const Page404 = () => {
+  const { t, a } = useTranslation();
   return (
     <div className={css(StylesNotFound.container)}>
       <Particles
@@ -155,14 +157,12 @@ const Page404 = () => {
           )}
         />
         <h1 className={css(StylesNotFound.title)}>404</h1>
-        <h3 className={css(StylesNotFound.subtitle)}>
-          I think we&apos;re lost...
-        </h3>
+        <h3 className={css(StylesNotFound.subtitle)}>{t('404_subheader')}</h3>
         <p className={css(StylesNotFound.text)}>
-          How about we go{' '}
-          <Link to="/library" className={css(StylesNotFound.link)}>
-            back home?
-          </Link>
+          {a('404_subsubheader', [
+            undefined,
+            <Link to="/library" className={css(StylesNotFound.link)} />,
+          ])}
         </p>
       </div>
     </div>

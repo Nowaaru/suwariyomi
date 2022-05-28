@@ -58,6 +58,7 @@ import useQuery from '../util/hook/usequery';
 import Switch from '../components/switch';
 import TrackerModal from '../components/trackermodal';
 import Theme from '../../main/util/theme';
+import { useTranslation } from '../../shared/intl';
 
 const { theme, themeStyleDark, themeStyleLight } =
   window.electron.settings.getAll().appearance;
@@ -626,6 +627,8 @@ const View = () => {
     [setShiftPressed]
   );
 
+  const { t } = useTranslation();
+
   const [isInLibrary, setInLibrary] = useState<boolean>(
     !!window.electron.library.getLibraryMangas(source).find((x) => x === id)
   );
@@ -746,13 +749,15 @@ const View = () => {
     if (!mangaData.current || !mangaData.current.Name) return;
     window.electron.rpc.updateRPC({
       // Using mangaData as a dependency doesn't re-run the useEffect. Unsure as to why that is the case.
-      details: `Viewing ${mangaData.current?.Name}`,
+      details: t('rpc_view_details', { mangaTitle: mangaData.current?.Name }),
       largeImageText:
         calculateReadChapters() > 0
-          ? `Progress: ${calculateReadChapters()}/${
-              calculateChaptersNoDuplicates()?.length ??
-              mangaData.current.Chapters.length
-            }`
+          ? t('rpc_view_largeimg_details', {
+              ch: calculateReadChapters(),
+              chs:
+                calculateChaptersNoDuplicates()?.length ??
+                mangaData.current.Chapters.length,
+            })
           : undefined,
       largeImageKey: 'icon_large',
       startTimestamp: Date.now(),
@@ -795,23 +800,25 @@ const View = () => {
         return currentPage > -1 && pageCount > -1 && currentPage >= pageCount;
       }) || currentManga.Chapters.length === 0;
 
-    let ReadingButtonInnerText = 'Start Reading';
+    let ReadingButtonInnerText = t('startreading');
     let mangaProgressBar = allChaptersRead ? 100 : 0;
     if (allChaptersRead) {
-      ReadingButtonInnerText = 'All Chapters Read';
+      ReadingButtonInnerText = t('allchaptersread');
     } else if (chapterToDisplay) {
       const foundChapter = chapterData.current[chapterToDisplay.ChapterID];
-      const readChapterData = `${
-        chapterToDisplay.Volume ? `Volume ${chapterToDisplay.Volume} ` : ''
-      }Chapter ${chapterToDisplay.Chapter}`;
+      const readChapterData = chapterToDisplay.Volume
+        ? t('volumechapter', {
+            volume: chapterToDisplay.Volume,
+            chapter: chapterToDisplay.Chapter,
+          })
+        : t('chapter', { chapter: chapterToDisplay.Chapter });
+
       ReadingButtonInnerText = foundChapter
-        ? `${
-            foundChapter.currentPage > -1 &&
-            foundChapter.currentPage < foundChapter.pageCount
-              ? 'Continue'
-              : 'Start'
-          } Reading ${readChapterData}`
-        : `Start Reading ${readChapterData}`;
+        ? foundChapter.currentPage > -1 &&
+          foundChapter.currentPage < foundChapter.pageCount
+          ? t('mangaitem_continue', { title: readChapterData })
+          : t('mangaitem_start', { title: readChapterData })
+        : t('mangaitem_start', { title: readChapterData });
 
       let { Chapter: mangaProgressEnd } = currentManga.Chapters[0]; // This is [0] because the chapters are sorted in descending order.
 
@@ -968,7 +975,7 @@ const View = () => {
             {/* TODO: Add IconURL fields to sources and have a small pin on the top of the cover image that indicates the source */}
             <img
               src={currentManga.CoverURL}
-              alt="Banner"
+              alt={t('banner')}
               className={css(styles.mangaBanner)}
             />
           </div>
@@ -983,7 +990,7 @@ const View = () => {
                   }
                   className={css(styles.sourceIcon)}
                   src={selectedSource.getIcon()}
-                  alt="Source Icon"
+                  alt={t('sicon')}
                 />
               </Tooltip>
               <img
@@ -1049,7 +1056,7 @@ const View = () => {
                       }
                 }
               >
-                {isInLibrary ? 'In Library' : 'Add To Library'}
+                {isInLibrary ? t('in_library') : t('add_library')}
               </Button>
             </div>
           </div>
@@ -1084,7 +1091,7 @@ const View = () => {
             <div className={css(styles.mangaSynopsis)}>
               {currentManga.Synopsis && currentManga.Synopsis.length > 0
                 ? currentManga.Synopsis
-                : 'No synopsis available.'}
+                : t('mangaitem_no_synopsis')}
             </div>
           </div>
           {/* <h1>{Query.get('id')}</h1>
@@ -1095,7 +1102,7 @@ const View = () => {
           <h2 className={css(styles.chaptersHeader)}>
             Chapters
             <Tooltip
-              title={`Filter${filtersInUse ? ' (in-use)' : ''}`}
+              title={`${t('filter')}${filtersInUse ? ` ${t('in_use')}` : ''}`}
               placement="right"
             >
               <IconButton

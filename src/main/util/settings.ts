@@ -93,6 +93,7 @@ export const settingsSchema: Schema<typeof defaultSettings> = {
       locale: {
         type: 'string',
         default: 'en',
+        enum: ['en'],
       },
       dateFormat: {
         type: 'string',

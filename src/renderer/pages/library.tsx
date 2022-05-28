@@ -1,3 +1,4 @@
+/* eslint-disable no-constant-condition */
 import {
   TextField,
   Accordion,
@@ -20,13 +21,12 @@ import React, {
   useEffect,
   useMemo,
   SyntheticEvent,
+  useCallback,
 } from 'react';
-
-import { useTranslation, Trans } from 'react-i18next';
 
 import { Link, useNavigate } from 'react-router-dom';
 import { userInfo } from 'os';
-import { capitalize, clamp, isUndefined } from 'lodash';
+import { sample, clamp, isUndefined } from 'lodash';
 
 import LazyLoad, { forceCheck } from 'react-lazyload';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -40,6 +40,7 @@ import parseQuery from '../util/search';
 
 import { FullManga, Manga as MangaType } from '../../main/util/manga';
 import type { ReadDatabaseValue } from '../../main/util/read';
+import { useTranslation } from '../../shared/intl';
 import MangaItem from '../components/mangaitem';
 import useQuery from '../util/hook/usequery';
 import Handler from '../../main/sources/handler';
@@ -407,17 +408,7 @@ const libraryStyleSheet = StyleSheet.create({
   ...pageStyle,
 }) as any;
 
-const noResultsFlavorTexts = [
-  ["Nobody's reading manga here.", 'How about we look', 'somewhere else?'],
-  ["This library's empty.", "Let's go", 'somewhere else.'],
-  ['Nothing to see here.', "Let's", 'keep on moving.'],
-  ['End of the road.', 'Want to', 'start building?'],
-  ['Nobody here but us chickens.', 'Want to', 'search globally?'],
-];
-
-let readingPrefixTarget: MangaType | undefined;
-let statusPrefix: string;
-let statusSuffix: string;
+let pTarget: MangaType | undefined;
 const Library = () => {
   useEvent();
   useEffect(() => {
@@ -430,9 +421,73 @@ const Library = () => {
     );
   }, []);
 
+  const { t, a: arrTrans } = useTranslation();
+  const [readingPrefixTarget, setPTargetINT] = useState(pTarget);
+  const setPTarget = useCallback(
+    (newPTarget: MangaType) => {
+      setPTargetINT(newPTarget);
+      pTarget = newPTarget;
+    },
+    [setPTargetINT]
+  );
+
   const userName = useRef(userInfo().username);
   const Navigate = useNavigate();
   const forceUpdate = useForceUpdate();
+
+  const { current: noResultsFlavorTexts } = useRef(
+    (() => {
+      const NR_PREFIX = `library_nr_flavor`;
+      const ALL_FLAVORS = [];
+      let i = 0;
+
+      while (true) {
+        const headerItem = t(`${NR_PREFIX}_${i}h`);
+        const subheaderItem = t(`${NR_PREFIX}_${i}s`);
+
+        if (!headerItem || !subheaderItem || !Array.isArray(subheaderItem))
+          break;
+
+        i++;
+        ALL_FLAVORS.push(headerItem, ...subheaderItem);
+      }
+
+      return ALL_FLAVORS;
+    })()
+  );
+
+  const libraryFlavorTexts = useMemo(() => {
+    if (!readingPrefixTarget) return [t('library_flavor_default')];
+    const LIBRARY_PREFIX = `library_flavor_`;
+    const ALL_FLAVORS = [];
+    let i = 1;
+
+    while (true) {
+      const K = `${LIBRARY_PREFIX}${i}`;
+      if (!Array.isArray(arrTrans(`${LIBRARY_PREFIX}${i}`, []))) break;
+
+      const translated = arrTrans(
+        K,
+        [
+          undefined,
+          <span
+            className={css(
+              libraryStyleSheet.infoRegular,
+              libraryStyleSheet.infoHighlight
+            )}
+          />,
+        ],
+        {
+          mangaTitle: readingPrefixTarget?.Name,
+        }
+      );
+
+      ALL_FLAVORS.push(translated);
+      i++;
+    }
+
+    return ALL_FLAVORS;
+  }, [arrTrans, t, readingPrefixTarget]);
 
   const { library: LibraryUtilities } = window.electron;
   const mangaItemDisplayFormat: 'list' | 'grid' = 'list';
@@ -938,8 +993,7 @@ const Library = () => {
               }}
               className={css(libraryStyleSheet.accordionItemCount)}
             >
-              {mangaListArray.length} Manga
-              {(mangaListArray.length > 1 && 's') || ''}
+              {t('library_manga_count', { count: mangaListArray.length })}
             </Typography>
             {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events */}
             <div
@@ -1027,16 +1081,24 @@ const Library = () => {
                   forceUpdate();
                 }}
               >
-                <MenuItem value="Title">Title</MenuItem>
-                <MenuItem value="Unread">Unread</MenuItem>
-                <MenuItem value="Last Read">Last Read</MenuItem>
-                <MenuItem value="Latest Chapter">Latest Chapter</MenuItem>
-                <MenuItem value="Total Chapters">Total Chapters</MenuItem>
-                <MenuItem value="Date Added">Date Added</MenuItem>
-                <MenuItem value="Date Fetched">Date Fetched</MenuItem>
+                <MenuItem value="Title">{t('library_sort_title')}</MenuItem>
+                <MenuItem value="Unread">{t('library_sort_unread')}</MenuItem>
+                <MenuItem value="Last Read">{t('library_sort_last')}</MenuItem>
+                <MenuItem value="Latest Chapter">
+                  {t('library_sort_latest')}
+                </MenuItem>
+                <MenuItem value="Total Chapters">
+                  {t('library_sort_total')}
+                </MenuItem>
+                <MenuItem value="Date Added">
+                  {t('library_sort_added')}
+                </MenuItem>
+                <MenuItem value="Date Fetched">
+                  {t('library_sort_fetched')}
+                </MenuItem>
               </Select>
             </div>
-            <Tooltip title="Search Using This Source">
+            <Tooltip title={t('library_source_tooltip_search')}>
               <IconButton
                 className={css(libraryStyleSheet.accordionSearchButton)}
                 onClick={(e) => {
@@ -1052,8 +1114,8 @@ const Library = () => {
             <Tooltip
               title={`${
                 sourcesFetching.includes(sourceKey)
-                  ? 'Currently fetching!'
-                  : 'Refresh'
+                  ? t('library_fetching_current')
+                  : t('library_refresh')
               }`}
             >
               <IconButton
@@ -1097,50 +1159,9 @@ const Library = () => {
     .flat()
     .filter((x) => x.Name.toLowerCase().length <= 45);
   if (!readingPrefixTarget)
-    readingPrefixTarget =
-      filteredMediaList[Math.floor(Math.random() * filteredMediaList.length)];
-
-  if (readingPrefixTarget && (!statusPrefix || !statusSuffix)) {
-    const flavorTexts = [
-      ['How about reading', '?'],
-      ["Let's read", '!'],
-      ['Feel like reading', '?'],
-      ['Want to read', '?'],
-      ['Feeling like reading', 'today?'],
-      ['Want to read', 'today?'],
-      ['Is it time for the', 'binge-read marathon?'],
-    ];
-
-    const chosenText =
-      flavorTexts[Math.floor(Math.random() * flavorTexts.length)];
-
-    [statusPrefix, statusSuffix] = chosenText;
-
-    // switch (readingPrefixTarget.readingstatus) {
-    //   case 'COMPLETED':
-    //     [statusPrefix, statusSuffix] = ['Want to reread', '?'];
-    //     break;
-    //   case 'PLANNING':
-    //     [statusPrefix, statusSuffix] = ['Want to try reading', '?'];
-    //     break;
-    //   case 'DROPPED':
-    //     [statusPrefix, statusSuffix] = ['Maybe try reconsidering', '..?'];
-    //     break;
-    //   case 'PAUSED':
-    //     [statusPrefix, statusSuffix] = [
-    //       'Want to pick up',
-    //       ' where you left off?',
-    //     ];
-    //     break;
-    //   case 'REPEATING':
-    //   // eslint-disable-next-line no-fallthrough
-    //   case 'CURRENT':
-    //     [statusPrefix, statusSuffix] = ['Want to continue reading', '?'];
-    //     break;
-    //   default:
-    //     break;
-    // }
-  } else [statusPrefix, statusSuffix] = ["Let's start reading", '!'];
+    setPTarget(
+      filteredMediaList[Math.floor(Math.random() * filteredMediaList.length)]
+    );
 
   const decidedFlavorText =
     noResultsFlavorTexts[
@@ -1203,13 +1224,13 @@ const Library = () => {
             }}
           >
             <TextField
-              label="Search manga..."
+              label={t('library_search_placeholder')}
               placeholder={selectedDescription.current}
               className={css(libraryStyleSheet.searchbar)}
               variant="filled"
               defaultValue={searchQuery}
               error={!parsedSearch}
-              helperText={parsedSearch ? '' : 'Mismatched quotation marks.'}
+              helperText={parsedSearch ? '' : t('library_search_error_quotes')}
               onKeyDown={(e) => {
                 if (e.key === 'Tab') {
                   if (e.shiftKey) {
@@ -1265,8 +1286,8 @@ const Library = () => {
             >
               {userSettings.current?.library.displayUserName &&
               userName.current?.length <= 10
-                ? `Welcome back, ${capitalize(userName.current)}.`
-                : 'Welcome back.'}
+                ? t('library_welcome_name', { userName: userName.current })
+                : t('library_welcome_anon')}
             </h1>
             <h4
               className={css(
@@ -1274,28 +1295,13 @@ const Library = () => {
                 libraryStyleSheet.infoPaperHeaderSub
               )}
             >
-              <span className={css(libraryStyleSheet.infoRegular)}>
-                {statusPrefix}
-              </span>{' '}
-              <span
-                className={css(
-                  libraryStyleSheet.infoRegular,
-                  libraryStyleSheet.infoHighlight
-                )}
-              >
-                {!readingPrefixTarget ? 'some manga' : readingPrefixTarget.Name}
-              </span>
-              <span className={css(libraryStyleSheet.infoRegular)}>
-                {statusSuffix.match(/^[.!?]$/)
-                  ? statusSuffix
-                  : ` ${statusSuffix}`}
-              </span>
+              {sample(libraryFlavorTexts)}
             </h4>
             <hr className={css(libraryStyleSheet.darkHR)} />
             <div className={css(libraryStyleSheet.mangaStatsContainer)}>
               <div className={css(libraryStyleSheet.mangaStatsItem)}>
                 <h3 className={css(libraryStyleSheet.infoPaperHeaderBase)}>
-                  Total Manga
+                  {t('library_info_total')}
                 </h3>
                 <span
                   className={css(
@@ -1308,7 +1314,7 @@ const Library = () => {
               </div>
               <div className={css(libraryStyleSheet.mangaStatsItem)}>
                 <h3 className={css(libraryStyleSheet.infoPaperHeaderBase)}>
-                  Chapters Read
+                  {t('library_info_chapters')}
                 </h3>
                 <span
                   className={css(
@@ -1321,7 +1327,7 @@ const Library = () => {
               </div>
               <div className={css(libraryStyleSheet.mangaStatsItem)}>
                 <h3 className={css(libraryStyleSheet.infoPaperHeaderBase)}>
-                  Pages Read
+                  {t('library_info_pages')}
                 </h3>
                 <span
                   className={css(
@@ -1333,7 +1339,7 @@ const Library = () => {
                 </span>
               </div>
             </div>
-            <Tooltip title="Settings">
+            <Tooltip title={t('settings_tooltip')}>
               <IconButton
                 className={css(libraryStyleSheet.settingsButton)}
                 onClick={() => Navigate('/settings')}
@@ -1341,7 +1347,7 @@ const Library = () => {
                 <SettingsIcon className={css(libraryStyleSheet.settingsIcon)} />
               </IconButton>
             </Tooltip>
-            <Tooltip title="Sources">
+            <Tooltip title={t('sources_tooltip')}>
               <IconButton
                 className={css(libraryStyleSheet.sourcesButton)}
                 onClick={() => Navigate('/sources')}
@@ -1362,7 +1368,9 @@ const Library = () => {
                 fontWeight: 'bold',
               }}
             >
-              {hasNoSources ? 'You have no sources.' : decidedFlavorText[0]}
+              {hasNoSources
+                ? t('library_sources_none_header')
+                : decidedFlavorText[0]}
             </Typography>
             <Typography
               sx={{
@@ -1370,7 +1378,9 @@ const Library = () => {
                 fontSize: '16px',
               }}
             >
-              {hasNoSources ? "Let's get" : decidedFlavorText[1]}{' '}
+              {hasNoSources
+                ? t('library_sources_none_subheader')[0]
+                : decidedFlavorText[1]}
               <Link
                 to={
                   hasNoSources
@@ -1383,7 +1393,7 @@ const Library = () => {
                 )}
               >
                 {hasNoSources
-                  ? 'some more.'
+                  ? t('library_sources_none_subheader')[1]
                   : decidedFlavorText[decidedFlavorText.length - 1]}
               </Link>
             </Typography>
@@ -1394,16 +1404,16 @@ const Library = () => {
             <hr className={css(libraryStyleSheet.centeredHR)} />
             <div className={css(libraryStyleSheet.globalSearchContainer)}>
               <h3 className={css(libraryStyleSheet.infoPaperHeaderBase)}>
-                Can&apos;t find what you&apos;re looking for?
+                {t('library_global_more_header')}
               </h3>
               <h4 className={css(libraryStyleSheet.infoPaperHeaderBase)}>
-                How about we{' '}
-                <Link
-                  className={css(libraryStyleSheet.infoHighlight)}
-                  to={`/search?${currentSearchParams.toString()}`}
-                >
-                  search globally?
-                </Link>
+                {arrTrans('library_global_more_subheader', [
+                  undefined,
+                  <Link
+                    className={css(libraryStyleSheet.infoHighlight)}
+                    to={`/search?${currentSearchParams.toString()}`}
+                  />,
+                ])}
               </h4>
             </div>
           </div>
