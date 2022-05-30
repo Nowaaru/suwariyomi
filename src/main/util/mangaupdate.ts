@@ -61,7 +61,6 @@ export class MangaQueue {
     this._queuedManga = this.queue.length;
     this._processed = 0;
 
-    const tn = Date.now();
     if (this._queuedManga >= 200)
       new Notification({
         title: 'Warning',
@@ -69,7 +68,6 @@ export class MangaQueue {
         icon: this.notificationIcon,
       }).show();
 
-    log.warn(`tn to now: ${Date.now() - tn}ms`);
     // Process queue
     const allNewChapters: { [mangaID: string]: LibraryManga } = {};
     const allPreviousManga = await MangaDB.GetAllCachedMangas();
