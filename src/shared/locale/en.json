@@ -222,15 +222,15 @@
 
   "settings_reset_label": "Reset to Default Settings",
 
-  "setting_theme_light": "Theme Style - Light",
-  "setting_theme_dark": "Theme Style - Dark",
-  "setting_theme_desc": "Change your theme here.",
+  "settings_theme_light": "Theme Style - Light",
+  "settings_theme_dark": "Theme Style - Dark",
+  "settings_theme_description": "Change your theme here.",
 
-  "setting_backup_restore": "Restore from Tachiyomi Backup",
-  "setting_backup_restore_desc": "This may overwrite some of your manga.",
+  "settings_backup_restore": "Restore from Tachiyomi Backup",
+  "settings_backup_restore_description": "This may overwrite some of your manga.",
 
-  "setting_tracking_tracking": "Tracking",
-  "setting_tracking_tracking_desc": "Set your trackers here.",
+  "settings_tracking_tracking": "Tracking",
+  "settings_tracking_tracking_description": "Set your trackers here.",
 
   "anilist_track": "Track using AniList",
   "deauthorize": "Click to deauthorize.",
@@ -320,8 +320,8 @@
   "settings_general_closeToTray_label": "Minimize on Close",
   "settings_general_closeToTray_description": "Minimize the window instead of directly closing it.",
 
-  "library_displayUserName_label": "Display User Name",
-  "library_displayUserName_description": "Display your OS name when in the library. Otherwise, simply show \"Welcome Back.\"",
+  "settings_library_displayUserName_label": "Display User Name",
+  "settings_library_displayUserName_description": "Display your OS name when in the library. Otherwise, simply show \"Welcome Back.\"",
 
   "settings_library_updateOnKeyPress_label": "Update on Key Press",
   "settings_library_updateOnKeyPress_description": "Update search results upon every key press. If this causes performance issues, disable this.",

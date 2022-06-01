@@ -734,9 +734,9 @@ const Settings = () => {
                       {
                         ...value,
                         ...{
-                          label: t(`${settingsLocation}_${key}_label`),
+                          label: t(`settings_${settingsLocation}_${key}_label`),
                           description: t(
-                            `${settingsLocation}_${key}_description`
+                            `settings_${settingsLocation}_${key}_description`
                           ),
                         },
                       },
@@ -796,11 +796,11 @@ const Settings = () => {
                 appearance: (
                   <Box className={css(styles.optionContainer)}>
                     <Typography className={css(styles.optionLabel)}>
-                      {t(`setting_theme_${settings.appearance.theme}`)}
+                      {t(`settings_theme_${settings.appearance.theme}`)}
                       <Typography
                         className={css(styles.optionLabelDescription)}
                       >
-                        {t('setting_theme_description')}
+                        {t('settings_theme_description')}
                       </Typography>
                     </Typography>
                     <div className={css(styles.themeSelector)}>
@@ -866,11 +866,11 @@ const Settings = () => {
                 backup: (
                   <Box className={css(styles.optionContainer)}>
                     <Typography className={css(styles.optionLabel)}>
-                      {t('setting_backup_restore')}
+                      {t('settings_backup_restore')}
                       <Typography
                         className={css(styles.optionLabelDescription)}
                       >
-                        {t('setting_backup_Restore_description')}
+                        {t('settings_backup_restore_description')}
                       </Typography>
                     </Typography>
                     <Button
@@ -898,11 +898,11 @@ const Settings = () => {
                 tracking: (
                   <Box className={css(styles.optionContainer)}>
                     <Typography className={css(styles.optionLabel)}>
-                      {t('setting_tracking_tracking')}
+                      {t('settings_tracking_tracking')}
                       <Typography
                         className={css(styles.optionLabelDescription)}
                       >
-                        {t('setting_tracking_tracking_description')}
+                        {t('settings_tracking_tracking_description')}
                       </Typography>
                     </Typography>
                     <div>

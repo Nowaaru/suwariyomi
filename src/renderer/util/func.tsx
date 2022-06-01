@@ -8,7 +8,7 @@ import Switch from '../components/switch';
 import Theme from '../../main/util/theme';
 
 import type { Schema } from './auxiliary';
-import { useTranslation } from '../../shared/intl';
+import { mainTranslator } from '../../shared/intl';
 import { Chapter } from '../../main/util/manga';
 
 const { theme, themeStyleDark, themeStyleLight } =
@@ -113,7 +113,8 @@ export const convertDateToFormatted = (
  * @param schemeItem {Schema}
  * @param currentValue {string}
  * @param onChange {(value: string) => void}
- * @param translationKey {string} A prefix-key for the label and description. The value will be appended to this - as in `${translationKey}_${value}_label`.
+ * @param settingCagetory {string}
+ * @param settingKey {string}
  * @returns {JSX.Element}
  */
 export const generateSettings = (
@@ -123,9 +124,6 @@ export const generateSettings = (
   settingCategory?: string,
   settingKey?: string
 ): JSX.Element => {
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const { t } = useTranslation(); // technically speaking its a react component. nerd!
-
   const {
     type,
     label,
@@ -143,7 +141,9 @@ export const generateSettings = (
     (options as { label: string; value: string }[]).forEach((option) => {
       serializedOptions[option.value] =
         settingKey && settingCategory
-          ? t(`settings_${settingCategory}_${settingKey}_${option.value}_label`)
+          ? mainTranslator.translate(
+              `settings_${settingCategory}_${settingKey}_${option.value}_label`
+            )
           : option.label;
     });
   }
@@ -185,7 +185,9 @@ export const generateSettings = (
         {label}
         <Typography className={css(styles.optionLabelDescription)}>
           {settingCategory && settingKey
-            ? t(`settings_${settingCategory}_${settingKey}_description`)
+            ? mainTranslator.translate(
+                `settings_${settingCategory}_${settingKey}_description`
+              )
             : description}
         </Typography>
       </Typography>
