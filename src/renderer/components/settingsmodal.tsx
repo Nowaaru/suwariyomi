@@ -19,6 +19,7 @@ import React, { useRef, useState } from 'react';
 import { generateSettings } from '../util/func';
 import { settingsSchemata } from '../util/auxiliary';
 import { generateSliderStyles } from './settings/filterslider';
+import { useTranslation } from '../../shared/intl';
 
 import Switch from './switch';
 import Select from './select';
@@ -100,6 +101,7 @@ const SettingsModal = ({
 }) => {
   const [tab, setTab] = useState('General');
   const [isPreviewing, setPreviewing] = useState(false);
+  const { t } = useTranslation();
 
   const readerCategories = useRef({
     General: {
@@ -362,9 +364,15 @@ const SettingsModal = ({
                   {headerItem}
                   {categorySchemata.map((x) =>
                     generateSettings(
-                      settingsSchemata.reader[
-                        x as keyof typeof settingsSchemata.reader
-                      ],
+                      {
+                        ...settingsSchemata.reader[
+                          x as keyof typeof settingsSchemata.reader
+                        ],
+                        ...{
+                          label: t(`settings_reader_${x}_label`),
+                          description: t(`settings_reader_${x}_description`),
+                        },
+                      },
                       settings[x as keyof typeof settings],
                       (value) => {
                         onChange({

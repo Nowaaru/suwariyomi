@@ -736,7 +736,9 @@ const SearchPage = () => {
           <Typography variant="h6">{t('search_no_sources_title')}</Typography>
         </DialogTitle>
         <DialogContent>
-          <Typography variant="body1">{t('search_no_sources_desc')}</Typography>
+          <Typography variant="body1">
+            {t('search_no_sources_description')}
+          </Typography>
         </DialogContent>
         <DialogActions>
           <Button

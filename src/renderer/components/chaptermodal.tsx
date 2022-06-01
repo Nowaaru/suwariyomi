@@ -12,6 +12,7 @@ import Chapter from './chapter';
 import Handler from '../../main/sources/handler';
 
 import { sortChapters } from '../util/func';
+import { useTranslation } from '../../shared/intl';
 import Theme from '../../main/util/theme';
 
 const { theme, themeStyleDark, themeStyleLight } =
@@ -88,6 +89,7 @@ const ChapterModal = ({
     DatabaseManga | Record<string, never>
   >();
   const [errorOccured, setErrorOccured] = useState(false);
+  const { t } = useTranslation();
 
   // If manga is not in cache, pull from source
   useEffect(() => {
@@ -101,7 +103,7 @@ const ChapterModal = ({
         .filter((x) => x.getName().toLowerCase() === source.toLowerCase());
 
       if (foundSource.length === 0) {
-        window.electron.log.error(`Source ${source} not found`);
+        window.electron.log.error(t('chaptermodal_error_source'));
         return setErrorOccured(true);
       }
       const sourceObject = foundSource[0];
@@ -117,7 +119,7 @@ const ChapterModal = ({
     }
 
     return undefined;
-  }, [mangaObject, source, manga, errorOccured]);
+  }, [mangaObject, source, manga, errorOccured, t]);
 
   return (
     <Dialog
@@ -132,7 +134,7 @@ const ChapterModal = ({
         {errorOccured ? (
           <div className={css(styles.chapterModalDialogErrorContainer)}>
             <p>
-              An error occured while loading chapters.
+              {t('chaptermodal_error_load')}
               <Button
                 className={css(styles.chapterModalDialogErrorRetryButton)}
                 onClick={() => {
@@ -140,7 +142,7 @@ const ChapterModal = ({
                   setErrorOccured(false);
                 }}
               >
-                Retry
+                {t('retry')}
               </Button>
             </p>
           </div>

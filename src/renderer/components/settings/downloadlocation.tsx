@@ -7,6 +7,7 @@ import {
 } from '@mui/material';
 import { StyleSheet, css } from 'aphrodite';
 import { settingsStylesObject } from '../../util/func';
+import { useTranslation } from '../../../shared/intl';
 import type { Schema } from '../../util/auxiliary';
 import Theme from '../../../main/util/theme';
 
@@ -46,6 +47,7 @@ const DownloadLocation = (
   }
 ) => {
   const { setting, schema, onChange } = props;
+  const { t } = useTranslation();
 
   return (
     <Box className={css(styles.optionContainer)}>
@@ -64,7 +66,7 @@ const DownloadLocation = (
             const chosenPath =
               (await window.electron.util.showOpenDialog({
                 buttonLabel: 'Set',
-                title: 'Set Download Location',
+                title: t('downloadlocation_tooltip'),
                 defaultPath: setting,
                 properties: ['openDirectory', 'createDirectory'],
               })) ?? [];

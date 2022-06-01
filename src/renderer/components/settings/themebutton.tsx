@@ -64,8 +64,6 @@ const ThemeButton = (props: ThemeButtonProps) => {
   const themeItem = new Theme(theme.name.toLowerCase(), variant);
 
   const newThemeColours = themeItem.getColors();
-  console.log(selected);
-
   return (
     <div className={css(styles.themeButtonContainer)}>
       <button

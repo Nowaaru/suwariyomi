@@ -4,6 +4,7 @@ import { useState } from 'react';
 import sanitizeHtml from 'sanitize-html';
 
 import Theme from '../../main/util/theme';
+import { useTranslation } from '../../shared/intl';
 import { Media } from '../util/tracker/tracker';
 
 const { theme, themeStyleDark, themeStyleLight } =
@@ -81,6 +82,7 @@ const TrackerItem = ({
   const coverImage =
     media.covers?.medium ?? media.covers?.large ?? media.covers?.extraLarge;
 
+  const { t } = useTranslation();
   const descriptionTrimLength = 200;
   const [isBackgroundIlluminated, setIllumination] = useState<boolean>(chosen!);
   return (
@@ -105,20 +107,26 @@ const TrackerItem = ({
             media.title?.romaji ??
             media.title?.english ??
             media.title?.native ??
-            'No Title'}
+            t('notitle')}
         </span>
         {media.chapters ?? media.volumes ? (
           <span className={css(styles.containerContentMeta)}>
+            {media.volumes
+              ? media.volumes === 1
+                ? t('countv')
+                : t('countvs')
+              : null}
+            {media.volumes ? t('comma') : ''}
             {media.chapters
-              ? `${media.chapters} Chapters${media.volumes ? ',' : ''}`
-              : null}{' '}
-            {media.volumes ? `${media.volumes} Volumes` : null}
+              ? t(media.chapters === 1 ? 'countc' : 'countcs')
+              : null}
           </span>
         ) : null}
         <span className={css(styles.containerContentDescription)}>
-          {sanitizeHtml(
-            media.description ?? 'No description provided.'
-          ).substring(0, descriptionTrimLength)}
+          {sanitizeHtml(media.description ?? t('trackeritem_nodesc')).substring(
+            0,
+            descriptionTrimLength
+          )}
           {(media.description?.length ?? 0) > descriptionTrimLength
             ? '...'
             : null}

@@ -5,6 +5,7 @@ import type { SelectProps as MaterialSelectProps } from '@mui/material/Select';
 
 import { omit } from 'lodash';
 import { StyleSheet, css } from 'aphrodite';
+import { useTranslation } from '../../shared/intl';
 import Theme from '../../main/util/theme';
 
 const { theme, themeStyleDark, themeStyleLight } =
@@ -67,12 +68,17 @@ const Select = (
   }
 ) => {
   const { value, values, sx, defaultValue } = props;
+  const { t } = useTranslation();
   if (
     !Object.keys(values).find(
       (optionValue) => optionValue === (value ?? defaultValue)
     )
   )
-    throw new Error(`Value "${value ?? defaultValue}" not found in values`);
+    throw new Error(
+      t('select_error', {
+        value: String(value ?? defaultValue),
+      })
+    );
 
   return (
     <MaterialSelect

@@ -12,6 +12,7 @@ import { settingsStylesObject } from '../../util/func';
 import type { Schema } from '../../util/auxiliary';
 import Switch from '../switch';
 import Theme from '../../../main/util/theme';
+import { useTranslation } from '../../../shared/intl';
 
 const { theme, themeStyleDark, themeStyleLight } =
   window.electron.settings.getAll().appearance;
@@ -20,7 +21,6 @@ const currentTheme = new Theme(
   theme === 'dark' ? themeStyleDark : themeStyleLight,
   theme as 'dark' | 'light'
 );
-
 const componentStyle = currentTheme.getComponentStyle('themeswitch');
 const styles = StyleSheet.create({
   switchContainer: {
@@ -52,6 +52,7 @@ const ThemeSwitch = (
     setting: string;
   }
 ) => {
+  const { t } = useTranslation();
   const { onChange = noop, schema, setting } = switchProps;
   const checked = setting === 'light';
 
@@ -73,8 +74,8 @@ const ThemeSwitch = (
       <Switch
         checked={checked}
         onChange={() => onChange(checked ? 'dark' : 'light')}
-        tooltipOff="Dark Mode"
-        tooltipOn="Light Mode"
+        tooltipOff={t('themeswitch_darkmode')}
+        tooltipOn={t('themeswitch_lightmode')}
       />
       <ModeDayIcon
         className={css(

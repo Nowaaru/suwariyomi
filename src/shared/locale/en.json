@@ -250,6 +250,7 @@
   "rpc_sources_state": "Getting new sources...",
 
   "mangaitem_no_synopsis": "No synopsis available.",
+  "mangaitem_remaining": "{{chapters}} Remaining Chapters",
   "mangaitem_chapter_unread": "Chapter {{chapter}} - Unread",
   "mangaitem_chapter_page": "Chapter {{chapter}} - Page {{page}} of {{pages}}",
 
@@ -258,7 +259,8 @@
 
   "select_error": "Value {{value}} not found in values.",
 
-  "chaptermodal_error": "An error occured while loading chapters.",
+  "chaptermodal_error_load": "An error occured while loading chapters.",
+  "chaptermodal_error_source": "Source {{source}} not found.",
   "chaptermodal_title": "Chapters",
 
   "filtersettings_error_options": "No options available for field {{field}}.",

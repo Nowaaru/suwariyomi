@@ -3,6 +3,7 @@ import { css, StyleSheet } from 'aphrodite';
 import { clamp } from 'lodash';
 
 import Theme from '../../main/util/theme';
+import { useTranslation } from '../../shared/intl';
 
 import {
   Media,
@@ -89,6 +90,7 @@ const TrackerModal = (
   }
 ) => {
   const { libraryManga, searchModalData, onError, onClose = () => {} } = props;
+  const { t } = useTranslation();
   if (!libraryManga || !searchModalData) return null;
 
   const lA1 = `${themeColors.accent.substring(0, 7)}11`;
@@ -111,7 +113,7 @@ const TrackerModal = (
           }}
           className={css(styles.interactionButton)}
         >
-          Clear
+          {t('clear')}
         </Button>,
         <Button
           key="close"
@@ -122,11 +124,14 @@ const TrackerModal = (
             ':hover': { backgroundColor: lA1 },
           }}
         >
-          Close
+          {t('close')}
         </Button>,
       ]}
       className={css(styles.trackerMangaDialog)}
-      title={`${searchModalData?.tracker} Tracking for ${libraryManga.Name}`}
+      title={t('trackermodal_title', {
+        tracker: getTracker(searchModalData.tracker).name,
+        mangaTitle: libraryManga.Name,
+      })}
       open={!!searchModalData}
       onClose={() => onClose}
     >
@@ -144,9 +149,9 @@ const TrackerModal = (
               id={x.mediaId}
               onClick={async () => {
                 if (!searchModalData?.tracker)
-                  return window.electron.log.info('No tracker field.');
+                  return window.electron.log.info(t('trackermodal_error_tf'));
                 if (!x.mediaId)
-                  return window.electron.log.info('No mediaId field.');
+                  return window.electron.log.info(t('trackermodal_error_mid'));
                 // If there's no userTrackedInfo, that means that the user does not have this on their list.
 
                 const readChapters = window.electron.read.get(
@@ -293,12 +298,12 @@ const TrackerModal = (
             >
               <Select
                 values={{
-                  current: 'Reading',
-                  completed: 'Completed',
-                  paused: 'Paused',
-                  dropped: 'Dropped',
-                  planning: 'Planning',
-                  rereading: 'Rereading',
+                  current: t('reading'),
+                  completed: t('completed'),
+                  paused: t('paused'),
+                  dropped: t('dropped'),
+                  planning: t('planning'),
+                  rereading: t('rereading'),
                 }}
                 defaultValue={
                   currentTracker.readingStatus?.toLowerCase() ?? 'current'
@@ -327,7 +332,7 @@ const TrackerModal = (
                 }}
               />
               <TextField
-                label="Chapter Progress"
+                label={t('chapterprogress')}
                 defaultValue={currentTracker.progress}
                 InputLabelProps={{
                   shrink: true,
@@ -353,7 +358,7 @@ const TrackerModal = (
                 }}
               />
               <TextField
-                label="Score"
+                label={t('score')}
                 defaultValue={currentTracker.score}
                 onChange={(e) => {
                   if (e.target.value.match(/[^0-9.]|(\.$)/g)) return;
@@ -401,7 +406,7 @@ const TrackerModal = (
             >
               <TextField
                 type="date"
-                label="Started At"
+                label={t('startedat')}
                 defaultValue={
                   currentDateStartedAt
                     ? currentDateStartedAt.toISOString().split('T')[0]
@@ -445,7 +450,7 @@ const TrackerModal = (
               />
               <TextField
                 type="date"
-                label="Completed At"
+                label={t('completedat')}
                 defaultValue={
                   currentDateFinishedAt
                     ? currentDateFinishedAt.toISOString().split('T')[0]

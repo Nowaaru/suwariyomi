@@ -13,6 +13,7 @@ import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import Handler from '../../main/sources/handler';
 import { ReadDatabaseValue } from '../../main/util/read';
 import { convertDateToFormatted } from '../util/func';
+import { useTranslation } from '../../shared/intl';
 import {
   Chapter as DatabaseChapter,
   Manga as DatabaseManga,
@@ -188,6 +189,7 @@ const Chapter = ({
   source: string;
   manga: DatabaseManga;
 }) => {
+  const { t } = useTranslation();
   const { lastRead = undefined, timeElapsed = 0 } = dbchapter ?? {};
   const [currentPage, setCurrentPage] = useState(dbchapter?.currentPage ?? -1);
   const isRead =
@@ -222,15 +224,21 @@ const Chapter = ({
           {chapter.ChapterTitle ||
             `${
               chapter.Volume
-                ? `Volume ${chapter.Volume} Chapter ${chapter.Chapter}`
-                : `Chapter ${chapter.Chapter}`
+                ? t('volumechapter', {
+                    volume: chapter.Volume,
+                    chapter: chapter.Chapter,
+                  })
+                : t('chapter', { chapter: chapter.Chapter })
             }`}
         </h3>
         {chapter.ChapterTitle && (
           <h4 className={css(styles.chapterNumberData)}>
             {chapter.Volume
-              ? `VOL. ${chapter.Volume} CH. ${chapter.Chapter}`
-              : `CH. ${chapter.Chapter}`}
+              ? t('volchap', {
+                  volume: chapter.Volume,
+                  chapter: chapter.Chapter,
+                })
+              : t('chap', { chapter: chapter.Chapter })}
           </h4>
         )}
         {chapter.Groups && chapter.Groups.length > 0 ? (
@@ -253,8 +261,8 @@ const Chapter = ({
         <Tooltip
           title={
             currentPage !== -1
-              ? `Page ${currentPage} / ${chapter.PageCount}`
-              : 'Unread'
+              ? t('page', { page: currentPage, total: chapter.PageCount })
+              : t('unread')
           }
           placement="top"
         >
@@ -269,13 +277,13 @@ const Chapter = ({
           >
             {dbchapter && currentPage !== -1
               ? isRead
-                ? 'Re-read'
-                : 'Continue'
-              : 'Read'}
+                ? t('reread')
+                : t('continue')
+              : t('read')}
           </Button>
         </Tooltip>
       </div>
-      <Tooltip title="Bookmark">
+      <Tooltip title={t('bookmark')}>
         <Checkbox
           className={css(styles.chapterContainerBookmarkButton)}
           sx={{
@@ -306,7 +314,7 @@ const Chapter = ({
         />
       </Tooltip>
       {modifierShift ? (
-        <Tooltip title={isRead ? 'Mark as unread' : 'Mark as read'}>
+        <Tooltip title={isRead ? t('mark_unread') : t('mark_read')}>
           <Checkbox
             checked={!!isRead}
             checkedIcon={
@@ -341,9 +349,14 @@ const Chapter = ({
         </Tooltip>
       ) : downloadable ? (
         <Tooltip
-          title={`Download Ch. ${chapter.Chapter}${
-            chapter.ChapterTitle ? ` - ${chapter.ChapterTitle}` : ''
-          }`}
+          title={
+            chapter.ChapterTitle
+              ? t('download_ch_title', {
+                  ch: chapter.Chapter,
+                  title: chapter.ChapterTitle,
+                })
+              : t('download_ch', { ch: chapter.Chapter })
+          }
           placement="top"
         >
           <IconButton

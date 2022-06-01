@@ -27,6 +27,7 @@ import type {
   SearchFilterFieldTypeCheckbox3,
 } from '../../main/sources/static/base';
 import Theme from '../../main/util/theme';
+import { useTranslation } from '../../shared/intl';
 
 const { theme, themeStyleDark, themeStyleLight } =
   window.electron.settings.getAll().appearance;
@@ -171,6 +172,7 @@ const FilterSettings = ({
   onSubmit,
 }: FilterSettingsProps) => {
   const [sourceFiltersState, setSourceFiltersState] = useState(sourceFilters);
+  const { t } = useTranslation();
 
   const handleChange = useCallback(
     (changeList: Array<[string, any]>) => {
@@ -190,9 +192,9 @@ const FilterSettings = ({
 
       if (!fieldChoices)
         throw new Error(
-          `No options for ${
-            field ? String(field) : '<no name>'
-          } in field ${field}.`
+          t('filtersettings_error_options', {
+            field: field ?? '<no value>',
+          })
         );
 
       // TODO: Instead of repetitively making <divs> with <FormGroup>s, make one big div with <FormGroup>s
@@ -387,10 +389,15 @@ const FilterSettings = ({
           );
           break;
         default:
-          throw new Error(`Unsupported field type ${fieldType} for ${field}.`);
+          throw new Error(
+            t('filtersettings_error_type', {
+              fieldType,
+              field,
+            })
+          );
       }
     },
-    [sourceFiltersState, filterSettings, handleChange]
+    [sourceFiltersState, filterSettings, handleChange, t]
   );
 
   // Convert each filter field to a component

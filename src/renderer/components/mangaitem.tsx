@@ -13,7 +13,7 @@ import Handler from '../../main/sources/handler';
 import type { ReadDatabaseValue } from '../../main/util/read';
 import { getReadUrl, sortChapters } from '../util/func';
 import type { FullManga } from '../../main/util/manga';
-
+import { useTranslation } from '../../shared/intl';
 import Theme from '../../main/util/theme';
 
 type MangaItemListProps = {
@@ -315,6 +315,7 @@ const MangaItem = ({
   cachedChapterData,
   isLibrary,
 }: MangaItemProps) => {
+  const { t } = useTranslation();
   const Navigation = useNavigate();
   const mangaTags = tags.map((tag) => (
     <Tag
@@ -385,11 +386,7 @@ const MangaItem = ({
         <div key={elementKey} className={css(styles.mangaItemListContainer)}>
           <div className={css(styles.mangaItemCover, styles.listCover)}>
             {isLibrary && remainingChapters > 0 ? (
-              <Tooltip
-                title={`${remainingChapters} Remaining Chapters`}
-                placement="right"
-                arrow
-              >
+              <Tooltip title={t('mangaitem_remaining')} placement="right" arrow>
                 <span className={css(styles.mangaItemCoverBanner)}>
                   {remainingChapters}
                 </span>

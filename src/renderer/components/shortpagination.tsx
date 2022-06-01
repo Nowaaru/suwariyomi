@@ -12,6 +12,7 @@ import { IconButton, Paper } from '@mui/material';
 
 import propTypes from 'prop-types';
 import Theme from '../../main/util/theme';
+import { useTranslation } from '../../shared/intl';
 
 const { theme, themeStyleDark, themeStyleLight } =
   window.electron.settings.getAll().appearance;
@@ -220,9 +221,11 @@ const ShortPagination = ({
   maxpages,
   onUpdate = () => {},
 }: PaginationProps) => {
-  if (maxpages < 1) throw new Error('maxpages must be greater than 1');
-  if (page < 1) throw new Error('page must be greater than 0');
-  if (page > maxpages) throw new Error('page must be less than maxpages');
+  const { t } = useTranslation();
+
+  if (maxpages < 1) throw new Error(t('shortpagination_error_gt'));
+  if (page < 1) throw new Error(t('shortpagination_error_zero'));
+  if (page > maxpages) throw new Error(t('shortpagination_error_inclusivity'));
 
   const [value, setValue] = useState(String(page)); // display page number
   const [searchButtonIsVisible, setVisiblity] = useState(false); // display search button if the text input is focused
@@ -267,7 +270,7 @@ const ShortPagination = ({
           Number(page) === 1 && styles.startReached
         )}
       >
-        MIN 1
+        {t('shortpagination_min')}
       </span>
       <Paper className={css(styles.paginationBoxInner)}>
         <IconButton
@@ -342,12 +345,13 @@ const ShortPagination = ({
         )}
       >
         {endReached
-          ? 'END REACHED'
-          : `MAX ${
-              Number.isFinite(maxpages) && Number.isSafeInteger(maxpages)
-                ? maxpages
-                : '∞'
-            }`}
+          ? t('shortpagination_endreached')
+          : t('shortpagination_max', {
+              max:
+                Number.isFinite(maxpages) && Number.isSafeInteger(maxpages)
+                  ? maxpages
+                  : '∞',
+            })}
       </span>
     </Box>
   );

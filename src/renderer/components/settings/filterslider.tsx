@@ -5,6 +5,7 @@ import { noop, clamp } from 'lodash';
 import type { DefaultSettings } from '../../../main/util/settings';
 import { settingsStylesObject, hexToRgb } from '../../util/func';
 import type { Schema } from '../../util/auxiliary';
+import { useTranslation } from '../../../shared/intl';
 import Theme from '../../../main/util/theme';
 
 const { theme, themeStyleDark, themeStyleLight } =
@@ -64,13 +65,14 @@ const FilterSlider = (
     setting: number;
   }
 ) => {
+  const { t } = useTranslation();
   const { onChange = noop, schema, setting: value, settings } = sliderProps;
   const clampedValue = clamp(value, 0, 255);
   const colorConstantHex = `${themeColors.accent.substring(0, 7)}22`; // Strip off opacity that a themer might have added to their accent color
   const colorConstant = hexToRgb(themeColors.accent);
   const isEnabled: boolean = (settings.reader as DefaultSettings['reader'])
     .useCustomColorFilter;
-  if (!colorConstant) throw new Error('Could not parse color constant');
+  if (!colorConstant) throw new Error(t('colorslider_error'));
 
   const sliderColor = `rgba(${(clampedValue / 255) * colorConstant.r}, ${
     (clampedValue / 255) * colorConstant.g
