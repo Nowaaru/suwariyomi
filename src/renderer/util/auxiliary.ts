@@ -17,6 +17,25 @@ export type Schema = {
   optionsFunc?: () => any[];
 };
 
+export const determineChapterStringType = ({
+  volume,
+  chapter,
+  short,
+}: {
+  volume: number | undefined;
+  chapter: number | undefined;
+  short: boolean | undefined;
+}): string => {
+  const [isNaNC, isNaNV] = [chapter, volume].map(Number.isNaN);
+
+  if (isNaNV && isNaNC) throw new Error('Cannot determine chapter string type');
+  if (isNaNV && !isNaNC) return short ? 'chap' : 'chapter';
+  if (isNaNC && !isNaNV) return short ? 'vol' : 'volume';
+
+  return short ? 'volchapter' : 'volumechapter';
+};
+
+// settings_${translationKey}_${option.value}_label
 // @ts-ignore - this keeps whining about readonly type even though readonly has never been mentioned once in this project
 export const settingsSchemata: {
   [settingsContainer in keyof DefaultSettings]: {

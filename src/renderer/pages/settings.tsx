@@ -731,7 +731,15 @@ const Settings = () => {
                     />
                   ) : (
                     generateSettings(
-                      value,
+                      {
+                        ...value,
+                        ...{
+                          label: t(`${settingsLocation}_${key}_label`),
+                          description: t(
+                            `${settingsLocation}_${key}_description`
+                          ),
+                        },
+                      },
                       settings[settingsLocation][key],
                       (settingsValue: any) => {
                         const newSettings = { ...settings };
@@ -755,7 +763,7 @@ const Settings = () => {
                 advanced: (
                   <Box className={css(styles.optionContainer)}>
                     <Typography className={css(styles.optionLabel)}>
-                      Reset to Default Settings
+                      {t('settings_reset_label')}
                       <Typography
                         className={css(styles.optionLabelDescription)}
                       >
@@ -792,7 +800,7 @@ const Settings = () => {
                       <Typography
                         className={css(styles.optionLabelDescription)}
                       >
-                        {t('setting_theme_desc')}
+                        {t('setting_theme_description')}
                       </Typography>
                     </Typography>
                     <div className={css(styles.themeSelector)}>
@@ -862,7 +870,7 @@ const Settings = () => {
                       <Typography
                         className={css(styles.optionLabelDescription)}
                       >
-                        {t('setting_backup_Restore_desc')}
+                        {t('setting_backup_Restore_description')}
                       </Typography>
                     </Typography>
                     <Button
@@ -894,7 +902,7 @@ const Settings = () => {
                       <Typography
                         className={css(styles.optionLabelDescription)}
                       >
-                        {t('setting_tracking_tracking_desc')}
+                        {t('setting_tracking_tracking_description')}
                       </Typography>
                     </Typography>
                     <div>

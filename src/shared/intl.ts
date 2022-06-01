@@ -41,12 +41,16 @@ export default class Translator {
     Record<string, string | undefined>
   >();
 
+  public get langdata() {
+    return this.loadedLanguages;
+  }
+
   private currentLanguage: string;
 
   private supportedLanguages: string[];
 }
 
-const mainTranslator = new Translator(['en']);
+export const mainTranslator = new Translator(['en']);
 export const useTranslation = (): {
   t: (k: string, vars?: Record<string, string | number>) => string;
   a: (

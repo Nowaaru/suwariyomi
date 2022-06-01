@@ -111,6 +111,12 @@
   "chap": "CH. {{chapter}}",
   "pg": "PG. {{page}}",
 
+  "countc": "{{count}} Chapter",
+  "countcs": "{{count}} Chapters",
+
+  "countv": "{{count}} Volume",
+  "countvs": "{{count}} Volumes",
+
   "page": "Page {{page}} / {{total}}",
   "unread": "Unread",
   "reread": "Re-read",
@@ -137,6 +143,8 @@
   "in_use": "(in-use)",
   "installed": "Installed",
   "all": "All",
+  "on": "On",
+  "off": "Off",
 
   "reading": "Reading",
   "completed": "Completed",
@@ -145,7 +153,7 @@
   "planning": "Planning",
   "rereading": "Rereading",
 
-  "progress": "Chapter Progress",
+  "chapterprogress": "Chapter Progress",
   "score": "Score",
   "startedat": "Started At",
   "completedat": "Completed At",
@@ -212,6 +220,8 @@
   "settings_clear_warning": "This can't be undone! If you want to proceed, click the button {{count}} more time.",
   "settings_clear_warnings": "This can't be undone! If you want to proceed, click the button {{count}} more times.",
 
+  "settings_reset_label": "Reset to Default Settings",
+
   "setting_theme_light": "Theme Style - Light",
   "setting_theme_dark": "Theme Style - Dark",
   "setting_theme_desc": "Change your theme here.",
@@ -259,10 +269,12 @@
   "shortpagination_error_inclusivity": "pages must be less than maxpages",
   "shortpaginaton_min": "MIN 1",
   "shortpaginaton_max": "MAX {{pg}}",
+  "shortpagination_endreached": "END REACHED",
 
   "trackeritem_nodesc": "No description provided.",
   "trackeritem_desc_culled": "{{desc}}...",
 
+  "trackermodal_title": "{{tracker}} Tracking for {{mangaTitle}}",
   "trackermodal_error_tf": "No tracker field.",
   "trackermodal_error_mid": "No mediaId field.",
 
@@ -288,5 +300,195 @@
 
   "menu_reader_misc": "Misc",
   "menu_reader_misc_sharepage": "Share Page",
-  "menu_reader_misc_sharechapter": "Share Chapter"
+  "menu_reader_misc_sharechapter": "Share Chapter",
+
+  "settings_general_locale_label": "Language",
+  "settings_general_locale_description": "The language to use for the application.",
+
+  "settings_general_dateFormat_label": "Date Format",
+  "settings_general_dateFormat_description": "The format to use for dates.",
+
+  "settings_general_discordRPCIntegration_label": "Discord Rich Presence Integration",
+  "settings_general_discordRPCIntegration_description": "Enable full Discord Rich Presence integration. Disabling this will remove the presence from your status.",
+
+  "settings_general_autoUpdate_label": "Auto Update",
+  "settings_general_autoUpdate_description": "Automatically check for updates to the application",
+
+  "settings_general_minimizeToTray_label": "Minimize to Tray",
+  "settings_general_minimizeToTray_description": "Send the window to the system tray instead of minimizing it.",
+
+  "settings_general_closeToTray_label": "Minimize on Close",
+  "settings_general_closeToTray_description": "Minimize the window instead of directly closing it.",
+
+  "library_displayUserName_label": "Display User Name",
+  "library_displayUserName_description": "Display your OS name when in the library. Otherwise, simply show \"Welcome Back.\"",
+
+  "settings_library_updateOnKeyPress_label": "Update on Key Press",
+  "settings_library_updateOnKeyPress_description": "Update search results upon every key press. If this causes performance issues, disable this.",
+
+  "settings_library_refreshCovers_description": "When updating, also fetch the latest covers of the manga.",
+  "settings_library_refreshCovers_label": "Refresh Covers",
+
+  "settings_library_ignoreArticles_label": "Ignore Articles When Searching",
+  "settings_library_ignoreArticles_description": "When searching, ignore articles (the, an, a) when searching for manga.",
+
+  "settings_library_searchSuggestions_label": "Show Search Suggestions",
+  "settings_library_searchSuggestions_description": "Show search suggestions when searching for manga. You can press SHIFT + TAB to fill in the search field.",
+
+  "settings_library_updateFrequency_label": "Update Frequency",
+  "settings_library_updateFrequency_description": "How often to update the library.",
+
+  "settings_library_updateNotifications_label": "Update Notifications",
+  "settings_library_updateNotifications_description": "Show notifications whenever the update cycle starts and ends, and when a new chapter is added.",
+
+  "settings_library_updateOngoingManga_label": "Only Update Ongoing Manga",
+  "settings_library_updateOngoingManga_description": "Only update ongoing manga when updating the library.",
+
+  "settings_appearance_theme_label": "Theme",
+  "settings_appearance_theme_description": "The look and feel of the application.",
+
+  "settings_reader_lightbarVertical_label": "Vertical Lightbar",
+  "settings_reader_lightbarVertical_description": "Display the lightbar vertically.",
+
+  "settings_reader_lightbarEnabled_label": "Enable Lightbar",
+  "settings_reader_lightbarEnabled_description": "Enable the lightbar.",
+
+  "settings_reader_lightbarRight_label": "Right Lightbar",
+  "settings_reader_lightbarRight_description": "Display the lightbar on the right side if the vertical lightbar is enabled.",
+
+  "settings_reader_skipChaptersOfDifferentGroup_label": "Skip Chapters of Different Group",
+  "settings_reader_skipChaptersOfDifferentGroup_description": "If the next chapter has the same chapter number but a different group/language, skip it.",
+
+  "settings_reader_skipChaptersMarkedRead_label": "Skip Chapters Marked Read",
+  "settings_reader_skipChaptersMarkedRead_description": "If the next chapter is marked read, skip it.",
+
+  "settings_reader_readingMode_label": "Reading Mode",
+  "settings_reader_readingMode_description": "The way the manga is read.",
+
+  "settings_reader_navLayoutPaged_label": "Navigation Layout",
+  "settings_reader_navLayoutPaged_description": "Where you need to tap to navigate to the next/previous page.",
+
+  "settings_reader_invertTappingPaged_label": "Invert Tapping",
+  "settings_reader_invertTappingPaged_description": "Invert the way you tap to navigate to the next/previous page.",
+
+  "settings_reader_scaleType_label": "Scale Type",
+  "settings_reader_scaleType_description": "The size of the page when reading.",
+
+  "settings_reader_cropBordersPaged_label": "Crop Borders",
+  "settings_reader_cropBordersPaged_description": "Crop the borders of the pages.",
+
+  "settings_reader_pageLayoutPaged_label": "Page Layout",
+  "settings_reader_pageLayoutPaged_description": "The way the pages are laid out.",
+
+  "settings_reader_zoomStartPosition_label": "Zoom Start Position",
+  "settings_reader_zoomStartPosition_description": "The position to start the zoom at.",
+
+  "settings_reader_navLayoutWebtoon_label": "Navigation Layout (Webtoon)",
+  "settings_reader_navLayoutWebtoon_description": "Where you need to tap to navigate to the next/previous page.",
+
+  "settings_reader_invertTappingWebtoon_label": "Invert Tapping (Webtoon)",
+  "settings_reader_invertTappingWebtoon_description": "Invert the way you tap to navigate to the next/previous page.",
+
+  "settings_reader_pageLayoutWebtoon_label": "Page Layout (Webtoon)",
+  "settings_reader_pageLayoutWebtoon_description": "The way the pages are laid out.",
+
+  "settings_reader_invertDoublePagesWebtoon_label": "Invert Double Pages (Webtoon)",
+  "settings_reader_invertDoublePagesWebtoon_description": "Swap the left and right pages when double-page layout is used.",
+
+  "settings_reader_allowZoomOutWebtoon_label": "Allow Zoom Out (Webtoon)",
+  "settings_reader_allowZoomOutWebtoon_description": "Allow the user to zoom out past the minimum zoom level.",
+
+  "settings_reader_sidePaddingWebtoon_label": "Side Padding (Webtoon)",
+  "settings_reader_sidePaddingWebtoon_description": "The amount of padding on the sides of the pages.",
+
+  "settings_reader_useCustomColorFilter_label": "Use Custom Color Filter",
+  "settings_reader_useCustomColorFilter_description": "Use a custom color filter when reading manga. Good for if the page has a hue shift.",
+
+  "settings_reader_filterR_label": "R",
+  "settings_reader_filterR_description": "The red hue of the page.",
+
+  "settings_reader_filterG_label": "G",
+  "settings_reader_filterG_description": "The green hue of the page.",
+
+  "settings_reader_filterB_label": "B",
+  "settings_reader_filterB_description": "The blue hue of the page.",
+
+  "settings_reader_filterA_label": "A",
+  "settings_reader_filterA_description": "The opacity of the page.",
+
+  "settings_reader_blendMode_label": "Blend Mode",
+  "settings_reader_blendMode_description": "The blend mode to use when reading manga.",
+
+  "settings_downloads_deleteRemovedChapters_label": "Delete Removed Chapters",
+  "settings_downloads_deleteRemovedChapters_description": "Automatically delete chapters that have been removed from the website.",
+
+  "settings_downloads_downloadNewChapters_label": "Download New Chapters",
+  "settings_downloads_downloadNewChapters_description": "Automatically download new chapters when a manga updates.",
+
+  "settings_downloads_location_label": "Download Location",
+  "settings_downloads_location_description": "Where to save the downloaded chapters. If your path has holes, the folder(s) will be created if it does not exist.",
+
+  "settings_downloads_removeAfterRead_label": "Remove After Read",
+  "settings_downloads_removeAfterRead_description": "Remove downloaded chapters after you have finished reading them.",
+
+  "settings_downloads_removeWhenMarkedRead_label": "Remove When Marked Read",
+  "settings_downloads_removeWhenMarkedRead_description": "Remove downloaded chapters when you mark them as read.",
+
+  "settings_downloads_saveChaptersAsCBZ_label": "Save Chapters As CBZ",
+  "settings_downloads_saveChaptersAsCBZ_description": "Save downloaded chapters as a CBZ file instead of a directory of images.",
+
+  "settings_browse_checkForUpdates_label": "Check for Updates",
+  "settings_browse_checkForUpdates_description": "Periodically check for updates to sources.",
+
+  "settings_browse_onlySearchPinned_label": "Only Search Pinned",
+  "settings_browse_onlySearchPinned_description": "Only search for new chapters when the manga is pinned in the library.",
+
+  "settings_browse_showNSFWSources_label": "Show NSFW Sources",
+  "settings_browse_showNSFWSources_description": "Show NSFW sources when browsing sources and manga.",
+
+  "settings_tracking_syncChaptersAfterReading_label": "Update Tracking After Reading",
+  "settings_tracking_syncChaptersAfterReading_description": "Automatically sync the chapter list with the website after you have finished reading a chapter.",
+
+  "settings_tracking_trackWhenAddingToLibrary_label": "Track When Adding To Library",
+  "settings_tracking_trackWhenAddingToLibrary_description": "Automatically track new chapters when you add a manga to your library. This usually only works for silent-tracking sites like Komga.",
+
+  "settings_tracking_updateWhenMarkedAsRead_label": "Update When Marked As Read",
+  "settings_tracking_updateWhenMarkedAsRead_description": "Update trackers when you mark a chapter as read/unread.",
+
+  "settings_advanced_sendCrashReports_label": "Send Crash Reports",
+  "settings_advanced_sendCrashReports_description": "Send crash reports to the developer. This will help us fix bugs and improve the application.",
+
+  "settings_general_library_updateFrequency_manual_label": "Manual",
+  "settings_general_library_updateFrequency_43200_label": "Every 12 hours",
+  "settings_general_library_updateFrequency_86400_label": "Daily",
+  "settings_general_library_updateFrequency_172800_label": "Every 2 days",
+  "settings_general_library_updateFrequency_259200_label": "Every 3 days",
+  "settings_general_library_updateFrequency_604800_label": "Weekly",
+
+  "settings_general_library_readingMode_right-to-left_label": "Right-to-Left",
+  "settings_general_library_readingMode_left-to-right_label": "Left-to-Right",
+  "settings_general_library_readingMode_vertical_label": "Vertical",
+  "settings_general_library_readingMode_continuous-vertical_label": "Continuous Vertical",
+  "settings_general_library_readingMode_webtoon_label": "Webtoon",
+
+  "settings_general_reader_navLayoutPaged_left-and-right_label": "Left and Right",
+  "settings_general_reader_navLayoutPaged_top-and-bottom_label": "Top and Bottom",
+  "settings_general_reader_navLayoutPaged_kindle_label": "Kindle",
+  "settings_general_reader_navLayoutPaged_l-shaped_label": "L-Shaped",
+  "settings_general_reader_navLayoutPaged_edge_label": "Edge",
+
+  "settings_general_reader_pageLayoutPaged_single-page_label": "Single Page",
+  "settings_general_reader_pageLayoutPaged_double-page_label": "Double Page",
+
+  "settings_general_reader_sidePaddingWebtoon_none_label": "None",
+  "settings_general_reader_sidePaddingWebtoon_25%_label": "25%",
+  "settings_general_reader_sidePaddingWebtoon_50%_label": "50%",
+  "settings_general_reader_sidePaddingWebtoon_75%_label": "75%",
+
+  "settings_general_reader_blendMode_default_label": "Default",
+  "settings_general_reader_blendMode_multiply_label": "Multiply",
+  "settings_general_reader_blendMode_screen_label": "Screen",
+  "settings_general_reader_blendMode_overlay_label": "Overlay",
+  "settings_general_reader_blendMode_dodge_label": "Dodge",
+  "settings_general_reader_blendMode_burn_label": "Burn"
 }
