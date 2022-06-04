@@ -2,6 +2,7 @@
 import ThemeSwitch from '../components/settings/themeswitch';
 import FilterSlider from '../components/settings/filterslider';
 import DownloadLocation from '../components/settings/downloadlocation';
+import { mainTranslator } from '../../shared/intl';
 import type { DefaultSettings } from '../../main/util/settings';
 
 export type Schema = {
@@ -48,7 +49,15 @@ export const settingsSchemata: {
       label: 'Language',
       description: 'The language to use for the application.',
       default: 'en',
-      options: [{ label: 'English', value: 'en' }],
+      options: mainTranslator.languages.map((lang) => ({
+        label: (
+          mainTranslator.langdata.get(lang)?.$meta as unknown as Record<
+            string,
+            string
+          >
+        )?.name,
+        value: lang,
+      })),
     },
     dateFormat: {
       type: 'select',

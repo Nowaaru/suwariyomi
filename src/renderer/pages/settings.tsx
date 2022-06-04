@@ -51,7 +51,7 @@ import ThemeButton from '../components/settings/themebutton';
 import Theme from '../../main/util/theme';
 
 import type { DefaultSettings } from '../../main/util/settings';
-import { useTranslation } from '../../shared/intl';
+import { mainTranslator, useTranslation } from '../../shared/intl';
 import { Schema, settingsSchemata } from '../util/auxiliary';
 import {
   generateSettings,
@@ -653,7 +653,7 @@ const Settings = () => {
         <>
           <Backdrop
             open={isInLoadingContext}
-            onClickCapture={(e) => e.stopPropagation()}
+            onClickCapture={(e: Event) => e.stopPropagation()}
             className={css(styles.progressBackup)}
           >
             <div className={css(styles.circularProgressContainer)}>
@@ -750,7 +750,18 @@ const Settings = () => {
                           settingsLocation === 'general' &&
                           key === 'discordRPCIntegration'
                         ) {
-                          window.electron.rpc.toggleRPC(settingsValue);
+                          switch (key) {
+                            case 'discordRPCIntegration':
+                              window.electron.rpc.toggleRPC(settingsValue);
+                              break;
+                            case 'locale':
+                              mainTranslator.lang = settingsValue;
+                              break;
+                            default:
+                              throw new Error(
+                                `Default case unexpected for ${key}`
+                              );
+                          }
                         }
                         setSettings(newSettings);
                       }

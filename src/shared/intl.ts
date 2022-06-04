@@ -36,6 +36,17 @@ export default class Translator {
     return language[key] || key;
   }
 
+  public set lang(language: string) {
+    if (!this.supportedLanguages.includes(language)) {
+      throw new Error(
+        `Language "${language}" is not supported. Supported languages are: ${this.supportedLanguages.join(
+          ', '
+        )}`
+      );
+    }
+    this.currentLanguage = language;
+  }
+
   private loadedLanguages = new Map<
     string,
     Record<string, string | undefined>
@@ -48,6 +59,10 @@ export default class Translator {
   private currentLanguage: string;
 
   private supportedLanguages: string[];
+
+  public get languages(): string[] {
+    return [...this.supportedLanguages];
+  }
 }
 
 export const mainTranslator = new Translator(['en']);
