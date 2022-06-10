@@ -23,6 +23,7 @@ import { StyleSheet, css } from 'aphrodite';
 import { isEqual } from 'lodash';
 import React, { useEffect, useState, useRef, Fragment } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { stripHtml } from 'string-strip-html';
 
 import LazyLoad, { forceCheck } from 'react-lazyload';
 import ArrowCircleLeftRoundedIcon from '@mui/icons-material/ArrowCircleLeftRounded';
@@ -661,10 +662,9 @@ const SearchPage = () => {
                       mangaid={MangaObject.MangaID}
                       synopsis={(() => {
                         return (
-                          new DOMParser().parseFromString(
-                            MangaObject.Synopsis || t('mangaitem_no_synopsis'), // Use OR instead of null check to implicitly cast empty strings to boolean.
-                            'text/html'
-                          ).body.textContent || t('mangaitem_no_synopsis')
+                          stripHtml(
+                            MangaObject.Synopsis || t('mangaitem_no_synopsis') // Use OR instead of null check to implicitly cast empty strings to boolean.
+                          ).result || t('mangaitem_no_synopsis')
                         );
                       })()}
                       key={MangaObject.MangaID}
