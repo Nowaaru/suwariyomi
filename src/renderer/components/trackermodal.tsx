@@ -212,7 +212,7 @@ const TrackerModal = (
                       }
                     }
 
-                    Object.assign(x.userTrackedInfo, {
+                    Object.assign(x.userTrackedInfo ?? {}, {
                       listId: data.userTrackedInfo.id,
                       progress: data.userTrackedInfo.progress,
                       readingStatus: data.userTrackedInfo.status,

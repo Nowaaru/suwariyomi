@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 
-import { Box, Typography, UseSwitchProps } from '@mui/material';
+import { Box, Typography, SwitchProps } from '@mui/material';
 
 import { StyleSheet, css } from 'aphrodite';
 import { noop } from 'lodash';
@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
 } as any) as any;
 
 const ThemeSwitch = (
-  switchProps: UseSwitchProps & {
+  switchProps: SwitchProps & {
     schema: Schema;
     setting: string;
   }
