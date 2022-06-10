@@ -1,10 +1,4 @@
-import {
-  Button,
-  Box,
-  Typography,
-  UseButtonProps,
-  Tooltip,
-} from '@mui/material';
+import { Button, Box, Typography, ButtonProps, Tooltip } from '@mui/material';
 import { StyleSheet, css } from 'aphrodite';
 import { settingsStylesObject } from '../../util/func';
 import { useTranslation } from '../../../shared/intl';
@@ -40,7 +34,7 @@ const styles = StyleSheet.create({
 }) as any;
 
 const DownloadLocation = (
-  props: UseButtonProps & {
+  props: ButtonProps & {
     schema: Schema;
     setting: string;
     onChange: (location: string) => void;
