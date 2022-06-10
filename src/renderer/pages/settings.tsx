@@ -2,7 +2,13 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable promise/no-nesting */
-import { useState, useEffect, useRef, useCallback } from 'react';
+import {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  MouseEventHandler,
+} from 'react';
 import { StyleSheet, css } from 'aphrodite';
 import { load } from 'protobufjs';
 import { readFileSync } from 'fs';
@@ -653,7 +659,7 @@ const Settings = () => {
         <>
           <Backdrop
             open={isInLoadingContext}
-            onClickCapture={(e: Event) => e.stopPropagation()}
+            onClickCapture={((e: Event) => e.stopPropagation()) as any}
             className={css(styles.progressBackup)}
           >
             <div className={css(styles.circularProgressContainer)}>
