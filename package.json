@@ -278,7 +278,7 @@
     "image-type": "^4.1.0",
     "is-url-superb": "^6.1.0",
     "jquery": "^3.6.0",
-    "jquery-ui": "^1.13.0",
+    "jquery-ui": "^1.13.2",
     "localstorage": "^1.0.1",
     "lodash": "^4.17.21",
     "long": "^5.2.0",
