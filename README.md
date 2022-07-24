@@ -1,5 +1,12 @@
+# yeah this got archived
+## don't ever use electron-react-boilerplate
+### ever.
+#### please.
+
 <center><h1><b>座り読み</b></h1></center>
 
+<details>
+<summary>old stuff</summary>
 | issues                                                                | forks                                                                | stars                                                                | license                                                                | codefactor                                                                                                                                                                                          | share                                                                                                |
 | --------------------------------------------------------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------- | ---------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
 | <img src="https://img.shields.io/github/issues/Nowaaru/suwariyomi" /> | <img src="https://img.shields.io/github/forks/Nowaaru/suwariyomi" /> | <img src="https://img.shields.io/github/stars/Nowaaru/suwariyomi" /> | <img src="https://img.shields.io/github/license/Nowaaru/suwariyomi" /> | <a href="https://www.codefactor.io/repository/github/nowaaru/suwariyomi/overview/main"><img src="https://www.codefactor.io/repository/github/nowaaru/suwariyomi/badge/main" alt="CodeFactor" /></a> | <a href="https://twitter.com/intent/tweet?text=Hey!%20There's%20a%20pretty%20cool%20manga%20reader%20on%20GitHub!%20Check%20it%20out%3A%20https%3A//github.com/Nowaaru/suwariyomi/releases"><img src="https://img.shields.io/twitter/url?url=https%3A%2F%2Fgithub.com%2FNowaaru%2Fsuwariyomi" /></a> |
@@ -125,3 +132,4 @@ to test the program, run `npm start`.
 if you have a port conflict, change the port in `.erb/scripts/check-port-in-use.js` (or figure out command line args in node)
 
 ###### powered by [Tachiyomi](https://github.com/tachiyomiorg/tachiyomi), [TachiyomiJ2K](https://github.com/Jays2Kings/tachiyomiJ2K), [electron](https://github.com/electron/electron), [electron-react-boilerplate](https://github.com/electron-react-boilerplate), [Material UI](https://mui.com/), and [react](https://github.com/facebook/react). thank you.
+</summary>
